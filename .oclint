@@ -1,0 +1,34 @@
+################################################################################
+#                                                                              #
+# Sample OCLint configuration file with current (v0.13) default values.        #
+#                                                                              #
+# Place this file in the directory you invoke oclint from and rename it        #
+# to '.oclint'                                                                 #
+#                                                                              #
+# See http://oclint-docs.readthedocs.io/en/stable/howto/rcfile.html            #
+#                                                                              #
+################################################################################
+
+# Allow duplicated violations in the OCLint report
+#
+# maps to command line argument '-allow-duplicated-violations'
+allow-duplicated-violations: false
+
+# Disable the following rules
+#
+# maps to command line argument '-disable-rule <rule name>'
+disable-rules:
+
+rule-configurations:
+  - key: LONG_LINE
+    value: 100
+  - key: LONG_METHOD
+    value: 150
+  - key: NCSS_METHOD
+    value: 100
+  - key: SHORT_VARIABLE_NAME
+    value: 2
+max-priority-1: 0
+max-priority-2: 10
+max-priority-3: 30
+enable-clang-static-analyzer: true

@@ -1,0 +1,79 @@
+# .travis.yml
+
+sudo: required
+language: cpp
+git:
+  depth: 5
+
+cache:
+  - directories:
+    - ~/.cache/apt # This must be accessible for non-root users
+
+matrix:
+  include:
+
+    # Code Style
+    - os: linux
+      name: "CODE::STYLE"
+      dist: xenial
+      compiler: clang-format
+      env:
+        - MATRIX_EVAL=""
+      before_script:
+        - wget https://raw.githubusercontent.com/Sarcasm/run-clang-format/master/run-clang-format.py
+        - chmod +x run-clang-format.py
+      script:
+        - ./run-clang-format.py -r Source
+
+    # Code Quality
+    - os: linux
+      name: "CODE::QUALITY"
+      dist: xenial
+      compiler: clang
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - sourceline: 'ppa:jonathonf/development-utils'
+      env:
+        - MATRIX_EVAL="CC=clang && CXX=clang++"
+      before_script:
+        - chmod +x ${TRAVIS_BUILD_DIR}/.travis.cache && ${TRAVIS_BUILD_DIR}/.travis.cache --load
+        - sudo apt-get update
+        - sudo apt-get install -y --no-install-recommends --no-install-suggests
+          gcc-8 g++-8 libtbb-dev libharfbuzz-bin libharfbuzz-dev libxrandr-dev
+          libxi-dev libxinerama-dev libxcursor-dev libgl1-mesa-dev
+          libglu1-mesa-dev cppcheck clang
+        - ${TRAVIS_BUILD_DIR}/.travis.cache --save
+        - eval "$(curl -sL https://raw.githubusercontent.com/ryuichis/oclint-cpp-travis-ci-examples/master/oclint-ci-install.sh)"
+        - cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON CMakeLists.txt
+      script:
+        - /usr/bin/cppcheck --quiet --enable=all --error-exitcode=1 --force
+          --inline-suppr --suppressions-list=.cppcheck
+          --std=c++14 --language=c++ -I Source main.cpp Source/*
+        - oclint-json-compilation-database -e Libs -e external -e asge -e _deps
+
+    # Linux GCC Build
+    - os: linux
+      name: "CODE::BUILD"
+      dist: xenial
+      compiler: cmake
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - sourceline: 'ppa:jonathonf/development-utils'
+      env:
+        - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
+      before_script:
+        - chmod +x ${TRAVIS_BUILD_DIR}/.travis.cache && ${TRAVIS_BUILD_DIR}/.travis.cache --load
+        - sudo apt-get update
+        - sudo apt-get install -y --no-install-recommends --no-install-suggests
+          gcc-8 g++-8 libtbb-dev libharfbuzz-bin libharfbuzz-dev libxrandr-dev
+          libxi-dev libxinerama-dev libxcursor-dev libgl1-mesa-dev libglu1-mesa-dev
+        - ${TRAVIS_BUILD_DIR}/.travis.cache --save
+      script:
+        - cmake --build .
+
+before_install:
+  - eval "${MATRIX_EVAL}"

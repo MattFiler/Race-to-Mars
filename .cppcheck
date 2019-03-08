@@ -1,0 +1,11 @@
+// suppress all unused functions errors in all files
+unusedFunction
+
+// suppress the annoying system include messages
+missingIncludeSystem
+
+// ignore the Libs folder please
+*:Libs/
+*:External/
+*:libs/
+*:external/

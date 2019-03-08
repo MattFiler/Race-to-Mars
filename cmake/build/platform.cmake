@@ -1,0 +1,7 @@
+if(UNIX AND APPLE)
+    set(PLATFORM "osx" )
+elseif(UNIX)
+    set(PLATFORM "linux")
+else()
+    set(PLATFORM "win")
+endif()

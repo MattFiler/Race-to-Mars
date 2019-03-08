@@ -1,0 +1,137 @@
+#!/bin/bash
+set -e
+
+##### Constants
+VERSION="1.0.0"
+if [[ "$OSTYPE" != "darwin"* ]]; then
+  BLUE='\033[1;34m'
+  PURPLE='\033[1;35m'
+  GREEN='\033[1;32m'
+  RED='\033[1;31m'
+  YELLOW='\033[1;33m'
+  NC='\033[0m' # No Color
+fi
+
+TAG="${YELLOW}[CACHE_BOT]:${NC} "
+##### Constants
+
+##### Variables
+cache=~/.cache/apt
+load=0
+save=0
+verbose=0
+##### Variables
+
+function usage()
+{
+    echo -e "${BLUE}Usage: ${YELLOW}[options] ...${NC}"
+    echo -e "${GREEN}Options:"
+    echo -e "${GREEN}-c, --cache                 ${YELLOW}Cache dir to use; defaults to ~/.cache/apt.${NC}"
+    echo -e "${GREEN}-s, --save                  ${YELLOW}Updates the cache using apts cache.${NC}"
+    echo -e "${GREEN}-l, --load                  ${YELLOW}Loads the cache.${NC}"
+    echo -e "${GREEN}-v, --verbose               ${YELLOW}Detailed messages.${NC}"
+}
+
+while [ "$1" != "" ]; do
+    case $1 in
+        -c | --cache )          shift
+                                cache=$1
+                                ;;
+        -i | --load )           load=1
+                                ;;
+        -s | --save )           save=1
+                                ;;
+        -v | --verbose )        verbose=1
+                                ;;
+        -h | --help )           usage
+                                exit
+                                ;;
+        * )                     usage
+                                exit 1
+    esac
+    shift
+done
+
+##### Functions
+function debug_print()
+{
+    if [ "$verbose" = "1" ]; then echo -e ${TAG} "${1^}"; fi
+}
+
+function print()
+{
+     echo -e ${TAG} "${1^}"
+}
+
+function exist()
+{
+    [ -e "$1" ]
+}
+
+function cache_count()
+{
+  file_count=`ls "${cache}"/*.deb | wc -l`
+  print "${BLUE}There are "${file_count}" packages cached${NC}"
+}
+
+function load_cache
+{
+  print "${BLUE}Print content of "${cache}" ${NC}"
+  cache_count
+
+  if [ "$verbose" = "1" ]; then ls "${cache}"; fi
+
+  debug_print "${BLUE}Checking whether apt-get has no cache${NC}"
+  if [ "$verbose" = "1" ]; then ls /var/cache/apt/archives; fi
+
+  if exist "${cache}"/*.deb
+  then
+      debug_print "${BLUE}Start loading cache${NC}"
+      sudo mv "${cache}"/*.deb /var/cache/apt/archives/
+      if [ "$verbose" = "1" ]; then ls /var/cache/apt/archives; fi
+  else
+      print "${GREEN}Cache is empty${NC}"
+  fi
+}
+
+function save_cache()
+{
+  print "${BLUE}Updating the cache${NC}"
+  if [ "$verbose" = "1" ]; then
+      cp -v /var/cache/apt/archives/*deb "${cache}"
+  else
+      cp  /var/cache/apt/archives/*deb "${cache}"
+  fi
+}
+##### Functions
+
+###################################################################
+########################### Main Script ###########################
+###################################################################
+# 1 if save and load, which one?
+if [ "$save" == "0" ] && [ "$load" == "0" ]; then
+  print "${GREEN}Do you want me to load or save the cache?${NC}"
+  exit 1;
+fi
+
+if [ "$save" == "1" ] && [ "$load" == "1" ]; then
+  print "${GREEN}Either save or load, not both duh!!${NC}"
+  exit 1;
+fi
+
+print "${BLUE}Using "${cache}" as cache directory"
+
+# if save run save_cache
+if [ "$save" == "1" ]; then
+  save_cache
+fi;
+
+# if load run load_cache
+if [ "$load" == "1" ]; then
+  load_cache
+fi;
+###################################################################
+########################### Main Script ###########################
+###################################################################
+
+exit 0;
