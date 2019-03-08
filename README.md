@@ -1,65 +1,9 @@
-### GitHub Username
-
-# Pong Feedback
-#### Your task was to create a clone of the classic Pong game. 
-You are expected to create a replica of the original before going on to improve it by adding additional features and functionality.
-
-![Pong](https://wallscover.com/images/pong-wallpaper-11.jpg)
-
-# Planning and Documentation
-- [ ] UML diagram present
-- [ ] Algorithmic discussion of collision detection 
-
-# Gameplay 
-
-#### Basic Requirements
-- [ ] Two player game
-- [ ] Moving ball that collides with bat
-- [ ] Keyboard input correctly moves paddles
-- [ ] Working scoring mechanism
-- [ ] Ability to quit at any time
-
-#### Extended Functionality
-- [ ] Obvious extensions to the base requirements
-
-# Implementation
-- [ ] Correct use of the coding standard
-- [ ] No memory leaks present
-- [ ] Well structured and easy to follow
-- [ ] Good use of object orientated design
-- [ ] Movement utilises delta-time 
-
-# Marking
-
-#### Breakdown of Components
-Shown below are the weighting for each component being assessed. 
-
-| Component | % |
-| ------ | ------ |
-| Problem Analysis (UML, Pseudo-code & Flow-Chart) | 10% |
-| Playability | 40% |
-| Technical Implementation  | 50% |
-| ------ | ------ |
-| **Total**| **100%**|  
-
-The three components total 100%. 
-This assignment contributes **20%** of your portfolio mark. 
-
-> You can find more information on breakdown and weightings on [Blackboard].
-
-# Grade
-Your grade and the breakdown is shown below
-
-| Component | MARKS |
-| ------ | ------ |
-| Problem Analysis (UML, Pseudo-code & Flow-Chart) | 0 |
-| Playability | 0 |
-| Technical Implementation  | 0 |
-| ------ | ------ |
-| **Total**| **0%**|
-
-
-#### Additional Feedback
-> Keep going, this is a good effort. 
-
-[Blackboard]: <https://blackboard.uwe.ac.uk>
+# Game 3: Low-Level Programming
+#### Your task is to create a video game version of your table top game designed in the Play and Game module.
+ 
+Tips:
+- Ensure you store all code for server logic inside the server source directory. You can find the cmake file for adding cpp and hpp files in the cmake folder.
+- Ensure you store all code for client logic inside the client source directory. You can find the cmake file for adding cpp and hpp files in the cmake folder. 
+- All code that is common to both projects should go in the GameLib library. This is a static library that will get linked into your applications.
+- Both applications will auto-link to the enet library
+- Only the client application is set to link to ASGE and SoLoud

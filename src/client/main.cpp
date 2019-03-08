@@ -1,6 +1,6 @@
+#include "game.h"
 #include <enetpp/client.h>
 #include <gamelib/gamelib.h>
-#include "game.h"
 int main()
 {
   enetpp::global_state::get().initialize();

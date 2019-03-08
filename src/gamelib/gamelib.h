@@ -8,6 +8,5 @@
 
 namespace GameLib
 {
-
 }
-#endif //PROJECT_GAMELIB_H
+#endif // PROJECT_GAMELIB_H

@@ -23,8 +23,7 @@ MyASGEGame::MyASGEGame()
  */
 MyASGEGame::~MyASGEGame()
 {
-  this->inputs->unregisterCallback(
-          static_cast<unsigned int>(key_callback_id));
+  this->inputs->unregisterCallback(static_cast<unsigned int>(key_callback_id));
 
   this->inputs->unregisterCallback(
     static_cast<unsigned int>(mouse_callback_id));

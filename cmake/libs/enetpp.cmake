@@ -16,8 +16,8 @@ if(ENABLE_ENET)
 
     FetchContent_Declare(
             enetpp
-            GIT_REPOSITORY https://github.com/jseward/enetpp
-            GIT_TAG        4e0133c9f76d0ebabf89d3a51b84728836aeb4aa)
+            GIT_REPOSITORY https://github.com/HuxyUK/enetpp
+            GIT_TAG        1f4ab305cfa96c4d506486affcc3acaf64992c50)
 
     FetchContent_GetProperties(enetpp)
     if(NOT enetpp_POPULATED)
@@ -30,12 +30,7 @@ if(ENABLE_ENET)
             INTERFACE SYSTEM
             ${enet_SOURCE_DIR}/include
             ${enetpp_SOURCE_DIR}/include)
-    target_compile_options(
-            enetpp
-            INTERFACE
-            $<$<COMPILE_LANGUAGE:CXX>:-w -fpermissive>)
 
     add_dependencies(enetpp enet)
     target_link_libraries(enetpp INTERFACE enet)
 endif()
-

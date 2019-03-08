@@ -23,7 +23,7 @@ matrix:
         - wget https://raw.githubusercontent.com/Sarcasm/run-clang-format/master/run-clang-format.py
         - chmod +x run-clang-format.py
       script:
-        - ./run-clang-format.py -r Source
+        - ./run-clang-format.py -r src
 
     # Code Quality
     - os: linux
@@ -34,7 +34,7 @@ matrix:
         apt:
           sources:
             - ubuntu-toolchain-r-test
-            - sourceline: 'ppa:jonathonf/development-utils'
+            - sourceline: 'ppa:jonathonf/development-tools'
       env:
         - MATRIX_EVAL="CC=clang && CXX=clang++"
       before_script:
@@ -46,12 +46,14 @@ matrix:
           libglu1-mesa-dev cppcheck clang
         - ${TRAVIS_BUILD_DIR}/.travis.cache --save
         - eval "$(curl -sL https://raw.githubusercontent.com/ryuichis/oclint-cpp-travis-ci-examples/master/oclint-ci-install.sh)"
-        - cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON CMakeLists.txt
+        - cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -H. -Bbuild
       script:
         - /usr/bin/cppcheck --quiet --enable=all --error-exitcode=1 --force
           --inline-suppr --suppressions-list=.cppcheck
-          --std=c++14 --language=c++ -I Source main.cpp Source/*
-        - oclint-json-compilation-database -e Libs -e external -e asge -e _deps
+          --std=c++14 --language=c++ -I src main.cpp src/*
+        - oclint-json-compilation-database
+          -e Libs -e external -e asge -e _deps
+          -enable-clang-static-analyzer -p ./build
 
     # Linux GCC Build
     - os: linux
@@ -62,7 +64,7 @@ matrix:
         apt:
           sources:
             - ubuntu-toolchain-r-test
-            - sourceline: 'ppa:jonathonf/development-utils'
+            - sourceline: 'ppa:jonathonf/development-tools'
       env:
         - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
       before_script:
@@ -72,8 +74,10 @@ matrix:
           gcc-8 g++-8 libtbb-dev libharfbuzz-bin libharfbuzz-dev libxrandr-dev
           libxi-dev libxinerama-dev libxcursor-dev libgl1-mesa-dev libglu1-mesa-dev
         - ${TRAVIS_BUILD_DIR}/.travis.cache --save
+        - cmake -H. -Bbuild
+
       script:
-        - cmake --build .
+        - cmake --build build
 
 before_install:
   - eval "${MATRIX_EVAL}"
