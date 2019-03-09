@@ -38,14 +38,14 @@ RaceToSpace::~RaceToSpace()
  */
 bool RaceToSpace::init()
 {
+  // Load core config
+  game_config = file_handler.loadConfig("game_core.json");
+
   setupResolution();
   if (!initAPI())
   {
     return false;
   }
-
-  // Load core config
-  game_config = file_handler.loadConfig("game_core.json");
 
   toggleFPS();
 
