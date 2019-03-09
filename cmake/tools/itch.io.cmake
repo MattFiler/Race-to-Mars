@@ -27,7 +27,7 @@ if(GAMEDATA_FOLDER)
         ## creates a compressed version of the game data ready for publishing ##
         add_custom_target(
                 ${PROJECT_NAME}+GameData
-                COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/../tools/7zip/${PLATFORM}/7za" -tzip a
+                COMMAND "${CMAKE_SOURCE_DIR}/tools/7zip/${PLATFORM}/7za" -tzip a
                         "$<TARGET_FILE_DIR:${PROJECT_NAME}>/game.dat" "${CMAKE_SOURCE_DIR}/${GAMEDATA_FOLDER}/*"
                 WORKING_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
                 COMMENT "creating data archive")
