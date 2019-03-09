@@ -4,8 +4,8 @@
 #include "../Debug/DebugText.h"
 #include <Engine/FileIO.h>
 #include <json.hpp>
-//#include <soloud.h>
-//#include <soloud_wav.h>
+#include <soloud.h>
+#include <soloud_wav.h>
 #include <sstream>
 #include <string>
 using json = nlohmann::json;
@@ -21,13 +21,11 @@ class FileHandler
                               const std::string& original_filename = "");
 
   std::string openAsString(const std::string& filename);
-  /*
   void loadSound(SoLoud::Wav& sound_file,
                  const std::string& filename,
                  float volume = 1.0f,
                  bool looping = false,
                  bool single_instance = true);
-                 */
 
   ASGE::FILEIO::IOBuffer openAsBuffer(const std::string& filename);
 

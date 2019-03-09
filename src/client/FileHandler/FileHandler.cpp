@@ -71,7 +71,6 @@ std::string FileHandler::openAsString(const std::string& filename)
 }
 
 /* Load a sound into a SoLoud WavStream */
-/*
 void FileHandler::loadSound(SoLoud::Wav& sound_file,
                             const std::string& filename,
                             float volume,
@@ -79,15 +78,17 @@ void FileHandler::loadSound(SoLoud::Wav& sound_file,
                             bool single_instance)
 {
   auto buffer = openAsBuffer("SOUNDS/" + filename + ".wav");
-  sound_file.loadMem(
-    buffer.as_unsigned_char(), static_cast<unsigned int>(buffer.length), false,
-false); sound_file.setVolume(volume); sound_file.setLooping(looping); if
-(single_instance)
+  sound_file.loadMem(buffer.as_unsigned_char(),
+                     static_cast<unsigned int>(buffer.length),
+                     false,
+                     false);
+  sound_file.setVolume(volume);
+  sound_file.setLooping(looping);
+  if (single_instance)
   {
     sound_file.setSingleInstance(1);
   }
 }
- */
 
 /* Load a file as a buffer */
 ASGE::FILEIO::IOBuffer FileHandler::openAsBuffer(const std::string& filename)

@@ -7,6 +7,8 @@ set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 ## we need enet ##
 include(libs/enetpp)
 
+include_directories(SYSTEM "${CMAKE_SOURCE_DIR}/external/nlohmann")
+
 ## out of source builds ##
 set(CMAKE_DEBUG_POSTFIX d)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)

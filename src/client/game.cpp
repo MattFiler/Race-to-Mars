@@ -44,6 +44,9 @@ bool RaceToSpace::init()
     return false;
   }
 
+  // Load core config
+  game_config = file_handler.loadConfig("game_core.json");
+
   toggleFPS();
 
   // input handling functions
@@ -67,13 +70,8 @@ bool RaceToSpace::init()
  */
 void RaceToSpace::setupResolution()
 {
-  // how will you calculate the game's resolution?
-  // will it scale correctly in full screen? what AR will you use?
-  // how will the game be framed in native 16:9 resolutions?
-  // here are some arbitrary values for you to adjust as you see fit
-  // https://www.gamasutra.com/blogs/KenanBolukbasi/20171002/306822/Scaling_and_MultiResolution_in_2D_Games.php
-  game_width = 640;
-  game_height = 920;
+  game_width = game_config["resolution"]["width"];
+  game_height = game_config["resolution"]["height"];
 }
 
 /**
