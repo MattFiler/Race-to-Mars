@@ -1,15 +1,17 @@
 #pragma once
 #include <Engine/OGLGame.h>
+#include <json.hpp>
 #include <string>
+using json = nlohmann::json;
 
 /**
  *  An OpenGL Game based on ASGE.
  */
-class MyASGEGame : public ASGE::OGLGame
+class RaceToSpace : public ASGE::OGLGame
 {
  public:
-  MyASGEGame();
-  ~MyASGEGame();
+  RaceToSpace();
+  ~RaceToSpace();
   virtual bool init() override;
 
  private:
@@ -25,4 +27,7 @@ class MyASGEGame : public ASGE::OGLGame
 
   // Add your GameObjects
   bool in_menu = true;
+
+ private:
+  json game_config;
 };

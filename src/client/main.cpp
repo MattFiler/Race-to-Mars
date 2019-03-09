@@ -5,7 +5,7 @@ int main()
 {
   enetpp::global_state::get().initialize();
 
-  MyASGEGame asge_game;
+  RaceToSpace asge_game;
   asge_game.init();
   asge_game.run();
 

@@ -5,10 +5,14 @@ set(GAMEDATA_FOLDER "data/client")
 ## add the files to be compiled here
 set(SOURCE_FILES
         "client/main.cpp"
-        "client/game.cpp")
+        "client/game.cpp"
+        "client/FileHandler/FileHandler.cpp"
+        "client/Debug/DebugText.cpp")
 
 set(HEADER_FILES
-        "client/game.h")
+        "client/game.h"
+        "client/FileHandler/FileHandler.h"
+        "client/Debug/DebugText.h")
 
 ## the executable
 add_executable(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES})

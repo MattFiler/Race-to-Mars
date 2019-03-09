@@ -12,16 +12,16 @@
  *   @details Consider setting the game's width and height
  *            and even seeding the random number generator.
  */
-MyASGEGame::MyASGEGame()
+RaceToSpace::RaceToSpace()
 {
-  game_name = "ASGE Game";
+  game_name = "Race to Space";
 }
 
 /**
  *   @brief   Destructor.
  *   @details Remove any non-managed memory and callbacks.
  */
-MyASGEGame::~MyASGEGame()
+RaceToSpace::~RaceToSpace()
 {
   this->inputs->unregisterCallback(static_cast<unsigned int>(key_callback_id));
 
@@ -36,7 +36,7 @@ MyASGEGame::~MyASGEGame()
  *            callback should also be set in the initialise function.
  *   @return  True if the game initialised correctly.
  */
-bool MyASGEGame::init()
+bool RaceToSpace::init()
 {
   setupResolution();
   if (!initAPI())
@@ -50,10 +50,10 @@ bool MyASGEGame::init()
   inputs->use_threads = false;
 
   key_callback_id =
-    inputs->addCallbackFnc(ASGE::E_KEY, &MyASGEGame::keyHandler, this);
+    inputs->addCallbackFnc(ASGE::E_KEY, &RaceToSpace::keyHandler, this);
 
   mouse_callback_id = inputs->addCallbackFnc(
-    ASGE::E_MOUSE_CLICK, &MyASGEGame::clickHandler, this);
+    ASGE::E_MOUSE_CLICK, &RaceToSpace::clickHandler, this);
 
   return true;
 }
@@ -65,7 +65,7 @@ bool MyASGEGame::init()
  *            game frames when resolutions are changed in size.
  *   @return  void
  */
-void MyASGEGame::setupResolution()
+void RaceToSpace::setupResolution()
 {
   // how will you calculate the game's resolution?
   // will it scale correctly in full screen? what AR will you use?
@@ -86,7 +86,7 @@ void MyASGEGame::setupResolution()
  *   @see     KeyEvent
  *   @return  void
  */
-void MyASGEGame::keyHandler(const ASGE::SharedEventData data)
+void RaceToSpace::keyHandler(const ASGE::SharedEventData data)
 {
   auto key = static_cast<const ASGE::KeyEvent*>(data.get());
 
@@ -106,7 +106,7 @@ void MyASGEGame::keyHandler(const ASGE::SharedEventData data)
  *   @see     ClickEvent
  *   @return  void
  */
-void MyASGEGame::clickHandler(const ASGE::SharedEventData data)
+void RaceToSpace::clickHandler(const ASGE::SharedEventData data)
 {
   auto click = static_cast<const ASGE::ClickEvent*>(data.get());
 
@@ -124,7 +124,7 @@ void MyASGEGame::clickHandler(const ASGE::SharedEventData data)
  *            the buffers are swapped accordingly and the image shown.
  *   @return  void
  */
-void MyASGEGame::update(const ASGE::GameTime& game_time)
+void RaceToSpace::update(const ASGE::GameTime& game_time)
 {
   // auto dt_sec = game_time.delta.count() / 1000.0;;
   // make sure you use delta time in any movement calculations!
@@ -141,7 +141,7 @@ void MyASGEGame::update(const ASGE::GameTime& game_time)
  *            swapped accordingly and the image shown.
  *   @return  void
  */
-void MyASGEGame::render(const ASGE::GameTime&)
+void RaceToSpace::render(const ASGE::GameTime&)
 {
   renderer->setFont(0);
 
