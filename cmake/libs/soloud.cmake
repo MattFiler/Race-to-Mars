@@ -36,4 +36,5 @@ if(ENABLE_SOUND)
     endif()
 
     add_dependencies(${PROJECT_NAME} soloud)
+    target_link_libraries(${PROJECT_NAME} soloud)
 endif()

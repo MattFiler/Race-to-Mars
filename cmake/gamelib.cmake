@@ -17,7 +17,8 @@ set_target_properties(GameLib
 ## include directories for this library
 target_include_directories(GameLib
         PUBLIC
-        "${CMAKE_CURRENT_SOURCE_DIR}")
+        "${CMAKE_CURRENT_SOURCE_DIR}"
+        "${CMAKE_SOURCE_DIR}/external/nlohmann")
 
 include(build/compilation)
 include(build/flags)
