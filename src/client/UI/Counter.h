@@ -2,6 +2,7 @@
 #define PROJECT_COUNTER_H
 
 #include "../Core/ServiceLocator.h"
+#include "../Math/Vector2.h"
 #include <Engine/Renderer.h>
 
 /*
@@ -18,7 +19,7 @@ class Counter
   Counter();
   ~Counter() = default;
 
- private:
+ protected:
   ASGE::Renderer* renderer = nullptr;
 };
 

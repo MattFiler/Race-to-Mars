@@ -13,8 +13,16 @@
 
 class PlayerCounter : Counter
 {
+ public:
   PlayerCounter() = default;
   ~PlayerCounter() = default;
+
+  void setPosition(Vector2 _position) {
+      position = _position;
+  }
+
+ private:
+  Vector2 position;
 };
 
 #endif // PROJECT_PLAYERCOUNTER_H
