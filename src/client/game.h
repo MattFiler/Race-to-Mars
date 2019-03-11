@@ -1,7 +1,12 @@
 #pragma once
+#include "Debug/DebugText.h"
 #include "FileHandler/FileHandler.h"
+#include "KeyHandler/KeyHandler.h"
+#include "Localisation/Localisation.h"
+#include "Scenes/SceneManager.h"
 #include <Engine/OGLGame.h>
 #include <json.hpp>
+#include <soloud.h>
 #include <string>
 using json = nlohmann::json;
 
@@ -32,4 +37,9 @@ class RaceToSpace : public ASGE::OGLGame
  private:
   json game_config;
   FileHandler file_handler;
+  DebugText debug_text;
+  KeyHandler key_handler;
+  SoLoud::Soloud audio;
+  SceneManager scene_manager;
+  Localisation localiser;
 };

@@ -4,6 +4,14 @@
 			"width": 1280,
 			"height": 720,
 			"scale": 1.0
-		}
+		},
+		"keybinds": {
+		  "Activate": 257,
+		  "Back": 256,
+		  "Menu Up": 265,
+		  "Menu Down": 264
+		},
+		"language": "English",
+		"enable_debug": true
 	}
 }

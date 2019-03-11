@@ -1,7 +1,7 @@
-file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/_deps/ci)
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/_deps/ci-src)
 
 set(MD5URL "https://www.dropbox.com/s/sj2s7dkdisim4yt/aeolus.latest.md5?dl=1")
-set(MD5DL ${CMAKE_BINARY_DIR}/_deps/ci/cargo.zip.md5)
+set(MD5DL ${CMAKE_BINARY_DIR}/_deps/ci-src/cargo.zip.md5)
 
 ## download the MD5
 file( DOWNLOAD
@@ -21,8 +21,8 @@ file(STRINGS ${MD5DL} MD5FILE LIMIT_INPUT 32)
 message("${MD5FILE}")
 
 set(PAKURL "https://www.dropbox.com/s/mvlbni7qtdb2vxy/aeolus.latest.zip?dl=1")
-set(PAKDL  ${CMAKE_BINARY_DIR}/_deps/ci/cargo.zip)
-set(PAKDIR ${CMAKE_BINARY_DIR}/_deps/ci)
+set(PAKDL  ${CMAKE_BINARY_DIR}/_deps/ci-src/cargo.zip)
+set(PAKDIR ${CMAKE_BINARY_DIR}/_deps/ci-src)
 
 ## correct version of arhive already present?
 if(EXISTS ${PAKDL})
@@ -50,4 +50,4 @@ execute_process(
         WORKING_DIRECTORY ${PAKDIR})
 
 ## utility scripts
-add_subdirectory(${PAKDIR})
+add_subdirectory(${PAKDIR} ${CMAKE_BINARY_DIR}/_deps/ci-build)
