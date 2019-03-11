@@ -1,12 +1,12 @@
 #include "DebugText.h"
-//#include "../Constants.h"
+#include "gamelib/Constants.h"
 
 /* Print a string if debug outputs are enabled */
 void DebugText::print(const std::string& debug_string)
 {
   if (enabled)
   {
-    ASGE::DebugPrinter{} << "PO_DEBUG: " << debug_string << std::endl;
+    ASGE::DebugPrinter{} << "RTS_DEBUG: " << debug_string << std::endl;
   }
 }
 

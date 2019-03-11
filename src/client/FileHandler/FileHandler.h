@@ -10,6 +10,13 @@
 #include <string>
 using json = nlohmann::json;
 
+/*
+ *
+ * RACE TO SPACE
+ * A file handler to allow for easy interaction between the game and configuration files, sounds, and other assets.
+ *
+ */
+
 class FileHandler
 {
  public:

@@ -3,6 +3,13 @@
 
 #include <Engine/DebugPrinter.h>
 
+/*
+ *
+ * RACE TO SPACE
+ * Debug functionality to output a log to the console. Enabled/disabled at runtime from a JSON key.
+ *
+ */
+
 class DebugText
 {
  public:

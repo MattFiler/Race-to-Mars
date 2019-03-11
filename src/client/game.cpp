@@ -1,5 +1,6 @@
 #include <string>
 
+#include "Core/ServiceLocator.h"
 #include <Engine/DebugPrinter.h>
 #include <Engine/Input.h>
 #include <Engine/InputEvents.h>
@@ -47,7 +48,13 @@ bool RaceToSpace::init()
     return false;
   }
 
-  toggleFPS();
+  if (game_config["enable_debug"]) {
+    debug_text.enabled = true;
+    toggleFPS();
+  }
+
+  //Setup our locator
+  Locator::setupRenderer(renderer.get());
 
   // input handling functions
   inputs->use_threads = false;

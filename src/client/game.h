@@ -1,5 +1,6 @@
 #pragma once
 #include "FileHandler/FileHandler.h"
+#include "Debug/DebugText.h"
 #include <Engine/OGLGame.h>
 #include <json.hpp>
 #include <string>
@@ -32,4 +33,5 @@ class RaceToSpace : public ASGE::OGLGame
  private:
   json game_config;
   FileHandler file_handler;
+    DebugText debug_text;
 };

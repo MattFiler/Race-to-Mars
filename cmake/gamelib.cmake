@@ -1,7 +1,7 @@
 project(GameLib)
 
 ## shared library for the game
-add_library(GameLib STATIC gamelib/gamelib.cpp)
+add_library(GameLib STATIC gamelib/gamelib.cpp ../src/gamelib/Constants.h)
 
 ## compile language settings
 target_compile_features(GameLib PUBLIC cxx_std_17)

@@ -4,6 +4,7 @@
 			"width": 1280,
 			"height": 720,
 			"scale": 1.0
-		}
+		},
+		"enable_debug": true
 	}
 }
