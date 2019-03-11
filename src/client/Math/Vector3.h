@@ -11,10 +11,11 @@ class Vector3
   Vector3(float _x, float _y, float _z)
   {
     m_x = _x;
-    m_y = _y m_z = _z;
+    m_y = _y;
+    m_z = _z;
   }
 
-  Vector3& operator=(Vector3 vector) { return *this; };
+  Vector3& operator=(const Vector3&) { return *this; };
 
   bool operator==(Vector3& vector)
   {
@@ -55,7 +56,7 @@ class Vector3
 
   float& x = m_x;
   float& y = m_y;
-  float& y = m_z;
+  float& z = m_z;
 
  private:
   float m_x;

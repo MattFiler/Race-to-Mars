@@ -14,7 +14,7 @@ class Vector2
     m_y = _y;
   }
 
-  Vector2& operator=(Vector2 vector) { return *this; };
+  Vector2& operator=(const Vector2&) { return *this; };
 
   bool operator==(Vector2& vector) { return (vector.x == x && vector.y == y); };
   Vector2 operator-(const Vector2& vector)
