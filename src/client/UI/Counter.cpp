@@ -15,7 +15,7 @@ void Counter::setSprite(const std::string& sprite_path)
 /* Set position of the counter */
 void Counter::setPosition(Vector2 _position)
 {
-  position = Vector2(_position.x, _position.y);
+  position.update(_position.x, _position.y);
   sprite->xPos(position.x);
   sprite->yPos(position.y);
 }
