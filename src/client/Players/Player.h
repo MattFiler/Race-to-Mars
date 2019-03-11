@@ -11,16 +11,17 @@
  *
  */
 
-class Player {
-public:
-    Player();
-    ~Player() = default;
+class Player
+{
+ public:
+  Player();
+  ~Player() = default;
 
-protected:
-    ASGE::Renderer* renderer = nullptr;
+ protected:
+  ASGE::Renderer* renderer = nullptr;
 
-private:
-    /* Stuff here */
+ private:
+  /* Stuff here */
 };
 
-#endif //PROJECT_PLAYER_H
+#endif // PROJECT_PLAYER_H

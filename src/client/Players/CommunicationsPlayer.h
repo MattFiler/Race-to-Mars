@@ -10,13 +10,14 @@
  *
  */
 
-class Communications : Player {
-public:
-    Communications() = default;
-    ~Communications() = default;
+class Communications : Player
+{
+ public:
+  Communications() = default;
+  ~Communications() = default;
 
-private:
-    /* Stuff here */
+ private:
+  /* Stuff here */
 };
 
-#endif //PROJECT_COMMUNICATIONSPLAYER_H
+#endif // PROJECT_COMMUNICATIONSPLAYER_H

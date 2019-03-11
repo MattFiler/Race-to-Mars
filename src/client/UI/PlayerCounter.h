@@ -6,13 +6,15 @@
 /*
  *
  * RACE TO SPACE
- * The player counter is a visual representation of the player's current position on the board.
+ * The player counter is a visual representation of the player's current
+ * position on the board.
  *
  */
 
-class PlayerCounter : Counter {
-    PlayerCounter() = default;
-    ~PlayerCounter() = default;
+class PlayerCounter : Counter
+{
+  PlayerCounter() = default;
+  ~PlayerCounter() = default;
 };
 
-#endif //PROJECT_PLAYERCOUNTER_H
+#endif // PROJECT_PLAYERCOUNTER_H

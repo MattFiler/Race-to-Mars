@@ -48,12 +48,13 @@ bool RaceToSpace::init()
     return false;
   }
 
-  if (game_config["enable_debug"]) {
+  if (game_config["enable_debug"])
+  {
     debug_text.enabled = true;
     toggleFPS();
   }
 
-  //Setup our locator
+  // Setup our locator
   Locator::setupRenderer(renderer.get());
 
   // input handling functions

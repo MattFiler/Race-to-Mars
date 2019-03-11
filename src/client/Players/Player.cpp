@@ -1,5 +1,6 @@
 #include "Player.h"
 
-Player::Player() {
-    renderer = Locator::getRenderer();
+Player::Player()
+{
+  renderer = Locator::getRenderer();
 }

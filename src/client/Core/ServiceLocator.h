@@ -10,17 +10,20 @@
  *
  */
 
-class Locator {
-public:
-    static ASGE::Renderer* getRenderer() { return ref_renderer; };
+class Locator
+{
+ public:
+  static ASGE::Renderer* getRenderer() { return ref_renderer; };
 
-    static void setupRenderer(ASGE::Renderer* inst_renderer) { ref_renderer = inst_renderer; };
+  static void setupRenderer(ASGE::Renderer* inst_renderer)
+  {
+    ref_renderer = inst_renderer;
+  };
 
-private:
-    static ASGE::Renderer* ref_renderer;
-
+ private:
+  static ASGE::Renderer* ref_renderer;
 };
 
 /* Return a null handler here? Not sure if we want to fail gracefully. */
 
-#endif //PROJECT_SERVICELOCATOR_H
+#endif // PROJECT_SERVICELOCATOR_H

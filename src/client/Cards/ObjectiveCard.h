@@ -10,8 +10,8 @@
  *
  */
 
-class ObjectiveCard : Card {
-
+class ObjectiveCard : Card
+{
 };
 
-#endif //PROJECT_OBJECTIVECARD_H
+#endif // PROJECT_OBJECTIVECARD_H

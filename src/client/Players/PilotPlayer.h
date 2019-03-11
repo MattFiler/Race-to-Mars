@@ -10,13 +10,14 @@
  *
  */
 
-class Pilot : Player {
-public:
-    Pilot() = default;
-    ~Pilot() = default;
+class Pilot : Player
+{
+ public:
+  Pilot() = default;
+  ~Pilot() = default;
 
-private:
-    /* Stuff here */
+ private:
+  /* Stuff here */
 };
 
-#endif //PROJECT_PILOTPLAYER_H
+#endif // PROJECT_PILOTPLAYER_H

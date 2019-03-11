@@ -10,13 +10,14 @@
  *
  */
 
-class Medic : Player {
-public:
-    Medic() = default;
-    ~Medic() = default;
+class Medic : Player
+{
+ public:
+  Medic() = default;
+  ~Medic() = default;
 
-private:
-    /* Stuff here */
+ private:
+  /* Stuff here */
 };
 
-#endif //PROJECT_MEDICPLAYER_H
+#endif // PROJECT_MEDICPLAYER_H

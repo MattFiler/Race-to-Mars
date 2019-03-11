@@ -10,13 +10,14 @@
  *
  */
 
-class Engineer : Player {
-public:
-    Engineer() = default;
-    ~Engineer() = default;
+class Engineer : Player
+{
+ public:
+  Engineer() = default;
+  ~Engineer() = default;
 
-private:
-    /* Stuff here */
+ private:
+  /* Stuff here */
 };
 
-#endif //PROJECT_ENGINEERPLAYER_H
+#endif // PROJECT_ENGINEERPLAYER_H

@@ -2,26 +2,28 @@
 #define PROJECT_CARD_H
 
 #include "../Core/ServiceLocator.h"
-#include <Engine/Sprite.h>
 #include <Engine/Renderer.h>
+#include <Engine/Sprite.h>
 
 /*
  *
  * RACE TO SPACE
- * The main cards instance to be used as a parent to all other card types (E.G. issues, objectives)
+ * The main cards instance to be used as a parent to all other card types (E.G.
+ * issues, objectives)
  *
  */
 
-class Card {
-public:
-    Card();
-    ~Card() = default;
+class Card
+{
+ public:
+  Card();
+  ~Card() = default;
 
-protected:
-    ASGE::Renderer* renderer = nullptr;
+ protected:
+  ASGE::Renderer* renderer = nullptr;
 
-private:
-    /* Stuff here */
+ private:
+  /* Stuff here */
 };
 
-#endif //PROJECT_CARD_H
+#endif // PROJECT_CARD_H

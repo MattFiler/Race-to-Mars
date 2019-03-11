@@ -6,12 +6,13 @@
 /*
  *
  * RACE TO SPACE
- * Issue cards are dealt per whole group turn in quantities between 1-3. Five total active issue cards ends the game.
+ * Issue cards are dealt per whole group turn in quantities between 1-3. Five
+ * total active issue cards ends the game.
  *
  */
 
-class IssueCard : Card {
-
+class IssueCard : Card
+{
 };
 
-#endif //PROJECT_ISSUECARD_H
+#endif // PROJECT_ISSUECARD_H

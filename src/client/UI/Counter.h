@@ -1,5 +1,5 @@
-#ifndef PROJECT_PLAYERCOUNTER_H
-#define PROJECT_PLAYERCOUNTER_H
+#ifndef PROJECT_COUNTER_H
+#define PROJECT_COUNTER_H
 
 #include "../Core/ServiceLocator.h"
 #include <Engine/Renderer.h>
@@ -7,17 +7,19 @@
 /*
  *
  * RACE TO SPACE
- * A counter to represent the position of something on our game board - E.G. a player or the ship.
+ * A counter to represent the position of something on our game board - E.G. a
+ * player or the ship.
  *
  */
 
-class Counter {
-public:
-    Counter();
-    ~Counter() = default;
+class Counter
+{
+ public:
+  Counter();
+  ~Counter() = default;
 
-private:
-    ASGE::Renderer* renderer = nullptr;
+ private:
+  ASGE::Renderer* renderer = nullptr;
 };
 
-#endif //PROJECT_PLAYERCOUNTER_H
+#endif // PROJECT_COUNTER_H

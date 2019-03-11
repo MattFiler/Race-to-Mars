@@ -6,12 +6,13 @@
 /*
  *
  * RACE TO SPACE
- * Item cards, acquired by buying a random stab at the pack from the supply room.
+ * Item cards, acquired by buying a random stab at the pack from the supply
+ * room.
  *
  */
 
-class ItemCard : Card {
-
+class ItemCard : Card
+{
 };
 
-#endif //PROJECT_ITEMCARD_H
+#endif // PROJECT_ITEMCARD_H
