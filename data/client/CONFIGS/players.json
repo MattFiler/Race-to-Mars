@@ -1,0 +1,26 @@
+{
+	"DEFAULT": {
+		"counter_sprite": "UI/PLAYER_COUNTERS/placeholder.png",
+		"start_room": 0,
+		"friendly_name": "PLACEHOLDER"
+	},
+	"COMMUNICATIONS": {
+		"counter_sprite": "UI/PLAYER_COUNTERS/communications.png",
+		"friendly_name": "PLAYER_COMMS"
+	},
+	"PILOT": {
+		"counter_sprite": "UI/PLAYER_COUNTERS/pilot.png",
+		"start_room": 1,
+		"friendly_name": "PLAYER_PILOT"
+	},
+	"ENGINEER": {
+		"counter_sprite": "UI/PLAYER_COUNTERS/engineer.png",
+		"start_room": 2,
+		"friendly_name": "PLAYER_ENGIN"
+	},
+	"MEDIC": {
+		"counter_sprite": "UI/PLAYER_COUNTERS/medic.png",
+		"start_room": 3,
+		"friendly_name": "PLAYER_MEDIC"
+	}
+}

@@ -10,15 +10,21 @@
 #include <string>
 using json = nlohmann::json;
 
+/*
+ *
+ * RACE TO SPACE
+ * A file handler to allow for easy interaction between the game and
+ * configuration files, sounds, and other assets.
+ *
+ */
+
 class FileHandler
 {
  public:
   json openAsJSON(const std::string& filename);
   json
   loadConfig(const std::string& config, const std::string& request = "DEFAULT");
-  json loadConfigFromExisting(json temp_config,
-                              const std::string& request,
-                              const std::string& original_filename = "");
+  json loadConfigFromExisting(json temp_config, const std::string& request);
 
   std::string openAsString(const std::string& filename);
   void loadSound(SoLoud::Wav& sound_file,
