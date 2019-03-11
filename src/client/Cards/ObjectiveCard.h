@@ -10,7 +10,7 @@
  *
  */
 
-class ObjectiveCard : Card
+class ObjectiveCard : public Card
 {
 };
 

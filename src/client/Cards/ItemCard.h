@@ -11,7 +11,7 @@
  *
  */
 
-class ItemCard : Card
+class ItemCard : public Card
 {
 };
 

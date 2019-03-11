@@ -62,7 +62,7 @@ bool RaceToSpace::init()
   // Setup keybinds
   key_handler.setup(game_config["keybinds"]);
 
-  //Start out on the main menu
+  // Start out on the main menu
   scene_manager.setCurrentScene(game_global_scenes::MAIN_MENU);
 
   // input handling functions

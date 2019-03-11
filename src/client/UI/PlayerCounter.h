@@ -11,7 +11,7 @@
  *
  */
 
-class PlayerCounter : Counter
+class PlayerCounter : public Counter
 {
  public:
   PlayerCounter() = default;

@@ -2,10 +2,11 @@
 #define PROJECT_SCENE_H
 
 #include "../Core/ServiceLocator.h"
-#include "../KeyHandler/KeyHandler.h"
 #include "../Debug/DebugText.h"
+#include "../KeyHandler/KeyHandler.h"
 #include "gamelib/Constants.h"
 #include <Engine/GameTime.h>
+#include <Engine/Renderer.h>
 
 class Scene
 {
@@ -17,6 +18,8 @@ class Scene
     audio = Locator::getAudio();
   };
   virtual ~Scene() = default;
+
+  virtual void init() { return; };
 
   virtual void keyHandler(const ASGE::SharedEventData data) { return; };
   virtual void clickHandler(const ASGE::SharedEventData data) { return; };
@@ -31,7 +34,7 @@ class Scene
   ASGE::Renderer* renderer = nullptr;
   SoLoud::Soloud* audio = nullptr;
   KeyHandler keys;
-    DebugText debug_text;
+  DebugText debug_text;
 
   game_global_scenes next_scene = game_global_scenes::DEFAULT;
 };

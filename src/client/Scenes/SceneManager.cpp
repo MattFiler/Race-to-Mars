@@ -29,4 +29,5 @@ void SceneManager::setCurrentScene(game_global_scenes new_scene)
       break;
     }
   }
+  current_scene->init();
 }
