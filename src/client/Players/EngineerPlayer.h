@@ -10,10 +10,10 @@
  *
  */
 
-class Engineer : Player
+class Engineer : public Player
 {
  public:
-  Engineer() = default;
+  Engineer();
   ~Engineer() = default;
 
  private:

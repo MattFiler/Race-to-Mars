@@ -10,10 +10,10 @@
  *
  */
 
-class Medic : Player
+class Medic : public Player
 {
  public:
-  Medic() = default;
+  Medic();
   ~Medic() = default;
 
  private:

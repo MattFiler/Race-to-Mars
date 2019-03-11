@@ -1,7 +1,7 @@
 #ifndef PROJECT_GAMESCENE_H
 #define PROJECT_GAMESCENE_H
 
-#include "../UI/PlayerCounter.h"
+#include "../Players/AllPlayers.h"
 #include "Scene.h"
 
 class GameScene : public Scene
@@ -18,7 +18,7 @@ class GameScene : public Scene
   void render() override;
 
  private:
-  PlayerCounter test_counter;
+  Players m_players;
 };
 
 #endif // PROJECT_GAMESCENE_H

@@ -3,8 +3,7 @@
 /* Initialise the scene */
 void GameScene::init()
 {
-  test_counter.setSprite("200x200.png");
-  test_counter.setPosition(Vector2(200, 200));
+  // initialisation here
 }
 
 /* Handles key inputs */
@@ -28,6 +27,6 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
 /* Render function */
 void GameScene::render()
 {
-  test_counter.render();
+  m_players.render();
   renderer->renderText("GameScene", 100, 100);
 }

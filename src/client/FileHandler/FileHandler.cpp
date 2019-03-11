@@ -16,24 +16,18 @@ json FileHandler::loadConfig(const std::string& config,
 {
   // Load our config and assign default values.
   json temp_config = openAsJSON("CONFIGS/" + config);
-  return loadConfigFromExisting(temp_config, request, config);
+  return loadConfigFromExisting(temp_config, request);
 }
 
 /* Load required JSON from an existing JSON object */
 json FileHandler::loadConfigFromExisting(json temp_config,
-                                         const std::string& request,
-                                         const std::string& original_filename)
+                                         const std::string& request)
 {
   // TODO: This is an ugly temp fix for DEFAULT enum. Improve!
-  std::string default_text = "DEFAULT";
-  if (original_filename == "characters_core.json")
-  {
-    default_text = "0";
-  }
-  json final_config = temp_config[default_text];
+  json final_config = temp_config["DEFAULT"];
 
   // If we're requesting default, we can stop here.
-  if (request == default_text)
+  if (request == "DEFAULT")
   {
     return final_config;
   }
@@ -105,5 +99,6 @@ ASGE::FILEIO::IOBuffer FileHandler::openAsBuffer(const std::string& filename)
     }
   }
   debug_text.print("FAILED LOADING OF - " + filename);
-  throw "An unhandled exception occurred while loading " + filename + ".";
+  throw std::runtime_error("An unhandled exception occurred while loading " +
+                           filename + ".");
 }

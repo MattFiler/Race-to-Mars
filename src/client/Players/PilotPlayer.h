@@ -10,10 +10,10 @@
  *
  */
 
-class Pilot : Player
+class Pilot : public Player
 {
  public:
-  Pilot() = default;
+  Pilot();
   ~Pilot() = default;
 
  private:

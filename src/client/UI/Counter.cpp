@@ -3,12 +3,12 @@
 Counter::Counter()
 {
   renderer = Locator::getRenderer();
+  sprite = renderer->createRawSprite();
 }
 
-/* Set sprite for counter */
+/* Set sprite texture for counter */
 void Counter::setSprite(const std::string& sprite_path)
 {
-  sprite = renderer->createRawSprite();
   sprite->loadTexture(sprite_path);
 }
 

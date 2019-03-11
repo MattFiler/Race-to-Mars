@@ -1,0 +1,10 @@
+{
+	"DEFAULT": {
+		"PLACEHOLDER": "Placeholder Text",
+	
+		"PLAYER_COMMS": "Communications",
+		"PLAYER_PILOT": "Pilot",
+		"PLAYER_ENGIN": "Engineer", 
+		"PLAYER_MEDIC": "Medic"
+	}
+}

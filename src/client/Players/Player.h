@@ -2,7 +2,12 @@
 #define PROJECT_PLAYER_H
 
 #include "../Core/ServiceLocator.h"
+#include "../FileHandler/FileHandler.h"
+#include "../Localisation/Localisation.h"
+#include "../UI/PlayerCounter.h"
 #include <Engine/Renderer.h>
+#include <json.hpp>
+using json = nlohmann::json;
 
 /*
  *
@@ -17,11 +22,29 @@ class Player
   Player();
   ~Player() = default;
 
+  std::string getCounterSpritePath() { return config["counter_sprite"]; }
+  int getStartingRoom() { return config["start_room"]; }
+  std::string getFriendlyName()
+  {
+    return localiser.getString(config["friendly_name"]);
+  }
+
+  void render();
+
  protected:
+  void retargetConfig(const std::string& name)
+  {
+    config = file_handler.loadConfigFromExisting(config, name);
+  };
+
   ASGE::Renderer* renderer = nullptr;
+  FileHandler file_handler;
+  Localisation localiser;
+
+  PlayerCounter counter;
 
  private:
-  /* Stuff here */
+  json config;
 };
 
 #endif // PROJECT_PLAYER_H

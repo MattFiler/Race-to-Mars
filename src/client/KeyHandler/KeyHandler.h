@@ -45,16 +45,15 @@ struct KeyHandler
   {
     if (config[keybind].is_null())
     {
-      debug_text.print("WARNING: ATTEMPTED TO ACCESS UNINITIALISED KEYBIND - " +
-                       keybind);
-      return false;
+      throw std::runtime_error("Attempted to access an uninitialised keybind "
+                               "- " +
+                               keybind + ".");
     }
     return true;
   }
 
   const ASGE::KeyEvent* key_event;
   static json config;
-  DebugText debug_text;
 };
 
 #endif // PROJECT_KEYHANDLER_H

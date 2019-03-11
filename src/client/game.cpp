@@ -65,6 +65,9 @@ bool RaceToSpace::init()
   // Start out on the main menu
   scene_manager.setCurrentScene(game_global_scenes::MAIN_MENU);
 
+  // Configure localisation
+  localiser.configure(game_config["language"]);
+
   // input handling functions
   inputs->use_threads = false;
 

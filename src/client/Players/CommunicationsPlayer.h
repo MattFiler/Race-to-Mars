@@ -10,10 +10,10 @@
  *
  */
 
-class Communications : Player
+class Communications : public Player
 {
  public:
-  Communications() = default;
+  Communications();
   ~Communications() = default;
 
  private:

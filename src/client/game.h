@@ -2,6 +2,7 @@
 #include "Debug/DebugText.h"
 #include "FileHandler/FileHandler.h"
 #include "KeyHandler/KeyHandler.h"
+#include "Localisation/Localisation.h"
 #include "Scenes/SceneManager.h"
 #include <Engine/OGLGame.h>
 #include <json.hpp>
@@ -40,4 +41,5 @@ class RaceToSpace : public ASGE::OGLGame
   KeyHandler key_handler;
   SoLoud::Soloud audio;
   SceneManager scene_manager;
+  Localisation localiser;
 };
