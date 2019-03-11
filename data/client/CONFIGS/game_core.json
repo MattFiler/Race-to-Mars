@@ -5,6 +5,12 @@
 			"height": 720,
 			"scale": 1.0
 		},
+		"keybinds": {
+		  "Activate": 257,
+		  "Back": 256,
+		  "Menu Up": 265,
+		  "Menu Down": 264
+		},
 		"enable_debug": true
 	}
 }

@@ -56,6 +56,14 @@ bool RaceToSpace::init()
 
   // Setup our locator
   Locator::setupRenderer(renderer.get());
+  Locator::setupInput(inputs.get());
+  Locator::setupAudio(&audio);
+
+  // Setup keybinds
+  key_handler.setup(game_config["keybinds"]);
+
+  //Start out on the main menu
+  scene_manager.setCurrentScene(game_global_scenes::MAIN_MENU);
 
   // input handling functions
   inputs->use_threads = false;
@@ -94,12 +102,7 @@ void RaceToSpace::setupResolution()
  */
 void RaceToSpace::keyHandler(const ASGE::SharedEventData data)
 {
-  auto key = static_cast<const ASGE::KeyEvent*>(data.get());
-
-  if (key->key == ASGE::KEYS::KEY_ESCAPE)
-  {
-    signalExit();
-  }
+  scene_manager.keyHandler(data);
 }
 
 /**
@@ -114,13 +117,7 @@ void RaceToSpace::keyHandler(const ASGE::SharedEventData data)
  */
 void RaceToSpace::clickHandler(const ASGE::SharedEventData data)
 {
-  auto click = static_cast<const ASGE::ClickEvent*>(data.get());
-
-  double x_pos = click->xpos;
-  double y_pos = click->ypos;
-
-  ASGE::DebugPrinter{} << "x_pos: " << x_pos << std::endl;
-  ASGE::DebugPrinter{} << "y_pos: " << y_pos << std::endl;
+  scene_manager.clickHandler(data);
 }
 
 /**
@@ -132,12 +129,7 @@ void RaceToSpace::clickHandler(const ASGE::SharedEventData data)
  */
 void RaceToSpace::update(const ASGE::GameTime& game_time)
 {
-  // auto dt_sec = game_time.delta.count() / 1000.0;;
-  // make sure you use delta time in any movement calculations!
-
-  if (!in_menu)
-  {
-  }
+  scene_manager.update(game_time);
 }
 
 /**
@@ -149,12 +141,5 @@ void RaceToSpace::update(const ASGE::GameTime& game_time)
  */
 void RaceToSpace::render(const ASGE::GameTime&)
 {
-  renderer->setFont(0);
-
-  if (in_menu)
-  {
-  }
-  else
-  {
-  }
+  scene_manager.render();
 }
