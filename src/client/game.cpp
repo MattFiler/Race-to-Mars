@@ -26,6 +26,7 @@ RaceToSpace::RaceToSpace()
  */
 RaceToSpace::~RaceToSpace()
 {
+  client.disconnect();
   enetpp::global_state::get().deinitialize();
 
   this->inputs->unregisterCallback(static_cast<unsigned int>(key_callback_id));
@@ -243,10 +244,14 @@ void RaceToSpace::render(const ASGE::GameTime&)
   if (has_connected_to_server)
   {
     std::string server_ip(game_config["server_hostname"]);
-    renderer->renderText("CONNECTED TO: " + server_ip, 500, 500);
+    renderer->renderText("CONNECTED: " + server_ip, game_width - 250, 50);
+    renderer->renderText(
+      "PING: " + std::to_string(client.get_statistics()._round_trip_time_in_ms),
+      game_width - 250,
+      75);
   }
   else
   {
-    renderer->renderText("NOT CONNECTED TO SERVER", 500, 500);
+    renderer->renderText("NOT CONNECTED", game_width - 250, 50);
   }
 }
