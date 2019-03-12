@@ -39,8 +39,8 @@ void NetworkConnection::networkLoop()
   {
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
     using namespace std::placeholders;
-    client.consume_events(std::bind(&NetworkConnection::connection, this),
-                          std::bind(&NetworkConnection::disconnection, this),
+    client.consume_events(std::bind(&RaceToSpace::connection, game),
+                          std::bind(&RaceToSpace::disconnection, game),
                           std::bind(&RaceToSpace::data, game, _1, _2));
 
     while (msg_queue.size())
@@ -72,18 +72,3 @@ void NetworkConnection::networkMessageDebug()
     msg_queue.push(std::move(txt));
   }
 }
-
-// Act on connection to our server
-void NetworkConnection::connection()
-{
-  has_connected = true;
-}
-
-// Act on disconnection to our server
-void NetworkConnection::disconnection()
-{
-  has_connected = false;
-}
-
-// Function called when data is received from the server
-void NetworkConnection::data(const enet_uint8* data, size_t data_size) {}

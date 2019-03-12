@@ -187,7 +187,7 @@ void RaceToSpace::render(const ASGE::GameTime&)
   scene_manager.render();
 
   // Server connection debug
-  if (networked_client.connected)
+  if (has_connected_to_server)
   {
     std::string server_ip(game_config["server_hostname"]);
     renderer->renderText("CONNECTED: " + server_ip, game_width - 250, 50);

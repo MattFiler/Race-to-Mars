@@ -18,14 +18,8 @@ class NetworkConnection
   void networkMessageDebug();
 
   enetpp::client* getClient() { return &client; };
-  const bool& connected = has_connected;
 
  private:
-  void connection();
-  void disconnection();
-  void data(const enet_uint8* data, size_t data_size);
-
-  bool has_connected = false;
   RaceToSpace* game = nullptr;
 
   enetpp::client client;
