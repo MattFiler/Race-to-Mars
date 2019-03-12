@@ -12,7 +12,47 @@ set(SOURCE_FILES
 set(HEADER_FILES
         "client/game.h"
         "client/FileHandler/FileHandler.h"
-        "client/Debug/DebugText.h" ../src/client/Cards/Card.h ../src/client/Cards/Card.cpp ../src/client/Cards/ObjectiveCard.cpp ../src/client/Cards/ObjectiveCard.h ../src/client/Cards/ItemCard.cpp ../src/client/Cards/ItemCard.h ../src/client/Cards/IssueCard.cpp ../src/client/Cards/IssueCard.h ../src/client/Core/ServiceLocator.h ../src/client/Players/Player.cpp ../src/client/Players/Player.h ../src/client/Players/MedicPlayer.cpp ../src/client/Players/MedicPlayer.h ../src/client/Players/EngineerPlayer.cpp ../src/client/Players/EngineerPlayer.h ../src/client/Players/CommunicationsPlayer.cpp ../src/client/Players/CommunicationsPlayer.h ../src/client/Players/PilotPlayer.cpp ../src/client/Players/PilotPlayer.h ../src/client/UI/Counter.h ../src/client/UI/Counter.cpp ../src/client/UI/PlayerCounter.cpp ../src/client/UI/PlayerCounter.h ../src/client/Core/ServiceLocator.cpp ../src/client/Math/Vector2.h ../src/client/Scenes/SceneManager.cpp ../src/client/Scenes/SceneManager.h ../src/client/Scenes/Scene.h ../src/client/Scenes/GameScene.cpp ../src/client/Scenes/GameScene.h ../src/client/Scenes/MenuScene.cpp ../src/client/Scenes/MenuScene.h ../src/client/KeyHandler/KeyHandler.cpp ../src/client/KeyHandler/KeyHandler.h ../src/client/Localisation/Localisation.cpp ../src/client/Localisation/Localisation.h ../src/client/Players/AllPlayers.h)
+        "client/Debug/DebugText.h"
+        ../src/client/Cards/Card.h
+        ../src/client/Cards/Card.cpp
+        ../src/client/Cards/ObjectiveCard.cpp
+        ../src/client/Cards/ObjectiveCard.h
+        ../src/client/Cards/ItemCard.cpp
+        ../src/client/Cards/ItemCard.h
+        ../src/client/Cards/IssueCard.cpp
+        ../src/client/Cards/IssueCard.h
+        ../src/client/Core/ServiceLocator.h
+        ../src/client/Players/Player.cpp
+        ../src/client/Players/Player.h
+        ../src/client/Players/MedicPlayer.cpp
+        ../src/client/Players/MedicPlayer.h
+        ../src/client/Players/EngineerPlayer.cpp
+        ../src/client/Players/EngineerPlayer.h
+        ../src/client/Players/CommunicationsPlayer.cpp
+        ../src/client/Players/CommunicationsPlayer.h
+        ../src/client/Players/PilotPlayer.cpp
+        ../src/client/Players/PilotPlayer.h
+        ../src/client/UI/Counter.h
+        ../src/client/UI/Counter.cpp
+        ../src/client/UI/PlayerCounter.cpp
+        ../src/client/UI/PlayerCounter.h
+        ../src/client/Core/ServiceLocator.cpp
+        ../src/client/Math/Vector2.h
+        ../src/client/Scenes/SceneManager.cpp
+        ../src/client/Scenes/SceneManager.h
+        ../src/client/Scenes/Scene.h
+        ../src/client/Scenes/GameScene.cpp
+        ../src/client/Scenes/GameScene.h
+        ../src/client/Scenes/MenuScene.cpp
+        ../src/client/Scenes/MenuScene.h
+        ../src/client/KeyHandler/KeyHandler.cpp
+        ../src/client/KeyHandler/KeyHandler.h
+        ../src/client/Localisation/Localisation.cpp
+        ../src/client/Localisation/Localisation.h
+        ../src/client/Players/AllPlayers.h
+        ../src/client/NetworkedData/PlayerData.h
+        ../src/client/NetworkConnection/NetworkConnection.cpp
+        ../src/client/NetworkConnection/NetworkConnection.h)
 
 ## the executable
 add_executable(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES})

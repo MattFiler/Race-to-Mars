@@ -7,6 +7,7 @@
 #include "gamelib/Constants.h"
 #include <Engine/GameTime.h>
 #include <Engine/Renderer.h>
+#include <enet/enet.h>
 
 class Scene
 {
@@ -20,6 +21,13 @@ class Scene
   virtual ~Scene() = default;
 
   virtual void init() { return; };
+
+  virtual void networkConnected() { return; };
+  virtual void networkDisconnected() { return; };
+  virtual void networkDataReceived(const enet_uint8* data, size_t data_size)
+  {
+    return;
+  };
 
   virtual void keyHandler(const ASGE::SharedEventData data) { return; };
   virtual void clickHandler(const ASGE::SharedEventData data) { return; };

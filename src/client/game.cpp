@@ -7,6 +7,8 @@
 #include <Engine/Keys.h>
 #include <Engine/Sprite.h>
 
+#include <iostream>
+
 #include "game.h"
 /**
  *   @brief   Default Constructor.
@@ -42,12 +44,18 @@ bool RaceToSpace::init()
   // Load core config
   game_config = file_handler.loadConfig("game_core.json");
 
+  // Connect us to our server
+  networked_client.connectToServer(game_config["server_hostname"],
+                                   game_config["server_port"]);
+
+  // Configure game
   setupResolution();
   if (!initAPI())
   {
     return false;
   }
 
+  // Enable debug outputs if requested
   if (game_config["enable_debug"])
   {
     debug_text.enabled = true;
@@ -58,26 +66,58 @@ bool RaceToSpace::init()
   Locator::setupRenderer(renderer.get());
   Locator::setupInput(inputs.get());
   Locator::setupAudio(&audio);
+  Locator::setupClient(&networked_client);
 
   // Setup keybinds
   key_handler.setup(game_config["keybinds"]);
 
-  // Start out on the main menu
-  scene_manager.setCurrentScene(game_global_scenes::MAIN_MENU);
-
   // Configure localisation
   localiser.configure(game_config["language"]);
 
-  // input handling functions
-  inputs->use_threads = false;
+  // Start out on the main menu
+  scene_manager.setCurrentScene(game_global_scenes::MAIN_MENU);
 
+  // Input handling functions
+  inputs->use_threads = false;
   key_callback_id =
     inputs->addCallbackFnc(ASGE::E_KEY, &RaceToSpace::keyHandler, this);
-
   mouse_callback_id = inputs->addCallbackFnc(
     ASGE::E_MOUSE_CLICK, &RaceToSpace::clickHandler, this);
 
+  // Start listening to the server
+  networked_client.startListening(this);
+
   return true;
+}
+
+// Act on connection to our server
+void RaceToSpace::connection()
+{
+  scene_manager.networkConnected();
+
+  // debugging
+  debug_text.print("Connected to server.");
+  has_connected_to_server = true;
+}
+
+// Act on disconnection to our server
+void RaceToSpace::disconnection()
+{
+  scene_manager.networkDisconnected();
+
+  // debugging
+  debug_text.print("Disconnected from server.");
+  has_connected_to_server = false;
+}
+
+// Function called when data is received from the server
+void RaceToSpace::data(const enet_uint8* data, size_t data_size)
+{
+  scene_manager.networkDataReceived(data, data_size);
+
+  // Debugging with message send/receive
+  std::string msg(reinterpret_cast<const char*>(data), data_size);
+  debug_text.print("received message from server: " + msg);
 }
 
 /**
@@ -145,4 +185,20 @@ void RaceToSpace::update(const ASGE::GameTime& game_time)
 void RaceToSpace::render(const ASGE::GameTime&)
 {
   scene_manager.render();
+
+  // Server connection debug
+  if (has_connected_to_server)
+  {
+    std::string server_ip(game_config["server_hostname"]);
+    renderer->renderText("CONNECTED: " + server_ip, game_width - 250, 50);
+    renderer->renderText("PING: " + std::to_string(networked_client.getClient()
+                                                     ->get_statistics()
+                                                     ._round_trip_time_in_ms),
+                         game_width - 250,
+                         75);
+  }
+  else
+  {
+    renderer->renderText("NOT CONNECTED", game_width - 250, 50);
+  }
 }
