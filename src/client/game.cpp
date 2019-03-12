@@ -26,9 +26,6 @@ RaceToSpace::RaceToSpace()
  */
 RaceToSpace::~RaceToSpace()
 {
-  client.disconnect();
-  enetpp::global_state::get().deinitialize();
-
   this->inputs->unregisterCallback(static_cast<unsigned int>(key_callback_id));
 
   this->inputs->unregisterCallback(
@@ -47,13 +44,9 @@ bool RaceToSpace::init()
   // Load core config
   game_config = file_handler.loadConfig("game_core.json");
 
-  // Initialise networking and connect to server
-  std::string server_ip(game_config["server_hostname"]);
-  enetpp::global_state::get().initialize();
-  client.connect(enetpp::client_connect_params()
-                   .set_channel_count(1)
-                   .set_server_host_name_and_port(server_ip.c_str(),
-                                                  game_config["server_port"]));
+  // Connect us to our server
+  networked_client.connectToServer(game_config["server_hostname"],
+                                   game_config["server_port"]);
 
   // Configure game
   setupResolution();
@@ -73,7 +66,7 @@ bool RaceToSpace::init()
   Locator::setupRenderer(renderer.get());
   Locator::setupInput(inputs.get());
   Locator::setupAudio(&audio);
-  Locator::setupClient(&client);
+  Locator::setupClient(&networked_client);
 
   // Setup keybinds
   key_handler.setup(game_config["keybinds"]);
@@ -91,56 +84,10 @@ bool RaceToSpace::init()
   mouse_callback_id = inputs->addCallbackFnc(
     ASGE::E_MOUSE_CLICK, &RaceToSpace::clickHandler, this);
 
-  // Thread out our network loop so we can continue with the game loop
-  std::thread th(&RaceToSpace::networkLoop, this);
-  th.detach();
-
-  // Enable debug input to test comms from client to server (& other clients)
-  std::thread th2(&RaceToSpace::networkMessageDebug, this);
-  th2.detach();
+  // Start listening to the server
+  networked_client.startListening(this);
 
   return true;
-}
-
-// Our network connection loop
-void RaceToSpace::networkLoop()
-{
-  while (client.is_connecting_or_connected())
-  {
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    using namespace std::placeholders;
-    client.consume_events(std::bind(&RaceToSpace::connection, this),
-                          std::bind(&RaceToSpace::disconnection, this),
-                          std::bind(&RaceToSpace::data, this, _1, _2));
-
-    while (msg_queue.size())
-    {
-      std::lock_guard<std::mutex> lock(msg_queue_mtx);
-      const auto& txt = msg_queue.front();
-      assert(sizeof(char) == sizeof(enet_uint8));
-      client.send_packet(0,
-                         reinterpret_cast<const enet_uint8*>(txt.data()),
-                         txt.length(),
-                         ENET_PACKET_FLAG_RELIABLE);
-      msg_queue.pop();
-    }
-  }
-
-  exiting = true;
-}
-
-// Allow us to send a debug message over the network to our server and any other
-// clients
-void RaceToSpace::networkMessageDebug()
-{
-  while (!exiting)
-  {
-    std::string txt;
-    std::getline(std::cin, txt);
-
-    std::lock_guard<std::mutex> lock(msg_queue_mtx);
-    msg_queue.push(std::move(txt));
-  }
 }
 
 // Act on connection to our server
@@ -240,14 +187,15 @@ void RaceToSpace::render(const ASGE::GameTime&)
   scene_manager.render();
 
   // Server connection debug
-  if (has_connected_to_server)
+  if (networked_client.connected)
   {
     std::string server_ip(game_config["server_hostname"]);
     renderer->renderText("CONNECTED: " + server_ip, game_width - 250, 50);
-    renderer->renderText(
-      "PING: " + std::to_string(client.get_statistics()._round_trip_time_in_ms),
-      game_width - 250,
-      75);
+    renderer->renderText("PING: " + std::to_string(networked_client.getClient()
+                                                     ->get_statistics()
+                                                     ._round_trip_time_in_ms),
+                         game_width - 250,
+                         75);
   }
   else
   {

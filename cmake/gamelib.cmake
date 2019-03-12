@@ -1,7 +1,11 @@
 project(GameLib)
 
 ## shared library for the game
-add_library(GameLib STATIC gamelib/gamelib.cpp ../src/gamelib/Constants.h)
+add_library(GameLib STATIC gamelib/gamelib.cpp
+            ../src/gamelib/Constants.h
+            ../src/gamelib/NetworkedData/Cards.h
+            ../src/gamelib/NetworkedData/Players.h
+            ../src/gamelib/NetworkedData/Rooms.h)
 
 ## compile language settings
 target_compile_features(GameLib PUBLIC cxx_std_17)

@@ -3,6 +3,7 @@
 #include "FileHandler/FileHandler.h"
 #include "KeyHandler/KeyHandler.h"
 #include "Localisation/Localisation.h"
+#include "NetworkConnection/NetworkConnection.h"
 #include "Scenes/SceneManager.h"
 #include <Engine/OGLGame.h>
 #include <atomic>
@@ -23,9 +24,6 @@ class RaceToSpace : public ASGE::OGLGame
   ~RaceToSpace();
   virtual bool init() override;
 
-  void networkLoop();
-  void networkMessageDebug();
-
   void connection();
   void disconnection();
   void data(const enet_uint8* data, size_t data_size);
@@ -42,13 +40,9 @@ class RaceToSpace : public ASGE::OGLGame
   int mouse_callback_id = -1; /**< Mouse Input Callback ID. */
 
  private:
-  enetpp::client client;
-  std::atomic<bool> exiting = false;
-  std::queue<std::string> msg_queue;
-  std::mutex msg_queue_mtx;
-
   bool has_connected_to_server = false;
 
+  NetworkConnection networked_client;
   json game_config;
   FileHandler file_handler;
   DebugText debug_text;
