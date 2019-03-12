@@ -3,13 +3,11 @@
 
 RaceToSpaceServer::RaceToSpaceServer()
 {
-  // constructor
   enetpp::global_state::get().initialize();
 }
 
 RaceToSpaceServer::~RaceToSpaceServer()
 {
-  // destructor
   network_server.stop_listening();
   enetpp::global_state::get().deinitialize();
 }
@@ -21,7 +19,6 @@ void RaceToSpaceServer::initialise()
     next_uid++;
   };
 
-  // set the server running
   network_server.start_listening(
     enetpp::server_listen_params<server_client>()
       .set_max_client_count(20)
@@ -57,7 +54,7 @@ void RaceToSpaceServer::run()
         });
     });
 
-  // while server should not terminate
+  // cppcheck-suppress *
   static bool terminate = false;
   while (!terminate)
   {
