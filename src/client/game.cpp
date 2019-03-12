@@ -73,6 +73,7 @@ bool RaceToSpace::init()
   Locator::setupRenderer(renderer.get());
   Locator::setupInput(inputs.get());
   Locator::setupAudio(&audio);
+  Locator::setupClient(&client);
 
   // Setup keybinds
   key_handler.setup(game_config["keybinds"]);
@@ -83,12 +84,10 @@ bool RaceToSpace::init()
   // Start out on the main menu
   scene_manager.setCurrentScene(game_global_scenes::MAIN_MENU);
 
-  // input handling functions
+  // Input handling functions
   inputs->use_threads = false;
-
   key_callback_id =
     inputs->addCallbackFnc(ASGE::E_KEY, &RaceToSpace::keyHandler, this);
-
   mouse_callback_id = inputs->addCallbackFnc(
     ASGE::E_MOUSE_CLICK, &RaceToSpace::clickHandler, this);
 
