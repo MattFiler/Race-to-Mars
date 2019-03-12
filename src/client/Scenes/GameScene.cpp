@@ -1,10 +1,16 @@
 #include "GameScene.h"
 
 /* Initialise the scene */
-void GameScene::init()
-{
-  // initialisation here
-}
+void GameScene::init() {}
+
+/* Handles connecting to the server */
+void networkConnected() {}
+
+/* Handles disconnecting from the server */
+void networkDisconnected() {}
+
+/* Handles receiving data from the server */
+void networkDataReceived(const enet_uint8* data, size_t data_size) {}
 
 /* Handles key inputs */
 void GameScene::keyHandler(const ASGE::SharedEventData data)

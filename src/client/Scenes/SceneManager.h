@@ -5,6 +5,7 @@
 #include "Scene.h"
 #include "gamelib/Constants.h"
 #include <Engine/GameTime.h>
+#include <enet/enet.h>
 
 class SceneManager
 {
@@ -15,6 +16,15 @@ class SceneManager
   void setCurrentScene(game_global_scenes new_scene);
   game_global_scenes getCurrentScene() { return current_scene_id; };
 
+  // Call appropriate networking functions
+  void networkConnected() { current_scene->networkConnected(); };
+  void networkDisconnected() { current_scene->networkDisconnected(); };
+  void networkDataReceived(const enet_uint8* data, size_t data_size)
+  {
+    current_scene->networkDataReceived(data);
+  };
+
+  // Call appropriate engine functions
   void keyHandler(const ASGE::SharedEventData data)
   {
     current_scene->keyHandler(data);

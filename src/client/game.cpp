@@ -146,20 +146,31 @@ void RaceToSpace::networkMessageDebug()
 // Act on connection to our server
 void RaceToSpace::connection()
 {
+  scene_manager.networkConnected();
+
+  // debugging
   debug_text.print("Connected to server.");
+  has_connected_to_server = true;
 }
 
 // Act on disconnection to our server
 void RaceToSpace::disconnection()
 {
+  scene_manager.networkDisconnected();
+
+  // debugging
   debug_text.print("Disconnected from server.");
+  has_connected_to_server = false;
 }
 
-// Pass data between us and the server
+// Function called when data is received from the server
 void RaceToSpace::data(const enet_uint8* data, size_t data_size)
 {
+  scene_manager.networkDataReceived(data, data_size);
+
+  // Debugging with message send/receive
   std::string msg(reinterpret_cast<const char*>(data), data_size);
-  debug_text.print("Recieved message from server: " + msg);
+  debug_text.print("received message from server: " + msg);
 }
 
 /**
@@ -227,4 +238,15 @@ void RaceToSpace::update(const ASGE::GameTime& game_time)
 void RaceToSpace::render(const ASGE::GameTime&)
 {
   scene_manager.render();
+
+  // Server connection debug
+  if (has_connected_to_server)
+  {
+    std::string server_ip(game_config["server_hostname"]);
+    renderer->renderText("CONNECTED TO: " + server_ip, 500, 500);
+  }
+  else
+  {
+    renderer->renderText("NOT CONNECTED TO SERVER", 500, 500);
+  }
 }

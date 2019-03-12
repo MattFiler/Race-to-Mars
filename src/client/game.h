@@ -41,14 +41,13 @@ class RaceToSpace : public ASGE::OGLGame
   int key_callback_id = -1;   /**< Key Input Callback ID. */
   int mouse_callback_id = -1; /**< Mouse Input Callback ID. */
 
-  // Add your GameObjects
-  bool in_menu = true;
-
  private:
   enetpp::client client;
   std::atomic<bool> exiting = false;
   std::queue<std::string> msg_queue;
   std::mutex msg_queue_mtx;
+
+  bool has_connected_to_server = false;
 
   json game_config;
   FileHandler file_handler;
