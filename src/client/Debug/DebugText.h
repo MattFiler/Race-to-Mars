@@ -1,7 +1,8 @@
 #ifndef PO_DEBUG
 #define PO_DEBUG
 
-#include <Engine/DebugPrinter.h>
+//#include <Engine/DebugPrinter.h>
+#include "../../../external/asge/include/Engine/DebugPrinter.h" //Weird?
 
 /*
  *

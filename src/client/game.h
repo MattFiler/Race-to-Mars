@@ -5,7 +5,10 @@
 #include "Localisation/Localisation.h"
 #include "Scenes/SceneManager.h"
 #include <Engine/OGLGame.h>
+#include <atomic>
+#include <enetpp/client.h>
 #include <json.hpp>
+#include <queue>
 #include <soloud.h>
 #include <string>
 using json = nlohmann::json;
@@ -19,6 +22,13 @@ class RaceToSpace : public ASGE::OGLGame
   RaceToSpace();
   ~RaceToSpace();
   virtual bool init() override;
+
+  void networkLoop();
+  void networkMessageDebug();
+
+  void connection();
+  void disconnection();
+  void data(const enet_uint8* data, size_t data_size);
 
  private:
   void keyHandler(const ASGE::SharedEventData data);
@@ -35,6 +45,11 @@ class RaceToSpace : public ASGE::OGLGame
   bool in_menu = true;
 
  private:
+  enetpp::client client;
+  std::atomic<bool> exiting = false;
+  std::queue<std::string> msg_queue;
+  std::mutex msg_queue_mtx;
+
   json game_config;
   FileHandler file_handler;
   DebugText debug_text;

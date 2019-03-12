@@ -30,7 +30,7 @@ class SceneManager
   void render() { current_scene->render(); };
 
  private:
-  game_global_scenes current_scene_id;
+  game_global_scenes current_scene_id = game_global_scenes::DEFAULT;
   Scene* current_scene;
   DebugText debug_text;
 };

@@ -12,6 +12,8 @@
 		  "Menu Down": 264
 		},
 		"language": "English",
+		"server_hostname": "localhost",
+		"server_port": 8888,
 		"enable_debug": true
 	}
 }
