@@ -54,8 +54,8 @@ void RaceToSpaceServer::run()
         });
     });
 
-  // cppcheck-suppress *
   static bool terminate = false;
+  // cppcheck-suppress *
   while (!terminate)
   {
     network_server.consume_events(on_connect, on_disconnect, on_data);
