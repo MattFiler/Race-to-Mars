@@ -34,17 +34,19 @@ void RaceToSpaceServer::run()
 {
   auto on_connect = ([&](server_client& client) {
     std::cout << "Client " << std::to_string(client.get_id())
-              << " has connected!";
+              << " has connected!" << std::endl;
   });
 
   auto on_disconnect = ([&](unsigned int client_id) {
-    std::cout << "Client " << std::to_string(client_id) << " has disconnected!";
+    std::cout << "Client " << std::to_string(client_id) << " has disconnected!"
+              << std::endl;
   });
 
   auto on_data =
     ([&](server_client& client, const enet_uint8* data, size_t data_size) {
       std::string msg(reinterpret_cast<const char*>(data), data_size);
-      std::cout << "Client " << std::to_string(client.get_id()) << ": " << msg;
+      std::cout << "Client " << std::to_string(client.get_id()) << ": " << msg
+                << std::endl;
       network_server.send_packet_to_all_if(
         0,
         data,
