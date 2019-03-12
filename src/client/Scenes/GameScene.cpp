@@ -4,13 +4,13 @@
 void GameScene::init() {}
 
 /* Handles connecting to the server */
-void networkConnected() {}
+void GameScene::networkConnected() {}
 
 /* Handles disconnecting from the server */
-void networkDisconnected() {}
+void GameScene::networkDisconnected() {}
 
 /* Handles receiving data from the server */
-void networkDataReceived(const enet_uint8* data, size_t data_size) {}
+void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size) {}
 
 /* Handles key inputs */
 void GameScene::keyHandler(const ASGE::SharedEventData data)

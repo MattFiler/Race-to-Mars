@@ -4,13 +4,13 @@
 void MenuScene::init() {}
 
 /* Handles connecting to the server */
-void networkConnected() {}
+void MenuScene::networkConnected() {}
 
 /* Handles disconnecting from the server */
-void networkDisconnected() {}
+void MenuScene::networkDisconnected() {}
 
 /* Handles receiving data from the server */
-void networkDataReceived(const enet_uint8* data, size_t data_size) {}
+void MenuScene::networkDataReceived(const enet_uint8* data, size_t data_size) {}
 
 /* Handles key inputs */
 void MenuScene::keyHandler(const ASGE::SharedEventData data)
