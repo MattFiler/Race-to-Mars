@@ -21,7 +21,7 @@ class SceneManager
   void networkDisconnected() { current_scene->networkDisconnected(); };
   void networkDataReceived(const enet_uint8* data, size_t data_size)
   {
-    current_scene->networkDataReceived(data);
+    current_scene->networkDataReceived(data, data_size);
   };
 
   // Call appropriate engine functions

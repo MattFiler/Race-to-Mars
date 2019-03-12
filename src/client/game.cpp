@@ -54,14 +54,6 @@ bool RaceToSpace::init()
                    .set_server_host_name_and_port(server_ip.c_str(),
                                                   game_config["server_port"]));
 
-  // Thread out our network loop so we can continue with the game loop
-  std::thread th(&RaceToSpace::networkLoop, this);
-  th.detach();
-
-  // Enable debug input to test comms from client to server (& other clients)
-  std::thread th2(&RaceToSpace::networkMessageDebug, this);
-  th2.detach();
-
   // Configure game
   setupResolution();
   if (!initAPI())
@@ -98,6 +90,14 @@ bool RaceToSpace::init()
 
   mouse_callback_id = inputs->addCallbackFnc(
     ASGE::E_MOUSE_CLICK, &RaceToSpace::clickHandler, this);
+
+  // Thread out our network loop so we can continue with the game loop
+  std::thread th(&RaceToSpace::networkLoop, this);
+  th.detach();
+
+  // Enable debug input to test comms from client to server (& other clients)
+  std::thread th2(&RaceToSpace::networkMessageDebug, this);
+  th2.detach();
 
   return true;
 }
