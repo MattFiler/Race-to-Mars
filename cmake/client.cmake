@@ -71,7 +71,6 @@ set_target_properties(${PROJECT_NAME}
 
 ## important build scripts
 include(build/compilation)
-include(libs/asge)
 include(libs/soloud)
 include(tools/itch.io)
 
