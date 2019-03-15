@@ -1,5 +1,4 @@
 #include "server.h"
-#include <iostream>
 
 #include <gamelib/ChatMsg.h>
 
@@ -67,13 +66,13 @@ void RaceToSpaceServer::run()
   //  }
 
   auto on_connect = ([&](server_client& client) {
-    std::cout << "client " << std::to_string(client.get_id())
-              << ": has connected" << std::endl;
+    debug_text.print("Client " + std::to_string(client.get_id()) +
+                     " has connected!");
   });
 
-  auto on_disconnect = ([&](unsigned int client_uid) {
-    std::cout << "client " << std::to_string(client_uid)
-              << ": has disconnected\n";
+  auto on_disconnect = ([&](unsigned int client_id) {
+    debug_text.print("Client " + std::to_string(client_id) +
+                     " has disconnected!");
   });
 
   auto on_data =

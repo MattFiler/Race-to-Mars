@@ -1,6 +1,7 @@
 #ifndef PROJECT_MENUSCENE_H
 #define PROJECT_MENUSCENE_H
 
+#include "../UI/Menu.h"
 #include "Scene.h"
 
 class MenuScene : public Scene
@@ -19,6 +20,9 @@ class MenuScene : public Scene
   void clickHandler(const ASGE::SharedEventData data) override;
   game_global_scenes update(const ASGE::GameTime& game_time) override;
   void render() override;
+
+ private:
+  Menu main_menu;
 };
 
 #endif // PROJECT_MENUSCENE_H

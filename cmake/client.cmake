@@ -5,14 +5,10 @@ set(GAMEDATA_FOLDER "data/client")
 ## add the files to be compiled here
 set(SOURCE_FILES
         "client/main.cpp"
-        "client/game.cpp"
-        "client/FileHandler/FileHandler.cpp"
-        "client/Debug/DebugText.cpp")
+        "client/game.cpp")
 
 set(HEADER_FILES
         "client/game.h"
-        "client/FileHandler/FileHandler.h"
-        "client/Debug/DebugText.h"
         ../src/client/Cards/Card.h
         ../src/client/Cards/Card.cpp
         ../src/client/Cards/ObjectiveCard.cpp
@@ -32,12 +28,11 @@ set(HEADER_FILES
         ../src/client/Players/CommunicationsPlayer.h
         ../src/client/Players/PilotPlayer.cpp
         ../src/client/Players/PilotPlayer.h
-        ../src/client/UI/Counter.h
-        ../src/client/UI/Counter.cpp
-        ../src/client/UI/PlayerCounter.cpp
-        ../src/client/UI/PlayerCounter.h
+        ../src/client/UI/OnBoardObject.h
+        ../src/client/UI/OnBoardObject.cpp
+        ../src/client/Board/PlayerCounter.cpp
+        ../src/client/Board/PlayerCounter.h
         ../src/client/Core/ServiceLocator.cpp
-        ../src/client/Math/Vector2.h
         ../src/client/Scenes/SceneManager.cpp
         ../src/client/Scenes/SceneManager.h
         ../src/client/Scenes/Scene.h
@@ -47,12 +42,19 @@ set(HEADER_FILES
         ../src/client/Scenes/MenuScene.h
         ../src/client/KeyHandler/KeyHandler.cpp
         ../src/client/KeyHandler/KeyHandler.h
-        ../src/client/Localisation/Localisation.cpp
-        ../src/client/Localisation/Localisation.h
         ../src/client/Players/AllPlayers.h
         ../src/client/NetworkedData/PlayerData.h
         ../src/client/NetworkConnection/NetworkConnection.cpp
         ../src/client/NetworkConnection/NetworkConnection.h ../src/client/Cards/Deck.cpp ../src/client/Cards/Deck.h)
+        ../src/client/NetworkConnection/NetworkConnection.h
+        ../src/client/Board/Ship.cpp
+        ../src/client/Board/Ship.h
+        ../src/client/UI/Menu.cpp
+        ../src/client/UI/Menu.h
+        ../src/client/Board/GameBoard.cpp
+        ../src/client/Board/GameBoard.h
+        ../src/client/Board/ShipRoom.h
+        ../src/client/Board/ShipRoom.cpp)
 
 ## the executable
 add_executable(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES})
@@ -71,8 +73,6 @@ set_target_properties(${PROJECT_NAME}
 
 ## important build scripts
 include(build/compilation)
-include(libs/asge)
-include(libs/soloud)
 include(tools/itch.io)
 
 ## hide console unless debug build ##

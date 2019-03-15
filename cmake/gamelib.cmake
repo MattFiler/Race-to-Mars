@@ -6,6 +6,19 @@ add_library(GameLib STATIC gamelib/gamelib.cpp
             ../src/gamelib/NetworkedData/Cards.h
             ../src/gamelib/NetworkedData/Players.h
             ../src/gamelib/NetworkedData/Rooms.h ../src/gamelib/ChatMsg.cpp ../src/gamelib/ChatMsg.h)
+        ../src/gamelib/Constants.h
+        ../src/gamelib/NetworkedData/Cards.h
+        ../src/gamelib/NetworkedData/Players.h
+        ../src/gamelib/NetworkedData/Rooms.h
+        ../src/gamelib/Constants.cpp
+        ../src/gamelib/Debug/DebugText.cpp
+        ../src/gamelib/Debug/DebugText.h
+        ../src/gamelib/FileHandler/FileHandler.h
+        ../src/gamelib/FileHandler/FileHandler.cpp
+        ../src/gamelib/Localisation/Localisation.cpp
+        ../src/gamelib/Localisation/Localisation.h
+        ../src/gamelib/Math/Vector2.h
+        ../src/gamelib/Math/BoundingBox.h )
 
 ## compile language settings
 target_compile_features(GameLib PUBLIC cxx_std_17)
@@ -26,3 +39,5 @@ target_include_directories(GameLib
 
 include(build/compilation)
 include(build/flags)
+include(libs/asge)
+include(libs/soloud)
