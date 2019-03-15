@@ -5,6 +5,9 @@
 		"PLAYER_COMMS": "Communications",
 		"PLAYER_PILOT": "Pilot",
 		"PLAYER_ENGIN": "Engineer", 
-		"PLAYER_MEDIC": "Medic"
+		"PLAYER_MEDIC": "Medic",
+		
+		"MENU_NEWGAME": "New Game",
+		"MENU_QUIT": "Quit Game"
 	}
 }

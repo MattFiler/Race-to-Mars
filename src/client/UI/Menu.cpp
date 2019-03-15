@@ -13,8 +13,8 @@ Menu::Menu()
   sound_player = Locator::getAudio();
   renderer = Locator::getRenderer();
 
-  file_handler.loadSound(item_select, "CLICK_03", 0.7f);
-  file_handler.loadSound(item_index_change, "CLICK_04", 0.5f);
+  //file_handler.loadSound(item_select, "CLICK_03", 0.7f);
+  //file_handler.loadSound(item_index_change, "CLICK_04", 0.5f);
 }
 
 /* Add menu text item */
@@ -108,7 +108,7 @@ bool Menu::itemWasSelected(KeyHandler& user_input)
 }
 
 /* Render */
-void Menu::render(double delta_time)
+void Menu::render()
 {
   // Render sprites
   for (ASGE::Sprite* item_sprite : menu_sprites)

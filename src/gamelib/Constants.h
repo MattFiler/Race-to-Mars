@@ -5,7 +5,8 @@ enum game_global_scenes
 {
   DEFAULT = -1,
   MAIN_MENU = 0,
-  IN_GAME
+  IN_GAME,
+  QUIT_GAME
 };
 
 // Maybe have game sections here? E.G. assigning counters, syncing, etc.

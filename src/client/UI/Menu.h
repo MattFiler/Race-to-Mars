@@ -30,7 +30,7 @@ class Menu
   bool selectedItemWas(const std::string& item_text);
 
   bool itemWasSelected(KeyHandler& user_input);
-  void render(double delta_time);
+  void render();
 
   int getMiddleOfWindow() { return static_cast<int>(middle_of_window); };
 

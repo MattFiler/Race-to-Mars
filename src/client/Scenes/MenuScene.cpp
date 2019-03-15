@@ -1,7 +1,10 @@
 #include "MenuScene.h"
 
 /* Initialise the scene */
-void MenuScene::init() {}
+void MenuScene::init() {
+  main_menu.addMenuItem("MENU_NEWGAME");
+  main_menu.addMenuItem("MENU_QUIT");
+}
 
 /* Handles connecting to the server */
 void MenuScene::networkConnected() {}
@@ -16,10 +19,18 @@ void MenuScene::networkDataReceived(const enet_uint8* data, size_t data_size) {}
 void MenuScene::keyHandler(const ASGE::SharedEventData data)
 {
   keys.registerEvent(static_cast<const ASGE::KeyEvent*>(data.get()));
-  if (keys.keyReleased("Activate"))
+  if (main_menu.itemWasSelected(keys))
   {
-    debug_text.print("Swapping to game scene.");
-    next_scene = game_global_scenes::IN_GAME;
+    if (main_menu.selectedItemWas("MENU_NEWGAME"))
+    {
+      debug_text.print("Swapping to game scene.");
+      next_scene = game_global_scenes::IN_GAME;
+    }
+    else if (main_menu.selectedItemWas("MENU_QUIT"))
+    {
+      debug_text.print("Quitting the game.");
+      next_scene = game_global_scenes::QUIT_GAME;
+    }
   }
 }
 
@@ -38,5 +49,6 @@ game_global_scenes MenuScene::update(const ASGE::GameTime& game_time)
 /* Render function */
 void MenuScene::render()
 {
+    main_menu.render();
   renderer->renderText("MenuScene", 100, 100);
 }
