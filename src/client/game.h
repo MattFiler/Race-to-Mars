@@ -1,5 +1,5 @@
 #pragma once
-#include "Debug/DebugText.h"
+#include "gamelib/Debug/DebugText.h"
 #include "FileHandler/FileHandler.h"
 #include "KeyHandler/KeyHandler.h"
 #include "Localisation/Localisation.h"

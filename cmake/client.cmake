@@ -6,13 +6,11 @@ set(GAMEDATA_FOLDER "data/client")
 set(SOURCE_FILES
         "client/main.cpp"
         "client/game.cpp"
-        "client/FileHandler/FileHandler.cpp"
-        "client/Debug/DebugText.cpp")
+        "client/FileHandler/FileHandler.cpp")
 
 set(HEADER_FILES
         "client/game.h"
         "client/FileHandler/FileHandler.h"
-        "client/Debug/DebugText.h"
         ../src/client/Cards/Card.h
         ../src/client/Cards/Card.cpp
         ../src/client/Cards/ObjectiveCard.cpp
@@ -52,7 +50,7 @@ set(HEADER_FILES
         ../src/client/Players/AllPlayers.h
         ../src/client/NetworkedData/PlayerData.h
         ../src/client/NetworkConnection/NetworkConnection.cpp
-        ../src/client/NetworkConnection/NetworkConnection.h)
+        ../src/client/NetworkConnection/NetworkConnection.h ../src/client/Board/Ship.cpp ../src/client/Board/Ship.h ../src/client/UI/Menu.cpp ../src/client/UI/Menu.h)
 
 ## the executable
 add_executable(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES})

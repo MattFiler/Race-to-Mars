@@ -1,7 +1,7 @@
 #ifndef PROJECT_LOCALISATION_H
 #define PROJECT_LOCALISATION_H
 
-#include "../Debug/DebugText.h"
+#include "gamelib/Debug/DebugText.h"
 #include "../FileHandler/FileHandler.h"
 #include <json.hpp>
 using json = nlohmann::json;

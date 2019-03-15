@@ -2,7 +2,7 @@
 #define PROJECT_SCENE_H
 
 #include "../Core/ServiceLocator.h"
-#include "../Debug/DebugText.h"
+#include "gamelib/Debug/DebugText.h"
 #include "../KeyHandler/KeyHandler.h"
 #include "gamelib/Constants.h"
 #include <Engine/GameTime.h>

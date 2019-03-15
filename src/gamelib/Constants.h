@@ -15,4 +15,12 @@ enum game_local_scenes
   IS_PAUSED
 };
 
+// Resolution (set at runtime)
+struct GameResolution
+{
+ public:
+  static int height;
+  static int width;
+};
+
 #endif // PROJECT_CONSTANTS_H

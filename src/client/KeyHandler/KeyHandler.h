@@ -1,7 +1,7 @@
 #ifndef PROJECT_KEYHANDLER_H
 #define PROJECT_KEYHANDLER_H
 
-#include "../Debug/DebugText.h"
+#include "gamelib/Debug/DebugText.h"
 #include <Engine/InputEvents.h>
 #include <json.hpp>
 using json = nlohmann::json;

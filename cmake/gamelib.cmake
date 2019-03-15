@@ -5,7 +5,9 @@ add_library(GameLib STATIC gamelib/gamelib.cpp
             gamelib/Constants.h
             gamelib/NetworkedData/Cards.h
             gamelib/NetworkedData/Players.h
-            gamelib/NetworkedData/Rooms.h)
+            gamelib/NetworkedData/Rooms.h ../src/gamelib/Constants.cpp
+        "gamelib/Debug/DebugText.cpp"
+        "gamelib/Debug/DebugText.h")
 
 ## compile language settings
 target_compile_features(GameLib PUBLIC cxx_std_17)

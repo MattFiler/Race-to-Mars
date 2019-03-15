@@ -1,6 +1,7 @@
 #include <string>
 
 #include "Core/ServiceLocator.h"
+#include "gamelib/Constants.h"
 #include <Engine/DebugPrinter.h>
 #include <Engine/Input.h>
 #include <Engine/InputEvents.h>
@@ -10,6 +11,7 @@
 #include <iostream>
 
 #include "game.h"
+
 /**
  *   @brief   Default Constructor.
  *   @details Consider setting the game's width and height
@@ -130,7 +132,9 @@ void RaceToSpace::data(const enet_uint8* data, size_t data_size)
 void RaceToSpace::setupResolution()
 {
   game_width = game_config["resolution"]["width"];
+  GameResolution::width = game_width;
   game_height = game_config["resolution"]["height"];
+  GameResolution::height = game_height;
 }
 
 /**

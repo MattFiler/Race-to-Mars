@@ -1,7 +1,7 @@
 #ifndef PROJECT_SCENEMANAGER_H
 #define PROJECT_SCENEMANAGER_H
 
-#include "../Debug/DebugText.h"
+#include "gamelib/Debug/DebugText.h"
 #include "Scene.h"
 #include "gamelib/Constants.h"
 #include <Engine/GameTime.h>
