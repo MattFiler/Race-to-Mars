@@ -22,12 +22,20 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
 void GameScene::clickHandler(const ASGE::SharedEventData data)
 {
   // auto click = static_cast<const ASGE::ClickEvent*>(data.get());
+
+  if (m_board.didClickOnInteractable(
+        Vector2(Locator::getCursor()->getPosition().x / GameResolution::scale,
+                Locator::getCursor()->getPosition().y / GameResolution::scale,
+                false)))
+  {
+    debug_text.print("Clicked on an interactable part of the board!");
+  }
 }
 
 /* Update function */
 game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
 {
-  Locator::getCursor()->setCursorActive(m_board.checkForClicks(
+  Locator::getCursor()->setCursorActive(m_board.isHoveringOverInteractable(
     Vector2(Locator::getCursor()->getPosition().x / GameResolution::scale,
             Locator::getCursor()->getPosition().y / GameResolution::scale,
             false)));

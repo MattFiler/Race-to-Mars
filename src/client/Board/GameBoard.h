@@ -16,11 +16,13 @@ class GameBoard
   GameBoard() = default;
   ~GameBoard() = default;
 
-  bool checkForClicks(Vector2 clicked_pos);
+  bool isHoveringOverInteractable(Vector2 hover_pos);
+  bool didClickOnInteractable(Vector2 clicked_pos);
 
   void render();
 
  private:
+  bool cursorPosFallsIntoClickable(Vector2 pos);
   Players m_players;
   Ship m_ship;
 

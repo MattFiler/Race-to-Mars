@@ -1,18 +1,31 @@
 #include "GameBoard.h"
 
-bool GameBoard::checkForClicks(Vector2 clicked_pos)
+/* Check to see if we're HOVERING over an interactable item  */
+bool GameBoard::isHoveringOverInteractable(Vector2 hover_pos)
+{
+  return cursorPosFallsIntoClickable(hover_pos);
+}
+
+/* Check to see if we've CLICKED on an interactable item  */
+bool GameBoard::didClickOnInteractable(Vector2 clicked_pos)
+{
+  return cursorPosFallsIntoClickable(clicked_pos);
+}
+
+/* Generic check to see if vector position falls within any bounding box */
+bool GameBoard::cursorPosFallsIntoClickable(Vector2 pos)
 {
   for (ShipRoom& room : m_ship.getRooms())
   {
-    if (room.isInBoundingBox(clicked_pos))
+    if (room.isInBoundingBox(pos))
     {
-      debug_text.print("Clicked in room: " + room.getName());
       return true;
     }
   }
   return false;
 }
 
+/* Render the board */
 void GameBoard::render()
 {
   m_ship.render();
