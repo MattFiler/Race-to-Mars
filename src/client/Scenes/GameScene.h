@@ -1,8 +1,9 @@
 #ifndef PROJECT_GAMESCENE_H
 #define PROJECT_GAMESCENE_H
 
-#include "../Players/AllPlayers.h"
 #include "Scene.h"
+#include "client/Board/GameBoard.h"
+#include "client/UI/Cursor.h"
 
 class GameScene : public Scene
 {
@@ -22,7 +23,7 @@ class GameScene : public Scene
   void render() override;
 
  private:
-  Players m_players;
+  GameBoard m_board;
 };
 
 #endif // PROJECT_GAMESCENE_H

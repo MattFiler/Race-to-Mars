@@ -1,10 +1,11 @@
 #pragma once
-#include "Debug/DebugText.h"
-#include "FileHandler/FileHandler.h"
-#include "KeyHandler/KeyHandler.h"
-#include "Localisation/Localisation.h"
-#include "NetworkConnection/NetworkConnection.h"
-#include "Scenes/SceneManager.h"
+#include "client/KeyHandler/KeyHandler.h"
+#include "client/NetworkConnection/NetworkConnection.h"
+#include "client/Scenes/SceneManager.h"
+#include "client/UI/Cursor.h"
+#include "gamelib/Debug/DebugText.h"
+#include "gamelib/FileHandler/FileHandler.h"
+#include "gamelib/Localisation/Localisation.h"
 #include <Engine/OGLGame.h>
 #include <atomic>
 #include <enetpp/client.h>
@@ -41,6 +42,7 @@ class RaceToSpace : public ASGE::OGLGame
 
  private:
   bool has_connected_to_server = false;
+  int active_font = 0;
 
   NetworkConnection networked_client;
   json game_config;
@@ -50,4 +52,5 @@ class RaceToSpace : public ASGE::OGLGame
   SoLoud::Soloud audio;
   SceneManager scene_manager;
   Localisation localiser;
+  Cursor cursor_pointer;
 };

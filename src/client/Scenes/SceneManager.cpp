@@ -1,7 +1,7 @@
 #include "SceneManager.h"
-
 #include "GameScene.h"
 #include "MenuScene.h"
+#include <exception>
 
 /* Set the current scene */
 void SceneManager::setCurrentScene(game_global_scenes new_scene)
@@ -22,6 +22,11 @@ void SceneManager::setCurrentScene(game_global_scenes new_scene)
     {
       current_scene = dynamic_cast<Scene*>(new GameScene());
       break;
+    }
+    case game_global_scenes::QUIT_GAME:
+    {
+      // TODO: Implement quitting!
+      throw std::runtime_error("QUITTING GAME ISN'T SUPPORTED YET LOL");
     }
     default:
     {

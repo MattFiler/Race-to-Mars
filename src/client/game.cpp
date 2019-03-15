@@ -1,6 +1,7 @@
 #include <string>
 
 #include "Core/ServiceLocator.h"
+#include "gamelib/Constants.h"
 #include <Engine/DebugPrinter.h>
 #include <Engine/Input.h>
 #include <Engine/InputEvents.h>
@@ -10,6 +11,7 @@
 #include <iostream>
 
 #include "game.h"
+
 /**
  *   @brief   Default Constructor.
  *   @details Consider setting the game's width and height
@@ -67,6 +69,10 @@ bool RaceToSpace::init()
   Locator::setupInput(inputs.get());
   Locator::setupAudio(&audio);
   Locator::setupClient(&networked_client);
+  Locator::setupCursor(&cursor_pointer);
+
+  // Setup cursor
+  cursor_pointer.configure();
 
   // Setup keybinds
   key_handler.setup(game_config["keybinds"]);
@@ -76,6 +82,17 @@ bool RaceToSpace::init()
 
   // Start out on the main menu
   scene_manager.setCurrentScene(game_global_scenes::MAIN_MENU);
+
+  // Load font
+  auto font_buffer = file_handler.openAsBuffer("UI/font_regular.ttf");
+  active_font =
+    renderer->loadFontFromMem("Alte Haas",
+                              font_buffer.as_unsigned_char(),
+                              static_cast<unsigned int>(font_buffer.length),
+                              30 * static_cast<int>(GameResolution::scale));
+
+  // Hide cursor
+  inputs->setCursorMode(ASGE::MOUSE::CursorMode::HIDDEN);
 
   // Input handling functions
   inputs->use_threads = false;
@@ -130,7 +147,10 @@ void RaceToSpace::data(const enet_uint8* data, size_t data_size)
 void RaceToSpace::setupResolution()
 {
   game_width = game_config["resolution"]["width"];
+  GameResolution::width = game_width;
   game_height = game_config["resolution"]["height"];
+  GameResolution::height = game_height;
+  GameResolution::scale = static_cast<float>(game_height) / 720;
 }
 
 /**
@@ -172,6 +192,9 @@ void RaceToSpace::clickHandler(const ASGE::SharedEventData data)
  */
 void RaceToSpace::update(const ASGE::GameTime& game_time)
 {
+  double x, y;
+  inputs.get()->getCursorPos(x, y);
+  cursor_pointer.updatePosition(x, y);
   scene_manager.update(game_time);
 }
 
@@ -184,21 +207,26 @@ void RaceToSpace::update(const ASGE::GameTime& game_time)
  */
 void RaceToSpace::render(const ASGE::GameTime&)
 {
+  renderer->setFont(active_font);
+
   scene_manager.render();
 
   // Server connection debug
   if (has_connected_to_server)
   {
     std::string server_ip(game_config["server_hostname"]);
-    renderer->renderText("CONNECTED: " + server_ip, game_width - 250, 50);
+    renderer->renderText("CONNECTED: " + server_ip, game_width - 250, 50, 0.5f);
     renderer->renderText("PING: " + std::to_string(networked_client.getClient()
                                                      ->get_statistics()
                                                      ._round_trip_time_in_ms),
                          game_width - 250,
-                         75);
+                         75,
+                         0.5f);
   }
   else
   {
-    renderer->renderText("NOT CONNECTED", game_width - 250, 50);
+    renderer->renderText("NOT CONNECTED", game_width - 250, 50, 0.5f);
   }
+
+  cursor_pointer.render();
 }

@@ -1,11 +1,19 @@
 #ifndef PROJECT_SERVICELOCATOR_H
 #define PROJECT_SERVICELOCATOR_H
 
-#include "../NetworkConnection/NetworkConnection.h"
-#include <Engine/Input.h>
-#include <Engine/Sprite.h>
-#include <enetpp/client.h>
-#include <soloud.h>
+#include <stdexcept>
+
+class Cursor;
+class NetworkConnection;
+namespace ASGE
+{
+class Renderer;
+class Input;
+}
+namespace SoLoud
+{
+class Soloud;
+}
 
 /*
  *
@@ -17,10 +25,48 @@
 class Locator
 {
  public:
-  static ASGE::Renderer* getRenderer() { return ref_renderer; };
-  static SoLoud::Soloud* getAudio() { return ref_audio; };
-  static ASGE::Input* getInput() { return ref_input; };
-  static NetworkConnection* getClient() { return ref_client; };
+  static ASGE::Renderer* getRenderer()
+  {
+    if (ref_renderer == nullptr)
+    {
+      throw std::runtime_error("Renderer was called before it was "
+                               "initialised.");
+    }
+    return ref_renderer;
+  };
+  static SoLoud::Soloud* getAudio()
+  {
+    if (ref_audio == nullptr)
+    {
+      throw std::runtime_error("Audio was called before it was initialised.");
+    }
+    return ref_audio;
+  };
+  static ASGE::Input* getInput()
+  {
+    if (ref_input == nullptr)
+    {
+      throw std::runtime_error("Input was called before it was initialised.");
+    }
+    return ref_input;
+  };
+  static NetworkConnection* getClient()
+  {
+    if (ref_client == nullptr)
+    {
+      throw std::runtime_error("Network data was called before it was "
+                               "initialised.");
+    }
+    return ref_client;
+  };
+  static Cursor* getCursor()
+  {
+    if (ref_cursor == nullptr)
+    {
+      throw std::runtime_error("Cursor was called before it was initialised.");
+    }
+    return ref_cursor;
+  };
 
   static void setupRenderer(ASGE::Renderer* inst_renderer)
   {
@@ -35,12 +81,14 @@ class Locator
   {
     ref_client = inst_client;
   };
+  static void setupCursor(Cursor* inst_cursor) { ref_cursor = inst_cursor; }
 
  private:
   static ASGE::Renderer* ref_renderer;
   static SoLoud::Soloud* ref_audio;
   static ASGE::Input* ref_input;
   static NetworkConnection* ref_client;
+  static Cursor* ref_cursor;
 };
 
 /* Return a null handler here? Not sure if we want to fail gracefully. */
