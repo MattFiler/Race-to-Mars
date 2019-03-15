@@ -23,6 +23,8 @@ struct GameResolution
   static int height;
   static int width;
   static float scale;
+  static const int base_height = 720;
+  static const int base_width = 1280;
 };
 
 #endif // PROJECT_CONSTANTS_H

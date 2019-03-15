@@ -150,7 +150,8 @@ void RaceToSpace::setupResolution()
   GameResolution::width = game_width;
   game_height = game_config["resolution"]["height"];
   GameResolution::height = game_height;
-  GameResolution::scale = static_cast<float>(game_height) / 720;
+  GameResolution::scale =
+    static_cast<float>(game_height) / GameResolution::base_height;
 }
 
 /**

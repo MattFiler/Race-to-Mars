@@ -3,6 +3,7 @@
 /* Initialise the scene */
 void MenuScene::init()
 {
+  main_menu.addMenuSprite("MAIN_MENU/background.jpg");
   main_menu.addMenuItem("MENU_NEWGAME");
   main_menu.addMenuItem("MENU_QUIT");
 }
@@ -51,5 +52,4 @@ game_global_scenes MenuScene::update(const ASGE::GameTime& game_time)
 void MenuScene::render()
 {
   main_menu.render();
-  renderer->renderText("MenuScene", 100, 100);
 }

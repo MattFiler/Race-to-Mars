@@ -7,7 +7,6 @@ bool GameBoard::isHoveringOverInteractable(Vector2 hover_pos)
   {
     if (room.isInBoundingBox(hover_pos))
     {
-      debug_text.print("HOVERING OVER: " + room.getName());
       return true;
     }
   }

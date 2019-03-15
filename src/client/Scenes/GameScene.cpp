@@ -55,14 +55,4 @@ void GameScene::render()
 {
   m_board_menu.render();
   m_board.render();
-  renderer->renderText("GameScene", 100, 100);
-  renderer->renderText(
-    std::to_string(m_board.m_ship.getRooms().size()), 300, 100);
-
-  float pos = 0;
-  for (int i = 0; i < static_cast<int>(m_board.m_ship.getRooms().size()); i++)
-  {
-    pos += m_board.m_ship.getRooms()[i].getCentre().x;
-  }
-  renderer->renderText(std::to_string(pos), 300, 200);
 }
