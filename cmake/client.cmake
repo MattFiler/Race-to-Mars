@@ -52,7 +52,7 @@ set(HEADER_FILES
         ../src/client/Players/AllPlayers.h
         ../src/client/NetworkedData/PlayerData.h
         ../src/client/NetworkConnection/NetworkConnection.cpp
-        ../src/client/NetworkConnection/NetworkConnection.h)
+        ../src/client/NetworkConnection/NetworkConnection.h ../src/client/Cards/Deck.cpp ../src/client/Cards/Deck.h)
 
 ## the executable
 add_executable(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES})

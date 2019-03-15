@@ -13,6 +13,8 @@
 
 class ItemCard : public Card
 {
+ public:
+ private:
 };
 
 #endif // PROJECT_ITEMCARD_H

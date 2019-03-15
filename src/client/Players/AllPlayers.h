@@ -9,8 +9,8 @@ struct Players
   {
     player_communications.render();
     player_engineer.render();
-    player_medic.render();
     player_pilot.render();
+    player_medic.render();
   }
   Communications player_communications;
   Engineer player_engineer;

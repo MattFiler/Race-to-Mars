@@ -16,6 +16,12 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size) {}
 void GameScene::keyHandler(const ASGE::SharedEventData data)
 {
   keys.registerEvent(static_cast<const ASGE::KeyEvent*>(data.get()));
+
+  if (keys.keyReleased("Activate"))
+  {
+    debug_text.print("Swapping to menu scene.");
+    next_scene = game_global_scenes::MAIN_MENU;
+  }
 }
 
 /* Handles mouse clicks */

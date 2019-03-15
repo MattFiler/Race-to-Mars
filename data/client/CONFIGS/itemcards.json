@@ -1,0 +1,84 @@
+//https://stackoverflow.com/questions/11197818/how-do-i-make-a-json-object-with-multiple-arrays
+{
+	"ITEMCARDS":
+	{
+		"communications":	
+			[
+				{"type": "COMMUNICATION", "name": "Microphone","action_points": 5, "sprite_path": "UI/CARD_IMAGES/communications.png"},
+				{"type": "COMMUNICATION", "name": "Microphone", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/communications.png"},
+				{"type": "COMMUNICATION", "name": "Radar", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/communications.png"},
+				{"type": "COMMUNICATION", "name": "Radar", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/communications.png"},
+				{"type": "COMMUNICATION", "name": "Radio", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/communications.png"},
+				{"type": "COMMUNICATION", "name": "Radio", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/communications.png"},
+				{"type": "COMMUNICATION", "name": "Scout Drone", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/communications.png"},
+				{"type": "COMMUNICATION", "name": "Scout Drone", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/communications.png"},
+				{"type": "COMMUNICATION", "name": "Upgraded", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/communications.png"},
+				{"type": "COMMUNICATION", "name": "Upgraded", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/communications.png"}
+			],
+		"engineer": [
+			
+				{"type": "ENGINEER", "name": "Screwdriver", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/engineer.png"},
+				{"type": "ENGINEER", "name": "Screwdriver", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/engineer.png"},
+				{"type": "ENGINEER", "name": "Screws", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/engineer.png"},
+				{"type": "ENGINEER", "name": "Screws", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/engineer.png"},
+				{"type": "ENGINEER", "name": "Tool kit", "action_points": 5, "sprite_path":"UI/CARD_IMAGES/engineer.png"},
+				{"type": "ENGINEER", "name": "Tool kit", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/engineer.png"},
+				{"type": "ENGINEER", "name": "Welder", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/engineer.png"},
+				{"type": "ENGINEER", "name": "Welder", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/engineer.png"},
+				{"type": "ENGINEER", "name": "Welding Goggles", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/engineer.png"},
+				{"type": "ENGINEER", "name": "Welding Goggles", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/engineer.png"}
+		],
+		"medic": [
+						
+				{"type": "MEDIC", "name": "Antibiotics", "action_points": 5,"sprite_path": "UI/CARD_IMAGES/medic.png"},
+				{"type": "MEDIC", "name": "Antibiotics", "action_points": 5,"sprite_path": "UI/CARD_IMAGES/medic.png"},
+				{"type": "MEDIC", "name": "Band Aid", "action_points": 5,"sprite_path": "UI/CARD_IMAGES/medic.png"},
+				{"type": "MEDIC", "name": "Band Aid", "action_points": 5,"sprite_path": "UI/CARD_IMAGES/medic.png"},
+				{"type": "MEDIC", "name": "First Aid Kit", "action_points": 5,"sprite_path": "UI/CARD_IMAGES/medic.png"},
+				{"type": "MEDIC", "name": "First Aid Kit", "action_points": 5,"sprite_path": "UI/CARD_IMAGES/medic.png"},
+				{"type": "MEDIC", "name": "Pain Killers", "action_points": 5,"sprite_path": "UI/CARD_IMAGES/medic.png"},
+				{"type": "MEDIC", "name": "Pain Killers", "action_points": 5,"sprite_path": "UI/CARD_IMAGES/medic.png"},
+				{"type": "MEDIC", "name": "Pain Killers", "action_points": 5,"sprite_path": "UI/CARD_IMAGES/medic.png"},
+				{"type": "MEDIC", "name": "Pain Killers", "action_points": 5,"sprite_path": "UI/CARD_IMAGES/medic.png"}
+		],
+		"pilot": [			
+				{"type": "PILOT","name":  "Map","action_points": 5,"sprite_path": "UI/CARD_IMAGES/pilot.png"},
+				{"type": "PILOT","name":  "Map", "action_points":5,"sprite_path": "UI/CARD_IMAGES/pilot.png"},
+				{"type": "PILOT","name":  "New Controls", "action_points":5,"sprite_path": "UI/CARD_IMAGES/pilot.png"},
+				{"type": "PILOT","name":  "New Controls", "action_points":5,"sprite_path": "UI/CARD_IMAGES/pilot.png"},
+				{"type": "PILOT","name":  "Radar", "action_points":5,"sprite_path": "UI/CARD_IMAGES/pilot.png"},
+				{"type": "PILOT","name":  "Radar", "action_points":5,"sprite_path": "UI/CARD_IMAGES/pilot.png"},
+				{"type": "PILOT","name":  "Thruster Upgrade", "action_points":5,"sprite_path": "UI/CARD_IMAGES/pilot.png"},
+				{"type": "PILOT","name":  "Thruster Upgrade", "action_points":5,"sprite_path": "UI/CARD_IMAGES/pilot.png"},
+				{"type": "PILOT","name":  "Window Wash", "action_points":5,"sprite_path": "UI/CARD_IMAGES/pilot.png"},
+				{"type": "PILOT","name":  "Window Wash", "action_points":5,"sprite_path": "UI/CARD_IMAGES/pilot.png"}
+		]
+	},
+	
+	"ISSUECARDS": {
+		"communications": [
+			{"type": "COMMUNICATIONS", "name": "Dispatch Probe", "description": "The radar intercepts some strange signals, send out a probe to check on it.", "action_points": 15, "sprite_path": "UI/CARD_IMAGES/communications.png"},
+			{"type": "COMMUNICATIONS", "name": "Distress Signal", "description": "You intercept a signal from space. Spend ome time decoding it.", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/communications.png"},
+			{"type": "COMMUNICATIONS", "name": "Earth Transmission", "description": "There's a message from Earth, reply and update them on your progress.", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/communications.png"},
+			{"type": "COMMUNICATIONS", "name": "External Communications Issue", "description": "You can't communicate with home, fix the issue before it's too late!", "action_points": 10, "sprite_path": "UI/CARD_IMAGES/communications.png"},
+			{"type": "COMMUNICATIONS", "name": "Good Communication!", "description": "Discard this card next turn. All players receive an extra roll, keep your highest roll.", "action_points": 0, "sprite_path": "UI/CARD_IMAGES/communications.png"},
+			{"type": "COMMUNICATIONS", "name": "Internal Comms Issue", "description": "The onboard communications are down, fix it immediately!.", "action_points": 10, "sprite_path": "UI/CARD_IMAGES/communications.png"}
+		],
+		"ENGINEER": [
+			{"type": "ENGINEER", "name": "Air Leak", "description": "A piece of rock has collided with the ship and air is leaking. Patch it up!.", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/engineer.png"},
+			{"type": "ENGINEER", "name": "Broken Air Filter", "description": "Carbon dioxide is reaching critical level! Replace the air flter.", "action_points": 10, "sprite_path": "UI/CARD_IMAGES/engineer.png"},
+			{"type": "ENGINEER", "name": "Engine Malfunction", "description": "The engines are going haywire! if this issue isn't solved in two turns, the ship will move back a space.", "action_points": 15, "sprite_path": "UI/CARD_IMAGES/engineer.png"},
+			{"type": "ENGINEER", "name": "Faulty Generator", "description": "The generator is struggling and making ensettling sounds. Fix it!", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/engineer.png"},
+			{"type": "ENGINEER", "name": "Item Boost", "description": "All items", "action_points": 15, "sprite_path": "UI/CARD_IMAGES/engineer.png"},
+			{"type": "ENGINEER", "name": "Lighting Malfunction", "description": "The lighting system is flickering, fix it.", "action_points": 10, "sprite_path": "UI/CARD_IMAGES/engineer.png"}
+		],
+		"GLOBAL": [
+			{"type": "Global", "name": "Backpack Extended", "description": "All players can carry an extra item from now onwards (5 items max). Discard card a card next go.", "action_points": 0, "sprite_path": "UI/CARD_IMAGES/engineer.png"},
+			{"type": "Global", "name": "Broken Air Filter", "description": "Carbon dioxide is reaching critical level! Replace the air flter.", "action_points": 10, "sprite_path": "UI/CARD_IMAGES/engineer.png"},
+			{"type": "Global", "name": "Engine Malfunction", "description": "The engines are going haywire! if this issue isn't solved in two turns, the ship will move back a space.", "action_points": 15, "sprite_path": "UI/CARD_IMAGES/engineer.png"},
+			{"type": "Global", "name": "Faulty Generator", "description": "The generator is struggling and making ensettling sounds. Fix it!", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/engineer.png"},
+			{"type": "Global", "name": "Item Boost", "description": "All items", "action_points": 15, "sprite_path": "UI/CARD_IMAGES/engineer.png"},
+			{"type": "Global", "name": "Lighting Malfunction", "description": "The lighting system is flickering, fix it.", "action_points": 10, "sprite_path": "UI/CARD_IMAGES/engineer.png"}
+		]
+	}
+}

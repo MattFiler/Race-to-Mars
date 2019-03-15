@@ -21,11 +21,11 @@ class NetworkConnection
 
  private:
   RaceToSpace* game = nullptr;
-
   enetpp::client client;
   std::atomic<bool> exiting = false;
   std::queue<std::string> msg_queue;
   std::mutex msg_queue_mtx;
+  std::string username;
 };
 
 #endif // PROJECT_NETWORKCONNECTION_H
