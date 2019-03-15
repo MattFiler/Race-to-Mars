@@ -4,17 +4,16 @@
 /* Grab window scale */
 Menu::Menu()
 {
-  // middle_of_window = (SCREEN_HEIGHT * ScaledSpriteArray::width_scale / 2) +
-  // (15 * ScaledSpriteArray::width_scale);
-  middle_of_window = static_cast<float>((GameResolution::height / 2) + 15);
-  // x_offset *= ScaledSpriteArray::width_scale;
-  // y_offset *= ScaledSpriteArray::width_scale;
+  middle_of_window = (static_cast<float>(GameResolution::height) / 2) +
+                     (15 * GameResolution::scale);
+  x_offset *= GameResolution::scale;
+  y_offset *= GameResolution::scale;
 
   sound_player = Locator::getAudio();
   renderer = Locator::getRenderer();
 
-  //file_handler.loadSound(item_select, "CLICK_03", 0.7f);
-  //file_handler.loadSound(item_index_change, "CLICK_04", 0.5f);
+  // file_handler.loadSound(item_select, "CLICK_03", 0.7f);
+  // file_handler.loadSound(item_index_change, "CLICK_04", 0.5f);
 }
 
 /* Add menu text item */
@@ -39,16 +38,14 @@ ASGE::Sprite* Menu::addMenuSprite(const std::string& filepath)
 /* Set vertical spacing between menu text items */
 void Menu::setMenuTextSpacing(float offset)
 {
-  // y_offset = offset * ScaledSpriteArray::width_scale;
-  y_offset = offset;
+  y_offset = offset * GameResolution::scale;
   realignMenuTextItems();
 }
 
 /* Set the offset to the left of the screen */
 void Menu::setLeftMargin(float offset)
 {
-  // x_offset = offset * ScaledSpriteArray::width_scale;
-  x_offset = offset;
+  x_offset = offset * GameResolution::scale;
 }
 
 /* Set text active colour */
@@ -90,18 +87,18 @@ bool Menu::itemWasSelected(KeyHandler& user_input)
 {
   if (user_input.keyReleased("Activate"))
   {
-    sound_player->play(item_select);
+    // sound_player->play(item_select);
     return true;
   }
   else if (user_input.keyReleased("Menu Up") && (current_menu_index > 0))
   {
-    sound_player->play(item_index_change);
+    // sound_player->play(item_index_change);
     current_menu_index--;
   }
   else if (user_input.keyReleased("Menu Down") &&
            (current_menu_index < static_cast<int>(menu_text_items.size() - 1)))
   {
-    sound_player->play(item_index_change);
+    // sound_player->play(item_index_change);
     current_menu_index++;
   }
   return false;

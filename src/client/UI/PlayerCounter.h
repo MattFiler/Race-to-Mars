@@ -1,7 +1,7 @@
 #ifndef PROJECT_PLAYERCOUNTER_H
 #define PROJECT_PLAYERCOUNTER_H
 
-#include "Counter.h"
+#include "OnBoardObject.h"
 
 /*
  *
@@ -11,7 +11,7 @@
  *
  */
 
-class PlayerCounter : public Counter
+class PlayerCounter : public OnBoardObject
 {
  public:
   PlayerCounter() = default;

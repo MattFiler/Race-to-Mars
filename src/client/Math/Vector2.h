@@ -1,6 +1,7 @@
 #ifndef PROJECT_VECTOR2_H
 #define PROJECT_VECTOR2_H
 
+#include "gamelib/Constants.h"
 #include <algorithm>
 #include <math.h>
 
@@ -10,27 +11,29 @@ class Vector2
   Vector2() = default;
   Vector2(float _x, float _y)
   {
-    m_x = _x;
-    m_y = _y;
+    m_x = _x * GameResolution::scale;
+    m_y = _y * GameResolution::scale;
   }
 
   void update(float _x, float _y)
   {
-    m_x = _x;
-    m_y = _y;
+    m_x = _x * GameResolution::scale;
+    m_y = _y * GameResolution::scale;
   }
 
   bool operator==(Vector2& vector) { return (vector.x == x && vector.y == y); };
   Vector2 operator-(const Vector2& vector)
   {
     Vector2 return_vector;
-    return_vector.update(x - vector.x, y - vector.y);
+    return_vector.update(x - vector.x * GameResolution::scale,
+                         y - vector.y * GameResolution::scale);
     return return_vector;
   };
   Vector2 operator+(const Vector2& vector)
   {
     Vector2 return_vector;
-    return_vector.update(x + vector.x, y + vector.y);
+    return_vector.update(x + vector.x * GameResolution::scale,
+                         y + vector.y * GameResolution::scale);
     return return_vector;
   };
   Vector2 operator/(const float divider)

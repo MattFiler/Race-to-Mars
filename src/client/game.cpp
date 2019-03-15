@@ -79,6 +79,14 @@ bool RaceToSpace::init()
   // Start out on the main menu
   scene_manager.setCurrentScene(game_global_scenes::MAIN_MENU);
 
+  // Load font
+  auto font_buffer = file_handler.openAsBuffer("UI/font_regular.ttf");
+  active_font =
+    renderer->loadFontFromMem("Alte Haas",
+                              font_buffer.as_unsigned_char(),
+                              static_cast<unsigned int>(font_buffer.length),
+                              static_cast<int>(30 * GameResolution::scale));
+
   // Input handling functions
   inputs->use_threads = false;
   key_callback_id =
@@ -135,6 +143,7 @@ void RaceToSpace::setupResolution()
   GameResolution::width = game_width;
   game_height = game_config["resolution"]["height"];
   GameResolution::height = game_height;
+  GameResolution::scale = static_cast<float>(game_height) / 720;
 }
 
 /**
@@ -188,21 +197,24 @@ void RaceToSpace::update(const ASGE::GameTime& game_time)
  */
 void RaceToSpace::render(const ASGE::GameTime&)
 {
+  renderer->setFont(active_font);
+
   scene_manager.render();
 
   // Server connection debug
   if (has_connected_to_server)
   {
     std::string server_ip(game_config["server_hostname"]);
-    renderer->renderText("CONNECTED: " + server_ip, game_width - 250, 50);
+    renderer->renderText("CONNECTED: " + server_ip, game_width - 250, 50, 0.5f);
     renderer->renderText("PING: " + std::to_string(networked_client.getClient()
                                                      ->get_statistics()
                                                      ._round_trip_time_in_ms),
                          game_width - 250,
-                         75);
+                         75,
+                         0.5f);
   }
   else
   {
-    renderer->renderText("NOT CONNECTED", game_width - 250, 50);
+    renderer->renderText("NOT CONNECTED", game_width - 250, 50, 0.5f);
   }
 }

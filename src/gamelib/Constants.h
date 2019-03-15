@@ -22,6 +22,7 @@ struct GameResolution
  public:
   static int height;
   static int width;
+  static float scale;
 };
 
 #endif // PROJECT_CONSTANTS_H

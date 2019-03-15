@@ -25,7 +25,7 @@ void SceneManager::setCurrentScene(game_global_scenes new_scene)
     }
     case game_global_scenes::QUIT_GAME:
     {
-      //TODO: Implement quitting!
+      // TODO: Implement quitting!
       throw std::runtime_error("QUITTING GAME ISN'T SUPPORTED YET LOL");
     }
     default:

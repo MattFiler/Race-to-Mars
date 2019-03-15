@@ -30,8 +30,8 @@ set(HEADER_FILES
         ../src/client/Players/CommunicationsPlayer.h
         ../src/client/Players/PilotPlayer.cpp
         ../src/client/Players/PilotPlayer.h
-        ../src/client/UI/Counter.h
-        ../src/client/UI/Counter.cpp
+        ../src/client/UI/OnBoardObject.h
+        ../src/client/UI/OnBoardObject.cpp
         ../src/client/UI/PlayerCounter.cpp
         ../src/client/UI/PlayerCounter.h
         ../src/client/Core/ServiceLocator.cpp
@@ -50,7 +50,7 @@ set(HEADER_FILES
         ../src/client/Players/AllPlayers.h
         ../src/client/NetworkedData/PlayerData.h
         ../src/client/NetworkConnection/NetworkConnection.cpp
-        ../src/client/NetworkConnection/NetworkConnection.h ../src/client/Board/Ship.cpp ../src/client/Board/Ship.h ../src/client/UI/Menu.cpp ../src/client/UI/Menu.h)
+        ../src/client/NetworkConnection/NetworkConnection.h ../src/client/UI/Ship.cpp ../src/client/UI/Ship.h ../src/client/UI/Menu.cpp ../src/client/UI/Menu.h ../src/client/UI/GameBoard.cpp ../src/client/UI/GameBoard.h)
 
 ## the executable
 add_executable(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES})

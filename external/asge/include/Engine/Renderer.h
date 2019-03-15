@@ -160,7 +160,7 @@ namespace ASGE {
 		*  @param [in] scale Any scaling factor to apply.
 		*  @param [in] colour The colour to use for rendering.
 		*/
-		void renderText(const std::string str, int x, int y, float scale, const Colour& colour);
+		void renderText(const std::string str, int x, int y, float scale, const Colour& colour = ASGE::COLOURS::WHITE);
 
 		/**
 		*  Renders a string to the screen.

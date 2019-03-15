@@ -1,7 +1,8 @@
 #include "MenuScene.h"
 
 /* Initialise the scene */
-void MenuScene::init() {
+void MenuScene::init()
+{
   main_menu.addMenuItem("MENU_NEWGAME");
   main_menu.addMenuItem("MENU_QUIT");
 }
@@ -49,6 +50,6 @@ game_global_scenes MenuScene::update(const ASGE::GameTime& game_time)
 /* Render function */
 void MenuScene::render()
 {
-    main_menu.render();
+  main_menu.render();
   renderer->renderText("MenuScene", 100, 100);
 }

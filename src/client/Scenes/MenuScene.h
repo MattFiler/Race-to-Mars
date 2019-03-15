@@ -21,8 +21,8 @@ class MenuScene : public Scene
   game_global_scenes update(const ASGE::GameTime& game_time) override;
   void render() override;
 
-private:
-    Menu main_menu;
+ private:
+  Menu main_menu;
 };
 
 #endif // PROJECT_MENUSCENE_H

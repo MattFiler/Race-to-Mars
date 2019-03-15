@@ -33,6 +33,6 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
 /* Render function */
 void GameScene::render()
 {
-  m_players.render();
+  m_board.render();
   renderer->renderText("GameScene", 100, 100);
 }
