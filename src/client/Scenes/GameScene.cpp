@@ -21,17 +21,16 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
 /* Handles mouse clicks */
 void GameScene::clickHandler(const ASGE::SharedEventData data)
 {
-  auto click = static_cast<const ASGE::ClickEvent*>(data.get());
-  if (m_board.checkForClicks(Vector2(static_cast<float>(click->xpos),
-                                     static_cast<float>(click->ypos))))
-  {
-    debug_text.print("CLICK WAS IN A ROOM");
-  }
+  // auto click = static_cast<const ASGE::ClickEvent*>(data.get());
 }
 
 /* Update function */
 game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
 {
+  Locator::getCursor()->setCursorActive(m_board.checkForClicks(
+    Vector2(Locator::getCursor()->getPosition().x / GameResolution::scale,
+            Locator::getCursor()->getPosition().y / GameResolution::scale,
+            false)));
   return next_scene;
 }
 

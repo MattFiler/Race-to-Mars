@@ -69,6 +69,10 @@ bool RaceToSpace::init()
   Locator::setupInput(inputs.get());
   Locator::setupAudio(&audio);
   Locator::setupClient(&networked_client);
+  Locator::setupCursor(&cursor_pointer);
+
+  // Setup cursor
+  cursor_pointer.configure();
 
   // Setup keybinds
   key_handler.setup(game_config["keybinds"]);
@@ -86,6 +90,9 @@ bool RaceToSpace::init()
                               font_buffer.as_unsigned_char(),
                               static_cast<unsigned int>(font_buffer.length),
                               30 * static_cast<int>(GameResolution::scale));
+
+  // Hide cursor
+  inputs->setCursorMode(ASGE::MOUSE::CursorMode::HIDDEN);
 
   // Input handling functions
   inputs->use_threads = false;
@@ -185,6 +192,9 @@ void RaceToSpace::clickHandler(const ASGE::SharedEventData data)
  */
 void RaceToSpace::update(const ASGE::GameTime& game_time)
 {
+  double x, y;
+  inputs.get()->getCursorPos(x, y);
+  cursor_pointer.updatePosition(x, y);
   scene_manager.update(game_time);
 }
 
@@ -217,4 +227,6 @@ void RaceToSpace::render(const ASGE::GameTime&)
   {
     renderer->renderText("NOT CONNECTED", game_width - 250, 50, 0.5f);
   }
+
+  cursor_pointer.render();
 }

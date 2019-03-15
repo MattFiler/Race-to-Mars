@@ -7,9 +7,9 @@ struct BoundingBox
 {
   void setup(Vector2 _pos, float _width, float _height)
   {
-    width = _width;
-    height = _height;
-    pos.update(_pos.x, _pos.y);
+    width = _width * GameResolution::scale;
+    height = _height * GameResolution::scale;
+    pos.update(_pos.x, _pos.y, false);
   }
 
   bool isInside(Vector2 _pos)

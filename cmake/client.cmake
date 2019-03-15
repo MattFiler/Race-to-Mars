@@ -53,7 +53,7 @@ set(HEADER_FILES
         ../src/client/Board/GameBoard.cpp
         ../src/client/Board/GameBoard.h
         ../src/client/Board/ShipRoom.h
-        ../src/client/Board/ShipRoom.cpp)
+        ../src/client/Board/ShipRoom.cpp ../src/client/UI/Cursor.h ../src/client/UI/Cursor.cpp)
 
 ## the executable
 add_executable(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES})

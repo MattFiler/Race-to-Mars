@@ -12,14 +12,21 @@ Ship::Ship()
   sprite.setPosition(
     Vector2(ship_config["default_pos"][0], ship_config["default_pos"][1]));
   sprite.setDimensions(
-    Vector2(ship_config["default_size"][0], ship_config["default_size"][1]));
+    Vector2(ship_config["render_size"][0], ship_config["render_size"][1]));
+  base_size.update(
+    ship_config["base_size"][0], ship_config["base_size"][1], false);
 
   // Build up the rooms in the ship
-  rooms.emplace_back("COCKPIT", sprite.getPosition());
-  rooms.emplace_back("SUPPLY_BAY", sprite.getPosition());
-  rooms.emplace_back("MEDBAY", sprite.getPosition());
-  rooms.emplace_back("COMMUNICATIONS", sprite.getPosition());
-  rooms.emplace_back("ENGINE", sprite.getPosition());
+  rooms.emplace_back(
+    "COCKPIT", sprite.getPosition(), sprite.getDimensions() / base_size);
+  rooms.emplace_back(
+    "SUPPLY_BAY", sprite.getPosition(), sprite.getDimensions() / base_size);
+  rooms.emplace_back(
+    "MEDBAY", sprite.getPosition(), sprite.getDimensions() / base_size);
+  rooms.emplace_back(
+    "COMMUNICATIONS", sprite.getPosition(), sprite.getDimensions() / base_size);
+  rooms.emplace_back(
+    "ENGINE", sprite.getPosition(), sprite.getDimensions() / base_size);
 }
 
 /* Render the ship */

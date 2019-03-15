@@ -6,6 +6,7 @@ bool GameBoard::checkForClicks(Vector2 clicked_pos)
   {
     if (room.isInBoundingBox(clicked_pos))
     {
+      debug_text.print("Clicked in room: " + room.getName());
       return true;
     }
   }

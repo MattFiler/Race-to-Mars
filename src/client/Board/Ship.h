@@ -27,6 +27,7 @@ class Ship
   json ship_config;
   FileHandler file_handler;
   std::vector<ShipRoom> rooms;
+  Vector2 base_size;
 };
 
 #endif // PROJECT_SHIP_H

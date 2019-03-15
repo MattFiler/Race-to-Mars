@@ -3,6 +3,7 @@
 
 #include "client/Board/Ship.h"
 #include "client/Players/AllPlayers.h"
+#include "gamelib/Debug/DebugText.h"
 #include <Engine/Renderer.h>
 
 /* Ideally this class will know all about stuff on the board - E.G. active
@@ -22,6 +23,8 @@ class GameBoard
  private:
   Players m_players;
   Ship m_ship;
+
+  DebugText debug_text;
 };
 
 #endif // PROJECT_GAMEBOARD_H

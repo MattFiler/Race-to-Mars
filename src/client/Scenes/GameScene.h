@@ -3,6 +3,7 @@
 
 #include "Scene.h"
 #include "client/Board/GameBoard.h"
+#include "client/UI/Cursor.h"
 
 class GameScene : public Scene
 {
