@@ -45,7 +45,7 @@ set(HEADER_FILES
         ../src/client/Players/AllPlayers.h
         ../src/client/NetworkedData/PlayerData.h
         ../src/client/NetworkConnection/NetworkConnection.cpp
-        ../src/client/NetworkConnection/NetworkConnection.h ../src/client/Cards/Deck.cpp ../src/client/Cards/Deck.h)
+        ../src/client/NetworkConnection/NetworkConnection.h ../src/client/Cards/Deck.cpp ../src/client/Cards/Deck.h
         ../src/client/NetworkConnection/NetworkConnection.h
         ../src/client/Board/Ship.cpp
         ../src/client/Board/Ship.h

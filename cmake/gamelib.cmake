@@ -5,7 +5,7 @@ add_library(GameLib STATIC gamelib/gamelib.cpp
             ../src/gamelib/Constants.h
             ../src/gamelib/NetworkedData/Cards.h
             ../src/gamelib/NetworkedData/Players.h
-            ../src/gamelib/NetworkedData/Rooms.h ../src/gamelib/ChatMsg.cpp ../src/gamelib/ChatMsg.h)
+            ../src/gamelib/NetworkedData/Rooms.h ../src/gamelib/ChatMsg.cpp ../src/gamelib/ChatMsg.h
         ../src/gamelib/Constants.h
         ../src/gamelib/NetworkedData/Cards.h
         ../src/gamelib/NetworkedData/Players.h
