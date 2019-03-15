@@ -7,6 +7,12 @@
 		"PLAYER_ENGIN": "Engineer", 
 		"PLAYER_MEDIC": "Medic",
 		
+		"ROOM_BRIDGE": "Cockpit",
+		"ROOM_SUPPLY": "Supply Bay",
+		"ROOM_MEDBAY": "Medic Wing",
+		"ROOM_RADIOS": "Communications",
+		"ROOM_ENGINE": "Engine Room",
+		
 		"MENU_NEWGAME": "New Game",
 		"MENU_QUIT": "Quit Game"
 	}

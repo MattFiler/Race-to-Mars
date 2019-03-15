@@ -1,9 +1,9 @@
 #pragma once
-#include "FileHandler/FileHandler.h"
-#include "KeyHandler/KeyHandler.h"
-#include "Localisation/Localisation.h"
-#include "NetworkConnection/NetworkConnection.h"
-#include "Scenes/SceneManager.h"
+#include "client/KeyHandler/KeyHandler.h"
+#include "client/NetworkConnection/NetworkConnection.h"
+#include "client/Scenes/SceneManager.h"
+#include "gamelib/FileHandler/FileHandler.h"
+#include "gamelib/Localisation/Localisation.h"
 #include "gamelib/Debug/DebugText.h"
 #include <Engine/OGLGame.h>
 #include <atomic>

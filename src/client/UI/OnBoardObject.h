@@ -2,7 +2,7 @@
 #define PROJECT_COUNTER_H
 
 #include "client/Core/ServiceLocator.h"
-#include "client/Math/Vector2.h"
+#include "gamelib/Math/Vector2.h"
 #include <Engine/Renderer.h>
 #include <Engine/Sprite.h>
 

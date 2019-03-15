@@ -85,7 +85,7 @@ bool RaceToSpace::init()
     renderer->loadFontFromMem("Alte Haas",
                               font_buffer.as_unsigned_char(),
                               static_cast<unsigned int>(font_buffer.length),
-                              static_cast<int>(30 * GameResolution::scale));
+                              30 * static_cast<int>(GameResolution::scale));
 
   // Input handling functions
   inputs->use_threads = false;

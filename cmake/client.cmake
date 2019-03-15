@@ -5,12 +5,10 @@ set(GAMEDATA_FOLDER "data/client")
 ## add the files to be compiled here
 set(SOURCE_FILES
         "client/main.cpp"
-        "client/game.cpp"
-        "client/FileHandler/FileHandler.cpp")
+        "client/game.cpp")
 
 set(HEADER_FILES
         "client/game.h"
-        "client/FileHandler/FileHandler.h"
         ../src/client/Cards/Card.h
         ../src/client/Cards/Card.cpp
         ../src/client/Cards/ObjectiveCard.cpp
@@ -35,7 +33,6 @@ set(HEADER_FILES
         ../src/client/UI/PlayerCounter.cpp
         ../src/client/UI/PlayerCounter.h
         ../src/client/Core/ServiceLocator.cpp
-        ../src/client/Math/Vector2.h
         ../src/client/Scenes/SceneManager.cpp
         ../src/client/Scenes/SceneManager.h
         ../src/client/Scenes/Scene.h
@@ -45,8 +42,6 @@ set(HEADER_FILES
         ../src/client/Scenes/MenuScene.h
         ../src/client/KeyHandler/KeyHandler.cpp
         ../src/client/KeyHandler/KeyHandler.h
-        ../src/client/Localisation/Localisation.cpp
-        ../src/client/Localisation/Localisation.h
         ../src/client/Players/AllPlayers.h
         ../src/client/NetworkedData/PlayerData.h
         ../src/client/NetworkConnection/NetworkConnection.cpp
@@ -69,7 +64,6 @@ set_target_properties(${PROJECT_NAME}
 
 ## important build scripts
 include(build/compilation)
-include(libs/soloud)
 include(tools/itch.io)
 
 ## hide console unless debug build ##

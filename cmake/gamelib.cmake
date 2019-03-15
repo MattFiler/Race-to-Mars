@@ -7,7 +7,12 @@ add_library(GameLib STATIC gamelib/gamelib.cpp
             gamelib/NetworkedData/Players.h
             gamelib/NetworkedData/Rooms.h ../src/gamelib/Constants.cpp
         "gamelib/Debug/DebugText.cpp"
-        "gamelib/Debug/DebugText.h")
+        "gamelib/Debug/DebugText.h"
+        "gamelib/FileHandler/FileHandler.h"
+        "gamelib/FileHandler/FileHandler.cpp"
+        ../src/gamelib/Localisation/Localisation.cpp
+        ../src/gamelib/Localisation/Localisation.h
+        ../src/gamelib/Math/Vector2.h)
 
 ## compile language settings
 target_compile_features(GameLib PUBLIC cxx_std_17)
@@ -29,3 +34,4 @@ target_include_directories(GameLib
 include(build/compilation)
 include(build/flags)
 include(libs/asge)
+include(libs/soloud)

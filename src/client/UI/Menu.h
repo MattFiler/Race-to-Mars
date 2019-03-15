@@ -2,9 +2,9 @@
 #define PROJECT_MENU_H
 
 #include "client/Core/ServiceLocator.h"
-#include "client/FileHandler/FileHandler.h"
 #include "client/KeyHandler/KeyHandler.h"
-#include "client/Localisation/Localisation.h"
+#include "gamelib/FileHandler/FileHandler.h"
+#include "gamelib/Localisation/Localisation.h"
 #include "gamelib/Debug/DebugText.h"
 #include <Engine/Renderer.h>
 #include <Engine/Sprite.h>
