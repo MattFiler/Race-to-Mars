@@ -2,9 +2,9 @@
 #define PROJECT_COUNTER_H
 
 #include "client/Core/ServiceLocator.h"
+#include "client/UI/ScaledSprite.h"
 #include "gamelib/Math/Vector2.h"
 #include <Engine/Renderer.h>
-#include <Engine/Sprite.h>
 
 /*
  *
@@ -31,7 +31,7 @@ class OnBoardObject
 
  protected:
   ASGE::Renderer* renderer = nullptr;
-  ASGE::Sprite* sprite = nullptr;
+  ScaledSprite* sprite = nullptr;
 
   Vector2 position = Vector2(0, 0);
   Vector2 dimensions = Vector2(0, 0);

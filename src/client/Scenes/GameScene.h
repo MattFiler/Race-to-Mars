@@ -24,6 +24,7 @@ class GameScene : public Scene
 
  private:
   GameBoard m_board;
+  Menu m_board_menu;
 };
 
 #endif // PROJECT_GAMESCENE_H

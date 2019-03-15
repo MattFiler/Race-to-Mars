@@ -17,14 +17,15 @@ class GameBoard
   ~GameBoard() = default;
 
   bool isHoveringOverInteractable(Vector2 hover_pos);
-  bool didClickOnInteractable(Vector2 clicked_pos);
+  ShipRoom getClickedInteractable(Vector2 clicked_pos);
 
   void render();
+  Ship m_ship;
 
  private:
   bool cursorPosFallsIntoClickable(Vector2 pos);
   Players m_players;
-  Ship m_ship;
+  ShipRoom* clicked_room = nullptr;
 
   DebugText debug_text;
 };

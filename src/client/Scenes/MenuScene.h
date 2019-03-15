@@ -1,7 +1,6 @@
 #ifndef PROJECT_MENUSCENE_H
 #define PROJECT_MENUSCENE_H
 
-#include "../UI/Menu.h"
 #include "Scene.h"
 
 class MenuScene : public Scene
