@@ -25,8 +25,9 @@ class NetworkConnection
   enetpp::client client;
   std::atomic<bool> exiting = false;
   std::queue<ChatMsg> msg_queue;
+  std::queue<std::string> msg_queue_debug;
   std::mutex msg_queue_mtx;
-  std::string username;
+  std::mutex msg_queue_debug_mtx;
 };
 
 #endif // PROJECT_NETWORKCONNECTION_H

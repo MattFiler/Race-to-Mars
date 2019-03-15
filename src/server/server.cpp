@@ -1,6 +1,7 @@
 #include "server.h"
 
 #include <gamelib/ChatMsg.h>
+#include <gamelib/Packet.h>
 
 RaceToSpaceServer::RaceToSpaceServer()
 {
@@ -75,9 +76,10 @@ void RaceToSpaceServer::run()
                      " has disconnected!");
   });
 
+  // while data is received do...
   auto on_data =
     ([&](server_client& client, const enet_uint8* data, size_t data_size) {
-      ChatMsg msg(reinterpret_cast<const char*>(data));
+      Packet packet_data(reinterpret_cast<const char*>(data));
       std::cout << "client " << std::to_string(client.get_id()) << ": "
                 << msg.getUsername() << "=> " << msg.getMsg();
       std::cout << std::endl;

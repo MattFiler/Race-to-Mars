@@ -1,5 +1,6 @@
 #include "NetworkConnection.h"
 #include "../game.h"
+#include <Engine/Renderer.h>
 #include <iostream>
 
 NetworkConnection::~NetworkConnection()
@@ -12,8 +13,8 @@ NetworkConnection::~NetworkConnection()
 void NetworkConnection::connectToServer(const std::string& hostname,
                                         enet_uint16 port)
 {
-  std::cout << "Welcome to Race to Space! \n Please enter your Name: ";
-  std::getline(std::cin, username);
+  //  std::cout << "Welcome to Race to Space! \n Please enter your Name: ";
+  //  std::getline(std::cin, username);
 
   enetpp::global_state::get().initialize();
   client.connect(enetpp::client_connect_params()
@@ -33,13 +34,14 @@ void NetworkConnection::startListening(RaceToSpace* game_instance)
   // Enable debug input to test comms from client to server (& other clients)
   std::thread th2(&NetworkConnection::networkMessageDebug, this);
   th2.detach();
+
+  std::thread th3(&NetworkConnection::input, this);
+  th.detach();
 }
 
 // Our network connection loop
 void NetworkConnection::networkLoop()
 {
-  std::thread th(&NetworkConnection::input, this);
-  th.detach();
   while (client.is_connecting_or_connected())
   {
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -56,6 +58,7 @@ void NetworkConnection::networkLoop()
       unsigned int msg_length = 0;
       auto msg_data = msg.data(msg_length);
       msg_queue.pop();
+      // send packet to server
       client.send_packet(0,
                          reinterpret_cast<const enet_uint8*>(msg_data),
                          msg_length,
@@ -71,24 +74,24 @@ void NetworkConnection::networkMessageDebug()
 {
   while (!exiting)
   {
-    //    std::string txt;
-    //    std::getline(std::cin, txt);
-    //
-    //    std::lock_guard<std::mutex> lock(msg_queue_mtx);
-    //    msg_queue.push(std::move(txt));
+    std::string txt;
+    std::getline(std::cin, txt);
+
+    std::lock_guard<std::mutex> lock(msg_queue_debug_mtx);
+    msg_queue_debug.push(std::move(txt));
   }
 }
 
 void NetworkConnection::input()
 {
-  while (!exiting)
-  {
-    std::string txt;
-    std::getline(std::cin, txt);
-    std::time_t result = std::time(nullptr);
-    std::string time_stamp = std::asctime(std::localtime(&result));
-    ChatMsg msg(username, txt, result);
-    std::lock_guard<std::mutex> lock(msg_queue_mtx);
-    msg_queue.push(std::move(msg));
-  }
+  //  while (!exiting)
+  //  {
+  //    std::string txt;
+  //    std::getline(std::cin, txt);
+  //    std::time_t result = std::time(nullptr);
+  //    std::string time_stamp = std::asctime(std::localtime(&result));
+  //    ChatMsg msg(username, txt, result);
+  //    std::lock_guard<std::mutex> lock(msg_queue_mtx);
+  //    msg_queue.push(std::move(msg));
+  //  }
 }

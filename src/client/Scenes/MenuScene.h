@@ -23,6 +23,7 @@ class MenuScene : public Scene
 
  private:
   Menu main_menu;
+  std::string username;
 };
 
 #endif // PROJECT_MENUSCENE_H
