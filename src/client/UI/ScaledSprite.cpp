@@ -8,6 +8,8 @@ ScaledSprite::ScaledSprite(const std::string& filename)
 
   sprite = renderer->createRawSprite();
   sprite->loadTexture(filename);
+
+  sprite->scale(GameResolution::scale);
 }
 
 /* Destroy */
@@ -20,12 +22,14 @@ ScaledSprite::~ScaledSprite()
 /* Set width */
 void ScaledSprite::width(float width)
 {
+  sprite->scale(1);
   sprite->width(width * GameResolution::scale);
 }
 
 /* Set height */
 void ScaledSprite::height(float height)
 {
+  sprite->scale(1);
   sprite->height(height * GameResolution::scale);
 }
 
