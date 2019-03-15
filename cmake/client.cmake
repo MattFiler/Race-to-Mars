@@ -70,6 +70,11 @@ set_target_properties(${PROJECT_NAME}
         LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/build/${CLIENT}/lib"
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/build/${CLIENT}/bin")
 
+## Copy launcher to build directory on Windows
+if (${PLATFORM} MATCHES "win")
+    configure_file("${CMAKE_SOURCE_DIR}/launcher/RTS_Launcher.exe" "${CMAKE_BINARY_DIR}/build/${CLIENT}/bin/Launcher.exe" COPYONLY)
+endif()
+
 ## important build scripts
 include(build/compilation)
 include(tools/itch.io)
