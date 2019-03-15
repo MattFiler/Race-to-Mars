@@ -15,6 +15,8 @@ class GameBoard
   GameBoard() = default;
   ~GameBoard() = default;
 
+  bool checkForClicks(Vector2 clicked_pos);
+
   void render();
 
  private:

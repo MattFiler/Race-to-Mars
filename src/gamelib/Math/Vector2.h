@@ -11,14 +11,14 @@ class Vector2
   Vector2() = default;
   Vector2(float _x, float _y)
   {
-    m_x = _x * GameResolution::scale;
-    m_y = _y * GameResolution::scale;
+    x = _x * GameResolution::scale;
+    y = _y * GameResolution::scale;
   }
 
   void update(float _x, float _y)
   {
-    m_x = _x * GameResolution::scale;
-    m_y = _y * GameResolution::scale;
+    x = _x * GameResolution::scale;
+    y = _y * GameResolution::scale;
   }
 
   bool operator==(Vector2& vector) { return (vector.x == x && vector.y == y); };
@@ -49,12 +49,17 @@ class Vector2
     return return_vector;
   };
 
+  float x = 0;
+  float y = 0;
+
+  /*
   const float& x = m_x;
   const float& y = m_y;
 
  private:
   float m_x;
   float m_y;
+   */
 };
 
 #endif // PROJECT_VECTOR2_H

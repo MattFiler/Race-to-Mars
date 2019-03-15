@@ -13,7 +13,7 @@ class ShipRoom
 {
  public:
   ShipRoom(const std::string& room_name, Vector2 board_offset);
-  ~ShipRoom();
+  ~ShipRoom() = default;
 
   Vector2 getCentre();
   std::string getName();
@@ -22,7 +22,7 @@ class ShipRoom
  private:
   json room_config;
   FileHandler file_handler;
-  BoundingBox* bounding_box = nullptr;
+  BoundingBox bounding_box;
   Localisation localiser;
 };
 

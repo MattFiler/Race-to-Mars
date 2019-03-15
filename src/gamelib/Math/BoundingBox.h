@@ -5,9 +5,11 @@
 
 struct BoundingBox
 {
-  BoundingBox(Vector2 _pos, float _width, float _height) :
-    width(_width), height(_height), pos(_pos)
+  void setup(Vector2 _pos, float _width, float _height)
   {
+    width = _width;
+    height = _height;
+    pos.update(_pos.x, _pos.y);
   }
 
   bool isInside(Vector2 _pos)
