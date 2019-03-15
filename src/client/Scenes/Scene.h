@@ -1,8 +1,9 @@
 #ifndef PROJECT_SCENE_H
 #define PROJECT_SCENE_H
 
-#include "../Core/ServiceLocator.h"
-#include "../KeyHandler/KeyHandler.h"
+#include "client/Core/ServiceLocator.h"
+#include "client/KeyHandler/KeyHandler.h"
+#include "client/UI/Menu.h"
 #include "gamelib/Constants.h"
 #include "gamelib/Debug/DebugText.h"
 #include <Engine/GameTime.h>

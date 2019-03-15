@@ -4,13 +4,12 @@
 OnBoardObject::OnBoardObject()
 {
   renderer = Locator::getRenderer();
-  sprite = renderer->createRawSprite();
 }
 
 /* Set sprite texture for counter */
 void OnBoardObject::setSprite(const std::string& sprite_path)
 {
-  sprite->loadTexture(sprite_path);
+  sprite = new ScaledSprite(sprite_path);
   setDimensions(Vector2(sprite->width(), sprite->height()));
 }
 
@@ -33,5 +32,5 @@ void OnBoardObject::setDimensions(Vector2 _dims)
 /* Render the counter's sprite */
 void OnBoardObject::render()
 {
-  renderer->renderSprite(*sprite);
+  renderer->renderSprite(*sprite->getSprite());
 }

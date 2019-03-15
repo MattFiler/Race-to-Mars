@@ -2,7 +2,9 @@
 	"DEFAULT": {
 		"counter_sprite": "UI/PLAYER_COUNTERS/placeholder.png",
 		"start_room": 0,
-		"friendly_name": "PLACEHOLDER"
+		"friendly_name": "PLACEHOLDER",
+		"counter_width": 50,
+		"counter_height": 50
 	},
 	"COMMUNICATIONS": {
 		"counter_sprite": "UI/PLAYER_COUNTERS/communications.png",

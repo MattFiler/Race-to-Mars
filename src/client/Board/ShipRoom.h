@@ -12,9 +12,7 @@ using json = nlohmann::json;
 class ShipRoom
 {
  public:
-  ShipRoom(const std::string& room_name,
-           Vector2 board_offset,
-           Vector2 ship_base_size);
+  ShipRoom(const std::string& room_name, Vector2 board_offset);
   ~ShipRoom() = default;
 
   Vector2 getCentre();

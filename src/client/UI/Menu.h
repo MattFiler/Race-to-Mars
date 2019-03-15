@@ -3,11 +3,11 @@
 
 #include "client/Core/ServiceLocator.h"
 #include "client/KeyHandler/KeyHandler.h"
+#include "client/UI/ScaledSprite.h"
 #include "gamelib/Debug/DebugText.h"
 #include "gamelib/FileHandler/FileHandler.h"
 #include "gamelib/Localisation/Localisation.h"
 #include <Engine/Renderer.h>
-#include <Engine/Sprite.h>
 
 class Menu
 {
@@ -19,7 +19,7 @@ class Menu
   Menu& operator=(const Menu&) = delete;
 
   void addMenuItem(const std::string& item_text);
-  ASGE::Sprite* addMenuSprite(const std::string& filepath);
+  void addMenuSprite(const std::string& filepath);
 
   void setMenuTextSpacing(float offset);
   void setLeftMargin(float offset);
@@ -39,7 +39,7 @@ class Menu
 
   std::vector<std::string> menu_text_items;
   std::vector<float> menu_text_offsets;
-  std::vector<ASGE::Sprite*> menu_sprites;
+  std::vector<ScaledSprite> menu_sprites;
 
   FileHandler file_handler;
   ASGE::Renderer* renderer = nullptr;

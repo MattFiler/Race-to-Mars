@@ -5,8 +5,8 @@ unusedFunction
 missingIncludeSystem
 
 // ignore the Libs folder please
-*:Libs/*
-*:libs/*
-*:External/*
-*:external/*
-*:external/asge/include/Engine/
+//*:Libs/*
+//*:libs/*
+//*:External/*
+//*:external/*
+//*:external/asge/include/Engine/

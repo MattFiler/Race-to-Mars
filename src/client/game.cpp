@@ -89,7 +89,7 @@ bool RaceToSpace::init()
     renderer->loadFontFromMem("Alte Haas",
                               font_buffer.as_unsigned_char(),
                               static_cast<unsigned int>(font_buffer.length),
-                              30 * static_cast<int>(GameResolution::scale));
+                              static_cast<int>(30 * GameResolution::scale));
 
   // Hide cursor
   inputs->setCursorMode(ASGE::MOUSE::CursorMode::HIDDEN);
