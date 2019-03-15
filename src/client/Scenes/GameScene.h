@@ -2,7 +2,7 @@
 #define PROJECT_GAMESCENE_H
 
 #include "Scene.h"
-#include "client/UI/GameBoard.h"
+#include "client/Board/GameBoard.h"
 
 class GameScene : public Scene
 {

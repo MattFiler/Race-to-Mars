@@ -1,10 +1,10 @@
 #ifndef PROJECT_PLAYER_H
 #define PROJECT_PLAYER_H
 
+#include "client/Board/PlayerCounter.h"
 #include "client/Core/ServiceLocator.h"
 #include "gamelib/FileHandler/FileHandler.h"
 #include "gamelib/Localisation/Localisation.h"
-#include "client/UI/PlayerCounter.h"
 #include <Engine/Renderer.h>
 #include <json.hpp>
 using json = nlohmann::json;

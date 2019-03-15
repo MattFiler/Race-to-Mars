@@ -2,9 +2,9 @@
 #include "client/KeyHandler/KeyHandler.h"
 #include "client/NetworkConnection/NetworkConnection.h"
 #include "client/Scenes/SceneManager.h"
+#include "gamelib/Debug/DebugText.h"
 #include "gamelib/FileHandler/FileHandler.h"
 #include "gamelib/Localisation/Localisation.h"
-#include "gamelib/Debug/DebugText.h"
 #include <Engine/OGLGame.h>
 #include <atomic>
 #include <enetpp/client.h>

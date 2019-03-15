@@ -3,9 +3,9 @@
 
 #include "client/Core/ServiceLocator.h"
 #include "client/KeyHandler/KeyHandler.h"
+#include "gamelib/Debug/DebugText.h"
 #include "gamelib/FileHandler/FileHandler.h"
 #include "gamelib/Localisation/Localisation.h"
-#include "gamelib/Debug/DebugText.h"
 #include <Engine/Renderer.h>
 #include <Engine/Sprite.h>
 

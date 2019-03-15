@@ -1,7 +1,12 @@
 #include "GameScene.h"
 
 /* Initialise the scene */
-void GameScene::init() {}
+void GameScene::init() {
+
+  int i = 0;
+  i += 1;
+
+}
 
 /* Handles connecting to the server */
 void GameScene::networkConnected() {}

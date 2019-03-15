@@ -1,8 +1,8 @@
 #ifndef PROJECT_GAMEBOARD_H
 #define PROJECT_GAMEBOARD_H
 
+#include "client/Board/Ship.h"
 #include "client/Players/AllPlayers.h"
-#include "client/UI/Ship.h"
 #include <Engine/Renderer.h>
 
 /* Ideally this class will know all about stuff on the board - E.G. active

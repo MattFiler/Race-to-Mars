@@ -30,7 +30,7 @@ ASGE::Sprite* Menu::addMenuSprite(const std::string& filepath)
 {
   // Create sprite
   ASGE::Sprite* new_sprite = renderer->createRawSprite();
-  new_sprite->loadTexture("data/UI/" + filepath);
+  new_sprite->loadTexture("data/Board/" + filepath);
 
   return new_sprite;
 }
