@@ -2,6 +2,7 @@
 #define PROJECT_NETWORKCONNECTION_H
 
 #include <enetpp/client.h>
+#include <gamelib/ChatMsg.h>
 
 class RaceToSpace;
 
@@ -17,13 +18,15 @@ class NetworkConnection
   void networkLoop();
   void networkMessageDebug();
 
+  void input();
+
   enetpp::client* getClient() { return &client; };
 
  private:
   RaceToSpace* game = nullptr;
   enetpp::client client;
   std::atomic<bool> exiting = false;
-  std::queue<std::string> msg_queue;
+  std::queue<ChatMsg> msg_queue;
   std::mutex msg_queue_mtx;
   std::string username;
 };

@@ -54,9 +54,9 @@
 				{"type": "PILOT","name":  "Window Wash", "action_points":5,"sprite_path": "UI/CARD_IMAGES/pilot.png"}
 		]
 	},
-	
+
 	"ISSUECARDS": {
-		"communications": [
+		"COMMUNICATIONS": [
 			{"type": "COMMUNICATIONS", "name": "Dispatch Probe", "description": "The radar intercepts some strange signals, send out a probe to check on it.", "action_points": 15, "sprite_path": "UI/CARD_IMAGES/communications.png"},
 			{"type": "COMMUNICATIONS", "name": "Distress Signal", "description": "You intercept a signal from space. Spend ome time decoding it.", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/communications.png"},
 			{"type": "COMMUNICATIONS", "name": "Earth Transmission", "description": "There's a message from Earth, reply and update them on your progress.", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/communications.png"},

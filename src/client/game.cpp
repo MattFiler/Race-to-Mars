@@ -116,8 +116,12 @@ void RaceToSpace::data(const enet_uint8* data, size_t data_size)
   scene_manager.networkDataReceived(data, data_size);
 
   // Debugging with message send/receive
-  std::string msg(reinterpret_cast<const char*>(data), data_size);
-  debug_text.print("received message from server: " + msg);
+  //  ChatMsg msg(reinterpret_cast<const char*>(data), data_size);
+  //  debug_text.print("received message from server: " + msg);
+
+  ChatMsg msg(reinterpret_cast<const char*>(data));
+  std::string time_stamp = std::asctime(std::localtime(&msg.getStamp()));
+  std::cout << "(" + time_stamp + ")" + msg.getUsername() + ": " + msg.getMsg();
 }
 
 /**

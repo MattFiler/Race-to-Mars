@@ -12,6 +12,9 @@ NetworkConnection::~NetworkConnection()
 void NetworkConnection::connectToServer(const std::string& hostname,
                                         enet_uint16 port)
 {
+  std::cout << "Welcome to Race to Space! \n Please enter your Name: ";
+  std::getline(std::cin, username);
+
   enetpp::global_state::get().initialize();
   client.connect(enetpp::client_connect_params()
                    .set_channel_count(1)
@@ -35,6 +38,8 @@ void NetworkConnection::startListening(RaceToSpace* game_instance)
 // Our network connection loop
 void NetworkConnection::networkLoop()
 {
+  std::thread th(&NetworkConnection::input, this);
+  th.detach();
   while (client.is_connecting_or_connected())
   {
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -46,16 +51,17 @@ void NetworkConnection::networkLoop()
     while (msg_queue.size())
     {
       std::lock_guard<std::mutex> lock(msg_queue_mtx);
-      const auto& txt = msg_queue.front();
+      const auto& msg = msg_queue.front();
       assert(sizeof(char) == sizeof(enet_uint8));
-      client.send_packet(0,
-                         reinterpret_cast<const enet_uint8*>(txt.data()),
-                         txt.length(),
-                         ENET_PACKET_FLAG_RELIABLE);
+      unsigned int msg_length = 0;
+      auto msg_data = msg.data(msg_length);
       msg_queue.pop();
+      client.send_packet(0,
+                         reinterpret_cast<const enet_uint8*>(msg_data),
+                         msg_length,
+                         ENET_PACKET_FLAG_RELIABLE);
     }
   }
-
   exiting = true;
 }
 
@@ -65,10 +71,24 @@ void NetworkConnection::networkMessageDebug()
 {
   while (!exiting)
   {
+    //    std::string txt;
+    //    std::getline(std::cin, txt);
+    //
+    //    std::lock_guard<std::mutex> lock(msg_queue_mtx);
+    //    msg_queue.push(std::move(txt));
+  }
+}
+
+void NetworkConnection::input()
+{
+  while (!exiting)
+  {
     std::string txt;
     std::getline(std::cin, txt);
-
+    std::time_t result = std::time(nullptr);
+    std::string time_stamp = std::asctime(std::localtime(&result));
+    ChatMsg msg(username, txt, result);
     std::lock_guard<std::mutex> lock(msg_queue_mtx);
-    msg_queue.push(std::move(txt));
+    msg_queue.push(std::move(msg));
   }
 }

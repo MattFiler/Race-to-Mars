@@ -1,6 +1,8 @@
 #include "server.h"
 #include <iostream>
 
+#include <gamelib/ChatMsg.h>
+
 RaceToSpaceServer::RaceToSpaceServer()
 {
   enetpp::global_state::get().initialize();
@@ -29,21 +31,58 @@ void RaceToSpaceServer::initialise()
 
 void RaceToSpaceServer::run()
 {
+  //  auto on_connect = ([&](server_client& client) {
+  //    std::cout << "Client " << std::to_string(client.get_id())
+  //              << " has connected!" << std::endl;
+  //  });
+  //
+  //  auto on_disconnect = ([&](unsigned int client_id) {
+  //    std::cout << "Client " << std::to_string(client_id) << " has
+  //    disconnected!"
+  //              << std::endl;
+  //  });
+  //
+  //  auto on_data =
+  //    ([&](server_client& client, const enet_uint8* data, size_t data_size) {
+  //      std::string msg(reinterpret_cast<const char*>(data), data_size);
+  //      std::cout << "Client " << std::to_string(client.get_id()) << ": " <<
+  //      msg
+  //                << std::endl;
+  //      network_server.send_packet_to_all_if(
+  //        0,
+  //        data,
+  //        data_size,
+  //        ENET_PACKET_FLAG_RELIABLE,
+  //        [&](const server_client& destination) {
+  //          return destination.get_id() != client.get_id();
+  //        });
+  //    });
+  //
+  //  static bool terminate = false;
+  //  // cppcheck-suppress *
+  //  while (!terminate)
+  //  {
+  //    network_server.consume_events(on_connect, on_disconnect, on_data);
+  //    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+  //  }
+
   auto on_connect = ([&](server_client& client) {
-    std::cout << "Client " << std::to_string(client.get_id())
-              << " has connected!" << std::endl;
+    std::cout << "client " << std::to_string(client.get_id())
+              << ": has connected" << std::endl;
   });
 
-  auto on_disconnect = ([&](unsigned int client_id) {
-    std::cout << "Client " << std::to_string(client_id) << " has disconnected!"
-              << std::endl;
+  auto on_disconnect = ([&](unsigned int client_uid) {
+    std::cout << "client " << std::to_string(client_uid)
+              << ": has disconnected\n";
   });
 
   auto on_data =
     ([&](server_client& client, const enet_uint8* data, size_t data_size) {
-      std::string msg(reinterpret_cast<const char*>(data), data_size);
-      std::cout << "Client " << std::to_string(client.get_id()) << ": " << msg
-                << std::endl;
+      ChatMsg msg(reinterpret_cast<const char*>(data));
+      std::cout << "client " << std::to_string(client.get_id()) << ": "
+                << msg.getUsername() << "=> " << msg.getMsg();
+      std::cout << std::endl;
+      std::cout << "forwarding msg to all clients\n";
       network_server.send_packet_to_all_if(
         0,
         data,
@@ -54,8 +93,8 @@ void RaceToSpaceServer::run()
         });
     });
 
+  // while server should not terminate
   static bool terminate = false;
-  // cppcheck-suppress *
   while (!terminate)
   {
     network_server.consume_events(on_connect, on_disconnect, on_data);

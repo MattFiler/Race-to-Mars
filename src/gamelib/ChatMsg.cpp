@@ -35,8 +35,8 @@ const std::string& ChatMsg::getUsername() const
 
 char* ChatMsg::data(unsigned int& size) const
 {
-  const int username_length = static_cast<const int>(username.length() + 1);
-  const int txt_length = static_cast<const int>(msg_text.length() + 1);
+  const int username_length = static_cast<int>(username.length() + 1);
+  const int txt_length = static_cast<int>(msg_text.length() + 1);
   const int timestamp_size = sizeof(std::time_t);
   size =
     static_cast<unsigned int>(username_length + txt_length + timestamp_size);
