@@ -11,7 +11,7 @@
 class ScaledSprite
 {
  public:
-  ScaledSprite(const std::string& filename);
+  explicit ScaledSprite(const std::string& filename);
   ~ScaledSprite();
 
   void width(float width);
