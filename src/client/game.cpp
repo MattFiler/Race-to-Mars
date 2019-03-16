@@ -69,6 +69,10 @@ bool RaceToSpace::init()
   Locator::setupInput(inputs.get());
   Locator::setupAudio(&audio);
   Locator::setupClient(&networked_client);
+  Locator::setupCursor(&cursor_pointer);
+
+  // Setup cursor
+  cursor_pointer.configure();
 
   // Setup keybinds
   key_handler.setup(game_config["keybinds"]);
@@ -85,7 +89,10 @@ bool RaceToSpace::init()
     renderer->loadFontFromMem("Alte Haas",
                               font_buffer.as_unsigned_char(),
                               static_cast<unsigned int>(font_buffer.length),
-                              30 * static_cast<int>(GameResolution::scale));
+                              static_cast<int>(30 * GameResolution::scale));
+
+  // Hide cursor
+  inputs->setCursorMode(ASGE::MOUSE::CursorMode::HIDDEN);
 
   // Input handling functions
   inputs->use_threads = false;
@@ -147,7 +154,8 @@ void RaceToSpace::setupResolution()
   GameResolution::width = game_width;
   game_height = game_config["resolution"]["height"];
   GameResolution::height = game_height;
-  GameResolution::scale = static_cast<float>(game_height) / 720;
+  GameResolution::scale =
+    static_cast<float>(game_height) / GameResolution::base_height;
 }
 
 /**
@@ -189,6 +197,9 @@ void RaceToSpace::clickHandler(const ASGE::SharedEventData data)
  */
 void RaceToSpace::update(const ASGE::GameTime& game_time)
 {
+  double x, y;
+  inputs.get()->getCursorPos(x, y);
+  cursor_pointer.updatePosition(x, y);
   scene_manager.update(game_time);
 }
 
@@ -221,4 +232,6 @@ void RaceToSpace::render(const ASGE::GameTime&)
   {
     renderer->renderText("NOT CONNECTED", game_width - 250, 50, 0.5f);
   }
+
+  cursor_pointer.render();
 }

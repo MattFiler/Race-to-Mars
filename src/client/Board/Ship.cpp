@@ -9,10 +9,10 @@ Ship::Ship()
   // Configure ship
   sprite.setSprite("data/UI/BOARD/bounding box debug.png");
   ship_config = file_handler.openAsJSON("CONFIGS/ship_config.json");
-  sprite.setPosition(
-    Vector2(ship_config["default_pos"][0], ship_config["default_pos"][1]));
-  sprite.setDimensions(
-    Vector2(ship_config["default_size"][0], ship_config["default_size"][1]));
+  // sprite.setPosition(
+  //  Vector2(ship_config["default_pos"][0], ship_config["default_pos"][1]));
+  // sprite.setDimensions(
+  //  Vector2(ship_config["render_size"][0], ship_config["render_size"][1]));
 
   // Build up the rooms in the ship
   rooms.emplace_back("COCKPIT", sprite.getPosition());

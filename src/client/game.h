@@ -2,6 +2,7 @@
 #include "client/KeyHandler/KeyHandler.h"
 #include "client/NetworkConnection/NetworkConnection.h"
 #include "client/Scenes/SceneManager.h"
+#include "client/UI/Cursor.h"
 #include "gamelib/Debug/DebugText.h"
 #include "gamelib/FileHandler/FileHandler.h"
 #include "gamelib/Localisation/Localisation.h"
@@ -51,4 +52,5 @@ class RaceToSpace : public ASGE::OGLGame
   SoLoud::Soloud audio;
   SceneManager scene_manager;
   Localisation localiser;
+  Cursor cursor_pointer;
 };

@@ -11,29 +11,27 @@ class Vector2
   Vector2() = default;
   Vector2(float _x, float _y)
   {
-    x = _x * GameResolution::scale;
-    y = _y * GameResolution::scale;
+    x = _x;
+    y = _y;
   }
 
   void update(float _x, float _y)
   {
-    x = _x * GameResolution::scale;
-    y = _y * GameResolution::scale;
+    x = _x;
+    y = _y;
   }
 
   bool operator==(Vector2& vector) { return (vector.x == x && vector.y == y); };
   Vector2 operator-(const Vector2& vector)
   {
     Vector2 return_vector;
-    return_vector.update(x - vector.x * GameResolution::scale,
-                         y - vector.y * GameResolution::scale);
+    return_vector.update(x - vector.x, y - vector.y);
     return return_vector;
   };
   Vector2 operator+(const Vector2& vector)
   {
     Vector2 return_vector;
-    return_vector.update(x + vector.x * GameResolution::scale,
-                         y + vector.y * GameResolution::scale);
+    return_vector.update(x + vector.x, y + vector.y);
     return return_vector;
   };
   Vector2 operator/(const float divider)
@@ -42,15 +40,27 @@ class Vector2
     return_vector.update(x / divider, y / divider);
     return return_vector;
   };
+  Vector2 operator/(const Vector2& vector)
+  {
+    Vector2 return_vector;
+    return_vector.update(x / vector.x, y / vector.y);
+    return return_vector;
+  };
   Vector2 operator*(const float multiplier)
   {
     Vector2 return_vector;
     return_vector.update(x * multiplier, y * multiplier);
     return return_vector;
   };
+  Vector2 operator*(const Vector2& vector)
+  {
+    Vector2 return_vector;
+    return_vector.update(x * vector.x, y * vector.y);
+    return return_vector;
+  };
 
-  float x = 0;
-  float y = 0;
+  float x;
+  float y;
 
   /*
   const float& x = m_x;

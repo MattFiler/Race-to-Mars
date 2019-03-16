@@ -20,10 +20,12 @@ class ShipRoom
   bool isInBoundingBox(Vector2 _pos);
 
  private:
-  json room_config;
   FileHandler file_handler;
   BoundingBox bounding_box;
   Localisation localiser;
+
+  Vector2 centre_point;
+  std::string friendly_name;
 };
 
 #endif // PROJECT_SHIPROOM_H

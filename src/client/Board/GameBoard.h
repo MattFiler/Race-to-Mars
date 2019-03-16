@@ -3,6 +3,7 @@
 
 #include "client/Board/Ship.h"
 #include "client/Players/AllPlayers.h"
+#include "gamelib/Debug/DebugText.h"
 #include <Engine/Renderer.h>
 
 /* Ideally this class will know all about stuff on the board - E.G. active
@@ -15,13 +16,18 @@ class GameBoard
   GameBoard() = default;
   ~GameBoard() = default;
 
-  bool checkForClicks(Vector2 clicked_pos);
+  bool isHoveringOverInteractable(Vector2 hover_pos);
+  ShipRoom getClickedInteractable(Vector2 clicked_pos);
 
   void render();
 
  private:
+  bool cursorPosFallsIntoClickable(Vector2 pos);
   Players m_players;
   Ship m_ship;
+  ShipRoom* clicked_room = nullptr;
+
+  DebugText debug_text;
 };
 
 #endif // PROJECT_GAMEBOARD_H

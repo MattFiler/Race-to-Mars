@@ -4,10 +4,7 @@
 /* Grab window scale */
 Menu::Menu()
 {
-  middle_of_window = (static_cast<float>(GameResolution::height) / 2) +
-                     (15 * GameResolution::scale);
-  x_offset *= GameResolution::scale;
-  y_offset *= GameResolution::scale;
+  middle_of_window = (static_cast<float>(GameResolution::height) / 2) + 15;
 
   sound_player = Locator::getAudio();
   renderer = Locator::getRenderer();
@@ -26,26 +23,23 @@ void Menu::addMenuItem(const std::string& item_text)
 }
 
 /* Add menu sprite item */
-ASGE::Sprite* Menu::addMenuSprite(const std::string& filepath)
+void Menu::addMenuSprite(const std::string& filepath)
 {
   // Create sprite
-  ASGE::Sprite* new_sprite = renderer->createRawSprite();
-  new_sprite->loadTexture("data/UI/" + filepath);
-
-  return new_sprite;
+  menu_sprites.emplace_back("data/UI/" + filepath);
 }
 
 /* Set vertical spacing between menu text items */
 void Menu::setMenuTextSpacing(float offset)
 {
-  y_offset = offset * GameResolution::scale;
+  y_offset = offset;
   realignMenuTextItems();
 }
 
 /* Set the offset to the left of the screen */
 void Menu::setLeftMargin(float offset)
 {
-  x_offset = offset * GameResolution::scale;
+  x_offset = offset;
 }
 
 /* Set text active colour */
@@ -108,9 +102,9 @@ bool Menu::itemWasSelected(KeyHandler& user_input)
 void Menu::render()
 {
   // Render sprites
-  for (ASGE::Sprite* item_sprite : menu_sprites)
+  for (ScaledSprite& item_sprite : menu_sprites)
   {
-    renderer->renderSprite(*item_sprite);
+    renderer->renderSprite(*item_sprite.getSprite());
   }
 
   // Render text

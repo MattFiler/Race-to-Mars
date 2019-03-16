@@ -60,7 +60,7 @@ set(HEADER_FILES
         ../src/client/UI/Menu.h
         ../src/client/Board/GameBoard.h
         ../src/client/Board/ShipRoom.h
-)
+        ../src/client/Board/ShipRoom.cpp ../src/client/UI/Cursor.h ../src/client/UI/Cursor.cpp ../src/client/UI/ScaledSprite.cpp ../src/client/UI/ScaledSprite.h)
 
 ## the executable
 add_executable(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES})
@@ -76,6 +76,11 @@ set_target_properties(${PROJECT_NAME}
         ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/build/${CLIENT}/lib"
         LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/build/${CLIENT}/lib"
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/build/${CLIENT}/bin")
+
+## Copy launcher to build directory on Windows
+if (${PLATFORM} MATCHES "win")
+    configure_file("${CMAKE_SOURCE_DIR}/launcher/RTS_Launcher.exe" "${CMAKE_BINARY_DIR}/build/${CLIENT}/bin/Launcher.exe" COPYONLY)
+endif()
 
 ## important build scripts
 include(build/compilation)

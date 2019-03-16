@@ -42,8 +42,6 @@ class Player
   Localisation localiser;
 
   PlayerCounter counter;
-
- private:
   json config;
 };
 

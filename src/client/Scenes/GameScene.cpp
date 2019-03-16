@@ -3,7 +3,10 @@
 #include <gamelib/Packet.h>
 
 /* Initialise the scene */
-void GameScene::init() {}
+void GameScene::init()
+{
+  m_board_menu.addMenuSprite("BOARD/background.jpg");
+}
 
 /* Handles connecting to the server */
 void GameScene::networkConnected() {}
@@ -22,8 +25,7 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
 void GameScene::keyHandler(const ASGE::SharedEventData data)
 {
   keys.registerEvent(static_cast<const ASGE::KeyEvent*>(data.get()));
-
-  if (keys.keyReleased("Activate"))
+  if (keys.keyReleased("Back"))
   {
     debug_text.print("Swapping to menu scene.");
     next_scene = game_global_scenes::MAIN_MENU;
@@ -33,11 +35,15 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
 /* Handles mouse clicks */
 void GameScene::clickHandler(const ASGE::SharedEventData data)
 {
-  auto click = static_cast<const ASGE::ClickEvent*>(data.get());
-  if (m_board.checkForClicks(Vector2(static_cast<float>(click->xpos),
-                                     static_cast<float>(click->ypos))))
+  // auto click = static_cast<const ASGE::ClickEvent*>(data.get());
+
+  Vector2 mouse_pos = Vector2(Locator::getCursor()->getPosition().x,
+                              Locator::getCursor()->getPosition().y);
+  if (m_board.isHoveringOverInteractable(mouse_pos))
   {
-    debug_text.print("CLICK WAS IN A ROOM");
+    ShipRoom this_room = m_board.getClickedInteractable(mouse_pos);
+    debug_text.print("Clicked on an interactable part of the board!");
+    debug_text.print("CLICKED: " + this_room.getName());
   }
 }
 
@@ -50,12 +56,15 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
   // need to lock mutex and push back packet to network client to be able to
   // push to server.
   Locator::getClient()->getPacketQueue()->push(packet);
+  Locator::getCursor()->setCursorActive(m_board.isHoveringOverInteractable(
+    Vector2(Locator::getCursor()->getPosition().x,
+            Locator::getCursor()->getPosition().y)));
   return next_scene;
 }
 
 /* Render function */
 void GameScene::render()
 {
+  m_board_menu.render();
   m_board.render();
-  renderer->renderText("GameScene", 100, 100);
 }

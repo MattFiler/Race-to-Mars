@@ -3,6 +3,7 @@
 /* Initialise the scene */
 void MenuScene::init()
 {
+  main_menu.addMenuSprite("MAIN_MENU/background.jpg");
   main_menu.addMenuItem("MENU_NEWGAME");
   main_menu.addMenuItem("MENU_QUIT");
 }
