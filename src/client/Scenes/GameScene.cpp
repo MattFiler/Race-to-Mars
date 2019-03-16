@@ -75,7 +75,7 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
   {
     Packet packet;
     packet << test;
-    Locator::getClient()->getPacketQueue()->push(std::move(packet));
+    Locator::getClient()->getPacketQueue()->push(packet);
     test_val = false;
   }
 
