@@ -22,6 +22,9 @@ class GameScene : public Scene
   game_global_scenes update(const ASGE::GameTime& game_time) override;
   void render() override;
 
+  int test_int2 = 1;
+  bool test_val = false;
+
  private:
   GameBoard m_board;
   Menu m_board_menu;

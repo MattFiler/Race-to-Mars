@@ -79,7 +79,9 @@ void RaceToSpaceServer::run()
   // while data is received do...
   auto on_data =
     ([&](server_client& client, const enet_uint8* data, size_t data_size) {
-      Packet packet_data(reinterpret_cast<const char*>(data));
+      int test_value;
+      Packet packet_data(data, data_size);
+      packet_data >> test_value;
 
       std::cout << "forwarding msg to all clients\n";
       network_server.send_packet_to_all_if(

@@ -12,7 +12,6 @@ class ChatMsg
 {
  public:
   ChatMsg(std::string user, std::string msg, time_t time = std::time(nullptr));
-
   ChatMsg(const char* data);
 
   ~ChatMsg() = default;
