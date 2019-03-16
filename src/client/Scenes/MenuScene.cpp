@@ -20,8 +20,8 @@ void MenuScene::networkDataReceived(const enet_uint8* data, size_t data_size) {}
 /* Handles key inputs */
 void MenuScene::keyHandler(const ASGE::SharedEventData data)
 {
+  // temp
   auto event = static_cast<const ASGE::KeyEvent*>(data.get());
-
   if (event->action == ASGE::KEYS::KEY_PRESSED)
   {
     if (event->key == ASGE::KEYS::KEY_BACKSPACE)

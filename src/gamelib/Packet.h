@@ -5,6 +5,7 @@
 #ifndef PROJECT_PACKET_H
 #define PROJECT_PACKET_H
 
+#include "../../cmake-build-debug/_deps/enet-src/include/enet/types.h"
 #include <cstddef>
 #include <vector>
 
@@ -12,15 +13,16 @@ class Packet
 {
  public:
   explicit Packet() = default;
-  explicit Packet(const char* data);
+  // explicit Packet(const char *data, size_t size);
+  Packet(const enet_uint8* data, size_t length);
 
   ~Packet() = default;
 
   std::size_t read_pos = 0;
   std::vector<char> packet_data;
-  int test_int = 0;
 
-  char* data(unsigned int& size) const;
+  char* data();
+  unsigned long long int length();
 
   template<typename T>
   Packet& operator<<(const T& data)
