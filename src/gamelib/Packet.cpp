@@ -10,8 +10,7 @@ Packet::Packet(const char* data) {}
 
 char* Packet::data(unsigned int& size) const
 {
-  // size =
-  char* data = new char[size];
+  size = char* data = new char[size];
 
   // return pkt ready to send to server.
   return data;

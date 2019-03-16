@@ -46,9 +46,10 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
 {
   int test = 300;
   Packet packet(test);
+  packet << test;
   // need to lock mutex and push back packet to network client to be able to
   // push to server.
-
+  Locator::getClient()->getPacketQueue()->push(packet);
   return next_scene;
 }
 

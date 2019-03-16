@@ -3,6 +3,7 @@
 
 #include "../UI/Menu.h"
 #include "Scene.h"
+#include <enet/enet.h>
 
 class MenuScene : public Scene
 {

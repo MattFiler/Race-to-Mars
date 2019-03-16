@@ -22,7 +22,7 @@ class NetworkConnection
   enetpp::client* getClient() { return &client; };
 
   std::mutex* getMutex() { return &pkt_queue_mtx; };
-  std::queue<Packet>* getPacket() { return &pkt_queue; };
+  std::queue<Packet>* getPacketQueue() { return &pkt_queue; };
 
  private:
   RaceToSpace* game = nullptr;
