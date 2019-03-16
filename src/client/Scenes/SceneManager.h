@@ -33,10 +33,7 @@ class SceneManager
   {
     current_scene->clickHandler(data);
   };
-  void update(const ASGE::GameTime& game_time)
-  {
-    setCurrentScene(current_scene->update(game_time));
-  };
+  void update(const ASGE::GameTime& game_time);
   void render() { current_scene->render(); };
 
  private:

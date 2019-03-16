@@ -54,7 +54,7 @@
 	},
 
 	"ISSUECARDS": {
-		"COMMUNICATIONS": [
+		"communications": [
 			{"name": "Dispatch Probe", "description": "The radar intercepts some strange signals, send out a probe to check on it.", "action_points": 15, "sprite_path": "UI/CARD_IMAGES/communications.png"},
 			{"name": "Distress Signal", "description": "You intercept a signal from space. Spend ome time decoding it.", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/communications.png"},
 			{"name": "Earth Transmission", "description": "There's a message from Earth, reply and update them on your progress.", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/communications.png"},
@@ -62,7 +62,7 @@
 			{"name": "Good Communication!", "description": "Discard this card next turn. All players receive an extra roll, keep your highest roll.", "action_points": 0, "sprite_path": "UI/CARD_IMAGES/communications.png"},
 			{"name": "Internal Comms Issue", "description": "The onboard communications are down, fix it immediately!.", "action_points": 10, "sprite_path": "UI/CARD_IMAGES/communications.png"}
 		],
-		"ENGINEER": [
+		"engineer": [
 			{"name": "Air Leak", "description": "A piece of rock has collided with the ship and air is leaking. Patch it up!.", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/engineer.png"},
 			{"name": "Broken Air Filter", "description": "Carbon dioxide is reaching critical level! Replace the air flter.", "action_points": 10, "sprite_path": "UI/CARD_IMAGES/engineer.png"},
 			{"name": "Engine Malfunction", "description": "The engines are going haywire! if this issue isn't solved in two turns, the ship will move back a space.", "action_points": 15, "sprite_path": "UI/CARD_IMAGES/engineer.png"},
@@ -70,7 +70,7 @@
 			{"name": "Item Boost", "description": "All items action points are doubled this turn. Discard this card next turn.", "action_points": 15, "sprite_path": "UI/CARD_IMAGES/engineer.png"},
 			{"name": "Lighting Malfunction", "description": "The lighting system is flickering, fix it.", "action_points": 10, "sprite_path": "UI/CARD_IMAGES/engineer.png"}
 		],
-		"GLOBAL": [
+		"global": [
 			{"name": "Backpack Extended", "description": "All players can carry an extra item from now onwards (5 items max). Discard card a card next go.", "action_points": 0, "sprite_path": "UI/CARD_IMAGES/engineer.png"},
 			{"name": "Broken Air Filter", "description": "Carbon dioxide is reaching critical level! Replace the air flter.", "action_points": 10, "sprite_path": "UI/CARD_IMAGES/engineer.png"},
 			{"name": "Engine Malfunction", "description": "The engines are going haywire! if this issue isn't solved in two turns, the ship will move back a space.", "action_points": 15, "sprite_path": "UI/CARD_IMAGES/engineer.png"},

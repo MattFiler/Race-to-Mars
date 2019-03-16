@@ -80,9 +80,7 @@ void RaceToSpaceServer::run()
   auto on_data =
     ([&](server_client& client, const enet_uint8* data, size_t data_size) {
       Packet packet_data(reinterpret_cast<const char*>(data));
-      std::cout << "client " << std::to_string(client.get_id()) << ": "
-                << msg.getUsername() << "=> " << msg.getMsg();
-      std::cout << std::endl;
+
       std::cout << "forwarding msg to all clients\n";
       network_server.send_packet_to_all_if(
         0,

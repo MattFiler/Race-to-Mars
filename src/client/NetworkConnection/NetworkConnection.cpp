@@ -35,8 +35,8 @@ void NetworkConnection::startListening(RaceToSpace* game_instance)
   std::thread th2(&NetworkConnection::networkMessageDebug, this);
   th2.detach();
 
-  std::thread th3(&NetworkConnection::input, this);
-  th.detach();
+  //  std::thread th3(&RaceToSpace::input, this);
+  //  th.detach();
 }
 
 // Our network connection loop
@@ -50,18 +50,21 @@ void NetworkConnection::networkLoop()
                           std::bind(&RaceToSpace::disconnection, game),
                           std::bind(&RaceToSpace::data, game, _1, _2));
 
-    while (msg_queue.size())
+    while (!pkt_queue.empty())
     {
-      std::lock_guard<std::mutex> lock(msg_queue_mtx);
-      const auto& msg = msg_queue.front();
+      // lock thread
+      std::lock_guard<std::mutex> lock(pkt_queue_mtx);
+      // take the packet first in line.
+      const auto& pkt = pkt_queue.front();
       assert(sizeof(char) == sizeof(enet_uint8));
-      unsigned int msg_length = 0;
-      auto msg_data = msg.data(msg_length);
-      msg_queue.pop();
+      unsigned int pkt_length = 0;
+      // prepare packet to be send to server.
+      auto pkt_data = pkt.data(pkt_length);
+      pkt_queue.pop();
       // send packet to server
       client.send_packet(0,
-                         reinterpret_cast<const enet_uint8*>(msg_data),
-                         msg_length,
+                         reinterpret_cast<const enet_uint8*>(pkt_data),
+                         pkt_length,
                          ENET_PACKET_FLAG_RELIABLE);
     }
   }

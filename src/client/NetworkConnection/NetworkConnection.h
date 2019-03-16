@@ -3,6 +3,7 @@
 
 #include <enetpp/client.h>
 #include <gamelib/ChatMsg.h>
+#include <gamelib/Packet.h>
 
 class RaceToSpace;
 
@@ -20,11 +21,15 @@ class NetworkConnection
 
   enetpp::client* getClient() { return &client; };
 
+  std::mutex* getMutex() { return &pkt_queue_mtx; };
+  std::queue<Packet>* getPacket() { return &pkt_queue; };
+
  private:
   RaceToSpace* game = nullptr;
   enetpp::client client;
   std::atomic<bool> exiting = false;
-  std::queue<ChatMsg> msg_queue;
+  std::queue<Packet> pkt_queue;
+  std::mutex pkt_queue_mtx;
   std::queue<std::string> msg_queue_debug;
   std::mutex msg_queue_mtx;
   std::mutex msg_queue_debug_mtx;
