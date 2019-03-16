@@ -32,7 +32,7 @@ void Cursor::updatePosition(double x_pos, double y_pos)
                     static_cast<float>(y_pos) / GameResolution::scale);
   if (is_active)
   {
-    cursor_sprite_active->xPos(static_cast<float>(x_pos) /
+    cursor_sprite_active->xPos(static_cast<float>(x_pos - 7) /
                                GameResolution::scale);
     cursor_sprite_active->yPos(static_cast<float>(y_pos) /
                                GameResolution::scale);
