@@ -5,52 +5,59 @@ set(GAMEDATA_FOLDER "data/client")
 ## add the files to be compiled here
 set(SOURCE_FILES
         "client/main.cpp"
-        "client/game.cpp")
-
-set(HEADER_FILES
+        "client/game.cpp"
         "client/game.h"
-        ../src/client/Cards/Card.h
+
         ../src/client/Cards/Card.cpp
         ../src/client/Cards/ObjectiveCard.cpp
-        ../src/client/Cards/ObjectiveCard.h
         ../src/client/Cards/ItemCard.cpp
-        ../src/client/Cards/ItemCard.h
         ../src/client/Cards/IssueCard.cpp
-        ../src/client/Cards/IssueCard.h
-        ../src/client/Core/ServiceLocator.h
         ../src/client/Players/Player.cpp
-        ../src/client/Players/Player.h
         ../src/client/Players/MedicPlayer.cpp
-        ../src/client/Players/MedicPlayer.h
         ../src/client/Players/EngineerPlayer.cpp
-        ../src/client/Players/EngineerPlayer.h
         ../src/client/Players/CommunicationsPlayer.cpp
-        ../src/client/Players/CommunicationsPlayer.h
         ../src/client/Players/PilotPlayer.cpp
-        ../src/client/Players/PilotPlayer.h
-        ../src/client/UI/OnBoardObject.h
         ../src/client/UI/OnBoardObject.cpp
         ../src/client/Board/PlayerCounter.cpp
-        ../src/client/Board/PlayerCounter.h
         ../src/client/Core/ServiceLocator.cpp
         ../src/client/Scenes/SceneManager.cpp
+        ../src/client/Scenes/GameScene.cpp
+        ../src/client/Scenes/MenuScene.cpp
+        ../src/client/KeyHandler/KeyHandler.cpp
+        ../src/client/NetworkConnection/NetworkConnection.cpp
+        ../src/client/Cards/Deck.cpp
+        ../src/client/Board/Ship.cpp
+        ../src/client/UI/Menu.cpp
+        ../src/client/Board/GameBoard.cpp
+        ../src/client/Board/ShipRoom.cpp
+
+        )
+
+set(HEADER_FILES
+        ../src/client/Cards/Card.h
+        ../src/client/Cards/ObjectiveCard.h
+        ../src/client/Cards/ItemCard.h
+        ../src/client/Cards/IssueCard.h
+        ../src/client/Core/ServiceLocator.h
+        ../src/client/Players/Player.h
+        ../src/client/Players/MedicPlayer.h
+        ../src/client/Players/EngineerPlayer.h
+        ../src/client/Players/CommunicationsPlayer.h
+        ../src/client/Players/PilotPlayer.h
+        ../src/client/UI/OnBoardObject.h
+        ../src/client/Board/PlayerCounter.h
         ../src/client/Scenes/SceneManager.h
         ../src/client/Scenes/Scene.h
-        ../src/client/Scenes/GameScene.cpp
         ../src/client/Scenes/GameScene.h
-        ../src/client/Scenes/MenuScene.cpp
         ../src/client/Scenes/MenuScene.h
-        ../src/client/KeyHandler/KeyHandler.cpp
         ../src/client/KeyHandler/KeyHandler.h
         ../src/client/Players/AllPlayers.h
         ../src/client/NetworkedData/PlayerData.h
-        ../src/client/NetworkConnection/NetworkConnection.cpp
         ../src/client/NetworkConnection/NetworkConnection.h
-        ../src/client/Board/Ship.cpp
+        ../src/client/Cards/Deck.h
+        ../src/client/NetworkConnection/NetworkConnection.h
         ../src/client/Board/Ship.h
-        ../src/client/UI/Menu.cpp
         ../src/client/UI/Menu.h
-        ../src/client/Board/GameBoard.cpp
         ../src/client/Board/GameBoard.h
         ../src/client/Board/ShipRoom.h
         ../src/client/Board/ShipRoom.cpp ../src/client/UI/Cursor.h ../src/client/UI/Cursor.cpp ../src/client/UI/ScaledSprite.cpp ../src/client/UI/ScaledSprite.h)

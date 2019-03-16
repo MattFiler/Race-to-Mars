@@ -36,3 +36,8 @@ void SceneManager::setCurrentScene(game_global_scenes new_scene)
   }
   current_scene->init();
 }
+
+void SceneManager::update(const ASGE::GameTime& game_time)
+{
+  setCurrentScene(current_scene->update(game_time));
+}

@@ -1,5 +1,6 @@
 #include "NetworkConnection.h"
 #include "../game.h"
+#include <Engine/Renderer.h>
 #include <iostream>
 
 NetworkConnection::~NetworkConnection()
@@ -12,6 +13,9 @@ NetworkConnection::~NetworkConnection()
 void NetworkConnection::connectToServer(const std::string& hostname,
                                         enet_uint16 port)
 {
+  //  std::cout << "Welcome to Race to Space! \n Please enter your Name: ";
+  //  std::getline(std::cin, username);
+
   enetpp::global_state::get().initialize();
   client.connect(enetpp::client_connect_params()
                    .set_channel_count(1)
@@ -30,6 +34,9 @@ void NetworkConnection::startListening(RaceToSpace* game_instance)
   // Enable debug input to test comms from client to server (& other clients)
   std::thread th2(&NetworkConnection::networkMessageDebug, this);
   th2.detach();
+
+  //  std::thread th3(&RaceToSpace::input, this);
+  //  th.detach();
 }
 
 // Our network connection loop
@@ -43,19 +50,24 @@ void NetworkConnection::networkLoop()
                           std::bind(&RaceToSpace::disconnection, game),
                           std::bind(&RaceToSpace::data, game, _1, _2));
 
-    while (msg_queue.size())
+    while (!pkt_queue.empty())
     {
-      std::lock_guard<std::mutex> lock(msg_queue_mtx);
-      const auto& txt = msg_queue.front();
+      // lock thread
+      std::lock_guard<std::mutex> lock(pkt_queue_mtx);
+      // take the packet first in line.
+      const auto& pkt = pkt_queue.front();
       assert(sizeof(char) == sizeof(enet_uint8));
+      unsigned int pkt_length = 0;
+      // prepare packet to be send to server.
+      auto pkt_data = pkt.data(pkt_length);
+      // send packet to server.
       client.send_packet(0,
-                         reinterpret_cast<const enet_uint8*>(txt.data()),
-                         txt.length(),
+                         reinterpret_cast<const enet_uint8*>(pkt_data),
+                         pkt_length,
                          ENET_PACKET_FLAG_RELIABLE);
-      msg_queue.pop();
+      pkt_queue.pop();
     }
   }
-
   exiting = true;
 }
 
@@ -68,7 +80,21 @@ void NetworkConnection::networkMessageDebug()
     std::string txt;
     std::getline(std::cin, txt);
 
-    std::lock_guard<std::mutex> lock(msg_queue_mtx);
-    msg_queue.push(std::move(txt));
+    std::lock_guard<std::mutex> lock(msg_queue_debug_mtx);
+    msg_queue_debug.push(std::move(txt));
   }
+}
+
+void NetworkConnection::input()
+{
+  //  while (!exiting)
+  //  {
+  //    std::string txt;
+  //    std::getline(std::cin, txt);
+  //    std::time_t result = std::time(nullptr);
+  //    std::string time_stamp = std::asctime(std::localtime(&result));
+  //    ChatMsg msg(username, txt, result);
+  //    std::lock_guard<std::mutex> lock(msg_queue_mtx);
+  //    msg_queue.push(std::move(msg));
+  //  }
 }

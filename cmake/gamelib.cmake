@@ -2,6 +2,12 @@ project(GameLib)
 
 ## shared library for the game
 add_library(GameLib STATIC gamelib/gamelib.cpp
+            ../src/gamelib/Constants.h
+            ../src/gamelib/NetworkedData/Cards.h
+            ../src/gamelib/NetworkedData/Players.h
+            ../src/gamelib/NetworkedData/Rooms.h
+        ../src/gamelib/ChatMsg.cpp
+        ../src/gamelib/ChatMsg.h
         ../src/gamelib/Constants.h
         ../src/gamelib/NetworkedData/Cards.h
         ../src/gamelib/NetworkedData/Players.h
@@ -14,7 +20,9 @@ add_library(GameLib STATIC gamelib/gamelib.cpp
         ../src/gamelib/Localisation/Localisation.cpp
         ../src/gamelib/Localisation/Localisation.h
         ../src/gamelib/Math/Vector2.h
-        ../src/gamelib/Math/BoundingBox.h )
+        ../src/gamelib/Math/BoundingBox.h
+        ../src/gamelib/Packet.cpp
+        ../src/gamelib/Packet.h)
 
 ## compile language settings
 target_compile_features(GameLib PUBLIC cxx_std_17)

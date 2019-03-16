@@ -13,6 +13,8 @@
 
 class IssueCard : public Card
 {
+ public:
+ private:
 };
 
 #endif // PROJECT_ISSUECARD_H
