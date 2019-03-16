@@ -4,14 +4,16 @@
 
 #include "Packet.h"
 
-Packet::Packet(int _test) {}
-
 Packet::Packet(const char* data) {}
 
 char* Packet::data(unsigned int& size) const
 {
-  size = char* data = new char[size];
+  // assign size ref to the current packet_data size
+  size = static_cast<unsigned int>(packet_data.size());
 
-  // return pkt ready to send to server.
+  // Create vector of char to store data in using size of packet_data.
+  char* data = new char[size];
+
+  // return pkt data ready to send to to client
   return data;
 }

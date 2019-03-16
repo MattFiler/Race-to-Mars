@@ -11,7 +11,7 @@
 class Packet
 {
  public:
-  explicit Packet(int _test);
+  explicit Packet() = default;
   explicit Packet(const char* data);
 
   ~Packet() = default;

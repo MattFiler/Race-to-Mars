@@ -60,12 +60,12 @@ void NetworkConnection::networkLoop()
       unsigned int pkt_length = 0;
       // prepare packet to be send to server.
       auto pkt_data = pkt.data(pkt_length);
-      pkt_queue.pop();
-      // send packet to server
+      // send packet to server.
       client.send_packet(0,
                          reinterpret_cast<const enet_uint8*>(pkt_data),
                          pkt_length,
                          ENET_PACKET_FLAG_RELIABLE);
+      pkt_queue.pop();
     }
   }
   exiting = true;

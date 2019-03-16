@@ -50,12 +50,13 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
 /* Update function */
 game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
 {
-  int test = 300;
-  Packet packet(test);
+  int test = 1;
+  Packet packet;
   packet << test;
-  // need to lock mutex and push back packet to network client to be able to
+  // need to lock mutex and push packet to queue o network can
   // push to server.
   Locator::getClient()->getPacketQueue()->push(packet);
+
   Locator::getCursor()->setCursorActive(m_board.isHoveringOverInteractable(
     Vector2(Locator::getCursor()->getPosition().x,
             Locator::getCursor()->getPosition().y)));
