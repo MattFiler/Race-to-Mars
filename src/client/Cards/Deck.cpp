@@ -41,6 +41,6 @@ void Deck::shuffleDecks()
 {
   // shuffle all decks here.
   std::random_device rd;
-  std::mt19937 g(rd());
-  std::shuffle(itm_card_deck.begin(), itm_card_deck.end(), g);
+  std::mt19937 gen(rd());
+  std::shuffle(itm_card_deck.begin(), itm_card_deck.end(), gen);
 }
