@@ -1,4 +1,5 @@
 #include "GameScene.h"
+#include "gamelib/NetworkedData/MessageTypes.h"
 #include <client/game.h>
 #include <gamelib/Packet.h>
 
@@ -21,11 +22,15 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
   Packet data_packet(data, data_size);
   // handle packet here | decide what data was passed in and call the correct
   // function[s] etc...
-  int test_val4;
-  data_packet >> test_val4;
-  if (test_val4 == 5)
+  // int test_val4;
+  // data_packet >> test_val4;
+
+  packet_type chat_msg = packet_type::PACKET_DEFAULT;
+  data_packet >> chat_msg;
+
+  if (chat_msg == packet_type::PACKET_MSG)
   {
-    test_int2 += test_val4;
+    ++test_int2;
   }
 }
 
@@ -70,11 +75,11 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
 /* Update function */
 game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
 {
-  int test = 5;
   if (test_val)
   {
+    packet_type chat_msg = packet_type::PACKET_MSG;
     Packet packet;
-    packet << test;
+    packet << chat_msg;
     Locator::getClient()->getPacketQueue()->push(packet);
     test_val = false;
   }
