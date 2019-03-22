@@ -3,6 +3,7 @@
 
 #include "Scene.h"
 #include "client/Board/GameBoard.h"
+#include "client/Cards/Deck.h"
 #include "client/UI/Cursor.h"
 
 class GameScene : public Scene
@@ -28,6 +29,7 @@ class GameScene : public Scene
  private:
   GameBoard m_board;
   Menu m_board_menu;
+  Deck m_deck;
 };
 
 #endif // PROJECT_GAMESCENE_H

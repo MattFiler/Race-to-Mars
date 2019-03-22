@@ -33,7 +33,7 @@ class Deck
   std::vector<IssueCard> iss_card_deck;
   std::vector<ObjectiveCard> obj_card_deck;
   FileHandler file_handler;
-  json config;
+  json card_config;
 };
 
 #endif // PROJECT_DECK_H

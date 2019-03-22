@@ -48,18 +48,20 @@ void Deck::shuffleDecks()
   std::shuffle(obj_card_deck.begin(), obj_card_deck.end(), gen);
 }
 
+// https://stackoverflow.com/questions/11197818/how-do-i-make-a-json-object-with-multiple-arrays
 void Deck::initDecks()
 {
   // Load in all decks here.
-  config = file_handler.openAsJSON("CONFIGS/cards.json");
+  card_config = file_handler.openAsJSON("CONFIGS/cards.json");
 
   // load item cards
   retargetConfig("ITEMCARDS");
-  for (size_t i = 0; i < config["communications"].size(); ++i)
+  for (const auto& category : *card_config["communications"].begin())
   {
-    ItemCard temp_card;
-    temp_card.setItemName(config["communications"]["name"]);
-    temp_card.setActionPoints(config["communications"])
+    ItemCard temp_item;
+    temp_item.setItemName(category["name"]);
+    temp_item.setActionPoints(category["action_points"]);
+    temp_item.setSpritePath("sprite_path");
   }
 
   // Load issue Cards
@@ -69,5 +71,5 @@ void Deck::initDecks()
 
 void Deck::retargetConfig(const std::string& name)
 {
-  config = file_handler.loadConfigFromExisting(config, name);
+  card_config = file_handler.loadConfigFromExisting(card_config, name);
 }
