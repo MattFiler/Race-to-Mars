@@ -1,14 +1,8 @@
-//
-// Created by jackk on 15/03/2019.
-//
-
 #ifndef PROJECT_PACKET_H
 #define PROJECT_PACKET_H
 
-#include "../../cmake-build-debug/_deps/enet-src/include/enet/types.h"
 #include <cstddef>
-#include <cstring>
-#include <string.h>
+#include <enet/types.h>
 #include <vector>
 
 class Packet

@@ -21,7 +21,12 @@ class NetworkConnection
                 int _content_2 = 0,
                 int _content_3 = 0,
                 int _content_4 = 0,
-                int _content_5 = 0);
+                int _content_5 = 0,
+                int _content_6 = 0,
+                int _content_7 = 0,
+                int _content_8 = 0,
+                int _content_9 = 0,
+                int _content_10 = 0);
 
   enetpp::client* getClient() { return &client; };
 

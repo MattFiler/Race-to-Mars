@@ -16,9 +16,8 @@ void LobbyScene::init()
 {
   main_menu.addMenuSprite("MAIN_MENU/background.jpg");
 
-  // Request to connect to a lobby
-  Locator::getClient()->sendData(data_roles::PLAYER_REQUESTS_LOBBY_CONNECTION,
-                                 0);
+  // Request lobby info
+  Locator::getClient()->sendData(data_roles::CLIENT_REQUESTS_LOBBY_INFO, 0);
 }
 
 /* Handles connecting to the server */
@@ -38,91 +37,34 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
   // Handle all relevant data packets for this scene
   switch (received_data.role)
   {
-    case data_roles::PLAYER_REQUESTS_LOBBY_CONNECTION:
-    {
-      int connection_count = 0;
-      for (int i = 0; i < 4; i++)
-      {
-        if (players[i].has_connected)
-        {
-          connection_count++;
-        }
-      }
-      Locator::getClient()->sendData(
-        data_roles::PLAYER_LOBBY_REQUEST_ACCEPTED,
-        connection_count,
-        static_cast<int>(players[0].current_class),
-        static_cast<int>(players[1].current_class),
-        static_cast<int>(players[2].current_class),
-        static_cast<int>(players[3].current_class));
-      break;
-    }
-    case data_roles::PLAYER_LOBBY_REQUEST_ACCEPTED:
+    case data_roles::SERVER_GIVES_LOBBY_INFO:
     {
       if (!has_connected)
       {
-        // Fill in data we already know about clients in this lobby
+        // Fill out our known local player data from the server
         for (int i = 0; i < 4; i++)
         {
-          if (received_data.content[i + 1] != -1)
-          {
-            players[i].current_class =
-              static_cast<player_classes>(received_data.content[i + 1]);
-            players[i].has_connected = true;
-          }
+          players[i].current_class =
+            static_cast<player_classes>(received_data.content[i + 1]);
+          players[i].is_ready =
+            static_cast<player_classes>(received_data.content[i + 5]);
         }
+        my_player_index = received_data.content[9];
 
-        // Find an empty slot for us to enter
-        for (int i = 0; i < 4; i++)
-        {
-          if (!players[i].has_connected)
-          {
-            my_player_index = i;
-            debug_text.print("YOUR PLAYER SLOT IS " +
-                             std::to_string(my_player_index));
-            break;
-          }
-        }
-        if (my_player_index == -1)
-        {
-          // The lobby was full - ideally we'll handle this a little nicer than
-          // throwing an exception!
-          throw std::runtime_error("LOBBY IS FULL");
-        }
-
-        // Find us a class
-        bool full_up_classes[4] = { false, false, false, false };
-        for (int i = 0; i < 4; i++)
-        {
-          if (players[i].has_connected)
-          {
-            full_up_classes[static_cast<int>(players[i].current_class)] = true;
-          }
-        }
-        for (int i = 0; i < 4; i++)
-        {
-          if (!full_up_classes[i])
-          {
-            players[my_player_index].current_class =
-              static_cast<player_classes>(i);
-            break;
-          }
-        }
-
-        debug_text.print(
-          "YOU ARE CLASS " +
-          std::to_string(players[my_player_index].current_class));
-
-        // Notify all clients in the lobby that we've connected
-        Locator::getClient()->sendData(
-          data_roles::PLAYER_CONNECTED_TO_LOBBY,
-          static_cast<int>(players[my_player_index].current_class));
-
-        // Update all class sprites (test)
+        // Update all sprites and descriptions (wip)
         for (int i = 0; i < 4; i++)
         {
           TEST_updatePlayerIcon(i);
         }
+        debug_text.print("THIS CLIENT IS: " +
+                         players[my_player_index].player_class_text);
+
+        // Notify all clients in the lobby that we've connected
+        Locator::getClient()->sendData(data_roles::PLAYER_CONNECTED_TO_LOBBY,
+                                       my_player_index,
+                                       players[my_player_index].is_ready,
+                                       players[my_player_index].current_class);
+        debug_text.print("We synced to the lobby!");
 
         has_connected = true;
       }
@@ -130,22 +72,16 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     }
     case data_roles::PLAYER_CONNECTED_TO_LOBBY:
     {
-      for (int i = 0; i < 4; i++)
+      // A player that's not us connected to the lobby, update our info
+      if (received_data.content[0] != my_player_index)
       {
-        if (!players[i].has_connected)
-        {
-          players[i].has_connected = true;
-          players[i].current_class =
-            static_cast<player_classes>(received_data.content[0]);
-          TEST_updatePlayerIcon(i);
-
-          debug_text.print("THEY ARE CLASS " +
-                           std::to_string(players[i].current_class));
-          break;
-        }
+        players[received_data.content[0]].is_ready =
+          static_cast<bool>(received_data.content[1]);
+        players[received_data.content[0]].current_class =
+          static_cast<player_classes>(received_data.content[2]);
       }
 
-      // Update all class sprites (test)
+      // Update all sprites and descriptions (wip)
       for (int i = 0; i < 4; i++)
       {
         TEST_updatePlayerIcon(i);
@@ -156,18 +92,10 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     }
     case data_roles::PLAYER_DISCONNECTED_FROM_LOBBY:
     {
-      for (int i = 0; i < 4; i++)
-      {
-        if (static_cast<int>(players[i].current_class) ==
-            received_data.content[0])
-        {
-          players[i].performDisconnect();
-          TEST_updatePlayerIcon(i);
-          break;
-        }
-      }
+      // Forget them!
+      players[received_data.content[0]].performDisconnect();
 
-      // Update all class sprites (test)
+      // Update all sprites and descriptions (wip)
       for (int i = 0; i < 4; i++)
       {
         TEST_updatePlayerIcon(i);
@@ -178,15 +106,9 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     }
     case data_roles::PLAYER_CHANGED_LOBBY_READY_STATE:
     {
-      for (int i = 0; i < 4; i++)
-      {
-        if (static_cast<int>(players[i].current_class) ==
-            received_data.content[1])
-        {
-          players[i].is_ready = static_cast<bool>(received_data.content[0]);
-          break;
-        }
-      }
+      // Player is now ready/unready when they weren't before
+      players[received_data.content[1]].is_ready =
+        static_cast<bool>(received_data.content[0]);
       debug_text.print("A player changed their ready state!");
       break;
     }
@@ -247,7 +169,7 @@ void LobbyScene::render()
   main_menu.render();
   for (int i = 0; i < 4; i++)
   {
-    renderer->renderSprite(*players[i].player_class_sprite->getSprite());
+    // renderer->renderSprite(*players[i].player_class_sprite->getSprite());
     renderer->renderText(
       players[i].player_class_text, 100 + (100 * i), 530, 0.5);
     renderer->renderText(
@@ -292,7 +214,7 @@ void LobbyScene::TEST_updatePlayerIcon(int player_index)
     }
     default:
     {
-      sprite_path = "data/icon.jpg";
+      sprite_path = "data/UI/PLAYER_COUNTERS/placeholder.png";
       player_text = "EMPTY";
     }
   }

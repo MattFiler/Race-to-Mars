@@ -25,6 +25,10 @@ add_library(GameLib STATIC gamelib/gamelib.cpp
 ## compile language settings
 target_compile_features(GameLib PUBLIC cxx_std_17)
 
+## add enet to gamelib
+add_dependencies(${PROJECT_NAME} enetpp)
+target_link_libraries(${PROJECT_NAME} enetpp)
+
 ## these are the build directories
 get_target_property(GAMELIB GameLib NAME)
 set_target_properties(GameLib

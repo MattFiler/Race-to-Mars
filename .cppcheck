@@ -3,10 +3,3 @@ unusedFunction
 
 // suppress the annoying system include messages
 missingIncludeSystem
-
-// ignore the Libs folder please
-*:Libs/*
-*:libs/*
-*:External/*
-*:external/*
-*:external/asge/include/Engine/
