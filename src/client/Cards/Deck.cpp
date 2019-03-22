@@ -52,21 +52,140 @@ void Deck::shuffleDecks()
 void Deck::initDecks()
 {
   // Load in all decks here.
-  //  card_config = file_handler.openAsJSON("CONFIGS/cards.json");
-  //
-  //  // load item cards
-  //  retargetConfig("ITEMCARDS");
-  //  for (const auto& category : *card_config["communications"].begin())
-  //  {
-  //    ItemCard temp_item;
-  //    temp_item.setItemName(category["name"]);
-  //    temp_item.setActionPoints(category["action_points"]);
-  //    temp_item.setSpritePath("sprite_path");
-  //  }
+  card_config = file_handler.openAsJSON("CONFIGS/cards.json");
 
-  // Load issue Cards
+  // load item cards
+  for (size_t i = 0; i < 10; ++i)
+  {
+    ItemCard temp_card;
+    temp_card.setCardName(card_config["ITEMCARDS"]["communications"][i]["nam"
+                                                                        "e"]);
+    temp_card.setActionPoints(
+      card_config["ITEMCARDS"]["communications"][i]["action_points"]);
+    temp_card.setSpritePath(card_config["ITEMCARDS"]["communications"][i]["spri"
+                                                                          "te_"
+                                                                          "pat"
+                                                                          "h"]);
+    this->itm_card_deck.push_back(temp_card);
+  }
+
+  for (size_t i = 0; i < 10; ++i)
+  {
+    ItemCard temp_card;
+    temp_card.setCardName(card_config["ITEMCARDS"]["engineer"][i]["name"]);
+    temp_card.setActionPoints(card_config["ITEMCARDS"]["engineer"][i]["action_"
+                                                                      "point"
+                                                                      "s"]);
+    temp_card.setSpritePath(card_config["ITEMCARDS"]["engineer"][i]["sprite_"
+                                                                    "path"]);
+    this->itm_card_deck.push_back(temp_card);
+  }
+
+  for (size_t i = 0; i < 10; ++i)
+  {
+    ItemCard temp_card;
+    temp_card.setCardName(card_config["ITEMCARDS"]["medic"][i]["name"]);
+    temp_card.setActionPoints(card_config["ITEMCARDS"]["medic"][i]["action_"
+                                                                   "points"]);
+    temp_card.setSpritePath(card_config["ITEMCARDS"]["medic"][i]["sprite_"
+                                                                 "path"]);
+    this->itm_card_deck.push_back(temp_card);
+  }
+
+  for (size_t i = 0; i < 10; ++i)
+  {
+    ItemCard temp_card;
+    temp_card.setCardName(card_config["ITEMCARDS"]["pilot"][i]["name"]);
+    temp_card.setActionPoints(card_config["ITEMCARDS"]["pilot"][i]["action_"
+                                                                   "points"]);
+    temp_card.setSpritePath(card_config["ITEMCARDS"]["pilot"][i]["sprite_"
+                                                                 "path"]);
+    this->itm_card_deck.push_back(temp_card);
+  }
+
+  // Load Issue Cards
+  for (size_t i = 0; i < 6; ++i)
+  {
+    IssueCard temp_card;
+    temp_card.setCardName(card_config["ISSUECARDS"]["communications"][i]["nam"
+                                                                         "e"]);
+    temp_card.setCardDescription(
+      card_config["ISSUECARDS"]["communications"][i]["description"]);
+    temp_card.setActionPoints(
+      card_config["ISSUECARDS"]["communications"][i]["action_points"]);
+    temp_card.setSpritePath(
+      card_config["ISSUECARDS"]["communications"][i]["sprite_path"]);
+    this->iss_card_deck.push_back(temp_card);
+  }
+
+  for (size_t i = 0; i < 6; ++i)
+  {
+    IssueCard temp_card;
+    temp_card.setCardName(card_config["ITEMCARDS"]["engineer"][i]["name"]);
+    temp_card.setCardDescription(card_config["ISSUECARDS"]["engineer"][i]["desc"
+                                                                          "ript"
+                                                                          "io"
+                                                                          "n"]);
+    temp_card.setActionPoints(card_config["ITEMCARDS"]["engineer"][i]["action_"
+                                                                      "point"
+                                                                      "s"]);
+    temp_card.setSpritePath(card_config["ITEMCARDS"]["engineer"][i]["sprite_"
+                                                                    "path"]);
+    this->iss_card_deck.push_back(temp_card);
+  }
+
+  for (size_t i = 0; i < 6; ++i)
+  {
+    IssueCard temp_card;
+    temp_card.setCardName(card_config["ISSUECARDS"]["global"][i]["name"]);
+    temp_card.setCardDescription(card_config["ISSUECARDS"]["global"][i]["descri"
+                                                                        "ptio"
+                                                                        "n"]);
+    temp_card.setActionPoints(card_config["ISSUECARDS"]["global"][i]["action_"
+                                                                     "points"]);
+    temp_card.setSpritePath(card_config["ISSUECARDS"]["global"][i]["sprite_"
+                                                                   "path"]);
+    this->iss_card_deck.push_back(temp_card);
+  }
+
+  for (size_t i = 0; i < 6; ++i)
+  {
+    IssueCard temp_card;
+    temp_card.setCardName(card_config["ISSUECARDS"]["medic"][i]["name"]);
+    temp_card.setCardDescription(card_config["ISSUECARDS"]["medic"][i]["descrip"
+                                                                       "tion"]);
+    temp_card.setActionPoints(card_config["ISSUECARDS"]["medic"][i]["action_"
+                                                                    "points"]);
+    temp_card.setSpritePath(card_config["ISSUECARDS"]["medic"][i]["sprite_"
+                                                                  "path"]);
+    this->iss_card_deck.push_back(temp_card);
+  }
+
+  for (size_t i = 0; i < 6; ++i)
+  {
+    IssueCard temp_card;
+    temp_card.setCardName(card_config["ISSUECARDS"]["pilot"][i]["name"]);
+    temp_card.setCardDescription(card_config["ISSUECARDS"]["pilot"][i]["descrip"
+                                                                       "tion"]);
+    temp_card.setActionPoints(card_config["ISSUECARDS"]["pilot"][i]["action_"
+                                                                    "points"]);
+    temp_card.setSpritePath(card_config["ISSUECARDS"]["pilot"][i]["sprite_"
+                                                                  "path"]);
+    this->iss_card_deck.push_back(temp_card);
+  }
 
   // Load Objective Cards
+  for (size_t i = 0; i < 26; ++i)
+  {
+    IssueCard temp_card;
+    temp_card.setCardName(card_config["OBJECTIVECARDS"]["cards"][i]["name"]);
+    temp_card.setCardDescription(
+      card_config["OBJECTIVECARDS"]["cards"][i]["description"]);
+    temp_card.setAbilityText(card_config["OBJECTIVECARDS"]["cards"][i]["abilit"
+                                                                       "y"]);
+    temp_card.setSpritePath(card_config["OBJECTIVECARDS"]["sprite_path"]);
+    this->iss_card_deck.push_back(temp_card);
+  }
 }
 
 void Deck::retargetConfig(const std::string& name)

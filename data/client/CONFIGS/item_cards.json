@@ -1,0 +1,54 @@
+{
+    "communications":	
+		[
+            {"name": "Microphone","action_points": 5, "sprite_path": "UI/CARD_IMAGES/communications.png"},
+            {"name": "Microphone", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/communications.png"},
+            {"name": "Radar", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/communications.png"},
+            {"name": "Radar", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/communications.png"},
+            {"name": "Radio", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/communications.png"},
+            {"name": "Radio", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/communications.png"},
+            {"name": "Scout Drone", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/communications.png"},
+            {"name": "Scout Drone", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/communications.png"},
+            {"name": "Upgraded", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/communications.png"},
+            {"name": "Upgraded", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/communications.png"}
+        ],
+    "engineer": 
+        [
+            {"name": "Screwdriver", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/engineer.png"},
+            {"name": "Screwdriver", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/engineer.png"},
+            {"name": "Screws", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/engineer.png"},
+            {"name": "Screws", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/engineer.png"},
+            {"name": "Tool kit", "action_points": 5, "sprite_path":"UI/CARD_IMAGES/engineer.png"},
+            {"name": "Tool kit", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/engineer.png"},
+            {"name": "Welder", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/engineer.png"},
+            {"name": "Welder", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/engineer.png"},
+            {"name": "Welding Goggles", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/engineer.png"},
+            {"name": "Welding Goggles", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/engineer.png"}
+        ],
+    "medic": 
+        [	
+            {"name": "Antibiotics", "action_points": 5,"sprite_path": "UI/CARD_IMAGES/medic.png"},
+            {"name": "Antibiotics", "action_points": 5,"sprite_path": "UI/CARD_IMAGES/medic.png"},
+            {"name": "Band Aid", "action_points": 5,"sprite_path": "UI/CARD_IMAGES/medic.png"},
+            {"name": "Band Aid", "action_points": 5,"sprite_path": "UI/CARD_IMAGES/medic.png"},
+            {"name": "First Aid Kit", "action_points": 5,"sprite_path": "UI/CARD_IMAGES/medic.png"},
+            {"name": "First Aid Kit", "action_points": 5,"sprite_path": "UI/CARD_IMAGES/medic.png"},
+            {"name": "Pain Killers", "action_points": 5,"sprite_path": "UI/CARD_IMAGES/medic.png"},
+            {"name": "Pain Killers", "action_points": 5,"sprite_path": "UI/CARD_IMAGES/medic.png"},
+            {"name": "Pain Killers", "action_points": 5,"sprite_path": "UI/CARD_IMAGES/medic.png"},
+            {"name": "Pain Killers", "action_points": 5,"sprite_path": "UI/CARD_IMAGES/medic.png"}
+        ],
+    "pilot": 
+        [			
+            {"name":  "Map","action_points": 5,"sprite_path": "UI/CARD_IMAGES/pilot.png"},
+            {"name":  "Map", "action_points":5,"sprite_path": "UI/CARD_IMAGES/pilot.png"},
+            {"name":  "New Controls", "action_points":5,"sprite_path": "UI/CARD_IMAGES/pilot.png"},
+            {"name":  "New Controls", "action_points":5,"sprite_path": "UI/CARD_IMAGES/pilot.png"},
+            {"name":  "Radar", "action_points":5,"sprite_path": "UI/CARD_IMAGES/pilot.png"},
+            {"name":  "Radar", "action_points":5,"sprite_path": "UI/CARD_IMAGES/pilot.png"},
+            {"name":  "Thruster Upgrade", "action_points":5,"sprite_path": "UI/CARD_IMAGES/pilot.png"},
+            {"name":  "Thruster Upgrade", "action_points":5,"sprite_path": "UI/CARD_IMAGES/pilot.png"},
+            {"name":  "Window Wash", "action_points":5,"sprite_path": "UI/CARD_IMAGES/pilot.png"},
+            {"name":  "Window Wash", "action_points":5,"sprite_path": "UI/CARD_IMAGES/pilot.png"}
+        ]			
+}

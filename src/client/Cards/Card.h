@@ -19,8 +19,21 @@ class Card
   Card();
   ~Card() = default;
 
+  void setCardName(std::string _item_name);
+  void setActionPoints(int _action_points);
+  void setSpritePath(std::string _sprite_path);
+  void setCardDescription(std::string _description_text);
+  void setAbilityText(std::string _ability_test);
+
  protected:
   ASGE::Renderer* renderer = nullptr;
+
+  std::string m_card_name = "";
+  std::string m_card_decription = "";
+  std::string m_sprite_path = "";
+  std::string m_ability_text = "";
+
+  int m_action_points = 0;
 
  private:
   /* Stuff here */

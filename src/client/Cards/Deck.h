@@ -13,6 +13,7 @@ using json = nlohmann::json;
 class ItemCard;
 class IssueCard;
 class ObjectiveCard;
+class Card;
 
 class Deck
 {
