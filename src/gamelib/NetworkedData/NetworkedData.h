@@ -33,13 +33,7 @@ enum data_roles
   /* ^ This is the default role and should never be sent across the network. */
 
   PLAYER_REQUESTS_LOBBY_CONNECTION,
-  /* ^ A client is trying to connect to our lobby.
-   *   [0] = N/A
-   *   [1] = N/A
-   *   [2] = N/A
-   *   [3] = N/A
-   *   [4] = N/A
-   */
+  /* ^ A client is trying to connect to our lobby. */
 
   PLAYER_LOBBY_REQUEST_ACCEPTED,
   /* ^ The request to connect to a lobby was accepted - load the client.
@@ -48,34 +42,26 @@ enum data_roles
    *   [2] = class of player 2 (-1 means disconnect)
    *   [3] = class of player 3 (-1 means disconnect)
    *   [4] = class of player 4 (-1 means disconnect)
-   *   NEED TO SEND READY UP DATA HERE TOO - MIGHT HAVE TO EXTEND DATA ARRAY
+   *   [5] = player 1 ready (0=no,1=yes)
+   *   [6] = player 2 ready (0=no,1=yes)
+   *   [7] = player 3 ready (0=no,1=yes)
+   *   [8] = player 4 ready (0=no,1=yes)
    */
 
   PLAYER_CONNECTED_TO_LOBBY,
   /* ^ A client has connected to the lobby.
    *   [0] = the player ID
-   *   [1] = N/A
-   *   [2] = N/A
-   *   [3] = N/A
-   *   [4] = N/A
    */
 
   PLAYER_DISCONNECTED_FROM_LOBBY,
   /* ^ A client has disconnected from the lobby.
    *   [0] = the player ID
-   *   [1] = N/A
-   *   [2] = N/A
-   *   [3] = N/A
-   *   [4] = N/A
    */
 
   PLAYER_CHANGED_LOBBY_READY_STATE,
   /* ^ A client has changed their ready state in the lobby.
    *   [0] = the ready state (0=unready, 1=ready)
    *   [1] = the player ID
-   *   [2] = N/A
-   *   [3] = N/A
-   *   [4] = N/A
    */
 
   PLAYER_MOVED_WITHIN_SHIP,
@@ -84,7 +70,6 @@ enum data_roles
    *   [1] = player's previous room index
    *   [2] = player's action points after move
    *   [3] = player's ID
-   *   [4] = N/A
    */
 
   PLAYER_ASSIGNED_ACTION_POINTS,
@@ -100,9 +85,6 @@ enum data_roles
   /* ^ The active player ended their turn.
    *   [0] = the player's ID that just ended their go
    *   [1] = the next player (if back the beginning, ship needs to increment)
-   *   [2] = N/A
-   *   [3] = N/A
-   *   [4] = N/A
    */
 
   PLAYER_DREW_ITEM,
@@ -110,8 +92,6 @@ enum data_roles
    *   [0] = the player's ID that drew the item
    *   [1] = the ID of the item card they acquired
    *   [2] = their remaining action points
-   *   [3] = N/A
-   *   [4] = N/A
    */
 
   NEW_ISSUE_CARD_ADDED,
@@ -127,7 +107,7 @@ enum data_roles
 struct NetworkedData
 {
   data_roles role = data_roles::NO_ROLE;
-  int content[5] = { 0, 0, 0, 0, 0 };
+  int content[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 };
 
 #endif // PROJECT_NETWORKEDDATA_H

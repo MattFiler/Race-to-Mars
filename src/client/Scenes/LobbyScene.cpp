@@ -48,13 +48,16 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
           connection_count++;
         }
       }
-      Locator::getClient()->sendData(
-        data_roles::PLAYER_LOBBY_REQUEST_ACCEPTED,
-        connection_count,
-        static_cast<int>(players[0].current_class),
-        static_cast<int>(players[1].current_class),
-        static_cast<int>(players[2].current_class),
-        static_cast<int>(players[3].current_class));
+      Locator::getClient()->sendData(data_roles::PLAYER_LOBBY_REQUEST_ACCEPTED,
+                                     connection_count,
+                                     static_cast<int>(players[0].current_class),
+                                     static_cast<int>(players[1].current_class),
+                                     static_cast<int>(players[2].current_class),
+                                     static_cast<int>(players[3].current_class),
+                                     static_cast<int>(players[0].is_ready),
+                                     static_cast<int>(players[1].is_ready),
+                                     static_cast<int>(players[2].is_ready),
+                                     static_cast<int>(players[3].is_ready));
       break;
     }
     case data_roles::PLAYER_LOBBY_REQUEST_ACCEPTED:
@@ -68,6 +71,8 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
           {
             players[i].current_class =
               static_cast<player_classes>(received_data.content[i + 1]);
+            players[i].is_ready =
+              static_cast<bool>(received_data.content[i + 5]);
             players[i].has_connected = true;
           }
         }
@@ -287,7 +292,7 @@ void LobbyScene::TEST_updatePlayerIcon(int player_index)
     }
     default:
     {
-      sprite_path = "data/icon.jpg";
+      sprite_path = "data/UI/PLAYER_COUNTERS/placeholder.png";
       player_text = "EMPTY";
     }
   }
@@ -296,7 +301,15 @@ void LobbyScene::TEST_updatePlayerIcon(int player_index)
   players[player_index].player_class_sprite->yPos(450);
   players[player_index].player_class_sprite->xPos(
     static_cast<float>(100 + (100 * player_index)));
-  players[player_index].player_class_sprite->height(50);
-  players[player_index].player_class_sprite->width(50);
+  // players[player_index].player_class_sprite->height(50);
+  // players[player_index].player_class_sprite->width(50);
   players[player_index].player_class_text = player_text;
+
+  players[player_index].player_class_sprite.setSprite("data/UI/BOARD/bounding "
+                                                      "box debug.png");
+  ship_config = file_handler.openAsJSON("CONFIGS/ship_config.json");
+  sprite.setPosition(
+    Vector2(ship_config["default_pos"][0], ship_config["default_pos"][1]));
+  sprite.setDimensions(
+    Vector2(ship_config["render_size"][0], ship_config["render_size"][1]));
 }
