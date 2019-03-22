@@ -23,6 +23,7 @@ class RaceToSpaceServer
   enetpp::server<server_client> network_server;
   unsigned int next_uid = 0;
   DebugText debug_text;
+  int port = 8888;
 };
 
 #endif // PROJECT_SERVER_H
