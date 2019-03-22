@@ -9,7 +9,8 @@
 		  "Back": 256,
 		  "Menu Up": 265,
 		  "Menu Down": 264,
-		  "Debug Test": 80
+		  "Debug Test": 80,
+		  "Ready Up": 88
 		},
 		"language": "English",
 		"server_hostname": "localhost",

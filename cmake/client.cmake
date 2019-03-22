@@ -60,7 +60,7 @@ set(HEADER_FILES
         ../src/client/UI/Menu.h
         ../src/client/Board/GameBoard.h
         ../src/client/Board/ShipRoom.h
-        ../src/client/Board/ShipRoom.cpp ../src/client/UI/Cursor.h ../src/client/UI/Cursor.cpp ../src/client/UI/ScaledSprite.cpp ../src/client/UI/ScaledSprite.h ../src/gamelib/NetworkedData/MessageTypes.h ../src/gamelib/NetworkedData/TestDataStruct.h ../src/gamelib/NetworkedData/NetworkedData.h)
+        ../src/client/Board/ShipRoom.cpp ../src/client/UI/Cursor.h ../src/client/UI/Cursor.cpp ../src/client/UI/ScaledSprite.cpp ../src/client/UI/ScaledSprite.h ../src/gamelib/NetworkedData/MessageTypes.h ../src/gamelib/NetworkedData/NetworkedData.h ../src/client/Players/ClientPlayer.cpp ../src/client/Players/ClientPlayer.h ../src/client/Scenes/LobbyScene.cpp ../src/client/Scenes/LobbyScene.h)
 
 ## the executable
 add_executable(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES})

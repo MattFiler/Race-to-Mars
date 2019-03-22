@@ -22,19 +22,28 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
 {
   // Recreate packet
   Packet data_packet(data, data_size);
+  NetworkedData received_data;
+  data_packet >> received_data;
 
-  NetworkedData test;
-  data_packet >> test;
-
-  if (test.data_role == data_roles::PLAYER_ASSIGNED_ACTION_POINTS)
+  // Handle all relevant data packets for this scene
+  switch (received_data.role)
   {
-    debug_text.print("A player assigned action points!");
-    debug_text.print("Card the points were assigned to: " +
-                     std::to_string(test.data_content[0]));
-    debug_text.print("Number of points assigned: " +
-                     std::to_string(test.data_content[1]));
-    debug_text.print("Was the card completed? (0=no, 1=yes): " +
-                     std::to_string(test.data_content[2]));
+    case data_roles::PLAYER_ASSIGNED_ACTION_POINTS:
+    {
+      debug_text.print("A player assigned action points!");
+      debug_text.print("Card the points were assigned to: " +
+                       std::to_string(received_data.content[0]));
+      debug_text.print("Number of points assigned: " +
+                       std::to_string(received_data.content[1]));
+      debug_text.print("Was the card completed? (0=no, 1=yes): " +
+                       std::to_string(received_data.content[2]));
+      break;
+    }
+    default:
+    {
+      debug_text.print("An unhandled data packet was received");
+      break;
+    }
   }
 }
 
@@ -69,22 +78,6 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
 /* Update function */
 game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
 {
-  /* SEND DATA */
-  if (test_val)
-  {
-    NetworkedData test;
-    test.data_role = data_roles::PLAYER_ASSIGNED_ACTION_POINTS;
-    test.data_content[0] = 1;
-    test.data_content[1] = 10;
-    test.data_content[2] = 0;
-
-    Packet packet;
-    packet << test;
-
-    Locator::getClient()->getPacketQueue()->push(packet);
-    test_val = false;
-  }
-
   Locator::getCursor()->setCursorActive(m_board.isHoveringOverInteractable(
     Vector2(Locator::getCursor()->getPosition().x,
             Locator::getCursor()->getPosition().y)));

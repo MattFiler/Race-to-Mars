@@ -3,6 +3,8 @@
 
 enum issue_cards
 {
+  ISSUE_PLACEHOLDER,
+
   PILOT__ASTEROID_FELD,
   PILOT__NAVIGATION_ERROR,
   PILOT__BLACK_HOLE,
@@ -41,6 +43,8 @@ enum issue_cards
 
 enum objective_cards
 {
+  OBJECTIVE_PLACEHOLDER,
+
   ISSUE_HELPER,
   ISSUE_HELPER_ALT,
   UNHELPFUL,
@@ -58,6 +62,8 @@ enum objective_cards
 
 enum item_cards
 {
+  ITEM_PLACEHOLDER,
+
   PILOT__NEW_CONTROLS,
   PILOT__MAP,
   PILOT__RADAR,
