@@ -53,7 +53,8 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
         connection_count,
         static_cast<int>(players[0].current_class),
         static_cast<int>(players[1].current_class),
-        static_cast<int>(players[2].current_class));
+        static_cast<int>(players[2].current_class),
+        static_cast<int>(players[3].current_class));
       break;
     }
     case data_roles::PLAYER_LOBBY_REQUEST_ACCEPTED:
@@ -61,7 +62,7 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       if (!has_connected)
       {
         // Fill in data we already know about clients in this lobby
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 4; i++)
         {
           if (received_data.content[i + 1] != -1)
           {
@@ -242,6 +243,10 @@ void LobbyScene::render()
   for (int i = 0; i < 4; i++)
   {
     renderer->renderSprite(*players[i].player_class_sprite->getSprite());
+    renderer->renderText(
+      players[i].player_class_text, 100 + (100 * i), 530, 0.5);
+    renderer->renderText(
+      "THIS IS YOU", 100 + (100 * my_player_index), 420, 0.5);
   }
 }
 
@@ -249,35 +254,41 @@ void LobbyScene::render()
 void LobbyScene::TEST_updatePlayerIcon(int player_index)
 {
   std::string sprite_path = "";
+  std::string player_text = "";
   switch (players[player_index].current_class)
   {
     case player_classes::COMMUNICATIONS:
     {
       Communications player;
       sprite_path = player.getCounterSpritePath();
+      player_text = player.getFriendlyName();
       break;
     }
     case player_classes::MEDIC:
     {
       Medic player;
       sprite_path = player.getCounterSpritePath();
+      player_text = player.getFriendlyName();
       break;
     }
     case player_classes::PILOT:
     {
       Pilot player;
       sprite_path = player.getCounterSpritePath();
+      player_text = player.getFriendlyName();
       break;
     }
     case player_classes::ENGINEER:
     {
       Engineer player;
       sprite_path = player.getCounterSpritePath();
+      player_text = player.getFriendlyName();
       break;
     }
     default:
     {
       sprite_path = "data/icon.jpg";
+      player_text = "EMPTY";
     }
   }
   delete players[player_index].player_class_sprite;
@@ -287,4 +298,5 @@ void LobbyScene::TEST_updatePlayerIcon(int player_index)
     static_cast<float>(100 + (100 * player_index)));
   players[player_index].player_class_sprite->height(50);
   players[player_index].player_class_sprite->width(50);
+  players[player_index].player_class_text = player_text;
 }

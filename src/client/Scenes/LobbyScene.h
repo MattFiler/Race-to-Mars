@@ -18,6 +18,7 @@ struct LobbyPlayer
   bool is_ready = false;
   player_classes current_class = player_classes::UNASSIGNED;
   ScaledSprite* player_class_sprite = new ScaledSprite("data/icon.jpg");
+  std::string player_class_text = "";
 };
 
 class LobbyScene : public Scene

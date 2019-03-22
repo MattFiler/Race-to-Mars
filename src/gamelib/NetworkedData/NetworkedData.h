@@ -47,8 +47,8 @@ enum data_roles
    *   [1] = class of player 1 (-1 means disconnect)
    *   [2] = class of player 2 (-1 means disconnect)
    *   [3] = class of player 3 (-1 means disconnect)
-   *   [4] = N/A - NEED TO SEND READY UP DATA HERE TOO - MIGHT HAVE TO EXTEND
-   * DATA ARRAY
+   *   [4] = class of player 4 (-1 means disconnect)
+   *   NEED TO SEND READY UP DATA HERE TOO - MIGHT HAVE TO EXTEND DATA ARRAY
    */
 
   PLAYER_CONNECTED_TO_LOBBY,
