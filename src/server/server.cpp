@@ -1,7 +1,7 @@
 #include "server.h"
 
-#include <gamelib/ChatMsg.h>
 #include <gamelib/Packet.h>
+#include <iostream>
 
 RaceToSpaceServer::RaceToSpaceServer()
 {

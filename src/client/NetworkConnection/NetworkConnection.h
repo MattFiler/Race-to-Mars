@@ -2,7 +2,6 @@
 #define PROJECT_NETWORKCONNECTION_H
 
 #include <enetpp/client.h>
-#include <gamelib/ChatMsg.h>
 #include <gamelib/Packet.h>
 
 class RaceToSpace;

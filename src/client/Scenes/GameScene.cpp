@@ -7,6 +7,7 @@
 void GameScene::init()
 {
   m_board_menu.addMenuSprite("BOARD/background.jpg");
+  m_deck.initDecks();
 }
 
 /* Handles connecting to the server */
