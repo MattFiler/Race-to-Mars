@@ -1,7 +1,3 @@
-//
-// Created by jackk on 15/03/2019.
-//
-
 #include "Packet.h"
 
 Packet::Packet(const enet_uint8* data, size_t length)

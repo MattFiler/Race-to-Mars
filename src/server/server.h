@@ -20,7 +20,7 @@ struct server_client
 struct Lobby
 {
   Lobby() = delete;
-  Lobby(int _id) { lobby_id = _id; }
+  explicit Lobby(int _id) { lobby_id = _id; }
   int lobby_id = -1;
   int user_count = 0;
   int user_ids[4] = { -1, -1, -1, -1 };
