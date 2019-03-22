@@ -192,3 +192,8 @@ void Deck::retargetConfig(const std::string& name)
 {
   card_config = file_handler.loadConfigFromExisting(card_config, name);
 }
+
+void Deck::initLookUps()
+{
+  // Item card look up
+}

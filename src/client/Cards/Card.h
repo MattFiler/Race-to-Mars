@@ -2,6 +2,7 @@
 #define PROJECT_CARD_H
 
 #include "../Core/ServiceLocator.h"
+#include "gamelib/NetworkedData/Cards.h"
 #include <Engine/Renderer.h>
 #include <Engine/Sprite.h>
 
@@ -20,10 +21,10 @@ class Card
   ~Card() = default;
 
   void setCardName(std::string _item_name);
-  void setActionPoints(int _action_points);
   void setSpritePath(std::string _sprite_path);
   void setCardDescription(std::string _description_text);
   void setAbilityText(std::string _ability_test);
+  void setActionPoints(int _action_points);
 
  protected:
   ASGE::Renderer* renderer = nullptr;

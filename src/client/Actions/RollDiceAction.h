@@ -14,6 +14,7 @@ class RollDiceAction : public Action
   RollDiceAction(Player& player1);
 
   void execute() override;
+  void unExecute();
 
  private:
   Player& player;

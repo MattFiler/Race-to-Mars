@@ -222,6 +222,11 @@ void LobbyScene::keyHandler(const ASGE::SharedEventData data)
     debug_text.print("Swapping to menu scene.");
     next_scene = game_global_scenes::MAIN_MENU;
   }
+  if (keys.keyReleased("Activate"))
+  {
+    debug_text.print("Swapping to game scene.");
+    next_scene = game_global_scenes::IN_GAME;
+  }
 }
 
 /* Handles mouse clicks */

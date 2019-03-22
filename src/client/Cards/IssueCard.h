@@ -14,7 +14,10 @@
 class IssueCard : public Card
 {
  public:
+  void setCardID(issue_cards _item_card_id);
+
  private:
+  issue_cards m_cardID = issue_cards::ISSUE_PLACEHOLDER;
 };
 
 #endif // PROJECT_ISSUECARD_H

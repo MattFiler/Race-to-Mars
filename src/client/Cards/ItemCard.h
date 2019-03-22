@@ -14,7 +14,10 @@
 class ItemCard : public Card
 {
  public:
+  void setCardID(item_cards _item_card_id);
+
  private:
+  item_cards m_cardID = item_cards ::ITEM_PLACEHOLDER;
 };
 
 #endif // PROJECT_ITEMCARD_H
