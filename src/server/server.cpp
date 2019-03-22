@@ -160,17 +160,69 @@ void RaceToSpaceServer::run()
       Packet packet_data(data, data_size);
       packet_data >> data_to_send;
 
-      debug_text.print("Forwarding data to all clients, of type " +
-                       std::to_string(data_to_send.role) + ".");
-
-      network_server.send_packet_to_all_if(
-        0,
-        data,
-        data_size,
-        ENET_PACKET_FLAG_RELIABLE,
-        [&](const server_client& destination) {
-          return destination.get_id() != client.get_id();
-        });
+      // If client requests lobby info, we need to send that directly to the
+      // client that wants it
+      if (data_to_send.role == data_roles::CLIENT_REQUESTS_LOBBY_INFO)
+      {
+        for (Lobby& this_lobby : lobbies)
+        {
+          if (this_lobby.lobby_id == client.lobby_id)
+          {
+            int lobby_player_id = -1;
+            for (int i = 0; i < max_lobby_size; i++)
+            {
+              if (this_lobby.user_ids[i] == static_cast<int>(client.get_id()))
+              {
+                lobby_player_id = i;
+                break;
+              }
+            }
+            sendData(client.get_id(),
+                     data_roles::SERVER_GIVES_LOBBY_INFO,
+                     this_lobby.user_count,
+                     this_lobby.user_classes[0],
+                     this_lobby.user_classes[1],
+                     this_lobby.user_classes[2],
+                     this_lobby.user_classes[3],
+                     this_lobby.users_ready[0],
+                     this_lobby.users_ready[1],
+                     this_lobby.users_ready[2],
+                     this_lobby.users_ready[3],
+                     lobby_player_id);
+          }
+        }
+      }
+      // Otherwise, it's a message that needs to be forwarded to everyone
+      else
+      {
+        // We need to store lobby ready state before sending it out, so new
+        // players are up to date
+        if (data_to_send.role == data_roles::PLAYER_CHANGED_LOBBY_READY_STATE)
+        {
+          for (Lobby& this_lobby : lobbies)
+          {
+            if (this_lobby.user_ids[data_to_send.content[1]] ==
+                static_cast<int>(client.get_id()))
+            {
+              this_lobby.users_ready[data_to_send.content[1]] =
+                static_cast<bool>(data_to_send.content[0]);
+              break;
+            }
+          }
+        }
+        sendData(static_cast<unsigned int>(-1),
+                 data_to_send.role,
+                 data_to_send.content[0],
+                 data_to_send.content[1],
+                 data_to_send.content[2],
+                 data_to_send.content[3],
+                 data_to_send.content[4],
+                 data_to_send.content[5],
+                 data_to_send.content[6],
+                 data_to_send.content[7],
+                 data_to_send.content[8],
+                 data_to_send.content[9]);
+      }
     });
 
   /* Our server update loop */
@@ -184,7 +236,7 @@ void RaceToSpaceServer::run()
 }
 
 /* Send data from server to a client, or all (user_id = -1) */
-void RaceToSpaceServer::sendData(int user_id,
+void RaceToSpaceServer::sendData(unsigned int user_id,
                                  data_roles _role,
                                  int _content_1,
                                  int _content_2,
@@ -212,7 +264,7 @@ void RaceToSpaceServer::sendData(int user_id,
   data_to_send.content[9] = _content_10;
   packet_to_send << data_to_send;
 
-  if (user_id == -1)
+  if (user_id == static_cast<unsigned int>(-1))
   {
     debug_text.print("Sending data to all clients, of type " +
                      std::to_string(data_to_send.role) + ".");
@@ -230,7 +282,7 @@ void RaceToSpaceServer::sendData(int user_id,
                      ", of type " + std::to_string(data_to_send.role) + ".");
 
     network_server.send_packet_to(
-      static_cast<unsigned int>(user_id),
+      user_id,
       0,
       reinterpret_cast<const enet_uint8*>(packet_to_send.data()),
       static_cast<unsigned int>(packet_to_send.length()),

@@ -6,11 +6,11 @@
  * This class forms the foundation of networking within the game.
  *
  * A NetworkedData struct is sent around the clients via the server containing a
- * ROLE and CONTENT (up to 5x). The content is an integer array, stored in
- * "content" (1-5), and the role is an enum.
+ * ROLE and CONTENT (up to 10x). The content is an integer array, stored in
+ * "content" (1-10), and the role is an enum.
  *
  * The role describes the purpose of the integers - E.G. number of action points
- * assigned, etc. Not every struct role requires all 5 integers, so they are
+ * assigned, etc. Not every struct role requires all 10 integers, so they are
  * initialised as zero (think of this as null).
  *
  * The role must be checked when receiving a packet of NetworkedData to work out
@@ -32,12 +32,12 @@ enum data_roles
   NO_ROLE,
   /* ^ This is the default role and should never be sent across the network. */
 
-  PLAYER_REQUESTS_LOBBY_CONNECTION,
-  /* ^ A client is trying to connect to our lobby. */
+  CLIENT_REQUESTS_LOBBY_INFO,
+  /* ^ The client needs to know lobby info - pls send. */
 
-  PLAYER_LOBBY_REQUEST_ACCEPTED,
-  /* ^ The request to connect to a lobby was accepted - load the client.
-   *   [0] = number of connected clients (not including you)
+  SERVER_GIVES_LOBBY_INFO,
+  /* ^ The server is kindly sending the lobby info.
+   *   [0] = number of connected clients
    *   [1] = class of player 1 (-1 means disconnect)
    *   [2] = class of player 2 (-1 means disconnect)
    *   [3] = class of player 3 (-1 means disconnect)
@@ -46,16 +46,19 @@ enum data_roles
    *   [6] = player 2 ready (0=no,1=yes)
    *   [7] = player 3 ready (0=no,1=yes)
    *   [8] = player 4 ready (0=no,1=yes)
+   *   [9] = the client's player number in the lobby (-1 = something broke)
    */
 
   PLAYER_CONNECTED_TO_LOBBY,
-  /* ^ A client has connected to the lobby.
+  /* ^ A client has connected to the lobby, let all clients know its data.
    *   [0] = the player ID
+   *   [1] = if the player is ready
+   *   [2] = the player's current class
    */
 
   PLAYER_DISCONNECTED_FROM_LOBBY,
-  /* ^ A client has disconnected from the lobby.
-   *   [0] = the player ID
+  /* ^ A client has disconnected from the lobby, let everyone know to forget
+   * them. [0] = the player ID
    */
 
   PLAYER_CHANGED_LOBBY_READY_STATE,

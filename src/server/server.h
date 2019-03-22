@@ -41,7 +41,7 @@ class RaceToSpaceServer
   void run();
 
  private:
-  void sendData(int user_id,
+  void sendData(unsigned int user_id,
                 data_roles _role,
                 int _content_1,
                 int _content_2 = 0,
