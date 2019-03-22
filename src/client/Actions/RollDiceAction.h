@@ -10,12 +10,12 @@
 
 class RollDiceAction : public Action
 {
-  Player player;
-
  public:
   RollDiceAction(Player& player1);
 
   void execute() override;
-};
 
+ private:
+  Player& player;
+};
 #endif // PROJECT_ROLLDICEACTION_H

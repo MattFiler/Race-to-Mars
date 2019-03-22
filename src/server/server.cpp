@@ -5,6 +5,7 @@
 
 RaceToSpaceServer::RaceToSpaceServer()
 {
+  debug_text.enabled = true;
   enetpp::global_state::get().initialize();
 }
 
@@ -16,6 +17,8 @@ RaceToSpaceServer::~RaceToSpaceServer()
 
 void RaceToSpaceServer::initialise()
 {
+  debug_text.print("Initialising server!");
+
   auto init_client_func = [&](server_client& client, const char* ip) {
     client._uid = next_uid;
     next_uid++;
@@ -83,7 +86,8 @@ void RaceToSpaceServer::run()
       Packet packet_data(data, data_size);
       packet_data >> test_value;
 
-      std::cout << "forwarding msg to all clients\n";
+      debug_text.print("Forwarding msg to all clients!");
+
       network_server.send_packet_to_all_if(
         0,
         data,
@@ -96,6 +100,7 @@ void RaceToSpaceServer::run()
 
   // while server should not terminate
   static bool terminate = false;
+  // cppcheck-suppress *
   while (!terminate)
   {
     network_server.consume_events(on_connect, on_disconnect, on_data);

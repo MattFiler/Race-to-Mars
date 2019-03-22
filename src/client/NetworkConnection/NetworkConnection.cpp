@@ -13,9 +13,6 @@ NetworkConnection::~NetworkConnection()
 void NetworkConnection::connectToServer(const std::string& hostname,
                                         enet_uint16 port)
 {
-  //  std::cout << "Welcome to Race to Space! \n Please enter your Name: ";
-  //  std::getline(std::cin, username);
-
   enetpp::global_state::get().initialize();
   client.connect(enetpp::client_connect_params()
                    .set_channel_count(1)
@@ -34,9 +31,6 @@ void NetworkConnection::startListening(RaceToSpace* game_instance)
   // Enable debug input to test comms from client to server (& other clients)
   std::thread th2(&NetworkConnection::networkMessageDebug, this);
   th2.detach();
-
-  //  std::thread th3(&RaceToSpace::input, this);
-  //  th.detach();
 }
 
 // Our network connection loop
@@ -85,16 +79,23 @@ void NetworkConnection::networkMessageDebug()
   }
 }
 
-void NetworkConnection::input()
+/* Send a NetworkData struct of data */
+void NetworkConnection::sendData(data_roles _role,
+                                 int _content_1,
+                                 int _content_2,
+                                 int _content_3,
+                                 int _content_4,
+                                 int _content_5)
 {
-  //  while (!exiting)
-  //  {
-  //    std::string txt;
-  //    std::getline(std::cin, txt);
-  //    std::time_t result = std::time(nullptr);
-  //    std::string time_stamp = std::asctime(std::localtime(&result));
-  //    ChatMsg msg(username, txt, result);
-  //    std::lock_guard<std::mutex> lock(msg_queue_mtx);
-  //    msg_queue.push(std::move(msg));
-  //  }
+  NetworkedData data;
+  data.role = _role;
+  data.content[0] = _content_1;
+  data.content[1] = _content_2;
+  data.content[2] = _content_3;
+  data.content[3] = _content_4;
+  data.content[4] = _content_5;
+
+  Packet packet;
+  packet << data;
+  getPacketQueue()->push(packet);
 }
