@@ -5,6 +5,7 @@ enum game_global_scenes
 {
   DEFAULT = -1,
   MAIN_MENU = 0,
+  LOBBY,
   IN_GAME,
   QUIT_GAME
 };
@@ -23,6 +24,8 @@ struct GameResolution
   static int height;
   static int width;
   static float scale;
+  static const int base_height = 720;
+  static const int base_width = 1280;
 };
 
 #endif // PROJECT_CONSTANTS_H

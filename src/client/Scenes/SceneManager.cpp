@@ -1,5 +1,6 @@
 #include "SceneManager.h"
 #include "GameScene.h"
+#include "LobbyScene.h"
 #include "MenuScene.h"
 #include <exception>
 
@@ -16,6 +17,11 @@ void SceneManager::setCurrentScene(game_global_scenes new_scene)
     case game_global_scenes::MAIN_MENU:
     {
       current_scene = dynamic_cast<Scene*>(new MenuScene());
+      break;
+    }
+    case game_global_scenes::LOBBY:
+    {
+      current_scene = dynamic_cast<Scene*>(new LobbyScene());
       break;
     }
     case game_global_scenes::IN_GAME:
@@ -35,4 +41,9 @@ void SceneManager::setCurrentScene(game_global_scenes new_scene)
     }
   }
   current_scene->init();
+}
+
+void SceneManager::update(const ASGE::GameTime& game_time)
+{
+  setCurrentScene(current_scene->update(game_time));
 }

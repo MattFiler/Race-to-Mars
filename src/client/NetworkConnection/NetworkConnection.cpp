@@ -1,5 +1,6 @@
 #include "NetworkConnection.h"
 #include "../game.h"
+#include <Engine/Renderer.h>
 #include <iostream>
 
 NetworkConnection::~NetworkConnection()
@@ -43,19 +44,24 @@ void NetworkConnection::networkLoop()
                           std::bind(&RaceToSpace::disconnection, game),
                           std::bind(&RaceToSpace::data, game, _1, _2));
 
-    while (msg_queue.size())
+    while (!pkt_queue.empty())
     {
-      std::lock_guard<std::mutex> lock(msg_queue_mtx);
-      const auto& txt = msg_queue.front();
+      // lock thread
+      std::lock_guard<std::mutex> lock(pkt_queue_mtx);
+      // take the packet first in line.
+      auto& pkt = pkt_queue.front();
       assert(sizeof(char) == sizeof(enet_uint8));
+      auto pkt_length = static_cast<unsigned int>(pkt.length());
+      // prepare packet to be send to server.
+      auto pkt_data = pkt.data();
+      // send packet to server.
       client.send_packet(0,
-                         reinterpret_cast<const enet_uint8*>(txt.data()),
-                         txt.length(),
+                         reinterpret_cast<const enet_uint8*>(pkt_data),
+                         pkt_length,
                          ENET_PACKET_FLAG_RELIABLE);
-      msg_queue.pop();
+      pkt_queue.pop();
     }
   }
-
   exiting = true;
 }
 
@@ -68,7 +74,38 @@ void NetworkConnection::networkMessageDebug()
     std::string txt;
     std::getline(std::cin, txt);
 
-    std::lock_guard<std::mutex> lock(msg_queue_mtx);
-    msg_queue.push(std::move(txt));
+    std::lock_guard<std::mutex> lock(msg_queue_debug_mtx);
+    msg_queue_debug.push(std::move(txt));
   }
+}
+
+/* Send a NetworkData struct of data */
+void NetworkConnection::sendData(data_roles _role,
+                                 int _content_1,
+                                 int _content_2,
+                                 int _content_3,
+                                 int _content_4,
+                                 int _content_5,
+                                 int _content_6,
+                                 int _content_7,
+                                 int _content_8,
+                                 int _content_9,
+                                 int _content_10)
+{
+  NetworkedData data;
+  data.role = _role;
+  data.content[0] = _content_1;
+  data.content[1] = _content_2;
+  data.content[2] = _content_3;
+  data.content[3] = _content_4;
+  data.content[4] = _content_5;
+  data.content[5] = _content_6;
+  data.content[6] = _content_7;
+  data.content[7] = _content_8;
+  data.content[8] = _content_9;
+  data.content[9] = _content_10;
+
+  Packet packet;
+  packet << data;
+  getPacketQueue()->push(packet);
 }

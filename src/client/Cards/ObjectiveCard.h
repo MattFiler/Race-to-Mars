@@ -12,6 +12,8 @@
 
 class ObjectiveCard : public Card
 {
+ public:
+ private:
 };
 
 #endif // PROJECT_OBJECTIVECARD_H

@@ -1,9 +1,14 @@
-#include "GameScene.h"
+#include "client/Scenes/GameScene.h"
+#include "gamelib/NetworkedData/MessageTypes.h"
+#include "gamelib/NetworkedData/NetworkedData.h"
+#include <client/game.h>
+#include <gamelib/Packet.h>
 
 /* Initialise the scene */
 void GameScene::init()
 {
   m_board_menu.addMenuSprite("BOARD/background.jpg");
+  m_deck.initDecks();
 }
 
 /* Handles connecting to the server */
@@ -13,7 +18,34 @@ void GameScene::networkConnected() {}
 void GameScene::networkDisconnected() {}
 
 /* Handles receiving data from the server */
-void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size) {}
+void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
+{
+  // Recreate packet
+  Packet data_packet(data, data_size);
+  NetworkedData received_data;
+  data_packet >> received_data;
+
+  // Handle all relevant data packets for this scene
+  switch (received_data.role)
+  {
+    case data_roles::PLAYER_ASSIGNED_ACTION_POINTS:
+    {
+      debug_text.print("A player assigned action points!");
+      debug_text.print("Card the points were assigned to: " +
+                       std::to_string(received_data.content[0]));
+      debug_text.print("Number of points assigned: " +
+                       std::to_string(received_data.content[1]));
+      debug_text.print("Was the card completed? (0=no, 1=yes): " +
+                       std::to_string(received_data.content[2]));
+      break;
+    }
+    default:
+    {
+      debug_text.print("An unhandled data packet was received");
+      break;
+    }
+  }
+}
 
 /* Handles key inputs */
 void GameScene::keyHandler(const ASGE::SharedEventData data)
@@ -24,13 +56,15 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
     debug_text.print("Swapping to menu scene.");
     next_scene = game_global_scenes::MAIN_MENU;
   }
+  if (keys.keyReleased("Debug Test"))
+  {
+    test_val = true;
+  }
 }
 
 /* Handles mouse clicks */
 void GameScene::clickHandler(const ASGE::SharedEventData data)
 {
-  // auto click = static_cast<const ASGE::ClickEvent*>(data.get());
-
   Vector2 mouse_pos = Vector2(Locator::getCursor()->getPosition().x,
                               Locator::getCursor()->getPosition().y);
   if (m_board.isHoveringOverInteractable(mouse_pos))
@@ -55,14 +89,4 @@ void GameScene::render()
 {
   m_board_menu.render();
   m_board.render();
-  renderer->renderText("GameScene", 100, 100);
-  renderer->renderText(
-    std::to_string(m_board.m_ship.getRooms().size()), 300, 100);
-
-  float pos = 0;
-  for (int i = 0; i < static_cast<int>(m_board.m_ship.getRooms().size()); i++)
-  {
-    pos += m_board.m_ship.getRooms()[i].getCentre().x;
-  }
-  renderer->renderText(std::to_string(pos), 300, 200);
 }

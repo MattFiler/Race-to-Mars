@@ -3,6 +3,7 @@
 
 #include "Scene.h"
 #include "client/Board/GameBoard.h"
+#include "client/Cards/Deck.h"
 #include "client/UI/Cursor.h"
 
 class GameScene : public Scene
@@ -22,9 +23,13 @@ class GameScene : public Scene
   game_global_scenes update(const ASGE::GameTime& game_time) override;
   void render() override;
 
+  int test_int2 = 1;
+  bool test_val = false;
+
  private:
   GameBoard m_board;
   Menu m_board_menu;
+  Deck m_deck;
 };
 
 #endif // PROJECT_GAMESCENE_H

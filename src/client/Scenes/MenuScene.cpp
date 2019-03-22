@@ -3,6 +3,7 @@
 /* Initialise the scene */
 void MenuScene::init()
 {
+  main_menu.addMenuSprite("MAIN_MENU/background.jpg");
   main_menu.addMenuItem("MENU_NEWGAME");
   main_menu.addMenuItem("MENU_QUIT");
 }
@@ -24,8 +25,8 @@ void MenuScene::keyHandler(const ASGE::SharedEventData data)
   {
     if (main_menu.selectedItemWas("MENU_NEWGAME"))
     {
-      debug_text.print("Swapping to game scene.");
-      next_scene = game_global_scenes::IN_GAME;
+      debug_text.print("Entering lobby.");
+      next_scene = game_global_scenes::LOBBY;
     }
     else if (main_menu.selectedItemWas("MENU_QUIT"))
     {
@@ -51,5 +52,4 @@ game_global_scenes MenuScene::update(const ASGE::GameTime& game_time)
 void MenuScene::render()
 {
   main_menu.render();
-  renderer->renderText("MenuScene", 100, 100);
 }

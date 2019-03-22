@@ -133,8 +133,8 @@ void RaceToSpace::data(const enet_uint8* data, size_t data_size)
   scene_manager.networkDataReceived(data, data_size);
 
   // Debugging with message send/receive
-  std::string msg(reinterpret_cast<const char*>(data), data_size);
-  debug_text.print("received message from server: " + msg);
+  //  ChatMsg msg(reinterpret_cast<const char*>(data), data_size);
+  //  debug_text.print("received message from server: " + msg);
 }
 
 /**
@@ -150,7 +150,8 @@ void RaceToSpace::setupResolution()
   GameResolution::width = game_width;
   game_height = game_config["resolution"]["height"];
   GameResolution::height = game_height;
-  GameResolution::scale = static_cast<float>(game_height) / 720;
+  GameResolution::scale =
+    static_cast<float>(game_height) / GameResolution::base_height;
 }
 
 /**
