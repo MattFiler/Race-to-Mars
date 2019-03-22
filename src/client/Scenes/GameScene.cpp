@@ -1,5 +1,6 @@
-#include "GameScene.h"
+#include "client/Scenes/GameScene.h"
 #include "gamelib/NetworkedData/MessageTypes.h"
+#include "gamelib/NetworkedData/NetworkedData.h"
 #include <client/game.h>
 #include <gamelib/Packet.h>
 
@@ -21,17 +22,19 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
 {
   // Recreate packet
   Packet data_packet(data, data_size);
-  // handle packet here | decide what data was passed in and call the correct
-  // function[s] etc...
-  // int test_val4;
-  // data_packet >> test_val4;
 
-  packet_type chat_msg = packet_type::PACKET_DEFAULT;
-  data_packet >> chat_msg;
+  NetworkedData test;
+  data_packet >> test;
 
-  if (chat_msg == packet_type::PACKET_MSG)
+  if (test.data_role == data_roles::PLAYER_ASSIGNED_ACTION_POINTS)
   {
-    ++test_int2;
+    debug_text.print("A player assigned action points!");
+    debug_text.print("Card the points were assigned to: " +
+                     std::to_string(test.data_content[0]));
+    debug_text.print("Number of points assigned: " +
+                     std::to_string(test.data_content[1]));
+    debug_text.print("Was the card completed? (0=no, 1=yes): " +
+                     std::to_string(test.data_content[2]));
   }
 }
 
@@ -44,25 +47,15 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
     debug_text.print("Swapping to menu scene.");
     next_scene = game_global_scenes::MAIN_MENU;
   }
-
-  auto event = static_cast<const ASGE::KeyEvent*>(data.get());
-  if (event->action == ASGE::KEYS::KEY_PRESSED)
+  if (keys.keyReleased("Debug Test"))
   {
-    if (event->key == ASGE::KEYS::KEY_P)
-    {
-    }
-    if (event->key == ASGE::KEYS::KEY_O)
-    {
-      test_val = true;
-    }
+    test_val = true;
   }
 }
 
 /* Handles mouse clicks */
 void GameScene::clickHandler(const ASGE::SharedEventData data)
 {
-  // auto click = static_cast<const ASGE::ClickEvent*>(data.get());
-
   Vector2 mouse_pos = Vector2(Locator::getCursor()->getPosition().x,
                               Locator::getCursor()->getPosition().y);
   if (m_board.isHoveringOverInteractable(mouse_pos))
@@ -76,11 +69,18 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
 /* Update function */
 game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
 {
+  /* SEND DATA */
   if (test_val)
   {
-    packet_type chat_msg = packet_type::PACKET_MSG;
+    NetworkedData test;
+    test.data_role = data_roles::PLAYER_ASSIGNED_ACTION_POINTS;
+    test.data_content[0] = 1;
+    test.data_content[1] = 10;
+    test.data_content[2] = 0;
+
     Packet packet;
-    packet << chat_msg;
+    packet << test;
+
     Locator::getClient()->getPacketQueue()->push(packet);
     test_val = false;
   }
@@ -96,6 +96,4 @@ void GameScene::render()
 {
   m_board_menu.render();
   m_board.render();
-  // debug packet code
-  renderer->renderText(std::to_string(test_int2), 100, 100);
 }
