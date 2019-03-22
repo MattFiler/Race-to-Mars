@@ -13,6 +13,7 @@ struct server_client
   unsigned int _uid;
   unsigned int get_id() const { return _uid; }
   int lobby_id = -1;
+  int lobby_index = -1;
 };
 
 /* A game lobby */
@@ -22,7 +23,7 @@ struct Lobby
   Lobby(int _id) { lobby_id = _id; }
   int lobby_id = -1;
   int user_count = 0;
-  unsigned int user_ids[4] = { -1, -1, -1, -1 };
+  int user_ids[4] = { -1, -1, -1, -1 };
   bool users_ready[4] = { false, false, false, false };
   player_classes user_classes[4] = { player_classes::UNASSIGNED,
                                      player_classes::UNASSIGNED,

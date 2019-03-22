@@ -46,6 +46,7 @@ void RaceToSpaceServer::run()
 
     // Try and join an existing lobby
     int lobby_client_index = -1;
+    int lobby_index = 0;
     bool could_join_lobby = false;
     for (Lobby& this_lobby : lobbies)
     {
@@ -62,31 +63,35 @@ void RaceToSpaceServer::run()
         this_lobby.user_ids[lobby_client_index] = client.get_id();
         this_lobby.user_count++;
         client.lobby_id = this_lobby.lobby_id;
+        client.lobby_index = lobby_index;
         could_join_lobby = true;
+        break;
       }
+      lobby_index++;
     }
 
     // All lobbies are full, create a new one and join it
     if (!could_join_lobby)
     {
-      lobbies.emplace_back(latest_lobby_id);
+      Lobby& new_lobby = lobbies.emplace_back(latest_lobby_id);
       latest_lobby_id++;
+
+      debug_text.print("Created new lobby instance. There are " +
+                       std::to_string(lobbies.size()) + " active lobbies.");
 
       lobby_client_index = 0;
 
-      lobbies[static_cast<unsigned int>(latest_lobby_id) - 1]
-        .user_ids[lobbies[static_cast<unsigned int>(latest_lobby_id) - 1]
-                    .user_count] = client.get_id();
-      lobbies[static_cast<unsigned int>(latest_lobby_id) - 1].user_count++;
-      client.lobby_id =
-        lobbies[static_cast<unsigned int>(latest_lobby_id) - 1].lobby_id;
+      new_lobby.user_ids[lobby_client_index] = client.get_id();
+      new_lobby.user_count++;
+      client.lobby_id = new_lobby.lobby_id;
+      client.lobby_index = static_cast<int>(lobbies.size() - 1);
     }
 
     // Now client is in a lobby, assign them a free class
     bool classes_taken[4] = { false, false, false, false };
     for (int i = 0; i < max_lobby_size; i++)
     {
-      int taken_class = lobbies.at(client.lobby_id).user_classes[i];
+      int taken_class = lobbies.at(client.lobby_index).user_classes[i];
       if (taken_class != -1)
       {
         classes_taken[taken_class] = true;
@@ -96,7 +101,7 @@ void RaceToSpaceServer::run()
     {
       if (!classes_taken[i])
       {
-        lobbies.at(client.lobby_id).user_classes[lobby_client_index] =
+        lobbies.at(client.lobby_index).user_classes[lobby_client_index] =
           static_cast<player_classes>(i);
         break;
       }
@@ -106,7 +111,7 @@ void RaceToSpaceServer::run()
       "Client " + std::to_string(client.get_id()) + " has joined lobby " +
       std::to_string(client.lobby_id) + " as role " +
       std::to_string(
-        lobbies.at(client.lobby_id).user_classes[lobby_client_index]) +
+        lobbies.at(client.lobby_index).user_classes[lobby_client_index]) +
       ".");
   });
 
@@ -116,12 +121,14 @@ void RaceToSpaceServer::run()
                      " has disconnected.");
 
     // Take client out of the lobby they were registered to
+    int real_lobby_id = 0;
     for (Lobby& this_lobby : lobbies)
     {
       for (int i = 0; i < max_lobby_size; i++)
       {
-        if (this_lobby.user_ids[i] == client_id)
+        if (this_lobby.user_ids[i] == static_cast<int>(client_id))
         {
+          // Disconnect from lobby
           this_lobby.user_count--;
           this_lobby.user_ids[i] = -1;
           this_lobby.users_ready[i] = false;
@@ -130,8 +137,19 @@ void RaceToSpaceServer::run()
           debug_text.print("Client " + std::to_string(client_id) +
                            " has left lobby " +
                            std::to_string(this_lobby.lobby_id) + ".");
+
+          // If lobby is now empty, remove it so we can put new players in
+          // populated lobbies
+          if (this_lobby.user_count == 0)
+          {
+            lobbies.erase(lobbies.begin() + real_lobby_id);
+            debug_text.print("Destroying unpopulated lobby. There are " +
+                             std::to_string(lobbies.size()) +
+                             " active lobbies.");
+          }
         }
       }
+      real_lobby_id++;
     }
   });
 

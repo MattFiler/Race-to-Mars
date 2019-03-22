@@ -301,15 +301,7 @@ void LobbyScene::TEST_updatePlayerIcon(int player_index)
   players[player_index].player_class_sprite->yPos(450);
   players[player_index].player_class_sprite->xPos(
     static_cast<float>(100 + (100 * player_index)));
-  // players[player_index].player_class_sprite->height(50);
-  // players[player_index].player_class_sprite->width(50);
+  players[player_index].player_class_sprite->height(50);
+  players[player_index].player_class_sprite->width(50);
   players[player_index].player_class_text = player_text;
-
-  players[player_index].player_class_sprite.setSprite("data/UI/BOARD/bounding "
-                                                      "box debug.png");
-  ship_config = file_handler.openAsJSON("CONFIGS/ship_config.json");
-  sprite.setPosition(
-    Vector2(ship_config["default_pos"][0], ship_config["default_pos"][1]));
-  sprite.setDimensions(
-    Vector2(ship_config["render_size"][0], ship_config["render_size"][1]));
 }
