@@ -60,13 +60,6 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     {
       if (!has_connected)
       {
-        if (received_data.content[0] == 4)
-        {
-          // The lobby was full - ideally we'll handle this a little nicer than
-          // throwing an exception!
-          throw std::runtime_error("LOBBY IS FULL");
-        }
-
         // Fill in data we already know about clients in this lobby
         for (int i = 0; i < 3; i++)
         {
@@ -84,8 +77,16 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
           if (!players[i].has_connected)
           {
             my_player_index = i;
+            debug_text.print("YOUR PLAYER SLOT IS " +
+                             std::to_string(my_player_index));
             break;
           }
+        }
+        if (my_player_index == -1)
+        {
+          // The lobby was full - ideally we'll handle this a little nicer than
+          // throwing an exception!
+          throw std::runtime_error("LOBBY IS FULL");
         }
 
         // Find us a class
@@ -106,7 +107,6 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
             break;
           }
         }
-        TEST_updatePlayerIcon(my_player_index);
 
         debug_text.print(
           "YOU ARE CLASS " +
@@ -116,6 +116,14 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
         Locator::getClient()->sendData(
           data_roles::PLAYER_CONNECTED_TO_LOBBY,
           static_cast<int>(players[my_player_index].current_class));
+
+        // Update all class sprites (test)
+        for (int i = 0; i < 4; i++)
+        {
+          TEST_updatePlayerIcon(i);
+        }
+
+        has_connected = true;
       }
       break;
     }
@@ -135,6 +143,13 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
           break;
         }
       }
+
+      // Update all class sprites (test)
+      for (int i = 0; i < 4; i++)
+      {
+        TEST_updatePlayerIcon(i);
+      }
+
       debug_text.print("A player connected to the lobby!");
       break;
     }
@@ -150,6 +165,13 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
           break;
         }
       }
+
+      // Update all class sprites (test)
+      for (int i = 0; i < 4; i++)
+      {
+        TEST_updatePlayerIcon(i);
+      }
+
       debug_text.print("A player disconnected from the lobby!");
       break;
     }
@@ -262,5 +284,7 @@ void LobbyScene::TEST_updatePlayerIcon(int player_index)
   players[player_index].player_class_sprite = new ScaledSprite(sprite_path);
   players[player_index].player_class_sprite->yPos(450);
   players[player_index].player_class_sprite->xPos(
-    static_cast<float>(100 + (10 * player_index)));
+    static_cast<float>(100 + (100 * player_index)));
+  players[player_index].player_class_sprite->height(50);
+  players[player_index].player_class_sprite->width(50);
 }
