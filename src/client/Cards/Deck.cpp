@@ -41,6 +41,33 @@ void Deck::shuffleDecks()
 {
   // shuffle all decks here.
   std::random_device rd;
-  std::mt19937 g(rd());
-  std::shuffle(itm_card_deck.begin(), itm_card_deck.end(), g);
+  std::mt19937 gen(rd());
+
+  std::shuffle(itm_card_deck.begin(), itm_card_deck.end(), gen);
+  std::shuffle(iss_card_deck.begin(), iss_card_deck.end(), gen);
+  std::shuffle(obj_card_deck.begin(), obj_card_deck.end(), gen);
+}
+
+void Deck::initDecks()
+{
+  // Load in all decks here.
+  config = file_handler.openAsJSON("CONFIGS/cards.json");
+
+  // load item cards
+  retargetConfig("ITEMCARDS");
+  for (size_t i = 0; i < config["communications"].size(); ++i)
+  {
+    ItemCard temp_card;
+    temp_card.setItemName(config["communications"]["name"]);
+    temp_card.setActionPoints(config["communications"])
+  }
+
+  // Load issue Cards
+
+  // Load Objective Cards
+}
+
+void Deck::retargetConfig(const std::string& name)
+{
+  config = file_handler.loadConfigFromExisting(config, name);
 }

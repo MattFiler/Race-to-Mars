@@ -40,7 +40,6 @@ class Player
   ASGE::Renderer* renderer = nullptr;
   FileHandler file_handler;
   Localisation localiser;
-
   PlayerCounter counter;
   json config;
 };
