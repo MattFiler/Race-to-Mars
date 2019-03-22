@@ -52,17 +52,17 @@ void Deck::shuffleDecks()
 void Deck::initDecks()
 {
   // Load in all decks here.
-  card_config = file_handler.openAsJSON("CONFIGS/cards.json");
-
-  // load item cards
-  retargetConfig("ITEMCARDS");
-  for (const auto& category : *card_config["communications"].begin())
-  {
-    ItemCard temp_item;
-    temp_item.setItemName(category["name"]);
-    temp_item.setActionPoints(category["action_points"]);
-    temp_item.setSpritePath("sprite_path");
-  }
+  //  card_config = file_handler.openAsJSON("CONFIGS/cards.json");
+  //
+  //  // load item cards
+  //  retargetConfig("ITEMCARDS");
+  //  for (const auto& category : *card_config["communications"].begin())
+  //  {
+  //    ItemCard temp_item;
+  //    temp_item.setItemName(category["name"]);
+  //    temp_item.setActionPoints(category["action_points"]);
+  //    temp_item.setSpritePath("sprite_path");
+  //  }
 
   // Load issue Cards
 
