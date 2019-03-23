@@ -67,7 +67,7 @@ void Deck::initDecks()
                                                                           "pat"
                                                                           "h"]);
     temp_card.setCardID(static_cast<item_cards>(
-      card_config["ITEMCARDS"]["communications"][i]["action_points"]));
+      card_config["ITEMCARDS"]["communications"][i]["card_id"]));
     this->itm_card_deck.push_back(temp_card);
   }
 
@@ -81,9 +81,8 @@ void Deck::initDecks()
     temp_card.setSpritePath(card_config["ITEMCARDS"]["engineer"][i]["sprite_"
                                                                     "path"]);
     temp_card.setCardID(
-      static_cast<item_cards>(card_config["ITEMCARDS"]["engineer"][i]["action_"
-                                                                      "point"
-                                                                      "s"]));
+      static_cast<item_cards>(card_config["ITEMCARDS"]["engineer"][i]["card_"
+                                                                      "id"]));
     this->itm_card_deck.push_back(temp_card);
   }
 
@@ -96,8 +95,7 @@ void Deck::initDecks()
     temp_card.setSpritePath(card_config["ITEMCARDS"]["medic"][i]["sprite_"
                                                                  "path"]);
     temp_card.setCardID(
-      static_cast<item_cards>(card_config["ITEMCARDS"]["medic"][i]["action_"
-                                                                   "points"]));
+      static_cast<item_cards>(card_config["ITEMCARDS"]["medic"][i]["card_id"]));
     this->itm_card_deck.push_back(temp_card);
   }
 
@@ -110,8 +108,7 @@ void Deck::initDecks()
     temp_card.setSpritePath(card_config["ITEMCARDS"]["pilot"][i]["sprite_"
                                                                  "path"]);
     temp_card.setCardID(
-      static_cast<item_cards>(card_config["ITEMCARDS"]["pilot"][i]["action_"
-                                                                   "points"]));
+      static_cast<item_cards>(card_config["ITEMCARDS"]["pilot"][i]["card_id"]));
     this->itm_card_deck.push_back(temp_card);
   }
 
@@ -128,7 +125,7 @@ void Deck::initDecks()
     temp_card.setSpritePath(
       card_config["ISSUECARDS"]["communications"][i]["sprite_path"]);
     temp_card.setCardID(static_cast<issue_cards>(
-      card_config["ISSUECARDS"]["communications"][i]["action_points"]));
+      card_config["ISSUECARDS"]["communications"][i]["card_id"]));
     this->iss_card_deck.push_back(temp_card);
   }
 
@@ -146,9 +143,8 @@ void Deck::initDecks()
     temp_card.setSpritePath(card_config["ITEMCARDS"]["engineer"][i]["sprite_"
                                                                     "path"]);
     temp_card.setCardID(
-      static_cast<issue_cards>(card_config["ISSUECARDS"]["engineer"][i]["action"
-                                                                        "_point"
-                                                                        "s"]));
+      static_cast<issue_cards>(card_config["ISSUECARDS"]["engineer"][i]["card_"
+                                                                        "id"]));
     this->iss_card_deck.push_back(temp_card);
   }
 
@@ -164,9 +160,8 @@ void Deck::initDecks()
     temp_card.setSpritePath(card_config["ISSUECARDS"]["global"][i]["sprite_"
                                                                    "path"]);
     temp_card.setCardID(
-      static_cast<issue_cards>(card_config["ISSUECARDS"]["global"][i]["action_"
-                                                                      "point"
-                                                                      "s"]));
+      static_cast<issue_cards>(card_config["ISSUECARDS"]["global"][i]["card_"
+                                                                      "id"]));
     this->iss_card_deck.push_back(temp_card);
   }
 
@@ -181,9 +176,8 @@ void Deck::initDecks()
     temp_card.setSpritePath(card_config["ISSUECARDS"]["medic"][i]["sprite_"
                                                                   "path"]);
     temp_card.setCardID(
-      static_cast<issue_cards>(card_config["ISSUECARDS"]["medic"][i]["action_"
-                                                                     "point"
-                                                                     "s"]));
+      static_cast<issue_cards>(card_config["ISSUECARDS"]["medic"][i]["card_"
+                                                                     "id"]));
     this->iss_card_deck.push_back(temp_card);
   }
 
@@ -198,9 +192,8 @@ void Deck::initDecks()
     temp_card.setSpritePath(card_config["ISSUECARDS"]["pilot"][i]["sprite_"
                                                                   "path"]);
     temp_card.setCardID(
-      static_cast<issue_cards>(card_config["ISSUECARDS"]["pilot"][i]["action_"
-                                                                     "point"
-                                                                     "s"]));
+      static_cast<issue_cards>(card_config["ISSUECARDS"]["pilot"][i]["card_"
+                                                                     "id"]));
     this->iss_card_deck.push_back(temp_card);
   }
 
