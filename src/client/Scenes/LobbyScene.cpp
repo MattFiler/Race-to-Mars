@@ -24,7 +24,7 @@ void LobbyScene::init()
   }
 
   // Request lobby info
-  Locator::getClient()->sendData(data_roles::CLIENT_REQUESTS_LOBBY_INFO, 0);
+  Locator::getClient()->sendData(data_roles::CLIENT_REQUESTS_TO_JOIN_LOBBY, 0);
 }
 
 /* Handles connecting to the server */
@@ -84,7 +84,7 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       debug_text.print("A player connected to the lobby!");
       break;
     }
-    case data_roles::PLAYER_DISCONNECTED_FROM_LOBBY:
+    case data_roles::CLIENT_DISCONNECTING_FROM_LOBBY:
     {
       // Forget them!
       players[received_data.content[0]].performDisconnect();
@@ -140,9 +140,8 @@ void LobbyScene::keyHandler(const ASGE::SharedEventData data)
   if (keys.keyReleased("Back"))
   {
     // Alert everyone we're leaving
-    Locator::getClient()->sendData(
-      data_roles::PLAYER_DISCONNECTED_FROM_LOBBY,
-      static_cast<int>(players[my_player_index].current_class));
+    Locator::getClient()->sendData(data_roles::CLIENT_DISCONNECTING_FROM_LOBBY,
+                                   my_player_index);
 
     // Leave
     debug_text.print("Swapping to menu scene.");
@@ -166,6 +165,7 @@ game_global_scenes LobbyScene::update(const ASGE::GameTime& game_time)
 {
   if (should_start_game)
   {
+    // Game intro countdown
     game_countdown -= game_time.delta.count() / 1000;
     if (game_countdown <= 0.0)
     {
@@ -197,8 +197,6 @@ void LobbyScene::render()
                               ->getPlayer(players[i].current_class)
                               ->getLobbySprite()
                               ->getSprite());
-    // renderer->renderText(Locator::getPlayers()->getPlayer(players[i].current_class)->getFriendlyName(),
-    // 50 + this_pos, 530, 0.5);
     if (players[i].is_ready)
     {
       ready_marker[i]->xPos(this_pos);

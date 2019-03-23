@@ -32,7 +32,7 @@ enum data_roles
   NO_ROLE,
   /* ^ This is the default role and should never be sent across the network. */
 
-  CLIENT_REQUESTS_LOBBY_INFO,
+  CLIENT_REQUESTS_TO_JOIN_LOBBY,
   /* ^ The client needs to know lobby info - pls send. */
 
   SERVER_GIVES_LOBBY_INFO,
@@ -46,26 +46,26 @@ enum data_roles
    *   [6] = player 2 ready (0=no,1=yes)
    *   [7] = player 3 ready (0=no,1=yes)
    *   [8] = player 4 ready (0=no,1=yes)
-   *   [9] = the client's player number in the lobby (-1 = something broke)
+   *   [9] = the client's player index (-1 = something broke)
    */
 
   PLAYER_CONNECTED_TO_LOBBY,
   /* ^ A client has connected to the lobby, let all clients know its data.
-   *   [0] = the player ID
+   *   [0] = the player index
    *   [1] = if the player is ready
    *   [2] = the player's current class
    */
 
-  PLAYER_DISCONNECTED_FROM_LOBBY,
+  CLIENT_DISCONNECTING_FROM_LOBBY,
   /* ^ A client has disconnected from the lobby, let everyone know to forget
    * them.
-   *   [0] = the player ID
+   *   [0] = the player index
    */
 
   PLAYER_CHANGED_LOBBY_READY_STATE,
   /* ^ A client has changed their ready state in the lobby.
    *   [0] = the ready state (0=unready, 1=ready)
-   *   [1] = the player ID
+   *   [1] = the player index
    *   [2] = the lobby ID
    */
 
@@ -77,7 +77,7 @@ enum data_roles
    *   [0] = player's new room index
    *   [1] = player's previous room index
    *   [2] = player's action points after move
-   *   [3] = player's ID
+   *   [3] = player's index
    */
 
   PLAYER_ASSIGNED_ACTION_POINTS,
@@ -86,7 +86,7 @@ enum data_roles
    *   [1] = the number of action points assigned
    *   [2] = if the card was completed (0/1)
    *   [3] = the player's new action point total
-   *   [4] = the player's ID
+   *   [4] = the player's index
    */
 
   PLAYER_ENDED_TURN,
