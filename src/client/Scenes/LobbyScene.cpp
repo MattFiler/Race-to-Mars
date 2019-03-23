@@ -17,9 +17,10 @@ void LobbyScene::init()
 {
   // Load some required sprites
   main_menu.addMenuSprite("LOBBY/background.jpg");
-  this_is_you = new ScaledSprite("data/UI/LOBBY/this_is_you.png");
-  game_countdown_ui = new ScaledSprite("data/UI/LOBBY/"
-                                       "starting_3_notext_alt.png");
+  lobby_sprites.this_is_you = new ScaledSprite("data/UI/LOBBY/this_is_you.png");
+  lobby_sprites.game_countdown_ui = new ScaledSprite("data/UI/LOBBY/"
+                                                     "starting_3_notext_alt."
+                                                     "png");
 
   // Request lobby info
   Locator::getClient()->sendData(data_roles::CLIENT_REQUESTS_TO_JOIN_LOBBY, 0);
@@ -170,13 +171,13 @@ game_global_scenes LobbyScene::update(const ASGE::GameTime& game_time)
   {
     for (int i = 0; i < 4; i++)
     {
-      ready_marker[i] = new ScaledSprite("UI/LOBBY/ready.png");
+      lobby_sprites.ready_marker[i] = new ScaledSprite("UI/LOBBY/ready.png");
       std::string prompt_path = "UI/LOBBY/ready_prompt_notext.png";
       if (i == my_player_index)
       {
         prompt_path = "UI/LOBBY/ready_prompt.png";
       }
-      ready_prompt_marker[i] = new ScaledSprite(prompt_path);
+      lobby_sprites.ready_prompt_marker[i] = new ScaledSprite(prompt_path);
     }
   }
 
@@ -210,7 +211,7 @@ void LobbyScene::render()
       ->xPos(this_pos);
     if (i == my_player_index)
     {
-      this_is_you->xPos(this_pos); // Mark which one we are
+      lobby_sprites.this_is_you->xPos(this_pos); // Mark which one we are
     }
     renderer->renderSprite(*Locator::getPlayers()
                               ->getPlayer(players[i].current_class)
@@ -218,17 +219,18 @@ void LobbyScene::render()
                               ->getSprite());
 
     // Render ready-up prompt when appropriate
-    if (ready_marker[i] != nullptr)
+    if (lobby_sprites.ready_marker[i] != nullptr)
     {
       if (players[i].is_ready)
       {
-        ready_marker[i]->xPos(this_pos);
-        renderer->renderSprite(*ready_marker[i]->getSprite());
+        lobby_sprites.ready_marker[i]->xPos(this_pos);
+        renderer->renderSprite(*lobby_sprites.ready_marker[i]->getSprite());
       }
       else
       {
-        ready_prompt_marker[i]->xPos(this_pos);
-        renderer->renderSprite(*ready_prompt_marker[i]->getSprite());
+        lobby_sprites.ready_prompt_marker[i]->xPos(this_pos);
+        renderer->renderSprite(
+          *lobby_sprites.ready_prompt_marker[i]->getSprite());
       }
     }
   }
@@ -236,13 +238,13 @@ void LobbyScene::render()
   // Render our marker when connected
   if (my_player_index != -1)
   {
-    renderer->renderSprite(*this_is_you->getSprite());
+    renderer->renderSprite(*lobby_sprites.this_is_you->getSprite());
   }
 
   // Render game countdown when active
   if (should_start_game)
   {
-    renderer->renderSprite(*game_countdown_ui->getSprite());
+    renderer->renderSprite(*lobby_sprites.game_countdown_ui->getSprite());
     renderer->renderText(
       localiser.getString("LOBBY_COUNTDOWN_" +
                           std::to_string(static_cast<int>(game_countdown + 1))),
