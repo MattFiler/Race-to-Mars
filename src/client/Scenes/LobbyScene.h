@@ -17,8 +17,6 @@ struct LobbyPlayer
   bool has_connected = false;
   bool is_ready = false;
   player_classes current_class = player_classes::UNASSIGNED;
-  ScaledSprite* player_class_sprite = new ScaledSprite("data/icon.jpg");
-  std::string player_class_text = "";
 };
 
 class LobbyScene : public Scene
@@ -38,12 +36,11 @@ class LobbyScene : public Scene
   void render() override;
 
  private:
-  void TEST_updatePlayerIcon(int player_index);
-
   Menu main_menu;
   int my_player_index = -1; // the index of me in the player array
   LobbyPlayer players[4];
   bool has_connected = false; // have i connected to the lobby?
+  ScaledSprite* this_is_you = nullptr;
 };
 
 #endif // PROJECT_LOBBYSCENE_H

@@ -71,6 +71,10 @@ bool RaceToSpace::init()
   Locator::setupClient(&networked_client);
   Locator::setupCursor(&cursor_pointer);
 
+  // Initialise our players & pass to locator
+  all_players = new Players();
+  Locator::setupPlayers(all_players);
+
   // Setup cursor
   cursor_pointer.configure();
 

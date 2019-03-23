@@ -1,6 +1,7 @@
 #include "LobbyScene.h"
 #include "../Core/ServiceLocator.h"
 #include "../NetworkConnection/NetworkConnection.h"
+#include "../Players/AllPlayers.h"
 #include "../Players/ClientPlayer.h"
 #include <exception>
 
@@ -14,7 +15,8 @@
 /* Initialise the scene */
 void LobbyScene::init()
 {
-  main_menu.addMenuSprite("MAIN_MENU/background.jpg");
+  main_menu.addMenuSprite("LOBBY/background.jpg");
+  this_is_you = new ScaledSprite("data/UI/LOBBY/this_is_you.png");
 
   // Request lobby info
   Locator::getClient()->sendData(data_roles::CLIENT_REQUESTS_LOBBY_INFO, 0);
@@ -51,14 +53,6 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
         }
         my_player_index = received_data.content[9];
 
-        // Update all sprites and descriptions (wip)
-        for (int i = 0; i < 4; i++)
-        {
-          TEST_updatePlayerIcon(i);
-        }
-        debug_text.print("THIS CLIENT IS: " +
-                         players[my_player_index].player_class_text);
-
         // Notify all clients in the lobby that we've connected
         Locator::getClient()->sendData(data_roles::PLAYER_CONNECTED_TO_LOBBY,
                                        my_player_index,
@@ -81,12 +75,6 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
           static_cast<player_classes>(received_data.content[2]);
       }
 
-      // Update all sprites and descriptions (wip)
-      for (int i = 0; i < 4; i++)
-      {
-        TEST_updatePlayerIcon(i);
-      }
-
       debug_text.print("A player connected to the lobby!");
       break;
     }
@@ -94,12 +82,6 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     {
       // Forget them!
       players[received_data.content[0]].performDisconnect();
-
-      // Update all sprites and descriptions (wip)
-      for (int i = 0; i < 4; i++)
-      {
-        TEST_updatePlayerIcon(i);
-      }
 
       debug_text.print("A player disconnected from the lobby!");
       break;
@@ -162,63 +144,25 @@ game_global_scenes LobbyScene::update(const ASGE::GameTime& game_time)
 void LobbyScene::render()
 {
   main_menu.render();
+
   for (int i = 0; i < 4; i++)
   {
-    // renderer->renderSprite(*players[i].player_class_sprite->getSprite());
-    renderer->renderText(
-      players[i].player_class_text, 100 + (100 * i), 530, 0.5);
-    renderer->renderText(
-      "THIS IS YOU", 100 + (100 * my_player_index), 420, 0.5);
+    float this_pos = static_cast<float>(320 * i);
+    Locator::getPlayers()
+      ->getPlayer(players[i].current_class)
+      ->getLobbySprite()
+      ->getSprite()
+      ->xPos(this_pos);
+    if (i == my_player_index)
+    {
+      this_is_you->xPos(this_pos);
+    }
+    renderer->renderSprite(*Locator::getPlayers()
+                              ->getPlayer(players[i].current_class)
+                              ->getLobbySprite()
+                              ->getSprite());
+    // renderer->renderText(Locator::getPlayers()->getPlayer(players[i].current_class)->getFriendlyName(),
+    // 50 + this_pos, 530, 0.5);
   }
-}
-
-/* update player icon sprite */
-void LobbyScene::TEST_updatePlayerIcon(int player_index)
-{
-  std::string sprite_path = "";
-  std::string player_text = "";
-  switch (players[player_index].current_class)
-  {
-    case player_classes::COMMUNICATIONS:
-    {
-      Communications player;
-      sprite_path = player.getCounterSpritePath();
-      player_text = player.getFriendlyName();
-      break;
-    }
-    case player_classes::MEDIC:
-    {
-      Medic player;
-      sprite_path = player.getCounterSpritePath();
-      player_text = player.getFriendlyName();
-      break;
-    }
-    case player_classes::PILOT:
-    {
-      Pilot player;
-      sprite_path = player.getCounterSpritePath();
-      player_text = player.getFriendlyName();
-      break;
-    }
-    case player_classes::ENGINEER:
-    {
-      Engineer player;
-      sprite_path = player.getCounterSpritePath();
-      player_text = player.getFriendlyName();
-      break;
-    }
-    default:
-    {
-      sprite_path = "data/UI/PLAYER_COUNTERS/placeholder.png";
-      player_text = "EMPTY";
-    }
-  }
-  delete players[player_index].player_class_sprite;
-  players[player_index].player_class_sprite = new ScaledSprite(sprite_path);
-  players[player_index].player_class_sprite->yPos(450);
-  players[player_index].player_class_sprite->xPos(
-    static_cast<float>(100 + (100 * player_index)));
-  players[player_index].player_class_sprite->height(50);
-  players[player_index].player_class_sprite->width(50);
-  players[player_index].player_class_text = player_text;
+  renderer->renderSprite(*this_is_you->getSprite());
 }

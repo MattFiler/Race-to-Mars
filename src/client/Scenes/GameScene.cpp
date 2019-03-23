@@ -1,7 +1,6 @@
 #include "client/Scenes/GameScene.h"
 #include "gamelib/NetworkedData/MessageTypes.h"
 #include "gamelib/NetworkedData/NetworkedData.h"
-#include <client/game.h>
 #include <gamelib/Packet.h>
 
 /* Initialise the scene */

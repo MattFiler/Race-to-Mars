@@ -1,6 +1,7 @@
 {
 	"DEFAULT": {
 		"PLACEHOLDER": "Placeholder Text",
+		"BLANK_STRING": "",
 	
 		"PLAYER_COMMS": "Communications",
 		"PLAYER_PILOT": "Pilot",
