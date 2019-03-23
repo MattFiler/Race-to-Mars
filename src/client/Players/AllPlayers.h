@@ -1,3 +1,4 @@
+#include "../NetworkedData/PlayerData.h"
 #include "CommunicationsPlayer.h"
 #include "EngineerPlayer.h"
 #include "MedicPlayer.h"
@@ -9,6 +10,7 @@ struct Players
 {
   Players() { player_uninitialised.makeUninitialised(); }
 
+  // Render (scene dependant)
   void render(game_global_scenes game_scene)
   {
     player_communications.render(game_scene);
@@ -17,6 +19,7 @@ struct Players
     player_medic.render(game_scene);
   }
 
+  // Get player class pointer by enum
   Player* getPlayer(player_classes _class)
   {
     switch (_class)
@@ -45,9 +48,14 @@ struct Players
       }
     }
   }
+
+  // Class instances
   Communications player_communications;
   Engineer player_engineer;
   Medic player_medic;
   Pilot player_pilot;
   Player player_uninitialised;
+
+  // Class client data
+  LobbyPlayer players[4];
 };

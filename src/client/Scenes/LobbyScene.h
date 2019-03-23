@@ -2,21 +2,17 @@
 #define PROJECT_LOBBYSCENE_H
 
 #include "Scene.h"
+#include "client/NetworkedData/PlayerData.h"
 #include "gamelib/NetworkedData/Players.h"
 #include <enet/enet.h>
 
-// All useful info for a player in the lobby
-struct LobbyPlayer
+// All sprites for the lobby ui
+struct LobbySprites
 {
-  void performDisconnect()
-  {
-    has_connected = false;
-    is_ready = false;
-    current_class = player_classes::UNASSIGNED;
-  }
-  bool has_connected = false;
-  bool is_ready = false;
-  player_classes current_class = player_classes::UNASSIGNED;
+  ScaledSprite* this_is_you = nullptr;
+  ScaledSprite* game_countdown_ui = nullptr;
+  ScaledSprite* ready_prompt_marker[4] = { nullptr, nullptr, nullptr, nullptr };
+  ScaledSprite* ready_marker[4] = { nullptr, nullptr, nullptr, nullptr };
 };
 
 class LobbyScene : public Scene
@@ -37,17 +33,18 @@ class LobbyScene : public Scene
 
  private:
   int lobby_id = -1;
+  int my_player_index = -1;
   double game_countdown = 5.0;
-  Menu main_menu;
-  int my_player_index = -1; // the index of me in the player array
-  LobbyPlayer players[4];
-  bool has_connected = false; // have i connected to the lobby?
-  ScaledSprite* this_is_you = nullptr;
-  ScaledSprite* game_countdown_ui = nullptr;
-  ScaledSprite* ready_marker[4] = { nullptr, nullptr, nullptr, nullptr };
+
+  bool has_connected = false;
   bool can_change_ready_state = true;
   bool should_start_game = false;
+
+  Menu main_menu;
   Localisation localiser;
+
+  LobbyPlayer* players[4] = { nullptr, nullptr, nullptr, nullptr };
+  LobbySprites lobby_sprites;
 };
 
 #endif // PROJECT_LOBBYSCENE_H

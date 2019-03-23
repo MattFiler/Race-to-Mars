@@ -1,16 +1,24 @@
 #ifndef PROJECT_PLAYERDATA_H
 #define PROJECT_PLAYERDATA_H
 
-#include "gamelib/Networked/Cards.h"
-#include "gamelib/Networked/Players.h"
-#include "gamelib/Networked/Rooms.h"
+#include "gamelib/NetworkedData/Players.h"
 
-struct PlayerData
+// All useful info for a player in the lobby
+struct LobbyPlayer
 {
-  int action_points;
-  ship_rooms current_room;
-  objective_cards current_objective;
-  player_classes class_identifier;
+  void performDisconnect()
+  {
+    has_connected = false;
+    is_ready = false;
+    is_this_client = false;
+    is_active = false;
+    current_class = player_classes::UNASSIGNED;
+  }
+  bool has_connected = false;
+  bool is_this_client = false;
+  bool is_ready = false;
+  bool is_active = false;
+  player_classes current_class = player_classes::UNASSIGNED;
 };
 
 #endif // PROJECT_PLAYERDATA_H

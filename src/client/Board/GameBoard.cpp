@@ -32,5 +32,5 @@ ShipRoom GameBoard::getClickedInteractable(Vector2 clicked_pos)
 void GameBoard::render()
 {
   m_ship.render();
-  m_players.render(game_global_scenes::IN_GAME);
+  m_players->render(game_global_scenes::IN_GAME);
 }
