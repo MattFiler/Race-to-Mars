@@ -148,7 +148,7 @@ void LobbyScene::keyHandler(const ASGE::SharedEventData data)
       my_player_index,
       lobby_id);
   }
-  if (keys.keyReleased("Back"))
+  if (keys.keyReleased("Back") && !should_start_game)
   {
     // Alert everyone we're leaving
     Locator::getClient()->sendData(data_roles::CLIENT_DISCONNECTING_FROM_LOBBY,
@@ -174,7 +174,7 @@ void LobbyScene::clickHandler(const ASGE::SharedEventData data)
 /* Update function */
 game_global_scenes LobbyScene::update(const ASGE::GameTime& game_time)
 {
-  if (has_connected)
+  if (has_connected && lobby_sprites.ready_marker[0] == nullptr)
   {
     for (int i = 0; i < 4; i++)
     {

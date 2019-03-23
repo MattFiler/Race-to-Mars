@@ -1,4 +1,6 @@
 #include "client/Scenes/GameScene.h"
+#include "client/Core/ServiceLocator.h"
+#include "client/NetworkConnection/NetworkConnection.h"
 #include "gamelib/NetworkedData/MessageTypes.h"
 #include "gamelib/NetworkedData/NetworkedData.h"
 #include <gamelib/Packet.h>
@@ -6,7 +8,9 @@
 /* Initialise the scene */
 void GameScene::init()
 {
-  m_board_menu.addMenuSprite("BOARD/background.jpg");
+  pause_menu.addMenuSprite("BOARD/background.jpg");
+  pause_menu.addMenuItem("MENU_CONTINUE");
+  pause_menu.addMenuItem("MENU_QUIT");
   m_deck.initDecks();
 
   // Get a reference to the client lobby data array
@@ -19,6 +23,7 @@ void GameScene::init()
     }
   }
 
+  game_sprites.background = new ScaledSprite("UI/BOARD/background.jpg");
   game_sprites.active_player_marker = new ScaledSprite("UI/INGAME_UI/"
                                                        "active_player_tab.png");
   game_sprites.active_player_marker->yPos(-180.0f);
@@ -72,14 +77,42 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
 void GameScene::keyHandler(const ASGE::SharedEventData data)
 {
   keys.registerEvent(static_cast<const ASGE::KeyEvent*>(data.get()));
-  if (keys.keyReleased("Back"))
+  switch (current_state)
   {
-    debug_text.print("Swapping to menu scene.");
-    next_scene = game_global_scenes::MAIN_MENU;
-  }
-  if (keys.keyReleased("Debug Test"))
-  {
-    test_val = true;
+    case game_state::PLAYING:
+    {
+      if (keys.keyReleased("Back"))
+      {
+        current_state = game_state::LOCAL_PAUSE;
+        debug_text.print("Opening pause menu.");
+      }
+      break;
+    }
+    case game_state::LOCAL_PAUSE:
+    {
+      if (pause_menu.itemWasSelected(keys))
+      {
+        if (pause_menu.selectedItemWas("MENU_CONTINUE"))
+        {
+          current_state = game_state::PLAYING;
+          debug_text.print("Closing pause menu.");
+        }
+        else if (pause_menu.selectedItemWas("MENU_QUIT"))
+        {
+          // Alert everyone we're leaving and then return to menu
+          Locator::getClient()->sendData(
+            data_roles::CLIENT_DISCONNECTING_FROM_LOBBY, my_player_index);
+          next_scene = game_global_scenes::MAIN_MENU;
+          debug_text.print("Returning to main menu and disconnecting from "
+                           "lobby.");
+        }
+      }
+      break;
+    }
+    default:
+    {
+      break; // unhandled!
+    }
   }
 }
 
@@ -108,30 +141,48 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
 /* Render function */
 void GameScene::render()
 {
-  m_board_menu.render();
-  m_board.render();
-
-  for (int i = 0; i < 4; i++)
+  switch (current_state)
   {
-    float this_pos = static_cast<float>(180 * i);
-
-    Locator::getPlayers()
-      ->getPlayer(players[i]->current_class)
-      ->getGameTabSprite()
-      ->yPos(this_pos);
-    renderer->renderSprite(*Locator::getPlayers()
-                              ->getPlayer(players[i]->current_class)
-                              ->getGameTabSprite()
-                              ->getSprite());
-
-    renderer->renderSprite(*game_sprites.progress_meter->getSprite());
-    renderer->renderSprite(*game_sprites.progress_marker->getSprite());
-
-    renderer->renderSprite(*game_sprites.inactive_player_marker->getSprite());
-    if (players[i]->is_active)
+    case game_state::LOOKING_AT_PLAYER_INFO:
     {
-      game_sprites.active_player_marker->yPos(this_pos);
-      renderer->renderSprite(*game_sprites.active_player_marker->getSprite());
+      [[clang::fallthrough]];
+    }
+    case game_state::PLAYING:
+    {
+      renderer->renderSprite(*game_sprites.background->getSprite());
+      m_board.render();
+
+      for (int i = 0; i < 4; i++)
+      {
+        float this_pos = static_cast<float>(180 * i);
+
+        Locator::getPlayers()
+          ->getPlayer(players[i]->current_class)
+          ->getGameTabSprite()
+          ->yPos(this_pos);
+        renderer->renderSprite(*Locator::getPlayers()
+                                  ->getPlayer(players[i]->current_class)
+                                  ->getGameTabSprite()
+                                  ->getSprite());
+
+        renderer->renderSprite(
+          *game_sprites.inactive_player_marker->getSprite());
+        if (players[i]->is_active)
+        {
+          game_sprites.active_player_marker->yPos(this_pos);
+          renderer->renderSprite(
+            *game_sprites.active_player_marker->getSprite());
+        }
+      }
+
+      renderer->renderSprite(*game_sprites.progress_meter->getSprite());
+      renderer->renderSprite(*game_sprites.progress_marker->getSprite());
+
+      break;
+    }
+    case game_state::LOCAL_PAUSE:
+    {
+      pause_menu.render();
     }
   }
 }

@@ -9,6 +9,7 @@
 // All sprites for the game ui
 struct GameSprites
 {
+  ScaledSprite* background = nullptr;
   ScaledSprite* inactive_player_marker = nullptr;
   ScaledSprite* active_player_marker = nullptr;
   ScaledSprite* progress_meter = nullptr;
@@ -36,8 +37,17 @@ class GameScene : public Scene
   bool test_val = false;
 
  private:
+  enum game_state
+  {
+    PLAYING,               // The regular in-game state
+    LOCAL_PAUSE,           // The quit menu
+    LOOKING_AT_PLAYER_INFO // The player info popup
+  };
+
+  game_state current_state = game_state::PLAYING;
+
   GameBoard m_board;
-  Menu m_board_menu;
+  Menu pause_menu;
   Deck m_deck;
   GameSprites game_sprites;
   LobbyPlayer* players[4] = { nullptr, nullptr, nullptr, nullptr };
