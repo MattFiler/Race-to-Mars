@@ -17,6 +17,7 @@ void LobbyScene::init()
 {
   main_menu.addMenuSprite("LOBBY/background.jpg");
   this_is_you = new ScaledSprite("data/UI/LOBBY/this_is_you.png");
+  game_countdown_ui = new ScaledSprite("data/UI/LOBBY/starting_3_notext.png");
   for (int i = 0; i < 4; i++)
   {
     ready_marker[i] = new ScaledSprite("data/UI/LOBBY/ready.png");
@@ -147,6 +148,11 @@ void LobbyScene::keyHandler(const ASGE::SharedEventData data)
     debug_text.print("Swapping to menu scene.");
     next_scene = game_global_scenes::MAIN_MENU;
   }
+  if (keys.keyReleased("Debug Skip Readyup"))
+  {
+    // DEBUG ONLY LOCAL GAME START
+    // should_start_game = true;
+  }
 }
 
 /* Handles mouse clicks */
@@ -160,7 +166,7 @@ game_global_scenes LobbyScene::update(const ASGE::GameTime& game_time)
 {
   if (should_start_game)
   {
-    game_countdown -= game_time.delta.count() * 1000;
+    game_countdown -= game_time.delta.count() / 1000;
     if (game_countdown <= 0.0)
     {
       next_scene = game_global_scenes::IN_GAME;
@@ -200,4 +206,15 @@ void LobbyScene::render()
     }
   }
   renderer->renderSprite(*this_is_you->getSprite());
+
+  if (should_start_game)
+  {
+    renderer->renderSprite(*game_countdown_ui->getSprite());
+    renderer->renderText(
+      localiser.getString("LOBBY_COUNTDOWN_" +
+                          std::to_string(static_cast<int>(game_countdown) + 1)),
+      45,
+      678,
+      ASGE::COLOURS::WHITE);
+  }
 }
