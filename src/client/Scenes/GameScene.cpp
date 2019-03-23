@@ -25,6 +25,11 @@ void GameScene::init()
   game_sprites.inactive_player_marker = new ScaledSprite("UI/INGAME_UI/"
                                                          "inactive_player_tab_"
                                                          "singlesprite.png");
+  game_sprites.progress_meter = new ScaledSprite("UI/INGAME_UI/"
+                                                 "progress_bar.png");
+  game_sprites.progress_marker = new ScaledSprite("UI/INGAME_UI/"
+                                                  "progress_marker_padded.png");
+  game_sprites.progress_marker->yPos(89.0f); // increment this as we progress
 }
 
 /* Handles connecting to the server */
@@ -118,6 +123,9 @@ void GameScene::render()
                               ->getPlayer(players[i]->current_class)
                               ->getGameTabSprite()
                               ->getSprite());
+
+    renderer->renderSprite(*game_sprites.progress_meter->getSprite());
+    renderer->renderSprite(*game_sprites.progress_marker->getSprite());
 
     renderer->renderSprite(*game_sprites.inactive_player_marker->getSprite());
     if (players[i]->is_active)

@@ -11,6 +11,8 @@ struct GameSprites
 {
   ScaledSprite* inactive_player_marker = nullptr;
   ScaledSprite* active_player_marker = nullptr;
+  ScaledSprite* progress_meter = nullptr;
+  ScaledSprite* progress_marker = nullptr;
 };
 
 class GameScene : public Scene

@@ -7,7 +7,7 @@ Ship::Ship()
   renderer = Locator::getRenderer();
 
   // Configure ship
-  sprite.setSprite("data/UI/BOARD/bounding box debug.png");
+  sprite.setSprite("data/UI/BOARD/ship.png");
   ship_config = file_handler.openAsJSON("CONFIGS/ship_config.json");
   sprite.setPosition(
     Vector2(ship_config["default_pos"][0], ship_config["default_pos"][1]));
