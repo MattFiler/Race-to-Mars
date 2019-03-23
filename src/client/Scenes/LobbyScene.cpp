@@ -55,6 +55,7 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
           players[i].is_ready =
             static_cast<player_classes>(received_data.content[i + 5]);
         }
+        lobby_id = received_data.content[0];
         my_player_index = received_data.content[9];
 
         // Notify all clients in the lobby that we've connected
@@ -93,9 +94,24 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     case data_roles::PLAYER_CHANGED_LOBBY_READY_STATE:
     {
       // Player is now ready/unready when they weren't before
-      players[received_data.content[1]].is_ready =
-        static_cast<bool>(received_data.content[0]);
-      debug_text.print("A player changed their ready state!");
+      if (received_data.content[1] != my_player_index)
+      {
+        players[received_data.content[1]].is_ready =
+          static_cast<bool>(received_data.content[0]);
+        debug_text.print("A player changed their ready state!");
+      }
+      break;
+    }
+    case data_roles::SERVER_STARTS_GAME:
+    {
+      // The server has told us this lobby should start
+      for (int i = 0; i < 4; i++)
+      {
+        players[i].is_ready = true;
+      }
+      should_start_game = true;
+      can_change_ready_state = false;
+      debug_text.print("Server told us to start the game!");
       break;
     }
     default:
@@ -110,14 +126,15 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
 void LobbyScene::keyHandler(const ASGE::SharedEventData data)
 {
   keys.registerEvent(static_cast<const ASGE::KeyEvent*>(data.get()));
-  if (keys.keyReleased("Ready Up"))
+  if (keys.keyReleased("Ready Up") && can_change_ready_state)
   {
-    // Alert everyone we're ready or unready
+    // Alert everyone we're ready or unready (can't unready after all are ready)
     players[my_player_index].is_ready = !players[my_player_index].is_ready;
     Locator::getClient()->sendData(
       data_roles::PLAYER_CHANGED_LOBBY_READY_STATE,
       static_cast<int>(players[my_player_index].is_ready),
-      static_cast<int>(players[my_player_index].current_class));
+      my_player_index,
+      lobby_id);
   }
   if (keys.keyReleased("Back"))
   {
@@ -141,6 +158,15 @@ void LobbyScene::clickHandler(const ASGE::SharedEventData data)
 /* Update function */
 game_global_scenes LobbyScene::update(const ASGE::GameTime& game_time)
 {
+  if (should_start_game)
+  {
+    game_countdown -= game_time.delta.count() * 1000;
+    if (game_countdown <= 0.0)
+    {
+      next_scene = game_global_scenes::IN_GAME;
+      should_start_game = false;
+    }
+  }
   return next_scene;
 }
 

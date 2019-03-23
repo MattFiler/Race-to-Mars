@@ -36,12 +36,16 @@ class LobbyScene : public Scene
   void render() override;
 
  private:
+  int lobby_id = -1;
+  double game_countdown = 3.0;
   Menu main_menu;
   int my_player_index = -1; // the index of me in the player array
   LobbyPlayer players[4];
   bool has_connected = false; // have i connected to the lobby?
   ScaledSprite* this_is_you = nullptr;
   ScaledSprite* ready_marker[4] = { nullptr, nullptr, nullptr, nullptr };
+  bool can_change_ready_state = true;
+  bool should_start_game = false;
 };
 
 #endif // PROJECT_LOBBYSCENE_H

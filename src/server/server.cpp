@@ -18,7 +18,10 @@ RaceToSpaceServer::~RaceToSpaceServer()
 void RaceToSpaceServer::initialise()
 {
   // Setup
-  debug_text.print("Initialising server on port " + std::to_string(port) + "!");
+  debug_text.print("--------------------------------");
+  debug_text.print("RACE TO SPACE SERVER VERSION 1.2");
+  debug_text.print("--------------------------------");
+  debug_text.print("Initialising on port " + std::to_string(port) + "!");
   auto init_client_func = [&](server_client& client, const char* ip) {
     client._uid = next_uid;
     next_uid++;
@@ -162,66 +165,114 @@ void RaceToSpaceServer::run()
 
       // If client requests lobby info, we need to send that directly to the
       // client that wants it
-      if (data_to_send.role == data_roles::CLIENT_REQUESTS_LOBBY_INFO)
+      switch (data_to_send.role)
       {
-        for (Lobby& this_lobby : lobbies)
+        case data_roles::CLIENT_REQUESTS_LOBBY_INFO:
         {
-          if (this_lobby.lobby_id == client.lobby_id)
-          {
-            int lobby_player_id = -1;
-            for (int i = 0; i < max_lobby_size; i++)
-            {
-              if (this_lobby.user_ids[i] == static_cast<int>(client.get_id()))
-              {
-                lobby_player_id = i;
-                break;
-              }
-            }
-            sendData(client.get_id(),
-                     data_roles::SERVER_GIVES_LOBBY_INFO,
-                     this_lobby.user_count,
-                     this_lobby.user_classes[0],
-                     this_lobby.user_classes[1],
-                     this_lobby.user_classes[2],
-                     this_lobby.user_classes[3],
-                     this_lobby.users_ready[0],
-                     this_lobby.users_ready[1],
-                     this_lobby.users_ready[2],
-                     this_lobby.users_ready[3],
-                     lobby_player_id);
-          }
-        }
-      }
-      // Otherwise, it's a message that needs to be forwarded to everyone
-      else
-      {
-        // We need to store lobby ready state before sending it out, so new
-        // players are up to date
-        if (data_to_send.role == data_roles::PLAYER_CHANGED_LOBBY_READY_STATE)
-        {
+          bool did_send = false;
           for (Lobby& this_lobby : lobbies)
           {
-            if (this_lobby.user_ids[data_to_send.content[1]] ==
-                static_cast<int>(client.get_id()))
+            if (this_lobby.lobby_id == client.lobby_id)
+            {
+              int lobby_player_id = -1;
+              for (int i = 0; i < max_lobby_size; i++)
+              {
+                if (this_lobby.user_ids[i] == static_cast<int>(client.get_id()))
+                {
+                  lobby_player_id = i;
+                  break;
+                }
+              }
+              did_send = true;
+              sendData(client,
+                       client.get_id(),
+                       data_roles::SERVER_GIVES_LOBBY_INFO,
+                       this_lobby.lobby_id,
+                       this_lobby.user_classes[0],
+                       this_lobby.user_classes[1],
+                       this_lobby.user_classes[2],
+                       this_lobby.user_classes[3],
+                       this_lobby.users_ready[0],
+                       this_lobby.users_ready[1],
+                       this_lobby.users_ready[2],
+                       this_lobby.users_ready[3],
+                       lobby_player_id);
+            }
+          }
+          if (!did_send)
+          {
+            debug_text.print("ERROR: Client " +
+                             std::to_string(client.get_id()) +
+                             " requested lobby info, but we didn't supply it.");
+          }
+          break;
+        }
+          // We need to store lobby ready state before sending it out, so new
+          // players are up to date
+        case data_roles::PLAYER_CHANGED_LOBBY_READY_STATE:
+        {
+          bool did_send = false;
+          for (Lobby& this_lobby : lobbies)
+          {
+            if (this_lobby.lobby_id == data_to_send.content[2])
             {
               this_lobby.users_ready[data_to_send.content[1]] =
                 static_cast<bool>(data_to_send.content[0]);
+
+              // See how many in the lobby are ready
+              int ready_count = 0;
+              for (int i = 0; i < max_lobby_size; i++)
+              {
+                if (this_lobby.users_ready[i])
+                {
+                  ready_count++;
+                }
+              }
+              debug_text.print(
+                std::to_string(ready_count) + " clients in lobby " +
+                std::to_string(this_lobby.lobby_id) + " are ready to start.");
+              if (ready_count == max_lobby_size)
+              {
+                // Everyone in lobby is ready, signal to all of them that we
+                // should start the game.
+                debug_text.print("Starting gameplay in lobby " +
+                                 std::to_string(this_lobby.lobby_id) + ".");
+                did_send = true;
+                sendData(client,
+                         static_cast<unsigned int>(-1),
+                         data_roles::SERVER_STARTS_GAME,
+                         1);
+              }
               break;
             }
           }
+          if (did_send)
+          {
+            break;
+          }
+          else
+          {
+            [[clang::fallthrough]];
+          }
         }
-        sendData(static_cast<unsigned int>(-1),
-                 data_to_send.role,
-                 data_to_send.content[0],
-                 data_to_send.content[1],
-                 data_to_send.content[2],
-                 data_to_send.content[3],
-                 data_to_send.content[4],
-                 data_to_send.content[5],
-                 data_to_send.content[6],
-                 data_to_send.content[7],
-                 data_to_send.content[8],
-                 data_to_send.content[9]);
+          // Otherwise, it's a message that needs to be forwarded to everyone in
+          // the lobby
+        default:
+        {
+          sendData(client,
+                   static_cast<unsigned int>(-1),
+                   data_to_send.role,
+                   data_to_send.content[0],
+                   data_to_send.content[1],
+                   data_to_send.content[2],
+                   data_to_send.content[3],
+                   data_to_send.content[4],
+                   data_to_send.content[5],
+                   data_to_send.content[6],
+                   data_to_send.content[7],
+                   data_to_send.content[8],
+                   data_to_send.content[9]);
+        }
       }
     });
 
@@ -235,8 +286,10 @@ void RaceToSpaceServer::run()
   }
 }
 
-/* Send data from server to a client, or all (user_id = -1) */
-void RaceToSpaceServer::sendData(unsigned int user_id,
+/* Send data from server to a client, or lobby (user_id = -1), or all (user_id =
+ * -2) */
+void RaceToSpaceServer::sendData(server_client& client,
+                                 unsigned int user_id,
                                  data_roles _role,
                                  int _content_1,
                                  int _content_2,
@@ -265,6 +318,38 @@ void RaceToSpaceServer::sendData(unsigned int user_id,
   packet_to_send << data_to_send;
 
   if (user_id == static_cast<unsigned int>(-1))
+  {
+    debug_text.print("Sending data to all clients in lobby " +
+                     std::to_string(client.lobby_id) + ", of type " +
+                     std::to_string(data_to_send.role) + ".");
+
+    bool has_sent = false;
+    for (Lobby& this_lobby : lobbies)
+    {
+      if (this_lobby.lobby_id == client.lobby_id)
+      {
+        for (int i = 0; i < max_lobby_size; i++)
+        {
+          if (this_lobby.user_ids[i] != -1)
+          {
+            network_server.send_packet_to_all_if(
+              static_cast<enet_uint8>(this_lobby.user_ids[i]),
+              reinterpret_cast<const enet_uint8*>(packet_to_send.data()),
+              static_cast<unsigned int>(packet_to_send.length()),
+              ENET_PACKET_FLAG_RELIABLE,
+              [&](const server_client& destination) { return true; });
+            has_sent = true;
+          }
+        }
+      }
+    }
+    if (!has_sent)
+    {
+      debug_text.print("ERROR: Failed to send data to clients in requested "
+                       "lobby.");
+    }
+  }
+  else if (user_id == static_cast<unsigned int>(-2))
   {
     debug_text.print("Sending data to all clients, of type " +
                      std::to_string(data_to_send.role) + ".");

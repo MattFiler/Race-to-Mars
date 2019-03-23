@@ -58,14 +58,19 @@ enum data_roles
 
   PLAYER_DISCONNECTED_FROM_LOBBY,
   /* ^ A client has disconnected from the lobby, let everyone know to forget
-   * them. [0] = the player ID
+   * them.
+   *   [0] = the player ID
    */
 
   PLAYER_CHANGED_LOBBY_READY_STATE,
   /* ^ A client has changed their ready state in the lobby.
    *   [0] = the ready state (0=unready, 1=ready)
    *   [1] = the player ID
+   *   [2] = the lobby ID
    */
+
+  SERVER_STARTS_GAME,
+  /* ^ All clients in the lobby are ready, signal to start the game. */
 
   PLAYER_MOVED_WITHIN_SHIP,
   /* ^ The active player has moved within the ship.
