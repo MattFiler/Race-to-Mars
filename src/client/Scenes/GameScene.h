@@ -6,6 +6,13 @@
 #include "client/Cards/Deck.h"
 #include "client/UI/Cursor.h"
 
+// All sprites for the game ui
+struct GameSprites
+{
+  ScaledSprite* inactive_player_marker = nullptr;
+  ScaledSprite* active_player_marker = nullptr;
+};
+
 class GameScene : public Scene
 {
  public:
@@ -30,6 +37,9 @@ class GameScene : public Scene
   GameBoard m_board;
   Menu m_board_menu;
   Deck m_deck;
+  GameSprites game_sprites;
+  LobbyPlayer* players[4] = { nullptr, nullptr, nullptr, nullptr };
+  int my_player_index = -1;
 };
 
 #endif // PROJECT_GAMESCENE_H

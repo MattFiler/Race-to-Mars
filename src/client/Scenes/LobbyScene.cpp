@@ -22,6 +22,12 @@ void LobbyScene::init()
                                                      "starting_3_notext_alt."
                                                      "png");
 
+  // Get a reference to the client lobby data array to update
+  for (int i = 0; i < 4; i++)
+  {
+    players[i] = &Locator::getPlayers()->players[i];
+  }
+
   // Request lobby info
   Locator::getClient()->sendData(data_roles::CLIENT_REQUESTS_TO_JOIN_LOBBY, 0);
 }
@@ -52,22 +58,23 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
         my_player_index = received_data.content[9];
         for (int i = 0; i < 4; i++)
         {
-          players[i].current_class =
+          players[i]->current_class =
             static_cast<player_classes>(received_data.content[i + 1]);
-          players[i].is_ready =
+          players[i]->is_ready =
             static_cast<player_classes>(received_data.content[i + 5]);
 
-          if (players[i].current_class != player_classes::UNASSIGNED)
+          if (players[i]->current_class != player_classes::UNASSIGNED)
           {
-            players[i].has_connected = true;
+            players[i]->has_connected = true;
           }
+          players[i]->is_this_client = (i == my_player_index);
         }
 
         // Notify all clients in the lobby that we've connected
         Locator::getClient()->sendData(data_roles::CLIENT_CONNECTED_TO_LOBBY,
                                        my_player_index,
-                                       players[my_player_index].is_ready,
-                                       players[my_player_index].current_class);
+                                       players[my_player_index]->is_ready,
+                                       players[my_player_index]->current_class);
         debug_text.print("We synced to the lobby!");
 
         has_connected = true;
@@ -79,9 +86,9 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       // A player that's not us connected to the lobby, update our info
       if (received_data.content[0] != my_player_index)
       {
-        players[received_data.content[0]].is_ready =
+        players[received_data.content[0]]->is_ready =
           static_cast<bool>(received_data.content[1]);
-        players[received_data.content[0]].current_class =
+        players[received_data.content[0]]->current_class =
           static_cast<player_classes>(received_data.content[2]);
       }
 
@@ -91,7 +98,7 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     case data_roles::CLIENT_DISCONNECTING_FROM_LOBBY:
     {
       // Forget them!
-      players[received_data.content[0]].performDisconnect();
+      players[received_data.content[0]]->performDisconnect();
 
       debug_text.print("A player disconnected from the lobby!");
       break;
@@ -101,7 +108,7 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       // Player is now ready/unready when they weren't before
       if (received_data.content[1] != my_player_index)
       {
-        players[received_data.content[1]].is_ready =
+        players[received_data.content[1]]->is_ready =
           static_cast<bool>(received_data.content[0]);
         debug_text.print("A player changed their ready state!");
       }
@@ -112,7 +119,7 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       // The server has told us this lobby should start
       for (int i = 0; i < 4; i++)
       {
-        players[i].is_ready = true;
+        players[i]->is_ready = true;
       }
       should_start_game = true;
       can_change_ready_state = false;
@@ -134,10 +141,10 @@ void LobbyScene::keyHandler(const ASGE::SharedEventData data)
   if (keys.keyReleased("Ready Up") && can_change_ready_state)
   {
     // Alert everyone we're ready or unready (can't unready after all are ready)
-    players[my_player_index].is_ready = !players[my_player_index].is_ready;
+    players[my_player_index]->is_ready = !players[my_player_index]->is_ready;
     Locator::getClient()->sendData(
       data_roles::CLIENT_CHANGED_LOBBY_READY_STATE,
-      static_cast<int>(players[my_player_index].is_ready),
+      static_cast<int>(players[my_player_index]->is_ready),
       my_player_index,
       lobby_id);
   }
@@ -205,23 +212,22 @@ void LobbyScene::render()
 
     // Position player sprite and render
     Locator::getPlayers()
-      ->getPlayer(players[i].current_class)
+      ->getPlayer(players[i]->current_class)
       ->getLobbySprite()
-      ->getSprite()
       ->xPos(this_pos);
     if (i == my_player_index)
     {
       lobby_sprites.this_is_you->xPos(this_pos); // Mark which one we are
     }
     renderer->renderSprite(*Locator::getPlayers()
-                              ->getPlayer(players[i].current_class)
+                              ->getPlayer(players[i]->current_class)
                               ->getLobbySprite()
                               ->getSprite());
 
     // Render ready-up prompt when appropriate
     if (lobby_sprites.ready_marker[i] != nullptr)
     {
-      if (players[i].is_ready)
+      if (players[i]->is_ready)
       {
         lobby_sprites.ready_marker[i]->xPos(this_pos);
         renderer->renderSprite(*lobby_sprites.ready_marker[i]->getSprite());

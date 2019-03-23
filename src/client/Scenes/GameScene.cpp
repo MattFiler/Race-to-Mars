@@ -8,6 +8,23 @@ void GameScene::init()
 {
   m_board_menu.addMenuSprite("BOARD/background.jpg");
   m_deck.initDecks();
+
+  // Get a reference to the client lobby data array
+  for (int i = 0; i < 4; i++)
+  {
+    players[i] = &Locator::getPlayers()->players[i];
+    if (players[i]->is_this_client)
+    {
+      my_player_index = i;
+    }
+  }
+
+  game_sprites.active_player_marker = new ScaledSprite("UI/INGAME_UI/"
+                                                       "active_player_tab.png");
+  game_sprites.active_player_marker->yPos(-180.0f);
+  game_sprites.inactive_player_marker = new ScaledSprite("UI/INGAME_UI/"
+                                                         "inactive_player_tab_"
+                                                         "singlesprite.png");
 }
 
 /* Handles connecting to the server */
@@ -88,4 +105,25 @@ void GameScene::render()
 {
   m_board_menu.render();
   m_board.render();
+
+  for (int i = 0; i < 4; i++)
+  {
+    float this_pos = static_cast<float>(180 * i);
+
+    Locator::getPlayers()
+      ->getPlayer(players[i]->current_class)
+      ->getGameTabSprite()
+      ->yPos(this_pos);
+    renderer->renderSprite(*Locator::getPlayers()
+                              ->getPlayer(players[i]->current_class)
+                              ->getGameTabSprite()
+                              ->getSprite());
+
+    renderer->renderSprite(*game_sprites.inactive_player_marker->getSprite());
+    if (players[i]->is_active)
+    {
+      game_sprites.active_player_marker->yPos(this_pos);
+      renderer->renderSprite(*game_sprites.active_player_marker->getSprite());
+    }
+  }
 }

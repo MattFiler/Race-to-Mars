@@ -2,22 +2,9 @@
 #define PROJECT_LOBBYSCENE_H
 
 #include "Scene.h"
+#include "client/NetworkedData/PlayerData.h"
 #include "gamelib/NetworkedData/Players.h"
 #include <enet/enet.h>
-
-// All useful info for a player in the lobby
-struct LobbyPlayer
-{
-  void performDisconnect()
-  {
-    has_connected = false;
-    is_ready = false;
-    current_class = player_classes::UNASSIGNED;
-  }
-  bool has_connected = false;
-  bool is_ready = false;
-  player_classes current_class = player_classes::UNASSIGNED;
-};
 
 // All sprites for the lobby ui
 struct LobbySprites
@@ -56,7 +43,7 @@ class LobbyScene : public Scene
   Menu main_menu;
   Localisation localiser;
 
-  LobbyPlayer players[4];
+  LobbyPlayer* players[4] = { nullptr, nullptr, nullptr, nullptr };
   LobbySprites lobby_sprites;
 };
 

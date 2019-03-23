@@ -24,12 +24,14 @@ class Player
 
   std::string getCounterSpritePath() { return config["counter_sprite"]; }
   std::string getLobbySpritePath() { return config["lobby_sprite"]; }
+  std::string getGameTabSpritePath() { return config["ingame_tab_sprite"]; }
   int getStartingRoom() { return config["start_room"]; }
   std::string getFriendlyName()
   {
     return localiser.getString(config["friendly_name"]);
   }
   ScaledSprite* getLobbySprite() { return lobby_sprite; }
+  ScaledSprite* getGameTabSprite() { return game_tab_sprite; }
 
   void makeUninitialised()
   {
@@ -51,6 +53,7 @@ class Player
   Localisation localiser;
   PlayerCounter counter;
   ScaledSprite* lobby_sprite = nullptr;
+  ScaledSprite* game_tab_sprite = nullptr;
   json config;
 };
 

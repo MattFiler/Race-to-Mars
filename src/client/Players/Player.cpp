@@ -34,4 +34,5 @@ void Player::setup()
   counter.setDimensions(
     Vector2(config["counter_width"], config["counter_height"]));
   lobby_sprite = new ScaledSprite(getLobbySpritePath());
+  game_tab_sprite = new ScaledSprite(getGameTabSpritePath());
 }
