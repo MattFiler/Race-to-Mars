@@ -338,6 +338,8 @@ void RaceToSpaceServer::sendData(server_client& client,
               static_cast<unsigned int>(packet_to_send.length()),
               ENET_PACKET_FLAG_RELIABLE,
               [&](const server_client& destination) { return true; });
+            debug_text.print("DEBUG: SENDING MESSAGE TO CLIENT " +
+                             std::to_string(this_lobby.user_ids[i]));
             has_sent = true;
           }
         }
