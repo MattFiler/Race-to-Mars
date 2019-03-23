@@ -17,6 +17,10 @@ void LobbyScene::init()
 {
   main_menu.addMenuSprite("LOBBY/background.jpg");
   this_is_you = new ScaledSprite("data/UI/LOBBY/this_is_you.png");
+  for (int i = 0; i < 4; i++)
+  {
+    ready_marker[i] = new ScaledSprite("data/UI/LOBBY/ready.png");
+  }
 
   // Request lobby info
   Locator::getClient()->sendData(data_roles::CLIENT_REQUESTS_LOBBY_INFO, 0);
@@ -163,6 +167,11 @@ void LobbyScene::render()
                               ->getSprite());
     // renderer->renderText(Locator::getPlayers()->getPlayer(players[i].current_class)->getFriendlyName(),
     // 50 + this_pos, 530, 0.5);
+    if (players[i].is_ready)
+    {
+      ready_marker[i]->xPos(this_pos);
+      renderer->renderSprite(*ready_marker[i]->getSprite());
+    }
   }
   renderer->renderSprite(*this_is_you->getSprite());
 }

@@ -41,6 +41,7 @@ class LobbyScene : public Scene
   LobbyPlayer players[4];
   bool has_connected = false; // have i connected to the lobby?
   ScaledSprite* this_is_you = nullptr;
+  ScaledSprite* ready_marker[4] = { nullptr, nullptr, nullptr, nullptr };
 };
 
 #endif // PROJECT_LOBBYSCENE_H
