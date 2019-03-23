@@ -33,10 +33,10 @@ enum data_roles
   /* ^ This is the default role and should never be sent across the network. */
 
   CLIENT_REQUESTS_TO_JOIN_LOBBY,
-  /* ^ The client needs to know lobby info - pls send. */
+  /* ^ The client wants to join a lobby. */
 
   SERVER_GIVES_LOBBY_INFO,
-  /* ^ The server is kindly sending the lobby info.
+  /* ^ The server is sending lobby info for the client that just joined.
    *   [0] = number of connected clients
    *   [1] = class of player 1 (-1 means disconnect)
    *   [2] = class of player 2 (-1 means disconnect)
@@ -49,7 +49,7 @@ enum data_roles
    *   [9] = the client's player index (-1 = something broke)
    */
 
-  PLAYER_CONNECTED_TO_LOBBY,
+  CLIENT_CONNECTED_TO_LOBBY,
   /* ^ A client has connected to the lobby, let all clients know its data.
    *   [0] = the player index
    *   [1] = if the player is ready
@@ -62,7 +62,7 @@ enum data_roles
    *   [0] = the player index
    */
 
-  PLAYER_CHANGED_LOBBY_READY_STATE,
+  CLIENT_CHANGED_LOBBY_READY_STATE,
   /* ^ A client has changed their ready state in the lobby.
    *   [0] = the ready state (0=unready, 1=ready)
    *   [1] = the player index

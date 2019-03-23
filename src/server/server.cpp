@@ -95,7 +95,7 @@ void RaceToSpaceServer::run()
         }
           // We need to store lobby ready state before sending it out, so new
           // players are up to date
-        case data_roles::PLAYER_CHANGED_LOBBY_READY_STATE:
+        case data_roles::CLIENT_CHANGED_LOBBY_READY_STATE:
         {
           bool did_send = false;
           for (Lobby& this_lobby : lobbies)

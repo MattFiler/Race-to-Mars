@@ -19,6 +19,10 @@ struct LobbyPlayer
   player_classes current_class = player_classes::UNASSIGNED;
 };
 
+struct LobbySprites
+{
+};
+
 class LobbyScene : public Scene
 {
  public:
@@ -44,6 +48,7 @@ class LobbyScene : public Scene
   bool has_connected = false; // have i connected to the lobby?
   ScaledSprite* this_is_you = nullptr;
   ScaledSprite* game_countdown_ui = nullptr;
+  ScaledSprite* ready_prompt_marker[4] = { nullptr, nullptr, nullptr, nullptr };
   ScaledSprite* ready_marker[4] = { nullptr, nullptr, nullptr, nullptr };
   bool can_change_ready_state = true;
   bool should_start_game = false;
