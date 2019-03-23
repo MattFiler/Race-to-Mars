@@ -1,6 +1,7 @@
 #pragma once
 #include "client/KeyHandler/KeyHandler.h"
 #include "client/NetworkConnection/NetworkConnection.h"
+#include "client/Players/AllPlayers.h"
 #include "client/Scenes/SceneManager.h"
 #include "client/UI/Cursor.h"
 #include "gamelib/Debug/DebugText.h"
@@ -53,4 +54,5 @@ class RaceToSpace : public ASGE::OGLGame
   SceneManager scene_manager;
   Localisation localiser;
   Cursor cursor_pointer;
+  Players* all_players = nullptr;
 };
