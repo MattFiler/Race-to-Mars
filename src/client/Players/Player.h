@@ -23,24 +23,34 @@ class Player
   ~Player() = default;
 
   std::string getCounterSpritePath() { return config["counter_sprite"]; }
+  std::string getLobbySpritePath() { return config["lobby_sprite"]; }
   int getStartingRoom() { return config["start_room"]; }
   std::string getFriendlyName()
   {
     return localiser.getString(config["friendly_name"]);
   }
+  ScaledSprite* getLobbySprite() { return lobby_sprite; }
 
-  void render();
+  void makeUninitialised()
+  {
+    retargetConfig("DEFAULT");
+    setup();
+  }
+
+  void render(game_global_scenes game_scene);
 
  protected:
   void retargetConfig(const std::string& name)
   {
     config = file_handler.loadConfigFromExisting(config, name);
   };
+  void setup();
 
   ASGE::Renderer* renderer = nullptr;
   FileHandler file_handler;
   Localisation localiser;
   PlayerCounter counter;
+  ScaledSprite* lobby_sprite = nullptr;
   json config;
 };
 

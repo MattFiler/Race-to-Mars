@@ -13,7 +13,7 @@
 class GameBoard
 {
  public:
-  GameBoard() = default;
+  GameBoard() { m_players = Locator::getPlayers(); };
   ~GameBoard() = default;
 
   bool isHoveringOverInteractable(Vector2 hover_pos);
@@ -23,7 +23,7 @@ class GameBoard
 
  private:
   bool cursorPosFallsIntoClickable(Vector2 pos);
-  Players m_players;
+  Players* m_players = nullptr;
   Ship m_ship;
   ShipRoom* clicked_room = nullptr;
 

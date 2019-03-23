@@ -14,6 +14,7 @@ namespace SoLoud
 {
 class Soloud;
 }
+struct Players;
 
 /*
  *
@@ -67,6 +68,15 @@ class Locator
     }
     return ref_cursor;
   };
+  static Players* getPlayers()
+  {
+    if (ref_players == nullptr)
+    {
+      throw std::runtime_error("Players were called before they were "
+                               "initialised.");
+    }
+    return ref_players;
+  };
 
   static void setupRenderer(ASGE::Renderer* inst_renderer)
   {
@@ -82,6 +92,10 @@ class Locator
     ref_client = inst_client;
   };
   static void setupCursor(Cursor* inst_cursor) { ref_cursor = inst_cursor; }
+  static void setupPlayers(Players* inst_players)
+  {
+    ref_players = inst_players;
+  }
 
  private:
   static ASGE::Renderer* ref_renderer;
@@ -89,6 +103,7 @@ class Locator
   static ASGE::Input* ref_input;
   static NetworkConnection* ref_client;
   static Cursor* ref_cursor;
+  static Players* ref_players;
 };
 
 /* Return a null handler here? Not sure if we want to fail gracefully. */

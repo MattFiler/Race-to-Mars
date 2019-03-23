@@ -1,6 +1,7 @@
 {
 	"DEFAULT": {
 		"PLACEHOLDER": "Placeholder Text",
+		"BLANK_STRING": "",
 	
 		"PLAYER_COMMS": "Communications",
 		"PLAYER_PILOT": "Pilot",
@@ -25,9 +26,11 @@
 		"LOBBY_READY_2": "2/4 players ready...",
 		"LOBBY_READY_3": "3/4 players ready...",
 		"LOBBY_READY_4": "4/4 players ready...",
-		"LOBBY_COUNTDOWN_3": "Starting in 3...",
-		"LOBBY_COUNTDOWN_2": "Starting in 2...",
-		"LOBBY_COUNTDOWN_1": "Starting in 1...",
+		"LOBBY_COUNTDOWN_5": "Starting in 3...",
+		"LOBBY_COUNTDOWN_4": "Starting in 2...",
+		"LOBBY_COUNTDOWN_3": "Starting in 1...",
+		"LOBBY_COUNTDOWN_2": "Starting game.",
+		"LOBBY_COUNTDOWN_1": "Starting game..",
 		"LOBBY_COUNTDOWN_0": "Starting game..."
 	}
 }

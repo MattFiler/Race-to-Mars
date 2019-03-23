@@ -14,6 +14,7 @@ struct server_client
   unsigned int get_id() const { return _uid; }
   int lobby_id = -1;
   int lobby_index = -1;
+  int client_index = -1;
 };
 
 /* A game lobby */
@@ -40,8 +41,12 @@ class RaceToSpaceServer
   void initialise();
   void run();
 
+  void connectToLobby(server_client& client);
+  void disconnectFromLobby(int client_id);
+
  private:
-  void sendData(unsigned int user_id,
+  void sendData(server_client& client,
+                unsigned int user_id,
                 data_roles _role,
                 int _content_1,
                 int _content_2 = 0,
