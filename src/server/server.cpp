@@ -332,12 +332,12 @@ void RaceToSpaceServer::sendData(server_client& client,
         {
           if (this_lobby.user_ids[i] != -1)
           {
-            network_server.send_packet_to_all_if(
+            network_server.send_packet_to(
               static_cast<enet_uint8>(this_lobby.user_ids[i]),
+              0,
               reinterpret_cast<const enet_uint8*>(packet_to_send.data()),
               static_cast<unsigned int>(packet_to_send.length()),
-              ENET_PACKET_FLAG_RELIABLE,
-              [&](const server_client& destination) { return true; });
+              ENET_PACKET_FLAG_RELIABLE);
             debug_text.print("DEBUG: SENDING MESSAGE TO CLIENT " +
                              std::to_string(this_lobby.user_ids[i]));
             has_sent = true;

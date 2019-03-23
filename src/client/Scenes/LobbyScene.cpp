@@ -212,7 +212,7 @@ void LobbyScene::render()
     renderer->renderSprite(*game_countdown_ui->getSprite());
     renderer->renderText(
       localiser.getString("LOBBY_COUNTDOWN_" +
-                          std::to_string(static_cast<int>(game_countdown) + 1)),
+                          std::to_string(static_cast<int>(game_countdown))),
       45,
       678,
       ASGE::COLOURS::WHITE);
