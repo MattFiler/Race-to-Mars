@@ -16,7 +16,7 @@ class ObjectiveCard : public Card
   void setCardID(objective_cards _obj_card_id);
 
  private:
-  objective_cards m_cardID = objective_cards::OBJECTIVE_PLACEHOLDER
+  objective_cards m_cardID = objective_cards::OBJECTIVE_PLACEHOLDER;
 };
 
 #endif // PROJECT_OBJECTIVECARD_H
