@@ -104,7 +104,6 @@ void RaceToSpaceServer::run()
           {
             if (this_lobby.lobby_id == client.lobby_id)
             {
-              // cppcheck-suppress *
               this_clients_lobby = &this_lobby;
             }
           }
@@ -177,7 +176,6 @@ void RaceToSpaceServer::run()
           for (Lobby& this_lobby : lobbies)
           {
             if (this_lobby.lobby_id == data_to_send.content[2])
-            // cppcheck-suppress *
             {
               this_lobby.users_ready[data_to_send.content[1]] =
                 static_cast<bool>(data_to_send.content[0]);

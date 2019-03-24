@@ -8,6 +8,7 @@
 
 struct Players
 {
+  // cppcheck-suppress *
   Players() { player_uninitialised.makeUninitialised(); }
 
   // Render (scene dependant)
@@ -57,6 +58,5 @@ struct Players
   Player player_uninitialised;
 
   // Class client data
-  // cppcheck-suppress *
   LobbyPlayer players[4];
 };
