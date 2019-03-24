@@ -15,7 +15,8 @@
 		"ROOM_ENGINE": "Engine Room",
 		
 		"MENU_NEWGAME": "New Game",
-		"MENU_QUIT": "Quit Game",
+		"MENU_CONTINUE": "Continue",
+		"MENU_QUIT": "Quit",
 		
 		"LOBBY_AWAITING": "Awaiting players...",
 		"LOBBY_CONN_1": "1/4 players connected...",

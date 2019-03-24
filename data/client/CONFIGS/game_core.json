@@ -11,7 +11,8 @@
 		  "Menu Down": 264,
 		  "Debug Test": 80,
 		  "Ready Up": 88,
-		  "Debug Skip Readyup": 32
+		  "Debug Skip Readyup": 32,
+		  "End Turn": 77
 		},
 		"language": "English",
 		"server_hostname": "localhost",
