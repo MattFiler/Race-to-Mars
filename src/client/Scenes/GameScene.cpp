@@ -35,6 +35,7 @@ void GameScene::init()
   game_sprites.progress_marker = new ScaledSprite("UI/INGAME_UI/"
                                                   "progress_marker_padded.png");
   game_sprites.progress_marker->yPos(89.0f); // increment this as we progress
+  game_sprites.sync_overlay = new ScaledSprite("UI/INGAME_UI/syncing.png");
 }
 
 /* Handles connecting to the server */
@@ -78,8 +79,33 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
 
       // And yeah, should really handle this too! Might get complicated with
       // scores, etc - maybe don't allow it?
-      debug_text.print("A NEW PLATER CONNECTED TO THE LOBBY - AGAIN, WHAT THE "
+      debug_text.print("A NEW PLAYER CONNECTED TO THE LOBBY - AGAIN, WHAT THE "
                        "HELL DO WE DO!?!?");
+      break;
+    }
+    case data_roles::SERVER_ENDED_CLIENT_TURN:
+    {
+      current_scene_lock_active = true;
+
+      // Update active player flag
+      for (int i = 0; i < 4; i++)
+      {
+        players[i]->is_active = (received_data.content[1] == i);
+      }
+
+      // Re-sync progress index every turn
+      current_progress_index = received_data.content[2];
+
+      // Re-sync issue cards every turn
+      for (int i = 0; i < max_issue_cards; i++)
+      {
+        active_issue_cards[i] = received_data.content[i + 3];
+      }
+
+      current_scene_lock_active = false;
+      debug_text.print("The server ended the current go, and passed "
+                       "active-ness to client " +
+                       std::to_string(received_data.content[1]) + ".");
       break;
     }
     default:
@@ -99,10 +125,17 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
   {
     case game_state::PLAYING:
     {
-      if (keys.keyReleased("Back"))
+      if (keys.keyReleased("Back") && !current_scene_lock_active)
       {
         current_state = game_state::LOCAL_PAUSE;
         debug_text.print("Opening pause menu.");
+      }
+      if (keys.keyReleased("End Turn") && players[my_player_index]->is_active)
+      {
+        Locator::getClient()->sendData(data_roles::CLIENT_WANTS_TO_END_TURN,
+                                       my_player_index);
+        current_scene_lock_active = true;
+        debug_text.print("Requesting to end my go!!");
       }
       break;
     }
@@ -139,11 +172,19 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
 {
   Vector2 mouse_pos = Vector2(Locator::getCursor()->getPosition().x,
                               Locator::getCursor()->getPosition().y);
-  if (m_board.isHoveringOverInteractable(mouse_pos))
+  if (m_board.isHoveringOverInteractable(mouse_pos) &&
+      !current_scene_lock_active)
   {
     ShipRoom this_room = m_board.getClickedInteractable(mouse_pos);
     debug_text.print("Clicked on an interactable part of the board!");
     debug_text.print("CLICKED: " + this_room.getName());
+
+    Locator::getPlayers()
+      ->getPlayer(players[my_player_index]->current_class)
+      ->setPos(this_room.getCentre());
+    debug_text.print("Moving my player token to this room. Position: (" +
+                     std::to_string(this_room.getCentre().x) + ", " +
+                     std::to_string(this_room.getCentre().y) + ").");
   }
 }
 
@@ -160,10 +201,14 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
     // update bits?
   }
 
-  // Cursor hover always updates
-  Locator::getCursor()->setCursorActive(m_board.isHoveringOverInteractable(
-    Vector2(Locator::getCursor()->getPosition().x,
-            Locator::getCursor()->getPosition().y)));
+  // Cursor hover always updates unless lock active
+  if (!current_scene_lock_active)
+  {
+    Locator::getCursor()->setCursorActive(m_board.isHoveringOverInteractable(
+      Vector2(Locator::getCursor()->getPosition().x,
+              Locator::getCursor()->getPosition().y)));
+  }
+
   return next_scene;
 }
 
@@ -212,6 +257,8 @@ void GameScene::render()
 
       // Progress meters
       renderer->renderSprite(*game_sprites.progress_meter->getSprite());
+      game_sprites.progress_marker->yPos(
+        static_cast<float>(current_progress_index * 50));
       renderer->renderSprite(*game_sprites.progress_marker->getSprite());
 
       break;
@@ -220,6 +267,12 @@ void GameScene::render()
     {
       pause_menu.render();
     }
+  }
+  // If active, render the "scene lock" overlay (cuts out interaction while
+  // syncing)
+  if (current_scene_lock_active)
+  {
+    renderer->renderSprite(*game_sprites.sync_overlay->getSprite());
   }
 
   // client debugging
@@ -247,5 +300,6 @@ void GameScene::render()
                          10,
                          90,
                          0.5);
+    renderer->renderText("PRESS M TO FINISH TURN", 10, 110, 0.5);
   }
 }

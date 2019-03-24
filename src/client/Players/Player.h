@@ -30,8 +30,14 @@ class Player
   {
     return localiser.getString(config["friendly_name"]);
   }
+  // ScaledSprite* getCounterSprite() { return counter.getSprite(); } -
+  // shouldn't be needed as we provide a render function and necessary handles
+  // for moving, etc
   ScaledSprite* getLobbySprite() { return lobby_sprite; }
   ScaledSprite* getGameTabSprite() { return game_tab_sprite; }
+
+  void setPos(Vector2 new_pos) { counter.setPosition(new_pos); }
+  Vector2 getPos() { return counter.getPosition(); }
 
   void makeUninitialised()
   {

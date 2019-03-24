@@ -38,40 +38,57 @@ enum data_roles
   SERVER_GIVES_LOBBY_INFO,
   /* ^ The server is sending lobby info for the client that just joined.
    *   [0] = number of connected clients
-   *   [1] = class of player 1 (-1 means disconnect)
-   *   [2] = class of player 2 (-1 means disconnect)
-   *   [3] = class of player 3 (-1 means disconnect)
-   *   [4] = class of player 4 (-1 means disconnect)
-   *   [5] = player 1 ready (0=no,1=yes)
-   *   [6] = player 2 ready (0=no,1=yes)
-   *   [7] = player 3 ready (0=no,1=yes)
-   *   [8] = player 4 ready (0=no,1=yes)
-   *   [9] = the client's player index (-1 = something broke)
+   *   [1] = class of client 1 (-1 means disconnect)
+   *   [2] = class of client 2 (-1 means disconnect)
+   *   [3] = class of client 3 (-1 means disconnect)
+   *   [4] = class of client 4 (-1 means disconnect)
+   *   [5] = client 1 ready (0=no,1=yes)
+   *   [6] = client 2 ready (0=no,1=yes)
+   *   [7] = client 3 ready (0=no,1=yes)
+   *   [8] = client 4 ready (0=no,1=yes)
+   *   [9] = the client's index (-1 = something broke)
    */
 
   CLIENT_CONNECTED_TO_LOBBY,
   /* ^ A client has connected to the lobby, let all clients know its data.
-   *   [0] = the player index
-   *   [1] = if the player is ready
-   *   [2] = the player's current class
+   *   [0] = the client index
+   *   [1] = if the client is ready
+   *   [2] = the client's current class
    */
 
   CLIENT_DISCONNECTING_FROM_LOBBY,
   /* ^ A client has disconnected from the lobby, let everyone know to forget
    * them.
-   *   [0] = the player index
+   *   [0] = the client index
    */
 
   CLIENT_CHANGED_LOBBY_READY_STATE,
   /* ^ A client has changed their ready state in the lobby.
    *   [0] = the ready state (0=unready, 1=ready)
-   *   [1] = the player index
+   *   [1] = the client index
    *   [2] = the lobby ID
    */
 
   SERVER_STARTS_GAME,
   /* ^ All clients in the lobby are ready, signal to start the game.
-   *   [0] = the client to start
+   *   [0] = the client to start playing first
+   */
+
+  CLIENT_WANTS_TO_END_TURN,
+  /* ^ The active client wants the server to end their go.
+   *   [0] = the client index which is trying to end
+   */
+
+  SERVER_ENDED_CLIENT_TURN,
+  /* ^ Active client turn ended, re-sync game data (may be new if "full
+   * rotation"). [0] = the client that finished [1] = the next client to play
+   *   [2] = the position of the ship on the board (may not change)
+   *   [3] = issue card in slot 1 (may not change)
+   *   [4] = issue card in slot 2 (may not change)
+   *   [5] = issue card in slot 3 (may not change)
+   *   [6] = issue card in slot 4 (may not change)
+   *   [7] = issue card in slot 5 (may not change)
+   *   [8] = was this a new "full rotation" (1=yes,0=no)
    */
 
   /* Any below here are SPECULATIVE and not actually implemented! */

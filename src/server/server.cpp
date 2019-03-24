@@ -90,6 +90,84 @@ void RaceToSpaceServer::run()
 
           break;
         }
+          // The currently active client wants to end their turn, so we need to
+          // progress the game - this may be as simple as going to the next
+          // player, but if we've done a full rotation in this lobby, new issue
+          // cards will need to be pulled, etc
+        case data_roles::CLIENT_WANTS_TO_END_TURN:
+        {
+          bool has_done_full_rotation = false;
+          Lobby* this_clients_lobby = nullptr;
+
+          // Find the client's actual lobby instance
+          for (Lobby& this_lobby : lobbies)
+          {
+            if (this_lobby.lobby_id == client.lobby_id)
+            {
+              this_clients_lobby = &this_lobby;
+            }
+          }
+
+          // Should never have this happen, but just in case - throw an error
+          // and keep the server going...
+          if (this_clients_lobby == nullptr)
+          {
+            debug_text.print("ERROR - Client wanted to end turn, but we "
+                             "couldn't get their lobby's info to do so!");
+            break;
+          }
+
+          // Work out what client should go next
+          if (this_clients_lobby->currently_active_player + 1 <=
+              max_lobby_size - 1)
+          {
+            this_clients_lobby->currently_active_player++;
+          }
+          else
+          {
+            this_clients_lobby->currently_active_player = 0;
+          }
+
+          // If the next client was who started, we've done a "full rotation",
+          // work out some game logic
+          if (this_clients_lobby->currently_active_player ==
+              this_clients_lobby->player_that_started_id)
+          {
+            has_done_full_rotation = true;
+
+            // increment current ship position (win condition handling is done
+            // client side)
+            this_clients_lobby->current_progress_index++;
+
+            // pull some new issue cards
+            // FOR JACK TO DO!
+            // GO THROUGH THE DECK HERE AND PICK OUT SOME ISSUE CARDS, ADD THEIR
+            // IDs TO this_clients_lobby->active_issue_cards - WIN/LOSS
+            // CONDITIONS SHOULD THEN BE HANDLED CLIENT SIDE
+
+            // If this is an objective card spot, give a new objectve card
+            if (this_clients_lobby->current_progress_index % 3)
+            {
+              // OBJECTIVE CARDS ARE A WIP!!
+            }
+          }
+
+          // Forward current game data to all clients in this lobby
+          sendData(client,
+                   static_cast<unsigned int>(-1),
+                   data_roles::SERVER_ENDED_CLIENT_TURN,
+                   static_cast<int>(client.get_id()),
+                   this_clients_lobby->currently_active_player,
+                   this_clients_lobby->current_progress_index,
+                   this_clients_lobby->active_issue_cards[0],
+                   this_clients_lobby->active_issue_cards[1],
+                   this_clients_lobby->active_issue_cards[2],
+                   this_clients_lobby->active_issue_cards[3],
+                   this_clients_lobby->active_issue_cards[4],
+                   static_cast<int>(has_done_full_rotation));
+
+          break;
+        }
           // We need to store lobby ready state before sending it out, so new
           // players are up to date
         case data_roles::CLIENT_CHANGED_LOBBY_READY_STATE:
@@ -120,12 +198,15 @@ void RaceToSpaceServer::run()
                 // should start the game.
                 debug_text.print("Starting gameplay in lobby " +
                                  std::to_string(this_lobby.lobby_id) + ".");
+                int starting_player = 0; // The id of the starting client, maybe
+                                         // randomise this?
+                this_lobby.player_that_started_id = starting_player;
+                this_lobby.currently_active_player = starting_player;
                 did_send = true;
                 sendData(client,
                          static_cast<unsigned int>(-1),
                          data_roles::SERVER_STARTS_GAME,
-                         0); // the client index to start (maybe randomise this
-                             // 0-3?)
+                         starting_player);
               }
               break;
             }
