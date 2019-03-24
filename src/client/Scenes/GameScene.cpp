@@ -108,6 +108,20 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
                        std::to_string(received_data.content[1]) + ".");
       break;
     }
+    case data_roles::CLIENT_MOVING_PLAYER_TOKEN:
+    {
+      if (received_data.content[0] != my_player_index)
+      {
+        // Move a player token if its not ours (local lag is gross!)
+        Locator::getPlayers()
+          ->getPlayer(players[received_data.content[0]]->current_class)
+          ->setPos(Vector2(static_cast<float>(received_data.content[1]),
+                           static_cast<float>(received_data.content[2])));
+        debug_text.print("A player on the server moved their counter! We're "
+                         "gonna do that too.");
+      }
+      break;
+    }
     default:
     {
       debug_text.print("An unhandled data packet was received, of type " +
@@ -170,21 +184,33 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
 /* Handles mouse clicks */
 void GameScene::clickHandler(const ASGE::SharedEventData data)
 {
-  Vector2 mouse_pos = Vector2(Locator::getCursor()->getPosition().x,
-                              Locator::getCursor()->getPosition().y);
-  if (m_board.isHoveringOverInteractable(mouse_pos) &&
-      !current_scene_lock_active)
-  {
-    ShipRoom this_room = m_board.getClickedInteractable(mouse_pos);
-    debug_text.print("Clicked on an interactable part of the board!");
-    debug_text.print("CLICKED: " + this_room.getName());
+  auto click = static_cast<const ASGE::ClickEvent*>(data.get());
 
-    Locator::getPlayers()
-      ->getPlayer(players[my_player_index]->current_class)
-      ->setPos(this_room.getCentre());
-    debug_text.print("Moving my player token to this room. Position: (" +
-                     std::to_string(this_room.getCentre().x) + ", " +
-                     std::to_string(this_room.getCentre().y) + ").");
+  if (click->action == ASGE::E_MOUSE_CLICK)
+  {
+    Vector2 mouse_pos = Vector2(Locator::getCursor()->getPosition().x,
+                                Locator::getCursor()->getPosition().y);
+    if (!current_scene_lock_active && players[my_player_index]->is_active &&
+        m_board.isHoveringOverInteractable(mouse_pos))
+    {
+      ShipRoom this_room = m_board.getClickedInteractable(mouse_pos);
+      debug_text.print("Clicked on an interactable part of the board!");
+      debug_text.print("CLICKED: " + this_room.getName());
+
+      Vector2 new_pos =
+        this_room.getPosForPlayer(players[my_player_index]->current_class);
+
+      // let everyone know we're moving
+      Locator::getClient()->sendData(data_roles::CLIENT_MOVING_PLAYER_TOKEN,
+                                     my_player_index,
+                                     static_cast<int>(new_pos.x),
+                                     static_cast<int>(new_pos.y));
+
+      Locator::getPlayers()
+        ->getPlayer(players[my_player_index]->current_class)
+        ->setPos(new_pos);
+      debug_text.print("Moving my player token to this room.");
+    }
   }
 }
 
@@ -193,20 +219,20 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
 {
   if (players[my_player_index]->is_active)
   {
-    // Allow us to interact with the board
+    // If we're not syncing, handle hover sprite update
+    if (!current_scene_lock_active)
+    {
+      Locator::getCursor()->setCursorActive(m_board.isHoveringOverInteractable(
+        Vector2(Locator::getCursor()->getPosition().x,
+                Locator::getCursor()->getPosition().y)));
+    }
   }
   else
   {
     // It isn't our go, but we might be able to still do stuff, or need to
     // update bits?
-  }
 
-  // Cursor hover always updates unless lock active
-  if (!current_scene_lock_active)
-  {
-    Locator::getCursor()->setCursorActive(m_board.isHoveringOverInteractable(
-      Vector2(Locator::getCursor()->getPosition().x,
-              Locator::getCursor()->getPosition().y)));
+    Locator::getCursor()->setCursorActive(false);
   }
 
   return next_scene;

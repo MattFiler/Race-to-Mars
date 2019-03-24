@@ -91,6 +91,13 @@ enum data_roles
    *   [8] = was this a new "full rotation" (1=yes,0=no)
    */
 
+  CLIENT_MOVING_PLAYER_TOKEN,
+  /* ^ The active client moved their player token.
+   *   [0] = the client index
+   *   [1] = new token position (x)
+   *   [2] = new token position (y)
+   */
+
   /* Any below here are SPECULATIVE and not actually implemented! */
 
   PLAYER_MOVED_WITHIN_SHIP,

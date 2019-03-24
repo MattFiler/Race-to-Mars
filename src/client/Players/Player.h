@@ -39,6 +39,9 @@ class Player
   void setPos(Vector2 new_pos) { counter.setPosition(new_pos); }
   Vector2 getPos() { return counter.getPosition(); }
 
+  float getWidth() { return counter.getSprite()->height(); }
+  float getHeight() { return counter.getSprite()->width(); }
+
   void makeUninitialised()
   {
     retargetConfig("DEFAULT");

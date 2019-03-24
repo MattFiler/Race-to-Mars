@@ -2,35 +2,29 @@
 	"DEFAULT": {
 		"bounding_box_pos": [0,0],
 		"bounding_box_size": [158,75],
-		"centre_point": [0,0],
 		"friendly_name": "PLACEHOLDER"
 	},
 	"COCKPIT": {
 		"bounding_box_pos": [183,111],
 		"bounding_box_size": [134,111],
-		"centre_point": [252,189],
 		"friendly_name": "ROOM_BRIDGE"
 	},
 	"SUPPLY_BAY": {
 		"bounding_box_pos": [195,225],
 		"bounding_box_size": [109,172],
-		"centre_point": [252,189],
 		"friendly_name": "ROOM_SUPPLY"
 	},
 	"MEDBAY": {
 		"bounding_box_pos": [305,321],
-		"centre_point": [252,189],
 		"friendly_name": "ROOM_MEDBAY"
 	},
 	"COMMUNICATIONS": {
 		"bounding_box_pos": [36,321],
-		"centre_point": [252,189],
 		"friendly_name": "ROOM_RADIOS"
 	},
 	"ENGINE": {
 		"bounding_box_pos": [200,399],
 		"bounding_box_size": [99,56],
-		"centre_point": [252,189],
 		"friendly_name": "ROOM_ENGINE"
 	}
 }
