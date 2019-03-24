@@ -85,8 +85,6 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     }
     case data_roles::SERVER_ENDED_CLIENT_TURN:
     {
-      current_scene_lock_active = true;
-
       // Update active player flag
       for (int i = 0; i < 4; i++)
       {

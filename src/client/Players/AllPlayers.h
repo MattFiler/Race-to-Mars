@@ -57,5 +57,6 @@ struct Players
   Player player_uninitialised;
 
   // Class client data
+  // cppcheck-suppress *
   LobbyPlayer players[4];
 };
