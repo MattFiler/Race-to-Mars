@@ -7,8 +7,7 @@
 void GameScene::init()
 {
   m_board_menu.addMenuSprite("BOARD/background.jpg");
-  m_deck.initDecks();
-  m_deck.shuffleDecks();
+  // m_deck.setup();
 
   // Get a reference to the client lobby data array
   for (int i = 0; i < 4; i++)
@@ -115,6 +114,7 @@ void GameScene::render()
       ->getPlayer(players[i]->current_class)
       ->getGameTabSprite()
       ->yPos(this_pos);
+
     renderer->renderSprite(*Locator::getPlayers()
                               ->getPlayer(players[i]->current_class)
                               ->getGameTabSprite()

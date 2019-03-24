@@ -11,7 +11,7 @@
 
 Deck::Deck()
 {
-  // Initialise all decks here.
+  card_config = file_handler.openAsJSON("CONFIGS/cards.json");
 }
 
 Deck::~Deck() {}
@@ -39,7 +39,7 @@ ObjectiveCard Deck::drawObjCard()
 
 void Deck::shuffleDecks()
 {
-  // shuffle all decks here.
+  // Shuffle all decks here.
   std::random_device rd;
   std::mt19937 gen(rd());
 
@@ -51,9 +51,7 @@ void Deck::shuffleDecks()
 // https://stackoverflow.com/questions/11197818/how-do-i-make-a-json-object-with-multiple-arrays
 void Deck::initDecks()
 {
-  // Load in all decks here.
-  card_config = file_handler.openAsJSON("CONFIGS/cards.json");
-
+  // Dont throw up..On to do list
   // load item cards
   for (size_t i = 0; i < 10; ++i)
   {
@@ -209,7 +207,6 @@ void Deck::initDecks()
     temp_card.setCardID(static_cast<objective_cards>(
       card_config["OBJECTIVECARDS"]["cards"][i]["card_id"]));
     temp_card.setSpritePath(card_config["OBJECTIVECARDS"]["sprite_path"]);
-
     this->obj_card_deck.push_back(temp_card);
   }
 }
@@ -219,7 +216,11 @@ void Deck::retargetConfig(const std::string& name)
   card_config = file_handler.loadConfigFromExisting(card_config, name);
 }
 
-void Deck::initLookUps()
+void Deck::setup()
 {
-  // Item card look up
+  initDecks();
+  shuffleDecks();
+  m_itmdeck_card_sprite = new ScaledSprite(getItemBackSpritePath());
+  // m_issdeck_back_sprite = new ScaledSprite(getIssueBackSpritePath());
+  // m_objdeck_card_sprite = new ScaledSprite(getObjectiveBackSpritePath());
 }

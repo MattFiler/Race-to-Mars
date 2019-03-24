@@ -1,6 +1,7 @@
 #ifndef PROJECT_GAMEBOARD_H
 #define PROJECT_GAMEBOARD_H
 
+#include "client/Board/ItemDeck.h"
 #include "client/Board/Ship.h"
 #include "client/Players/AllPlayers.h"
 #include "gamelib/Debug/DebugText.h"
@@ -26,6 +27,7 @@ class GameBoard
   Players* m_players = nullptr;
   Ship m_ship;
   ShipRoom* clicked_room = nullptr;
+  // ItemDeck m_item_deck;
 
   DebugText debug_text;
 };

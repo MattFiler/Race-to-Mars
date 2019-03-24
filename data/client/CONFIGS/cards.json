@@ -1,4 +1,10 @@
 {
+	"CARDBACK":
+	{
+		"objective_card": "UI/CARD_IMAGES/objective_card_back.png",
+		"item_card": "UI/CARD_IMAGES/item_card_back.png",
+		"issue_card": "UI/CARD_IMAGES/issue_card_back.png"
+	},
 	"ITEMCARDS":
 	{
 		"communications":	
@@ -51,7 +57,6 @@
 				{"name":  "Window Wash", "action_points":5,"sprite_path": "UI/CARD_IMAGES/pilot_card.png", "card_id": 18}
 		]
 	},
-
 	"ISSUECARDS": {
 		"communications": [
 			{"name": "Dispatch Probe", "description": "The radar intercepts some strange signals, send out a probe to check on it.", "action_points": 15, "sprite_path": "UI/CARD_IMAGES/communications_card.png", "card_id": 0},
@@ -124,7 +129,6 @@
 			{"name": "Space Pirates", "description": "You're flying next to an alien pirate hot spot! Make sure you avoid them!", "action_points": 10, "sprite_path": "UI/CARD_IMAGES/pilot_card.png", "card_id": 29}
 		]
 	},
-	
 	"OBJECTIVECARDS" :
 	{
 		"sprite_path": "UI/CARD_IMAGES/pilot_card.png",

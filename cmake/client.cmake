@@ -79,7 +79,7 @@ set(HEADER_FILES
         ../src/gamelib/NetworkedData/MessageTypes.h
         ../src/client/Actions/Action.h
         ../src/client/Actions/RollDiceAction.cpp
-        ../src/client/Actions/RollDiceAction.h)
+        ../src/client/Actions/RollDiceAction.h ../src/client/Board/ItemDeck.cpp ../src/client/Board/ItemDeck.h)
 
 ## the executable
 add_executable(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES})

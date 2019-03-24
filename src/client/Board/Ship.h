@@ -18,7 +18,6 @@ class Ship
   ~Ship() = default;
 
   std::vector<ShipRoom> getRooms() { return rooms; };
-
   void render();
 
  private:

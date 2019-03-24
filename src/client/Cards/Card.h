@@ -2,6 +2,7 @@
 #define PROJECT_CARD_H
 
 #include "../Core/ServiceLocator.h"
+#include "client/UI/OnBoardObject.h"
 #include "gamelib/NetworkedData/Cards.h"
 #include <Engine/Renderer.h>
 #include <Engine/Sprite.h>
@@ -14,7 +15,7 @@
  *
  */
 
-class Card
+class Card : public OnBoardObject
 {
  public:
   Card();
@@ -23,7 +24,7 @@ class Card
   void setCardName(std::string _item_name);
   void setSpritePath(std::string _sprite_path);
   void setCardDescription(std::string _description_text);
-  void setAbilityText(std::string _ability_test);
+  void setAbilityText(std::string _ability_text);
   void setActionPoints(int _action_points);
 
  protected:
@@ -33,7 +34,6 @@ class Card
   std::string m_card_decription = "";
   std::string m_sprite_path = "";
   std::string m_ability_text = "";
-
   int m_action_points = 0;
 
  private:
