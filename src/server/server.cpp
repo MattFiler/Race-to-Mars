@@ -18,9 +18,6 @@ RaceToSpaceServer::~RaceToSpaceServer()
 void RaceToSpaceServer::initialise()
 {
   // Setup
-  debug_text.print("--------------------------------");
-  debug_text.print("RACE TO SPACE SERVER VERSION 1.3");
-  debug_text.print("--------------------------------");
   debug_text.print("Initialising on port " + std::to_string(port) + "!");
   auto init_client_func = [&](server_client& client, const char* ip) {
     client._uid = next_uid;
@@ -127,7 +124,8 @@ void RaceToSpaceServer::run()
                 sendData(client,
                          static_cast<unsigned int>(-1),
                          data_roles::SERVER_STARTS_GAME,
-                         1);
+                         0); // the client index to start (maybe randomise this
+                             // 0-3?)
               }
               break;
             }

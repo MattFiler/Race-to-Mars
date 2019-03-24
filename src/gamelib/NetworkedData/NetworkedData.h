@@ -70,7 +70,11 @@ enum data_roles
    */
 
   SERVER_STARTS_GAME,
-  /* ^ All clients in the lobby are ready, signal to start the game. */
+  /* ^ All clients in the lobby are ready, signal to start the game.
+   *   [0] = the client to start
+   */
+
+  /* Any below here are SPECULATIVE and not actually implemented! */
 
   PLAYER_MOVED_WITHIN_SHIP,
   /* ^ The active player has moved within the ship.
