@@ -5,6 +5,7 @@
 #include "gamelib/NetworkedData/NetworkedData.h"
 #include "gamelib/NetworkedData/Players.h"
 #include <enetpp/server.h>
+#include <gamelib/NetworkedData/Cards.h>
 #include <vector>
 
 /* A client on the server */
@@ -30,6 +31,10 @@ struct Lobby
                                      player_classes::UNASSIGNED,
                                      player_classes::UNASSIGNED,
                                      player_classes::UNASSIGNED };
+  int deck_id = 0;
+  std::vector<int> issue_deck;
+  std::vector<int> item_deck;
+  std::vector<int> objective_deck;
   int current_progress_index = 0;
   int player_that_started_id = -1;
   int currently_active_player = 0;

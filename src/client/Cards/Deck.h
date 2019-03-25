@@ -9,7 +9,6 @@
 #include "gamelib/NetworkedData/Cards.h"
 #include <client/UI/ScaledSprite.h>
 #include <json.hpp>
-#include <map>
 #include <vector>
 
 using json = nlohmann::json;

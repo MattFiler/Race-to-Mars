@@ -2,6 +2,7 @@
 #define PROJECT_ISSUECARD_H
 
 #include "Card.h"
+#include <client/Actions/Action.h>
 #include <gamelib/NetworkedData/Players.h>
 
 /*
@@ -18,6 +19,8 @@ class IssueCard : public Card
   void setCardID(issue_cards _item_card_id);
   void addActionPoints(player_classes _player_class, int _ap_amount);
   issue_cards getCardID();
+  bool isSolved() { return issue_solved; }
+  Action* m_issue_event = nullptr;
 
  private:
   issue_cards m_cardID = issue_cards::ISSUE_PLACEHOLDER;

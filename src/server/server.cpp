@@ -1,7 +1,9 @@
 #include "server.h"
 #include "gamelib/NetworkedData/NetworkedData.h"
+#include <algorithm>
 #include <gamelib/Packet.h>
 #include <iostream>
+#include <random>
 
 RaceToSpaceServer::RaceToSpaceServer()
 {
@@ -27,6 +29,45 @@ void RaceToSpaceServer::initialise()
   // Create the first lobby
   lobbies.emplace_back(latest_lobby_id);
   latest_lobby_id++;
+  // Create deck of Issue IDS. 60 cards total.
+  for (int i = 0; i < 2; ++i)
+  {
+    for (int j = 0; j < 30; ++j)
+    {
+      // Create for most recent lobby.
+      lobbies.back().issue_deck.push_back(j);
+    }
+  }
+
+  // Create deck of Item IDS. 38 cards total.
+  for (int i = 0; i < 2; ++i)
+  {
+    for (int j = 0; j < 19; ++j)
+    {
+      // Create for most recent lobby.
+      lobbies.back().item_deck.push_back(j);
+    }
+  }
+
+  // Create deck of Issue IDS. 24 cards total.
+  for (int i = 0; i < 2; ++i)
+  {
+    for (int j = 0; j < 12; ++j)
+    {
+      // Create for most recent lobby.
+      lobbies.back().objective_deck.push_back(j);
+    }
+  }
+  // Shuffle decks.
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::shuffle(
+    lobbies.back().issue_deck.begin(), lobbies.back().issue_deck.end(), gen);
+  std::shuffle(
+    lobbies.back().item_deck.begin(), lobbies.back().item_deck.end(), gen);
+  std::shuffle(lobbies.back().objective_deck.begin(),
+               lobbies.back().issue_deck.end(),
+               gen);
 
   // Start listening for network traffic
   network_server.start_listening(
@@ -144,6 +185,12 @@ void RaceToSpaceServer::run()
             // GO THROUGH THE DECK HERE AND PICK OUT SOME ISSUE CARDS, ADD THEIR
             // IDs TO this_clients_lobby->active_issue_cards - WIN/LOSS
             // CONDITIONS SHOULD THEN BE HANDLED CLIENT SIDE
+
+            this_clients_lobby->active_issue_cards[0] = data_to_send.content[1];
+            this_clients_lobby->active_issue_cards[1] = data_to_send.content[2];
+            this_clients_lobby->active_issue_cards[2] = data_to_send.content[3];
+            this_clients_lobby->active_issue_cards[3] = data_to_send.content[4];
+            this_clients_lobby->active_issue_cards[4] = data_to_send.content[5];
 
             // If this is an objective card spot, give a new objectve card
             if (this_clients_lobby->current_progress_index % 3)
