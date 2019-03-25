@@ -150,17 +150,6 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
                                        my_player_index);
         current_scene_lock_active = true;
         debug_text.print("Requesting to end my go!!");
-        // Draw new issue cards
-        if (my_player_index == 3)
-        {
-          // do for however many cards need to be drawn this turn. currently
-          // just drawing one per turn.
-          IssueCard temp_card = m_deck.drawIssCard();
-          int issue_card_id = static_cast<int>(temp_card.getCardID());
-          Locator::getClient()->sendData(data_roles::NEW_ISSUE_CARD_ADDED,
-                                         issue_card_id);
-          debug_text.print("drawing issue cards.");
-        }
       }
       break;
     }

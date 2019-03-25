@@ -185,12 +185,15 @@ void RaceToSpaceServer::run()
             // GO THROUGH THE DECK HERE AND PICK OUT SOME ISSUE CARDS, ADD THEIR
             // IDs TO this_clients_lobby->active_issue_cards - WIN/LOSS
             // CONDITIONS SHOULD THEN BE HANDLED CLIENT SIDE
-
-            this_clients_lobby->active_issue_cards[0] = data_to_send.content[1];
-            this_clients_lobby->active_issue_cards[1] = data_to_send.content[2];
-            this_clients_lobby->active_issue_cards[2] = data_to_send.content[3];
-            this_clients_lobby->active_issue_cards[3] = data_to_send.content[4];
-            this_clients_lobby->active_issue_cards[4] = data_to_send.content[5];
+            int issues_tobe_drawn = 1;
+            // int temp_issue_ids[3] = {0,0,0};
+            int temp_issue = 0;
+            for (int i = 0; i < issues_tobe_drawn; ++i)
+            {
+              temp_issue = this_clients_lobby->issue_deck.back();
+              this_clients_lobby->active_issue_cards[0] = temp_issue;
+              this_clients_lobby->issue_deck.pop_back();
+            }
 
             // If this is an objective card spot, give a new objectve card
             if (this_clients_lobby->current_progress_index % 3)

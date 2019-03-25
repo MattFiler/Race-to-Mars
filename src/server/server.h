@@ -31,7 +31,6 @@ struct Lobby
                                      player_classes::UNASSIGNED,
                                      player_classes::UNASSIGNED,
                                      player_classes::UNASSIGNED };
-  int deck_id = 0;
   std::vector<int> issue_deck;
   std::vector<int> item_deck;
   std::vector<int> objective_deck;
