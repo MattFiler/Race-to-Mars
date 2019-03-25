@@ -296,10 +296,12 @@ void RaceToSpaceServer::sendData(server_client& client,
                      std::to_string(data_to_send.role) + ".");
 
     bool has_sent = false;
+    int player_count = -1;
     for (Lobby& this_lobby : lobbies)
     {
       if (this_lobby.lobby_id == client.lobby_id)
       {
+        player_count = this_lobby.user_count;
         for (int i = 0; i < max_lobby_size; i++)
         {
           if (this_lobby.user_ids[i] != -1)
@@ -315,7 +317,7 @@ void RaceToSpaceServer::sendData(server_client& client,
         }
       }
     }
-    if (!has_sent)
+    if (!has_sent && player_count == 0)
     {
       debug_text.print("ERROR: Failed to send data to clients in requested "
                        "lobby.");
