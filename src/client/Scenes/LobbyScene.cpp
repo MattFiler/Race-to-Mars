@@ -120,7 +120,9 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       for (int i = 0; i < 4; i++)
       {
         players[i]->is_ready = true;
+        players[i]->is_active = false; // make sure we have no active conflicts
       }
+      players[received_data.content[0]]->is_active = true; // client to start
       should_start_game = true;
       can_change_ready_state = false;
       debug_text.print("Server told us to start the game!");
@@ -148,7 +150,7 @@ void LobbyScene::keyHandler(const ASGE::SharedEventData data)
       my_player_index,
       lobby_id);
   }
-  if (keys.keyReleased("Back"))
+  if (keys.keyReleased("Back") && !should_start_game)
   {
     // Alert everyone we're leaving
     Locator::getClient()->sendData(data_roles::CLIENT_DISCONNECTING_FROM_LOBBY,
@@ -158,10 +160,30 @@ void LobbyScene::keyHandler(const ASGE::SharedEventData data)
     debug_text.print("Swapping to menu scene.");
     next_scene = game_global_scenes::MAIN_MENU;
   }
-  if (keys.keyReleased("Debug Skip Readyup"))
+
+  /* DEBUGGING */
+  if (debug_text.enabled)
   {
-    // DEBUG ONLY LOCAL GAME START
-    should_start_game = true;
+    if (keys.keyReleased("Debug Skip Readyup"))
+    {
+      // DEBUG ONLY LOCAL GAME START
+      int player_count = 0;
+      for (int i = 0; i < 4; i++)
+      {
+        if (players[i]->has_connected)
+        {
+          player_count++;
+        }
+      }
+      if (player_count > 1)
+      {
+        debug_text.print("Debug Skip Readyup only functions with one player in "
+                         "the lobby.");
+        return;
+      }
+      players[my_player_index]->is_active = true;
+      should_start_game = true;
+    }
   }
 }
 
@@ -174,7 +196,7 @@ void LobbyScene::clickHandler(const ASGE::SharedEventData data)
 /* Update function */
 game_global_scenes LobbyScene::update(const ASGE::GameTime& game_time)
 {
-  if (has_connected)
+  if (has_connected && lobby_sprites.ready_marker[0] == nullptr)
   {
     for (int i = 0; i < 4; i++)
     {

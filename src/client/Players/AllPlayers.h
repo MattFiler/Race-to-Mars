@@ -8,6 +8,7 @@
 
 struct Players
 {
+  // cppcheck-suppress *
   Players() { player_uninitialised.makeUninitialised(); }
 
   // Render (scene dependant)

@@ -17,6 +17,7 @@ class IssueCard : public Card
  public:
   void setCardID(issue_cards _item_card_id);
   void addActionPoints(player_classes _player_class, int _ap_amount);
+  issue_cards getCardID();
 
  private:
   issue_cards m_cardID = issue_cards::ISSUE_PLACEHOLDER;

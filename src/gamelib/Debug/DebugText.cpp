@@ -1,12 +1,17 @@
 #include "DebugText.h"
 #include "gamelib/Constants.h"
+#include <chrono>
+#include <ctime>
 
 /* Print a string if debug outputs are enabled */
 void DebugText::print(const std::string& debug_string)
 {
   if (enabled)
   {
-    ASGE::DebugPrinter{} << "RTS_DEBUG: " << debug_string << std::endl;
+    time_t now = time(0);
+    std::string now_time = ctime(&now);
+    ASGE::DebugPrinter{} << now_time.substr(0, now_time.length() - 1) << " - "
+                         << debug_string << std::endl;
   }
 }
 

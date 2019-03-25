@@ -39,3 +39,8 @@ void IssueCard::addActionPoints(player_classes _player_class, int _ap_amount)
   }
   m_total_ap_assigned += _ap_amount;
 }
+
+issue_cards IssueCard::getCardID()
+{
+  return m_cardID;
+}

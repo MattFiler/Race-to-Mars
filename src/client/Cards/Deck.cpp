@@ -220,7 +220,7 @@ void Deck::setup()
 {
   initDecks();
   shuffleDecks();
-  m_itmdeck_card_sprite = new ScaledSprite(getItemBackSpritePath());
+  // m_itmdeck_card_sprite = new ScaledSprite(getItemBackSpritePath());
   // m_issdeck_back_sprite = new ScaledSprite(getIssueBackSpritePath());
   // m_objdeck_card_sprite = new ScaledSprite(getObjectiveBackSpritePath());
 }
