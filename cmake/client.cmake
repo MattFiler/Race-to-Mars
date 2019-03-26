@@ -25,7 +25,6 @@ set(SOURCE_FILES
         ../src/client/Scenes/MenuScene.cpp
         ../src/client/KeyHandler/KeyHandler.cpp
         ../src/client/NetworkConnection/NetworkConnection.cpp
-        ../src/client/Cards/Deck.cpp
         ../src/client/Board/Ship.cpp
         ../src/client/UI/Menu.cpp
         ../src/client/Board/GameBoard.cpp
@@ -54,7 +53,6 @@ set(HEADER_FILES
         ../src/client/Players/AllPlayers.h
         ../src/client/NetworkedData/PlayerData.h
         ../src/client/NetworkConnection/NetworkConnection.h
-        ../src/client/Cards/Deck.h
         ../src/client/NetworkConnection/NetworkConnection.h
         ../src/client/Board/Ship.h
         ../src/client/UI/Menu.h

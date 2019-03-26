@@ -67,3 +67,16 @@ issue_cards IssueCard::getCardID()
 {
   return m_cardID;
 }
+
+IssueCard::IssueCard(issue_cards _card_type)
+{
+  card_config = file_handler.openAsJSON("CONFIGS/cards.json");
+  this->setCardName(
+    card_config["ISSUECARDS"][static_cast<size_t>(_card_type)][0]);
+  this->setCardDescription(
+    card_config["ISSUECARDS"][static_cast<size_t>(_card_type)][1]);
+  this->setActionPoints(
+    card_config["ISSUECARDS"][static_cast<size_t>(_card_type)][2]);
+  this->setSprite(
+    card_config["ISSUECARDS"][static_cast<size_t>(_card_type)][3]);
+}

@@ -58,6 +58,7 @@ void RaceToSpaceServer::initialise()
       lobbies.back().objective_deck.push_back(j);
     }
   }
+
   // Shuffle decks.
   std::random_device rd;
   std::mt19937 gen(rd());
@@ -187,12 +188,24 @@ void RaceToSpaceServer::run()
             // CONDITIONS SHOULD THEN BE HANDLED CLIENT SIDE
             int issues_tobe_drawn = 1;
             // int temp_issue_ids[3] = {0,0,0};
-            int temp_issue = 0;
+
             for (int i = 0; i < issues_tobe_drawn; ++i)
             {
-              temp_issue = this_clients_lobby->issue_deck.back();
-              this_clients_lobby->active_issue_cards[0] = temp_issue;
-              this_clients_lobby->issue_deck.pop_back();
+              // check to see if issue card slot is already taken here. If no
+              // then set that slot to a new card.
+              for (int j = 0; j < 5; ++j)
+              {
+                if (this_clients_lobby->active_issue_cards[j] != 0)
+                {
+                  this_clients_lobby->active_issue_cards[j] =
+                    this_clients_lobby->issue_deck.back();
+                  debug_text.print(
+                    "adding issue" +
+                    std::to_string(this_clients_lobby->active_issue_cards[0]) +
+                    "to active issues.");
+                  this_clients_lobby->issue_deck.pop_back();
+                }
+              }
             }
 
             // If this is an objective card spot, give a new objectve card

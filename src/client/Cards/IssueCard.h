@@ -16,6 +16,8 @@
 class IssueCard : public Card
 {
  public:
+  explicit IssueCard(issue_cards _card_type);
+  ~IssueCard() = default;
   void setCardID(issue_cards _item_card_id);
   void addActionPoints(player_classes _player_class, int _ap_amount);
   issue_cards getCardID();

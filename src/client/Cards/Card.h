@@ -6,6 +6,7 @@
 #include "gamelib/NetworkedData/Cards.h"
 #include <Engine/Renderer.h>
 #include <Engine/Sprite.h>
+#include <gamelib/FileHandler/FileHandler.h>
 
 /*
  *
@@ -35,6 +36,8 @@ class Card : public OnBoardObject
   std::string m_sprite_path = "";
   std::string m_ability_text = "";
   int m_action_points = 0;
+  FileHandler file_handler;
+  json card_config;
 
  private:
   /* Stuff here */

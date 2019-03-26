@@ -12,7 +12,7 @@ void GameScene::init()
   pause_menu.addMenuSprite("INGAME_UI/pause_bg.jpg");
   pause_menu.addMenuItem("MENU_CONTINUE");
   pause_menu.addMenuItem("MENU_QUIT");
-  m_deck.setup();
+  // m_deck.setup();
 
   // Get a reference to the client lobby data array
   for (int i = 0; i < 4; i++)
@@ -96,9 +96,26 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       current_progress_index = received_data.content[2];
 
       // Re-sync issue cards every turn
-      for (int i = 0; i < max_issue_cards; i++)
+      for (int i = 0; i < max_issue_cards; ++i)
       {
-        active_issue_cards[i] = received_data.content[i + 3];
+        // check to see if game is lost here and send set END_GAME to true
+
+        // checking to see if full rotation. If yes, create new issue cards
+        // client side.
+        if (received_data.content[8])
+        {
+          // check to see if any cards changed during turn.
+          if (active_issue_cards[i] != received_data.content[i + 3])
+          {
+            active_issue_cards[i] = received_data.content[i + 3];
+            debug_text.print("Creating issue card:" +
+                             std::to_string(received_data.content[i + 3]));
+            // Creating a new issue card and adding it to the back of the
+            // current issues vector for rendering and points.
+            active_issues.emplace_back(
+              IssueCard(static_cast<issue_cards>(active_issue_cards[0])));
+          }
+        }
       }
 
       current_scene_lock_active = false;

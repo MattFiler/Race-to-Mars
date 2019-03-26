@@ -3,8 +3,8 @@
 
 #include "Scene.h"
 #include "client/Board/GameBoard.h"
-#include "client/Cards/Deck.h"
 #include "client/UI/Cursor.h"
+#include <client/Cards/IssueCard.h>
 
 // All sprites for the game ui
 struct GameSprites
@@ -47,7 +47,10 @@ class GameScene : public Scene
 
   GameBoard m_board;
   Menu pause_menu;
-  Deck m_deck;
+  // Deck m_deck;
+
+  std::vector<IssueCard> active_issues;
+
   GameSprites game_sprites;
   LobbyPlayer* players[4] = { nullptr, nullptr, nullptr, nullptr };
   int my_player_index = -1;
