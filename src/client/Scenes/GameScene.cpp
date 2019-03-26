@@ -269,6 +269,13 @@ void GameScene::render()
       // Board and background
       renderer->renderSprite(*game_sprites.background->getSprite());
       m_board.render();
+      if(!active_issues.empty()
+      {
+        for (int i = 0; i < active_issues.size(); ++i)
+        {
+          active_issues[i].render();
+        }
+      }
 
       float active_marker_pos = -180.0f;
       for (int i = 0; i < 4; i++)

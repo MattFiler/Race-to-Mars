@@ -71,12 +71,18 @@ issue_cards IssueCard::getCardID()
 IssueCard::IssueCard(issue_cards _card_type)
 {
   card_config = file_handler.openAsJSON("CONFIGS/cards.json");
-  this->setCardName(
-    card_config["ISSUECARDS"][static_cast<size_t>(_card_type)][0]);
-  this->setCardDescription(
-    card_config["ISSUECARDS"][static_cast<size_t>(_card_type)][1]);
-  this->setActionPoints(
-    card_config["ISSUECARDS"][static_cast<size_t>(_card_type)][2]);
-  this->setSprite(
-    card_config["ISSUECARDS"][static_cast<size_t>(_card_type)][3]);
+  //  this->setCardName(
+  //    card_config["ISSUECARDS"][static_cast<size_t>(_card_type)][0]);
+  //  this->setCardDescription(
+  //    card_config["ISSUECARDS"][static_cast<size_t>(_card_type)][1]);
+  //  this->setActionPoints(
+  //    card_config["ISSUECARDS"][static_cast<size_t>(_card_type)][2]);
+  //  this->setSprite(
+  //    card_config["ISSUECARDS"][static_cast<size_t>(_card_type)][3]);
+
+  this->setCardName("Default");
+  this->setCardDescription("Default Desc.");
+  this->setActionPoints(999);
+  this->setSpritePath("UI/PLAYER_COUNTERS/issueplaceholder.png");
+  this->setCardID(_card_type);
 }

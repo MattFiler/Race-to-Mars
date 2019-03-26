@@ -34,3 +34,7 @@ void Card::setAbilityText(std::string _ability_text)
 {
   this->m_ability_text = std::move(_ability_text);
 }
+
+void Card::render() {}
+
+void Card::setCardSize() {}

@@ -228,7 +228,6 @@ void RaceToSpaceServer::run()
                    this_clients_lobby->active_issue_cards[3],
                    this_clients_lobby->active_issue_cards[4],
                    static_cast<int>(has_done_full_rotation));
-
           break;
         }
           // We need to store lobby ready state before sending it out, so new
