@@ -6,7 +6,7 @@
 		"issue_card": "UI/CARD_IMAGES/issue_card_back.png"
 	},
 	"ITEMCARDS":
-		[
+	[
 				{"name": "Microphone","action_points": 5, "sprite_path": "UI/CARD_IMAGES/communications_card.png", "card_id": 0},
 				{"name": "Radar", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/communications_card.png", "card_id": 1},
 				{"name": "Radio", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/communications_card.png", "card_id": 2},
@@ -30,7 +30,7 @@
 				{"name":  "Radar", "action_points":5,"sprite_path": "UI/CARD_IMAGES/pilot_card.png", "card_id": 16},
 				{"name":  "Thruster Upgrade", "action_points":5,"sprite_path": "UI/CARD_IMAGES/pilot_card.png", "card_id": 17},
 				{"name":  "Window Wash", "action_points":5,"sprite_path": "UI/CARD_IMAGES/pilot_card.png", "card_id": 18}
-		],
+	],
 	"ISSUECARDS": 
 	[
 			{"name": "Dispatch Probe", "description": "The radar intercepts some strange signals, send out a probe to check on it.", "action_points": 15, "sprite_path": "UI/CARD_IMAGES/communications_card.png", "card_id": 0},
@@ -84,5 +84,4 @@
 			{"name": "Unhelpful", "description": "Don't help the player to your right solve an issue.", "ability": "Take an extra item", "card_id": 11},
 			{"name": "Unhelpful", "description": "Don't help the player to your left solve an issue.", "ability": "Re-roll the dice at any point during your turn.", "card_id": 12}
 		]
-	
 }

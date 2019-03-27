@@ -9,6 +9,7 @@ RaceToSpaceServer::RaceToSpaceServer()
 {
   debug_text.enabled = true;
   enetpp::global_state::get().initialize();
+  // chrono here
 }
 
 RaceToSpaceServer::~RaceToSpaceServer()

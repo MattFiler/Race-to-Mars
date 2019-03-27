@@ -76,9 +76,8 @@ class RaceToSpaceServer
   int port = 8888;
   int max_lobby_size = 4;
 
-  std::random_device r;
-  std::seed_seq seed_seq{ r(), r(), r(), r(), r(), r() };
-  std::mt19937 gen{ seed_seq };
+  size_t seed;
+  std::mt19937 gen;
 
   std::vector<Lobby> lobbies;
   int latest_lobby_id = 0;
