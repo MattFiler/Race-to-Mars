@@ -59,16 +59,17 @@ void RaceToSpaceServer::initialise()
     }
   }
 
-  // Shuffle decks.
-  std::random_device rd;
-  std::mt19937 gen(rd());
-  std::shuffle(
-    lobbies.back().issue_deck.begin(), lobbies.back().issue_deck.end(), gen);
-  std::shuffle(
-    lobbies.back().item_deck.begin(), lobbies.back().item_deck.end(), gen);
-  std::shuffle(lobbies.back().objective_deck.begin(),
-               lobbies.back().issue_deck.end(),
-               gen);
+  // Shuffle decks. - seems to only work in debug
+  //  std::random_device rd;
+  //  std::mt19937 gen(rd());
+  //  std::shuffle(
+  //    lobbies.back().issue_deck.begin(), lobbies.back().issue_deck.end(),
+  //    gen);
+  //  std::shuffle(
+  //    lobbies.back().item_deck.begin(), lobbies.back().item_deck.end(), gen);
+  //  std::shuffle(lobbies.back().objective_deck.begin(),
+  //               lobbies.back().issue_deck.end(),
+  //               gen);
 
   // Start listening for network traffic
   network_server.start_listening(
@@ -129,7 +130,6 @@ void RaceToSpaceServer::run()
                    lobbies.at(client.lobby_index).users_ready[2],
                    lobbies.at(client.lobby_index).users_ready[3],
                    client.client_index);
-
           break;
         }
           // The currently active client wants to end their turn, so we need to
@@ -187,27 +187,26 @@ void RaceToSpaceServer::run()
             // IDs TO this_clients_lobby->active_issue_cards - WIN/LOSS
             // CONDITIONS SHOULD THEN BE HANDLED CLIENT SIDE
             int issues_tobe_drawn = 1;
-            // int temp_issue_ids[3] = {0,0,0};
+            int issues_drawn = 0;
 
-            for (int i = 0; i < issues_tobe_drawn; ++i)
+            for (int j = 0; j < 5; ++j)
             {
-              // check to see if issue card slot is already taken here. If no
-              // then set that slot to a new card.
-              for (int j = 0; j < 5; ++j)
+              if (issues_drawn < issues_tobe_drawn)
               {
-                if (this_clients_lobby->active_issue_cards[j] != 0)
+                // Check to see if slot is empty
+                if (this_clients_lobby->active_issue_cards[j] == -1)
                 {
                   this_clients_lobby->active_issue_cards[j] =
                     this_clients_lobby->issue_deck.back();
+                  this_clients_lobby->issue_deck.pop_back();
                   debug_text.print(
                     "adding issue" +
                     std::to_string(this_clients_lobby->active_issue_cards[0]) +
                     "to active issues.");
-                  this_clients_lobby->issue_deck.pop_back();
+                  ++issues_drawn;
                 }
               }
             }
-
             // If this is an objective card spot, give a new objectve card
             if (this_clients_lobby->current_progress_index % 3)
             {

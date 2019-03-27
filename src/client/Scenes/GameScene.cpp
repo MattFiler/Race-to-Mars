@@ -108,16 +108,15 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
           if (active_issue_cards[i] != received_data.content[i + 3])
           {
             active_issue_cards[i] = received_data.content[i + 3];
+            // Creating a new issue card and adding it to the back of the
+            // Current issues vector for rendering and points.
+            active_issues.emplace_back(
+              IssueCard(static_cast<issue_cards>(active_issue_cards[i])));
             debug_text.print("Creating issue card:" +
                              std::to_string(received_data.content[i + 3]));
-            // Creating a new issue card and adding it to the back of the
-            // current issues vector for rendering and points.
-            active_issues.emplace_back(
-              IssueCard(static_cast<issue_cards>(active_issue_cards[0])));
           }
         }
       }
-
       current_scene_lock_active = false;
       debug_text.print("The server ended the current go, and passed "
                        "active-ness to client " +
@@ -250,7 +249,6 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
 
     Locator::getCursor()->setCursorActive(false);
   }
-
   return next_scene;
 }
 
@@ -269,9 +267,9 @@ void GameScene::render()
       // Board and background
       renderer->renderSprite(*game_sprites.background->getSprite());
       m_board.render();
-      if(!active_issues.empty()
+      if (!active_issues.empty())
       {
-        for (int i = 0; i < active_issues.size(); ++i)
+        for (int i = 0; i < static_cast<int>(active_issues.size()); ++i)
         {
           active_issues[i].render();
         }

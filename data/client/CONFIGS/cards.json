@@ -31,7 +31,6 @@
 				{"name":  "Thruster Upgrade", "action_points":5,"sprite_path": "UI/CARD_IMAGES/pilot_card.png", "card_id": 17},
 				{"name":  "Window Wash", "action_points":5,"sprite_path": "UI/CARD_IMAGES/pilot_card.png", "card_id": 18}
 		],
-
 	"ISSUECARDS": 
 	[
 			{"name": "Dispatch Probe", "description": "The radar intercepts some strange signals, send out a probe to check on it.", "action_points": 15, "sprite_path": "UI/CARD_IMAGES/communications_card.png", "card_id": 0},
@@ -69,7 +68,6 @@
 			{"name": "Navigation Error", "description": "Theere is a stange noise coming from the navigation system, correct it!", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/pilot_card.png", "card_id": 28},
 			{"name": "Space Pirates", "description": "You're flying next to an alien pirate hot spot! Make sure you avoid them!", "action_points": 10, "sprite_path": "UI/CARD_IMAGES/pilot_card.png", "card_id": 29}
 	],
-
 	"OBJECTIVECARDS" :
 		[
 			{"name": "Big Issue", "description": "Help solving a 15 point issue before drawing a new card!", "ability": "All ship movement is free for a turn.", "card_id": 0},

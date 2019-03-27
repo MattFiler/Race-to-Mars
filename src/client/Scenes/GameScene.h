@@ -69,5 +69,4 @@ class GameScene : public Scene
   int active_client_objective_card = -1; // hmm, maybe keep this data for every
                                          // client?
 };
-
 #endif // PROJECT_GAMESCENE_H

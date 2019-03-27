@@ -11,7 +11,6 @@ class Packet
   explicit Packet() = default;
   // explicit Packet(const char *data, size_t size);
   Packet(const enet_uint8* data, size_t length);
-
   ~Packet() = default;
 
   std::size_t read_pos = 0;
