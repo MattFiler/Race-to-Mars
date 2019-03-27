@@ -59,17 +59,15 @@ void RaceToSpaceServer::initialise()
     }
   }
 
-  // Shuffle decks. - seems to only work in debug
-  //  std::random_device rd;
-  //  std::mt19937 gen(rd());
-  //  std::shuffle(
-  //    lobbies.back().issue_deck.begin(), lobbies.back().issue_deck.end(),
-  //    gen);
-  //  std::shuffle(
-  //    lobbies.back().item_deck.begin(), lobbies.back().item_deck.end(), gen);
-  //  std::shuffle(lobbies.back().objective_deck.begin(),
-  //               lobbies.back().issue_deck.end(),
-  //               gen);
+  // Shuffle decks.
+
+  std::shuffle(
+    lobbies.back().issue_deck.begin(), lobbies.back().issue_deck.end(), gen);
+  std::shuffle(
+    lobbies.back().item_deck.begin(), lobbies.back().item_deck.end(), gen);
+  std::shuffle(lobbies.back().objective_deck.begin(),
+               lobbies.back().issue_deck.end(),
+               gen);
 
   // Start listening for network traffic
   network_server.start_listening(

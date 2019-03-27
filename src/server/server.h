@@ -6,6 +6,7 @@
 #include "gamelib/NetworkedData/Players.h"
 #include <enetpp/server.h>
 #include <gamelib/NetworkedData/Cards.h>
+#include <random>
 #include <vector>
 
 /* A client on the server */
@@ -74,6 +75,10 @@ class RaceToSpaceServer
   DebugText debug_text;
   int port = 8888;
   int max_lobby_size = 4;
+
+  std::random_device r;
+  std::seed_seq seed_seq{ r(), r(), r(), r(), r(), r() };
+  std::mt19937 gen{ seed_seq };
 
   std::vector<Lobby> lobbies;
   int latest_lobby_id = 0;
