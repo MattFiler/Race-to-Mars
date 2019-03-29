@@ -80,9 +80,12 @@ IssueCard::IssueCard(issue_cards _card_type)
   //  this->setSprite(
   //    card_config["ISSUECARDS"][static_cast<size_t>(_card_type)][3]);
 
-  this->setCardName("Default");
-  this->setCardDescription("Default Desc.");
-  this->setActionPoints(999);
-  this->setSpritePath("UI/PLAYER_COUNTERS/issueplaceholder.png");
-  this->setCardID(_card_type);
+  setCardName("Default");
+  setCardDescription("Default Desc.");
+  setActionPoints(999);
+  setSpritePath("data/UI/CARD_IMAGES/medic_card.png");
+  setCardID(_card_type);
+
+  m_card_sprite = renderer->createRawSprite();
+  m_card_sprite->loadTexture("data/UI/CARD_IMAGES/medic_card.png");
 }

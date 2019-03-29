@@ -267,13 +267,6 @@ void GameScene::render()
       // Board and background
       renderer->renderSprite(*game_sprites.background->getSprite());
       m_board.render();
-      if (!active_issues.empty())
-      {
-        for (int i = 0; i < static_cast<int>(active_issues.size()); ++i)
-        {
-          active_issues[i].render();
-        }
-      }
 
       float active_marker_pos = -180.0f;
       for (int i = 0; i < 4; i++)
@@ -303,10 +296,15 @@ void GameScene::render()
       renderer->renderSprite(*game_sprites.active_player_marker->getSprite());
 
       // Progress meters
-      //      renderer->renderSprite(*game_sprites.progress_meter->getSprite());
-      //      game_sprites.progress_marker->yPos(
-      //        static_cast<float>(current_progress_index * 50));
-      //      renderer->renderSprite(*game_sprites.progress_marker->getSprite());
+      renderer->renderSprite(*game_sprites.progress_meter->getSprite());
+      game_sprites.progress_marker->yPos(
+        static_cast<float>(current_progress_index * 50));
+      renderer->renderSprite(*game_sprites.progress_marker->getSprite());
+
+      for (auto& active_issue : active_issues)
+      {
+        active_issue.render();
+      }
 
       break;
     }

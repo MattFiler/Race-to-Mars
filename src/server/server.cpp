@@ -67,7 +67,7 @@ void RaceToSpaceServer::initialise()
   std::shuffle(
     lobbies.back().item_deck.begin(), lobbies.back().item_deck.end(), gen);
   std::shuffle(lobbies.back().objective_deck.begin(),
-               lobbies.back().issue_deck.end(),
+               lobbies.back().objective_deck.end(),
                gen);
 
   // Start listening for network traffic
