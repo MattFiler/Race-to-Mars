@@ -46,7 +46,6 @@ class RaceToSpaceServer
   int port = 8888;
   int max_lobby_size = 4;
 
-  size_t seed = 0;
   std::mt19937 gen;
 
   std::vector<Lobby> lobbies;
