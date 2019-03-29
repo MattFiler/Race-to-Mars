@@ -20,10 +20,10 @@ class ScaledSprite
   void height(float height);
   float height() { return sprite->height(); };
 
-  void xPos(float x);
+  void xPos(float x_pos);
   float xPos() { return sprite->xPos(); };
 
-  void yPos(float y);
+  void yPos(float y_pos);
   float yPos() { return sprite->yPos(); };
 
   void setPos(Vector2 new_pos);

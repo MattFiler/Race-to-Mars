@@ -10,6 +10,11 @@ bool GameBoard::isHoveringOverInteractable(Vector2 hover_pos)
       return true;
     }
   }
+
+  //  if(m_item_deck.isInBoundingBox(hover_pos))
+  //  {
+  //    return true;
+  //  }
   return false;
 }
 
@@ -33,4 +38,5 @@ void GameBoard::render()
 {
   m_ship.render();
   m_players->render(game_global_scenes::IN_GAME);
+  // m_item_deck.render();
 }

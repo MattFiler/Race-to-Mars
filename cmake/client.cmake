@@ -25,7 +25,6 @@ set(SOURCE_FILES
         ../src/client/Scenes/MenuScene.cpp
         ../src/client/KeyHandler/KeyHandler.cpp
         ../src/client/NetworkConnection/NetworkConnection.cpp
-        ../src/client/Cards/Deck.cpp
         ../src/client/Board/Ship.cpp
         ../src/client/UI/Menu.cpp
         ../src/client/Board/GameBoard.cpp
@@ -54,13 +53,33 @@ set(HEADER_FILES
         ../src/client/Players/AllPlayers.h
         ../src/client/NetworkedData/PlayerData.h
         ../src/client/NetworkConnection/NetworkConnection.h
-        ../src/client/Cards/Deck.h
         ../src/client/NetworkConnection/NetworkConnection.h
         ../src/client/Board/Ship.h
         ../src/client/UI/Menu.h
         ../src/client/Board/GameBoard.h
         ../src/client/Board/ShipRoom.h
-        ../src/client/Board/ShipRoom.cpp ../src/client/UI/Cursor.h ../src/client/UI/Cursor.cpp ../src/client/UI/ScaledSprite.cpp ../src/client/UI/ScaledSprite.h ../src/gamelib/NetworkedData/MessageTypes.h ../src/gamelib/NetworkedData/NetworkedData.h ../src/client/Players/ClientPlayer.cpp ../src/client/Players/ClientPlayer.h ../src/client/Scenes/LobbyScene.cpp ../src/client/Scenes/LobbyScene.h)
+        ../src/client/Board/ShipRoom.cpp
+        ../src/client/UI/Cursor.h
+        ../src/client/UI/Cursor.cpp
+        ../src/client/UI/ScaledSprite.cpp
+        ../src/client/UI/ScaledSprite.h
+        ../src/gamelib/NetworkedData/MessageTypes.h
+        ../src/gamelib/NetworkedData/NetworkedData.h
+        ../src/client/Players/ClientPlayer.cpp
+        ../src/client/Players/ClientPlayer.h
+        ../src/client/Scenes/LobbyScene.cpp
+        ../src/client/Scenes/LobbyScene.h
+        ../src/client/Board/ShipRoom.cpp
+        ../src/client/UI/Cursor.h
+        ../src/client/UI/Cursor.cpp
+        ../src/client/UI/ScaledSprite.cpp
+        ../src/client/UI/ScaledSprite.h
+        ../src/gamelib/NetworkedData/MessageTypes.h
+        ../src/client/Actions/Action.h
+        ../src/client/Actions/RollDiceAction.cpp
+        ../src/client/Actions/RollDiceAction.h
+        ../src/client/Board/ItemDeck.cpp
+        ../src/client/Board/ItemDeck.h)
 
 ## the executable
 add_executable(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES})

@@ -48,9 +48,10 @@ matrix:
         - eval "$(curl -sL https://raw.githubusercontent.com/ryuichis/oclint-cpp-travis-ci-examples/master/oclint-ci-install.sh)"
         - cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -H. -Bbuild
       script:
-        - /usr/bin/cppcheck --quiet --enable=all --error-exitcode=1 --force
-          --inline-suppr --suppressions-list=.cppcheck
-          --std=c++14 --language=c++ -I src main.cpp src/*
+        - /usr/bin/cppcheck --quiet
+          --enable=style,performance,portability,missingInclude
+          --error-exitcode=1 --force  --inline-suppr --suppressions-list=.cppcheck
+          --platform=unix64 --std=c++14 --language=c++ -I src main.cpp src/*
         - oclint-json-compilation-database
           -e Libs -e external -e asge -e _deps
           -enable-clang-static-analyzer -p ./build

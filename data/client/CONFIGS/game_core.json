@@ -12,7 +12,8 @@
 		  "Debug Test": 80,
 		  "Ready Up": 88,
 		  "Debug Skip Readyup": 32,
-		  "End Turn": 77
+		  "End Turn": 77,
+		  "Debug Spend AP": 76
 		},
 		"language": "English",
 		"server_hostname": "localhost",

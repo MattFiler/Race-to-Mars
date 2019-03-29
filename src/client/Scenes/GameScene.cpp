@@ -3,6 +3,7 @@
 #include "client/NetworkConnection/NetworkConnection.h"
 #include "gamelib/NetworkedData/MessageTypes.h"
 #include "gamelib/NetworkedData/NetworkedData.h"
+#include <client/Cards/IssueCard.h>
 #include <gamelib/Packet.h>
 
 /* Initialise the scene */
@@ -11,7 +12,7 @@ void GameScene::init()
   pause_menu.addMenuSprite("INGAME_UI/pause_bg.jpg");
   pause_menu.addMenuItem("MENU_CONTINUE");
   pause_menu.addMenuItem("MENU_QUIT");
-  m_deck.initDecks();
+  // m_deck.setup();
 
   // Get a reference to the client lobby data array
   for (int i = 0; i < 4; i++)
@@ -95,11 +96,24 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       current_progress_index = received_data.content[2];
 
       // Re-sync issue cards every turn
-      for (int i = 0; i < max_issue_cards; i++)
+      for (int i = 0; i < max_issue_cards; ++i)
       {
-        active_issue_cards[i] = received_data.content[i + 3];
-      }
+        // check to see if game is lost here and send set END_GAME to true
 
+        // checking to see if full rotation. If yes, create new issue cards
+        // client side.
+        if (received_data.content[8])
+        {
+          // check to see if any cards changed during turn.
+          if (active_issue_cards[i] != received_data.content[i + 3])
+          {
+            active_issue_cards[i] = received_data.content[i + 3];
+            // Creating a new issue card and adding it to the back of the
+            // current issues vector for rendering and points.
+            update_cards = true;
+          }
+        }
+      }
       current_scene_lock_active = false;
       debug_text.print("The server ended the current go, and passed "
                        "active-ness to client " +
@@ -120,6 +134,14 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       }
       break;
     }
+    case data_roles::CLIENT_ACTION_POINTS_CHANGED:
+    {
+      // Update another player's action point count
+      players[received_data.content[0]]->action_points =
+        received_data.content[1];
+      debug_text.print("A player spent or received action points.");
+      break;
+    }
     default:
     {
       debug_text.print("An unhandled data packet was received, of type " +
@@ -133,8 +155,14 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
 void GameScene::keyHandler(const ASGE::SharedEventData data)
 {
   keys.registerEvent(static_cast<const ASGE::KeyEvent*>(data.get()));
+
   switch (current_state)
   {
+    case game_state::LOOKING_AT_PLAYER_INFO:
+    {
+      // --
+      break;
+    }
     case game_state::PLAYING:
     {
       if (keys.keyReleased("Back") && !current_scene_lock_active)
@@ -148,6 +176,14 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
                                        my_player_index);
         current_scene_lock_active = true;
         debug_text.print("Requesting to end my go!!");
+      }
+      if (keys.keyReleased("Debug Spend AP") &&
+          players[my_player_index]->is_active)
+      {
+        // Debug: change my action points to 10
+        Locator::getClient()->sendData(
+          data_roles::CLIENT_ACTION_POINTS_CHANGED, my_player_index, 10);
+        debug_text.print("Debug: changing my action points to 10!");
       }
       break;
     }
@@ -171,10 +207,6 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
         }
       }
       break;
-    }
-    default:
-    {
-      break; // unhandled!
     }
   }
 }
@@ -203,7 +235,6 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
                                      my_player_index,
                                      static_cast<int>(new_pos.x),
                                      static_cast<int>(new_pos.y));
-
       Locator::getPlayers()
         ->getPlayer(players[my_player_index]->current_class)
         ->setPos(new_pos);
@@ -215,6 +246,20 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
 /* Update function */
 game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
 {
+  if (update_cards)
+  {
+    for (int i = 0; i < max_issue_cards; ++i)
+    {
+      if (active_issue_cards[i] != -1)
+      {
+        active_issues.emplace_back(
+          IssueCard(static_cast<issue_cards>(active_issue_cards[i])));
+        //    debug_text.print("Creating issue card:" +
+        //                     std::to_string(received_data.content[i + 3]));
+      }
+    }
+  }
+
   if (players[my_player_index]->is_active)
   {
     // If we're not syncing, handle hover sprite update
@@ -232,7 +277,6 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
 
     Locator::getCursor()->setCursorActive(false);
   }
-
   return next_scene;
 }
 
@@ -266,6 +310,10 @@ void GameScene::render()
                                   ->getPlayer(players[i]->current_class)
                                   ->getGameTabSprite()
                                   ->getSprite());
+        renderer->renderText(std::to_string(players[i]->action_points),
+                             225,
+                             static_cast<int>(this_pos + 100),
+                             ASGE::COLOURS::WHITE);
 
         // log position for active player marker
         if (players[i]->is_active)
@@ -285,6 +333,10 @@ void GameScene::render()
         static_cast<float>(current_progress_index * 50));
       renderer->renderSprite(*game_sprites.progress_marker->getSprite());
 
+      for (auto& active_issue : active_issues)
+      {
+        active_issue.render();
+      }
       break;
     }
     case game_state::LOCAL_PAUSE:
@@ -324,6 +376,13 @@ void GameScene::render()
                          10,
                          90,
                          0.5);
-    renderer->renderText("PRESS M TO FINISH TURN", 10, 110, 0.5);
+    renderer->renderText(
+      "ACTION_POINTS: " +
+        std::to_string(players[my_player_index]->action_points),
+      10,
+      110,
+      0.5);
+    renderer->renderText("PRESS M TO FINISH TURN", 10, 130, 0.5);
+    renderer->renderText("PRESS N TO DEBUG TEST ACTION POINTS", 10, 150, 0.5);
   }
 }
