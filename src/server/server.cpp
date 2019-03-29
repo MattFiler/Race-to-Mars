@@ -137,7 +137,7 @@ void RaceToSpaceServer::run()
           // cards will need to be pulled, etc
         case data_roles::CLIENT_WANTS_TO_END_TURN:
         {
-          bool has_done_full_rotation = false;
+          bool full_rotation = false;
           Lobby* this_clients_lobby = getLobbyByID(client.lobby_id);
           if (this_clients_lobby == nullptr)
           {
@@ -160,7 +160,7 @@ void RaceToSpaceServer::run()
           if (this_clients_lobby->currently_active_player ==
               this_clients_lobby->player_that_started_id)
           {
-            has_done_full_rotation = true;
+            full_rotation = true;
 
             // increment current ship position (win condition handling is done
             // client side)
@@ -209,7 +209,7 @@ void RaceToSpaceServer::run()
                    this_clients_lobby->active_issue_cards[2],
                    this_clients_lobby->active_issue_cards[3],
                    this_clients_lobby->active_issue_cards[4],
-                   static_cast<int>(has_done_full_rotation));
+                   static_cast<int>(full_rotation));
           break;
         }
           // Client spent or gained action points, update the lobby before
