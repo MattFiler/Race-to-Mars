@@ -11,7 +11,7 @@
 class RollDiceAction : public Action
 {
  public:
-  RollDiceAction(Player& player1);
+  explicit RollDiceAction(Player& player1);
 
   void execute() override;
   void unExecute();

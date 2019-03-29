@@ -42,7 +42,7 @@ class Card
   std::string m_ability_text = "";
   int m_action_points = 0;
 
-  ScaledSprite* m_card_sprite;
+  ScaledSprite* m_card_sprite = nullptr;
 
   FileHandler file_handler;
   json card_config;
