@@ -12,12 +12,14 @@ struct LobbyPlayer
     is_ready = false;
     is_this_client = false;
     is_active = false;
+    action_points = 0;
     current_class = player_classes::UNASSIGNED;
   }
   bool has_connected = false;
   bool is_this_client = false;
   bool is_ready = false;
   bool is_active = false;
+  int action_points = 0;
   player_classes current_class = player_classes::UNASSIGNED;
 };
 

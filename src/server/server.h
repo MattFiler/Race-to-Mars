@@ -38,6 +38,8 @@ class RaceToSpaceServer
                 int _content_9 = 0,
                 int _content_10 = 0);
 
+  Lobby* getLobbyByID(int lobby_id);
+
   enetpp::server<server_client> network_server;
   unsigned int next_uid = 0;
   DebugText debug_text;

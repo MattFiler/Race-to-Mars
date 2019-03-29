@@ -5,13 +5,6 @@
 #include "../Players/ClientPlayer.h"
 #include <exception>
 
-// This bit is gonna get a refactor - so labelled TEST for now :)
-#include "../Players/CommunicationsPlayer.h"
-#include "../Players/EngineerPlayer.h"
-#include "../Players/MedicPlayer.h"
-#include "../Players/PilotPlayer.h"
-// End of mess (look for function TEST_ below where it continues)
-
 /* Initialise the scene */
 void LobbyScene::init()
 {
