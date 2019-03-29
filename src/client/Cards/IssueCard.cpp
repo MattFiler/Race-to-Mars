@@ -71,20 +71,20 @@ issue_cards IssueCard::getCardID()
 IssueCard::IssueCard(issue_cards _card_type)
 {
   card_config = file_handler.openAsJSON("CONFIGS/cards.json");
-  //  this->setCardName(
-  //    card_config["ISSUECARDS"][static_cast<size_t>(_card_type)][0]);
-  //  this->setCardDescription(
-  //    card_config["ISSUECARDS"][static_cast<size_t>(_card_type)][1]);
-  //  this->setActionPoints(
-  //    card_config["ISSUECARDS"][static_cast<size_t>(_card_type)][2]);
-  //  this->setSprite(
-  //    card_config["ISSUECARDS"][static_cast<size_t>(_card_type)][3]);
 
-  setCardName("Default");
-  setCardDescription("Default Desc.");
-  setActionPoints(999);
-  setSpritePath("data/UI/CARD_IMAGES/medic_card.png");
-  setCardID(_card_type);
+  auto card_type = static_cast<size_t>(_card_type);
+
+  this->setCardName(card_config["ISSUECARDS"][card_type]["name"]);
+  this->setCardDescription(card_config["ISSUECARDS"][card_type]["description"]);
+  this->setActionPoints(card_config["ISSUECARDS"][card_type]["action_points"]);
+  this->setSpritePath(card_config["ISSUECARDS"][card_type]["sprite_path"]);
+  this->setActionPoints(card_config["ISSUECARDS"][card_type]["card_id"]);
+
+  //  setCardName("Default");
+  //  setCardDescription("Default Desc.");
+  //  setActionPoints(999);
+  //  setSpritePath("data/UI/CARD_IMAGES/medic_card.png");
+  //  setCardID(_card_type);
 
   m_card_sprite = renderer->createRawSprite();
   m_card_sprite->loadTexture(getSprtiepath());

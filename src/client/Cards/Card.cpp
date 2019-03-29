@@ -5,7 +5,6 @@
 Card::Card()
 {
   renderer = Locator::getRenderer();
-  card_config = file_handler.openAsJSON("CONFIGS/cards.json");
 }
 
 void Card::setCardName(const std::string& _item_name)
