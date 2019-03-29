@@ -297,9 +297,9 @@ void RaceToSpaceServer::run()
         }
           // Otherwise, it's a message that needs to be forwarded to everyone in
           // the lobby
-        SEND_TO_ALL:
         default:
         {
+        SEND_TO_ALL:
           sendData(client,
                    static_cast<unsigned int>(-1),
                    data_to_send.role,
