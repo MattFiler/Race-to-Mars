@@ -34,15 +34,15 @@ void ScaledSprite::height(float height)
 }
 
 /* Set X */
-void ScaledSprite::xPos(float x)
+void ScaledSprite::xPos(float x_pos)
 {
-  sprite->xPos(x * GameResolution::scale);
+  sprite->xPos(x_pos * GameResolution::scale);
 }
 
 /* Set Y */
-void ScaledSprite::yPos(float y)
+void ScaledSprite::yPos(float y_pos)
 {
-  sprite->yPos(y * GameResolution::scale);
+  sprite->yPos(y_pos * GameResolution::scale);
 }
 
 /* Set X and Y */

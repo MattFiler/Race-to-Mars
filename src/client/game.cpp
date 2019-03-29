@@ -197,9 +197,9 @@ void RaceToSpace::clickHandler(const ASGE::SharedEventData data)
  */
 void RaceToSpace::update(const ASGE::GameTime& game_time)
 {
-  double x, y;
-  inputs.get()->getCursorPos(x, y);
-  cursor_pointer.updatePosition(x, y);
+  double x_pos, y_pos;
+  inputs.get()->getCursorPos(x_pos, y_pos);
+  cursor_pointer.updatePosition(x_pos, y_pos);
   scene_manager.update(game_time);
 }
 
