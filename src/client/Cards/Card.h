@@ -24,10 +24,10 @@ class Card
 
   void render();
 
-  void setCardName(std::string _item_name);
-  void setSpritePath(std::string _sprite_path);
-  void setCardDescription(std::string _description_text);
-  void setAbilityText(std::string _ability_text);
+  void setCardName(const std::string& _item_name);
+  void setSpritePath(const std::string& _sprite_path);
+  void setCardDescription(const std::string& _description_text);
+  void setAbilityText(const std::string& _ability_text);
   void setActionPoints(int _action_points);
   void setCardSize();
 
