@@ -375,5 +375,6 @@ void GameScene::render()
       110,
       0.5);
     renderer->renderText("PRESS M TO FINISH TURN", 10, 130, 0.5);
+    renderer->renderText("PRESS N TO DEBUG TEST ACTION POINTS", 10, 150, 0.5);
   }
 }
