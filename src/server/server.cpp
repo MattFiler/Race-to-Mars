@@ -176,27 +176,25 @@ void RaceToSpaceServer::run()
 
             for (int j = 0; j < 5; ++j)
             {
-              if (issues_drawn < issues_tobe_drawn)
+              // Check to see if slot is empty
+              if (issues_drawn < issues_tobe_drawn &&
+                  this_clients_lobby->active_issue_cards[j] == -1)
               {
-                // Check to see if slot is empty
-                if (this_clients_lobby->active_issue_cards[j] == -1)
-                {
-                  this_clients_lobby->active_issue_cards[j] =
-                    this_clients_lobby->issue_deck.back();
-                  this_clients_lobby->issue_deck.pop_back();
-                  debug_text.print(
-                    "adding issue" +
-                    std::to_string(this_clients_lobby->active_issue_cards[0]) +
-                    "to active issues.");
-                  ++issues_drawn;
-                }
+                this_clients_lobby->active_issue_cards[j] =
+                  this_clients_lobby->issue_deck.back();
+                this_clients_lobby->issue_deck.pop_back();
+                debug_text.print(
+                  "adding issue" +
+                  std::to_string(this_clients_lobby->active_issue_cards[0]) +
+                  "to active issues.");
+                ++issues_drawn;
               }
             }
-            // If this is an objective card spot, give a new objectve card
-            if (this_clients_lobby->current_progress_index % 3)
-            {
-              // OBJECTIVE CARDS ARE A WIP!!
-            }
+            // If this is an objective card spot, give a new objective card
+            // if (this_clients_lobby->current_progress_index % 3)
+            //{
+            // OBJECTIVE CARDS ARE A WIP!!
+            //}
           }
 
           // Forward current game data to all clients in this lobby
