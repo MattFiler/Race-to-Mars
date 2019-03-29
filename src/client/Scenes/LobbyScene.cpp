@@ -62,21 +62,18 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
             static_cast<player_classes>(received_data.content[i + 1]);
           players[i]->is_ready =
             static_cast<player_classes>(received_data.content[i + 5]);
-
           if (players[i]->current_class != player_classes::UNASSIGNED)
           {
             players[i]->has_connected = true;
           }
           players[i]->is_this_client = (i == my_player_index);
         }
-
         // Notify all clients in the lobby that we've connected
         Locator::getClient()->sendData(data_roles::CLIENT_CONNECTED_TO_LOBBY,
                                        my_player_index,
                                        players[my_player_index]->is_ready,
                                        players[my_player_index]->current_class);
         debug_text.print("We synced to the lobby!");
-
         has_connected = true;
       }
       break;
@@ -91,7 +88,6 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
         players[received_data.content[0]]->current_class =
           static_cast<player_classes>(received_data.content[2]);
       }
-
       debug_text.print("A player connected to the lobby!");
       break;
     }

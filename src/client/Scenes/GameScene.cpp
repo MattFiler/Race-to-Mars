@@ -109,11 +109,8 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
           {
             active_issue_cards[i] = received_data.content[i + 3];
             // Creating a new issue card and adding it to the back of the
-            // Current issues vector for rendering and points.
-            active_issues.emplace_back(
-              IssueCard(static_cast<issue_cards>(active_issue_cards[i])));
-            debug_text.print("Creating issue card:" +
-                             std::to_string(received_data.content[i + 3]));
+            // current issues vector for rendering and points.
+            update_cards = true;
           }
         }
       }
@@ -232,6 +229,20 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
 /* Update function */
 game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
 {
+  if (update_cards)
+  {
+    for (int i = 0; i < max_issue_cards; ++i)
+    {
+      if (active_issue_cards[i] != -1)
+      {
+        active_issues.emplace_back(
+          IssueCard(static_cast<issue_cards>(active_issue_cards[i])));
+        //    debug_text.print("Creating issue card:" +
+        //                     std::to_string(received_data.content[i + 3]));
+      }
+    }
+  }
+
   if (players[my_player_index]->is_active)
   {
     // If we're not syncing, handle hover sprite update
@@ -305,7 +316,6 @@ void GameScene::render()
       {
         active_issue.render();
       }
-
       break;
     }
     case game_state::LOCAL_PAUSE:

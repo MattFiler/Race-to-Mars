@@ -10,12 +10,12 @@ Card::Card()
 
 void Card::setCardName(std::string _item_name)
 {
-  this->m_card_name = _item_name;
+  m_card_name = _item_name;
 }
 
 void Card::setActionPoints(int _action_points)
 {
-  this->m_action_points = _action_points;
+  m_action_points = _action_points;
 }
 
 void Card::setSpritePath(std::string _sprite_path)

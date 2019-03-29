@@ -47,7 +47,7 @@ class GameScene : public Scene
 
   GameBoard m_board;
   Menu pause_menu;
-  // Deck m_deck;
+  bool update_cards = false;
 
   std::vector<IssueCard> active_issues;
 

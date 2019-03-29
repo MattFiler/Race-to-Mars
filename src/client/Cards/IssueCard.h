@@ -26,13 +26,11 @@ class IssueCard : public Card
 
  private:
   issue_cards m_cardID = issue_cards::ISSUE_PLACEHOLDER;
-
   int m_comms_ap_assigned = 0;
   int m_engineer_ap_assigned = 0;
   int m_medic_ap_assigned = 0;
   int m_pilot_ap_assigned = 0;
   int m_total_ap_assigned = 0;
-
   bool issue_solved = false;
 };
 

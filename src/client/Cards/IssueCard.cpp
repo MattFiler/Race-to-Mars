@@ -87,5 +87,5 @@ IssueCard::IssueCard(issue_cards _card_type)
   setCardID(_card_type);
 
   m_card_sprite = renderer->createRawSprite();
-  m_card_sprite->loadTexture("data/UI/CARD_IMAGES/medic_card.png");
+  m_card_sprite->loadTexture(getSprtiepath());
 }
