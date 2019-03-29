@@ -5,13 +5,6 @@
 #include "../Players/ClientPlayer.h"
 #include <exception>
 
-// This bit is gonna get a refactor - so labelled TEST for now :)
-#include "../Players/CommunicationsPlayer.h"
-#include "../Players/EngineerPlayer.h"
-#include "../Players/MedicPlayer.h"
-#include "../Players/PilotPlayer.h"
-// End of mess (look for function TEST_ below where it continues)
-
 /* Initialise the scene */
 void LobbyScene::init()
 {
@@ -158,28 +151,25 @@ void LobbyScene::keyHandler(const ASGE::SharedEventData data)
   }
 
   /* DEBUGGING */
-  if (debug_text.enabled)
+  if (debug_text.enabled && keys.keyReleased("Debug Skip Readyup"))
   {
-    if (keys.keyReleased("Debug Skip Readyup"))
+    // DEBUG ONLY LOCAL GAME START
+    int player_count = 0;
+    for (int i = 0; i < 4; i++)
     {
-      // DEBUG ONLY LOCAL GAME START
-      int player_count = 0;
-      for (int i = 0; i < 4; i++)
+      if (players[i]->has_connected)
       {
-        if (players[i]->has_connected)
-        {
-          player_count++;
-        }
+        player_count++;
       }
-      if (player_count > 1)
-      {
-        debug_text.print("Debug Skip Readyup only functions with one player in "
-                         "the lobby.");
-        return;
-      }
-      players[my_player_index]->is_active = true;
-      should_start_game = true;
     }
+    if (player_count > 1)
+    {
+      debug_text.print("Debug Skip Readyup only functions with one player in "
+                       "the lobby.");
+      return;
+    }
+    players[my_player_index]->is_active = true;
+    should_start_game = true;
   }
 }
 

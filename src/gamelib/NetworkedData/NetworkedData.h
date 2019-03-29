@@ -98,45 +98,10 @@ enum data_roles
    *   [2] = new token position (y)
    */
 
-  /* Any below here are SPECULATIVE and not actually implemented! */
-
-  PLAYER_MOVED_WITHIN_SHIP,
-  /* ^ The active player has moved within the ship.
-   *   [0] = player's new room index
-   *   [1] = player's previous room index
-   *   [2] = player's action points after move
-   *   [3] = player's index
-   */
-
-  PLAYER_ASSIGNED_ACTION_POINTS,
-  /* ^ The active player has assigned action points to an issue.
-   *   [0] = the card points were assigned to
-   *   [1] = the number of action points assigned
-   *   [2] = if the card was completed (0/1)
-   *   [3] = the player's new action point total
-   *   [4] = the player's index
-   */
-
-  PLAYER_ENDED_TURN,
-  /* ^ The active player ended their turn.
-   *   [0] = the player's ID that just ended their go
-   *   [1] = the next player (if back the beginning, ship needs to increment)
-   */
-
-  PLAYER_DREW_ITEM,
-  /* ^ The active player drew an item from the supply room.
-   *   [0] = the player's ID that drew the item
-   *   [1] = the ID of the item card they acquired
-   *   [2] = their remaining action points
-   */
-
-  NEW_ISSUE_CARD_ADDED,
-  /* ^ A new issue card has been added to the board.
-   *   [0] = the id of the new issue card
-   *   [1] = the id of the new issue card (optional - if zero, data is blank)
-   *   [2] = the id of the new issue card (optional - if zero, data is blank)
-   *   [3] = the id of the new issue card (optional - if zero, data is blank)
-   *   [4] = the id of the new issue card (optional - if zero, data is blank)
+  CLIENT_ACTION_POINTS_CHANGED,
+  /* ^ The active client spent or gained action points.
+   *   [0] = the client index
+   *   [1] = the new action point count
    */
 };
 

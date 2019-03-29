@@ -4,10 +4,13 @@ set(GAMEDATA_FOLDER "data/server")
 
 ## add the files to be compiled here
 set(SOURCE_FILES
-        "server/main.cpp" "server/server.cpp")
+        "server/main.cpp"
+        "server/server.cpp")
 
 set(HEADER_FILES
-        "server/server.h")
+        "server/server.h"
+        ../src/server/Structs/Lobby.h
+        ../src/server/Structs/ServerClient.h)
 
 ## the executable
 add_executable(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES})

@@ -134,6 +134,14 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       }
       break;
     }
+    case data_roles::CLIENT_ACTION_POINTS_CHANGED:
+    {
+      // Update another player's action point count
+      players[received_data.content[0]]->action_points =
+        received_data.content[1];
+      debug_text.print("A player spent or received action points.");
+      break;
+    }
     default:
     {
       debug_text.print("An unhandled data packet was received, of type " +
@@ -150,6 +158,11 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
 
   switch (current_state)
   {
+    case game_state::LOOKING_AT_PLAYER_INFO:
+    {
+      // --
+      break;
+    }
     case game_state::PLAYING:
     {
       if (keys.keyReleased("Back") && !current_scene_lock_active)
@@ -163,6 +176,14 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
                                        my_player_index);
         current_scene_lock_active = true;
         debug_text.print("Requesting to end my go!!");
+      }
+      if (keys.keyReleased("Debug Spend AP") &&
+          players[my_player_index]->is_active)
+      {
+        // Debug: change my action points to 10
+        Locator::getClient()->sendData(
+          data_roles::CLIENT_ACTION_POINTS_CHANGED, my_player_index, 10);
+        debug_text.print("Debug: changing my action points to 10!");
       }
       break;
     }
@@ -186,10 +207,6 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
         }
       }
       break;
-    }
-    default:
-    {
-      break; // unhandled!
     }
   }
 }
@@ -293,6 +310,10 @@ void GameScene::render()
                                   ->getPlayer(players[i]->current_class)
                                   ->getGameTabSprite()
                                   ->getSprite());
+        renderer->renderText(std::to_string(players[i]->action_points),
+                             225,
+                             static_cast<int>(this_pos + 100),
+                             ASGE::COLOURS::WHITE);
 
         // log position for active player marker
         if (players[i]->is_active)
@@ -355,6 +376,13 @@ void GameScene::render()
                          10,
                          90,
                          0.5);
-    renderer->renderText("PRESS M TO FINISH TURN", 10, 110, 0.5);
+    renderer->renderText(
+      "ACTION_POINTS: " +
+        std::to_string(players[my_player_index]->action_points),
+      10,
+      110,
+      0.5);
+    renderer->renderText("PRESS M TO FINISH TURN", 10, 130, 0.5);
+    renderer->renderText("PRESS N TO DEBUG TEST ACTION POINTS", 10, 150, 0.5);
   }
 }
