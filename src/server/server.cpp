@@ -1,12 +1,15 @@
 #include "server.h"
 #include "gamelib/NetworkedData/NetworkedData.h"
+#include <algorithm>
 #include <gamelib/Packet.h>
 #include <iostream>
+#include <random>
 
 RaceToSpaceServer::RaceToSpaceServer()
 {
   debug_text.enabled = true;
   enetpp::global_state::get().initialize();
+  // chrono here
 }
 
 RaceToSpaceServer::~RaceToSpaceServer()
@@ -27,6 +30,45 @@ void RaceToSpaceServer::initialise()
   // Create the first lobby
   lobbies.emplace_back(latest_lobby_id);
   latest_lobby_id++;
+  // Create deck of Issue IDS. 60 cards total.
+  for (int i = 0; i < 2; ++i)
+  {
+    for (int j = 0; j < 30; ++j)
+    {
+      // Create for most recent lobby.
+      lobbies.back().issue_deck.push_back(j);
+    }
+  }
+
+  // Create deck of Item IDS. 38 cards total.
+  for (int i = 0; i < 2; ++i)
+  {
+    for (int j = 0; j < 19; ++j)
+    {
+      // Create for most recent lobby.
+      lobbies.back().item_deck.push_back(j);
+    }
+  }
+
+  // Create deck of Issue IDS. 24 cards total.
+  for (int i = 0; i < 2; ++i)
+  {
+    for (int j = 0; j < 12; ++j)
+    {
+      // Create for most recent lobby.
+      lobbies.back().objective_deck.push_back(j);
+    }
+  }
+
+  // Shuffle decks.
+
+  std::shuffle(
+    lobbies.back().issue_deck.begin(), lobbies.back().issue_deck.end(), gen);
+  std::shuffle(
+    lobbies.back().item_deck.begin(), lobbies.back().item_deck.end(), gen);
+  std::shuffle(lobbies.back().objective_deck.begin(),
+               lobbies.back().issue_deck.end(),
+               gen);
 
   // Start listening for network traffic
   network_server.start_listening(
@@ -87,7 +129,6 @@ void RaceToSpaceServer::run()
                    lobbies.at(client.lobby_index).users_ready[2],
                    lobbies.at(client.lobby_index).users_ready[3],
                    client.client_index);
-
           break;
         }
           // The currently active client wants to end their turn, so we need to
@@ -144,7 +185,27 @@ void RaceToSpaceServer::run()
             // GO THROUGH THE DECK HERE AND PICK OUT SOME ISSUE CARDS, ADD THEIR
             // IDs TO this_clients_lobby->active_issue_cards - WIN/LOSS
             // CONDITIONS SHOULD THEN BE HANDLED CLIENT SIDE
+            int issues_tobe_drawn = 1;
+            int issues_drawn = 0;
 
+            for (int j = 0; j < 5; ++j)
+            {
+              if (issues_drawn < issues_tobe_drawn)
+              {
+                // Check to see if slot is empty
+                if (this_clients_lobby->active_issue_cards[j] == -1)
+                {
+                  this_clients_lobby->active_issue_cards[j] =
+                    this_clients_lobby->issue_deck.back();
+                  this_clients_lobby->issue_deck.pop_back();
+                  debug_text.print(
+                    "adding issue" +
+                    std::to_string(this_clients_lobby->active_issue_cards[0]) +
+                    "to active issues.");
+                  ++issues_drawn;
+                }
+              }
+            }
             // If this is an objective card spot, give a new objectve card
             if (this_clients_lobby->current_progress_index % 3)
             {
@@ -165,7 +226,6 @@ void RaceToSpaceServer::run()
                    this_clients_lobby->active_issue_cards[3],
                    this_clients_lobby->active_issue_cards[4],
                    static_cast<int>(has_done_full_rotation));
-
           break;
         }
           // We need to store lobby ready state before sending it out, so new

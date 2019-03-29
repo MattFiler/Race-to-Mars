@@ -14,14 +14,10 @@
 class ItemCard : public Card
 {
  public:
-  void setItemName(std::string _item_name);
-  void setActionPoints(int _action_points);
-  void setSpritePath(std::string _sprite_path);
+  void setCardID(item_cards _item_card_id);
 
  private:
-  std::string item_name = "";
-  int action_points = 0;
-  std::string sprite_path = "";
+  item_cards m_cardID = item_cards ::ITEM_PLACEHOLDER;
 };
 
 #endif // PROJECT_ITEMCARD_H

@@ -2,6 +2,7 @@
 #define PROJECT_LOBBY_H
 
 #include "gamelib/NetworkedData/Players.h"
+#include <vector>
 
 /* A game lobby */
 struct Lobby
@@ -16,6 +17,9 @@ struct Lobby
                                      player_classes::UNASSIGNED,
                                      player_classes::UNASSIGNED,
                                      player_classes::UNASSIGNED };
+  std::vector<int> issue_deck;
+  std::vector<int> item_deck;
+  std::vector<int> objective_deck;
   int current_progress_index = 0;
   int player_that_started_id = -1;
   int currently_active_player = 0;

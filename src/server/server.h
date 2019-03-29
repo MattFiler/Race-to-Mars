@@ -7,6 +7,8 @@
 #include "server/Structs/Lobby.h"
 #include "server/Structs/ServerClient.h"
 #include <enetpp/server.h>
+#include <gamelib/NetworkedData/Cards.h>
+#include <random>
 #include <vector>
 
 class RaceToSpaceServer
@@ -41,6 +43,9 @@ class RaceToSpaceServer
   DebugText debug_text;
   int port = 8888;
   int max_lobby_size = 4;
+
+  size_t seed;
+  std::mt19937 gen;
 
   std::vector<Lobby> lobbies;
   int latest_lobby_id = 0;

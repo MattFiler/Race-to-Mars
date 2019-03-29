@@ -1,1 +1,88 @@
 #include "IssueCard.h"
+
+void IssueCard::setCardID(issue_cards _item_card_id)
+{
+  this->m_cardID = _item_card_id;
+  switch (static_cast<int>(_item_card_id))
+  {
+    case 12:
+    {
+    }
+    case 13:
+    {
+    }
+    case 14:
+    {
+    }
+    case 15:
+    {
+    }
+    case 16:
+    {
+    }
+    case 17:
+    {
+    }
+    default:
+      break;
+  }
+}
+
+void IssueCard::addActionPoints(player_classes _player_class, int _ap_amount)
+{
+  switch (_player_class)
+  {
+    case player_classes::UNASSIGNED:
+    {
+      throw("Unassigned player tried to assign action points. THATS "
+            "IMPOSSIBRU.");
+    }
+    case player_classes::COMMUNICATIONS:
+    {
+      m_comms_ap_assigned += _ap_amount;
+      break;
+    }
+    case player_classes::ENGINEER:
+    {
+      m_engineer_ap_assigned += _ap_amount;
+      break;
+    }
+    case player_classes::MEDIC:
+    {
+      m_medic_ap_assigned += _ap_amount;
+      break;
+    }
+    case player_classes ::PILOT:
+    {
+      m_pilot_ap_assigned += _ap_amount;
+      break;
+    }
+    default:
+      break;
+  }
+  m_total_ap_assigned += _ap_amount;
+}
+
+issue_cards IssueCard::getCardID()
+{
+  return m_cardID;
+}
+
+IssueCard::IssueCard(issue_cards _card_type)
+{
+  card_config = file_handler.openAsJSON("CONFIGS/cards.json");
+  //  this->setCardName(
+  //    card_config["ISSUECARDS"][static_cast<size_t>(_card_type)][0]);
+  //  this->setCardDescription(
+  //    card_config["ISSUECARDS"][static_cast<size_t>(_card_type)][1]);
+  //  this->setActionPoints(
+  //    card_config["ISSUECARDS"][static_cast<size_t>(_card_type)][2]);
+  //  this->setSprite(
+  //    card_config["ISSUECARDS"][static_cast<size_t>(_card_type)][3]);
+
+  this->setCardName("Default");
+  this->setCardDescription("Default Desc.");
+  this->setActionPoints(999);
+  this->setSpritePath("UI/PLAYER_COUNTERS/issueplaceholder.png");
+  this->setCardID(_card_type);
+}
