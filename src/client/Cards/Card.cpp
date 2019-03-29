@@ -34,7 +34,7 @@ void Card::setAbilityText(const std::string& _ability_text)
 
 void Card::render()
 {
-  renderer->renderSprite(*m_card_sprite);
+  renderer->renderSprite(*m_card_sprite->getSprite());
 }
 
 void Card::setCardSize() {}

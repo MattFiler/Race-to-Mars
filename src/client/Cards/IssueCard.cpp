@@ -80,12 +80,5 @@ IssueCard::IssueCard(issue_cards _card_type)
   this->setSpritePath(card_config["ISSUECARDS"][card_type]["sprite_path"]);
   this->setActionPoints(card_config["ISSUECARDS"][card_type]["card_id"]);
 
-  //  setCardName("Default");
-  //  setCardDescription("Default Desc.");
-  //  setActionPoints(999);
-  //  setSpritePath("data/UI/CARD_IMAGES/medic_card.png");
-  //  setCardID(_card_type);
-
-  m_card_sprite = renderer->createRawSprite();
-  m_card_sprite->loadTexture(getSprtiepath());
+  m_card_sprite = new ScaledSprite(this->getSprtiepath());
 }

@@ -33,16 +33,18 @@ class Card
 
   std::string getSprtiepath() { return m_sprite_path; }
 
+  ScaledSprite* getSprite() { return m_card_sprite; }
+
  protected:
   ASGE::Renderer* renderer = nullptr;
 
   std::string m_card_name = "Temp Name";
   std::string m_card_decription = "Temp desc";
-  std::string m_sprite_path = "data/UI/CARD_IMAGES/medic_card.png\"";
+  std::string m_sprite_path = "data/UI/CARD_IMAGES/global_card.png";
   std::string m_ability_text = "Temp Ability Text";
   int m_action_points = 0;
 
-  ASGE::Sprite* m_card_sprite = nullptr;
+  ScaledSprite* m_card_sprite = nullptr;
 
   FileHandler file_handler;
   json card_config;

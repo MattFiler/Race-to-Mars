@@ -39,14 +39,12 @@ class RaceToSpaceServer
                 int _content_10 = 0);
 
   Lobby* getLobbyByID(int lobby_id);
-
+  int amount_to_draw[15]{ 1, 2, 1, 1, 2, 2, 1, 1, 3, 2, 1, 3, 2, 1, 2 };
   enetpp::server<server_client> network_server;
   unsigned int next_uid = 0;
   DebugText debug_text;
   int port = 8888;
   int max_lobby_size = 4;
-
-  std::mt19937 gen;
 
   std::vector<Lobby> lobbies;
   int latest_lobby_id = 0;

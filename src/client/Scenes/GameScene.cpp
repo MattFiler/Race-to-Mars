@@ -250,14 +250,19 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
   {
     for (int i = 0; i < max_issue_cards; ++i)
     {
-      if (active_issue_cards[i] != -1)
+      if (active_issue_cards[i] != -1 && !slot_occupied[i])
       {
         active_issues.emplace_back(
           IssueCard(static_cast<issue_cards>(active_issue_cards[i])));
-        //    debug_text.print("Creating issue card:" +
-        //                     std::to_string(received_data.content[i + 3]));
+        active_issues[i].getSprite()->setPos(
+          Vector2(static_cast<float>(i) * 340, 200.0f));
+        slot_occupied[i] = true;
+
+        debug_text.print("Creating issue card" +
+                         std::to_string(active_issue_cards[i]));
       }
     }
+    update_cards = false;
   }
 
   if (players[my_player_index]->is_active)
@@ -274,7 +279,6 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
   {
     // It isn't our go, but we might be able to still do stuff, or need to
     // update bits?
-
     Locator::getCursor()->setCursorActive(false);
   }
   return next_scene;
@@ -315,7 +319,7 @@ void GameScene::render()
                              static_cast<int>(this_pos + 100),
                              ASGE::COLOURS::WHITE);
 
-        // log position for active player marker
+        // log position for active player marker.
         if (players[i]->is_active)
         {
           active_marker_pos = this_pos;

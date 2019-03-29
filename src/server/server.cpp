@@ -10,6 +10,9 @@ RaceToSpaceServer::RaceToSpaceServer()
   debug_text.enabled = true;
   enetpp::global_state::get().initialize();
   // chrono here
+  //  std::random_device random;
+  //  std::mt19937 mtgen(random(), random(), random());
+  //  gen = mtgen;
 }
 
 RaceToSpaceServer::~RaceToSpaceServer()
@@ -60,8 +63,10 @@ void RaceToSpaceServer::initialise()
     }
   }
 
+  auto seed =
+    std::chrono::high_resolution_clock::now().time_since_epoch().count();
+  std::mt19937 gen(seed);
   // Shuffle decks.
-
   std::shuffle(
     lobbies.back().issue_deck.begin(), lobbies.back().issue_deck.end(), gen);
   std::shuffle(
@@ -171,22 +176,24 @@ void RaceToSpaceServer::run()
             // GO THROUGH THE DECK HERE AND PICK OUT SOME ISSUE CARDS, ADD THEIR
             // IDs TO this_clients_lobby->active_issue_cards - WIN/LOSS
             // CONDITIONS SHOULD THEN BE HANDLED CLIENT SIDE
+            // int issues_tobe_drawn =
+            // amount_to_draw[this_clients_lobby->current_progress_index - 1];
             int issues_tobe_drawn = 1;
             int issues_drawn = 0;
 
             for (int j = 0; j < 5; ++j)
             {
-              // Check to see if slot is empty
+              // Check to see if slot is empty.
               if (issues_drawn < issues_tobe_drawn &&
                   this_clients_lobby->active_issue_cards[j] == -1)
               {
                 this_clients_lobby->active_issue_cards[j] =
                   this_clients_lobby->issue_deck.back();
-                this_clients_lobby->issue_deck.pop_back();
                 debug_text.print(
                   "adding issue" +
-                  std::to_string(this_clients_lobby->active_issue_cards[0]) +
+                  std::to_string(this_clients_lobby->issue_deck.back()) +
                   "to active issues.");
+                this_clients_lobby->issue_deck.pop_back();
                 ++issues_drawn;
               }
             }
