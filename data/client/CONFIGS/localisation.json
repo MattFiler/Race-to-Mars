@@ -1,6 +1,7 @@
 {
 	"DEFAULT": {
 		"PLACEHOLDER": "Placeholder Text",
+		"BLANK_STRING": "",
 	
 		"PLAYER_COMMS": "Communications",
 		"PLAYER_PILOT": "Pilot",
@@ -14,6 +15,23 @@
 		"ROOM_ENGINE": "Engine Room",
 		
 		"MENU_NEWGAME": "New Game",
-		"MENU_QUIT": "Quit Game"
+		"MENU_CONTINUE": "Continue",
+		"MENU_QUIT": "Quit",
+		
+		"LOBBY_AWAITING": "Awaiting players...",
+		"LOBBY_CONN_1": "1/4 players connected...",
+		"LOBBY_CONN_2": "2/4 players connected...",
+		"LOBBY_CONN_3": "3/4 players connected...",
+		"LOBBY_CONN_4": "4/4 players connected...",
+		"LOBBY_READY_1": "1/4 players ready...",
+		"LOBBY_READY_2": "2/4 players ready...",
+		"LOBBY_READY_3": "3/4 players ready...",
+		"LOBBY_READY_4": "4/4 players ready...",
+		"LOBBY_COUNTDOWN_5": "Starting in 3...",
+		"LOBBY_COUNTDOWN_4": "Starting in 2...",
+		"LOBBY_COUNTDOWN_3": "Starting in 1...",
+		"LOBBY_COUNTDOWN_2": "Starting game.",
+		"LOBBY_COUNTDOWN_1": "Starting game..",
+		"LOBBY_COUNTDOWN_0": "Starting game..."
 	}
 }

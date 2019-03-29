@@ -20,31 +20,13 @@ void MenuScene::networkDataReceived(const enet_uint8* data, size_t data_size) {}
 /* Handles key inputs */
 void MenuScene::keyHandler(const ASGE::SharedEventData data)
 {
-  // temp
-  auto event = static_cast<const ASGE::KeyEvent*>(data.get());
-  if (event->action == ASGE::KEYS::KEY_PRESSED)
-  {
-    if (event->key == ASGE::KEYS::KEY_BACKSPACE)
-    {
-      if (username.size() != 0)
-      {
-        username.pop_back();
-      }
-    }
-    else
-    {
-      username += static_cast<char>(event->key);
-    }
-  }
-
   keys.registerEvent(static_cast<const ASGE::KeyEvent*>(data.get()));
-
   if (main_menu.itemWasSelected(keys))
   {
     if (main_menu.selectedItemWas("MENU_NEWGAME"))
     {
-      debug_text.print("Swapping to game scene.");
-      next_scene = game_global_scenes::IN_GAME;
+      debug_text.print("Entering lobby.");
+      next_scene = game_global_scenes::LOBBY;
     }
     else if (main_menu.selectedItemWas("MENU_QUIT"))
     {
@@ -70,7 +52,4 @@ game_global_scenes MenuScene::update(const ASGE::GameTime& game_time)
 void MenuScene::render()
 {
   main_menu.render();
-  renderer->renderText("MenuScene", 100, 100);
-  renderer->renderText("Please enter your name:", 350, 350);
-  renderer->renderText(username, 350, 450);
 }

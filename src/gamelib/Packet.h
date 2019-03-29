@@ -1,12 +1,8 @@
-//
-// Created by jackk on 15/03/2019.
-//
-
 #ifndef PROJECT_PACKET_H
 #define PROJECT_PACKET_H
 
-#include "../../cmake-build-debug/_deps/enet-src/include/enet/types.h"
 #include <cstddef>
+#include <enet/types.h>
 #include <vector>
 
 class Packet
@@ -15,7 +11,6 @@ class Packet
   explicit Packet() = default;
   // explicit Packet(const char *data, size_t size);
   Packet(const enet_uint8* data, size_t length);
-
   ~Packet() = default;
 
   std::size_t read_pos = 0;
@@ -42,5 +37,26 @@ class Packet
     read_pos += size;
     return *this;
   }
+
+  //// template clsses for strings.
+  //    template<>
+  //    Packet& operator << (const std::string &str)
+  //    {
+  //      auto data = reinterpret_cast<const char*>(
+  //              str.data());
+  //      auto length = str.length() +1; // +1 for null
+  //      packet_data.insert(
+  //              packet_data.end(), data, data + length);
+  //      return *this;
+  //    }
+  //    template<>
+  //    Packet& operator >> (std::string &str)
+  //    {
+  //      auto length =
+  //              std::strlen(&packet_data[read_pos]);
+  //      str = std::string(&packet_data[read_pos], length);
+  //      read_pos += packet_data.size();
+  //      return *this;
+  //    }
 };
 #endif // PROJECT_PACKET_H

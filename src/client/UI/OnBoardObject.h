@@ -20,6 +20,11 @@ class OnBoardObject
   ~OnBoardObject() = default;
 
   void setSprite(const std::string& sprite_path);
+  ScaledSprite* getSprite()
+  {
+    return sprite;
+  } // shouldn't be required as we provide a render function, but will add the
+    // functionality anyways for now
 
   void setPosition(Vector2 _position);
   Vector2 getPosition() { return position; }

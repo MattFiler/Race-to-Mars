@@ -17,12 +17,11 @@ class MenuScene : public Scene
 
   void keyHandler(const ASGE::SharedEventData data) override;
   void clickHandler(const ASGE::SharedEventData data) override;
-  game_global_scenes update(const ASGE::GameTime& game_time);
+  game_global_scenes update(const ASGE::GameTime& game_time) override;
   void render() override;
 
  private:
   Menu main_menu;
-  std::string username;
 };
 
 #endif // PROJECT_MENUSCENE_H

@@ -5,6 +5,7 @@ enum game_global_scenes
 {
   DEFAULT = -1,
   MAIN_MENU = 0,
+  LOBBY,
   IN_GAME,
   QUIT_GAME
 };

@@ -3,9 +3,9 @@
 
 enum player_classes
 {
-  UNASSIGNED,
+  UNASSIGNED = -1,
 
-  ENGINEER,
+  ENGINEER = 0,
   MEDIC,
   PILOT,
   COMMUNICATIONS

@@ -1,0 +1,14 @@
+{
+	"DEFAULT": {
+		"bounding_box_pos": [0,0],
+		"bounding_box_size": [300,450],
+		"centre_point": [0,0],
+		"friendly_name": "PLACEHOLDER"
+	},
+	"ITEMDECK": {
+		"bounding_box_pos": [183,111],
+		"bounding_box_size": [134,111],
+		"centre_point": [252,189],
+		"friendly_name": "ROOM_BRIDGE"
+	}
+}
