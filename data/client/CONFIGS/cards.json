@@ -7,29 +7,29 @@
 	},
 	"ITEMCARDS":
 	[
-				{"name": "Microphone","action_points": 5, "sprite_path": "UI/CARD_IMAGES/communications_card.png", "card_id": 0},
-				{"name": "Radar", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/communications_card.png", "card_id": 1},
-				{"name": "Radio", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/communications_card.png", "card_id": 2},
-				{"name": "Scout Drone", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/communications_card.png", "card_id": 3},
-				{"name": "Upgraded", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/communications_card.png", "card_id": 4},
+				{"name": "Microphone","action_points": 5, "sprite_path": "UI/CARD_IMAGES/item_map.png", "card_id": 0},
+				{"name": "Radar", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/item_mic.png", "card_id": 1},
+				{"name": "Radio", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/item_radio.png", "card_id": 2},
+				{"name": "Scout Drone", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/item_scoutdrone.png", "card_id": 3},
+				{"name": "Upgraded Speakers", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/item_upgradedspeakers.png", "card_id": 4},
 
-				{"name": "Screwdriver", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/engineer_card.png", "card_id": 5},
-				{"name": "Screws", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/engineer_card.png", "card_id": 6},
-				{"name": "Tool kit", "action_points": 5, "sprite_path":"UI/CARD_IMAGES/engineer_card.png", "card_id": 7},
-				{"name": "Welder", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/engineer_card.png", "card_id": 8},
-				{"name": "Welding Goggles", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/engineer_card.png", "card_id": 9},
+				{"name": "Screwdriver", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/item_screwdriver.png", "card_id": 5},
+				{"name": "Screws", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/item_screws.png", "card_id": 6},
+				{"name": "Tool kit", "action_points": 5, "sprite_path":"UI/CARD_IMAGES/item_toolkit.png", "card_id": 7},
+				{"name": "Welder", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/item_welder.png", "card_id": 8},
+				{"name": "Welding Goggles", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/item_weldinggoggles.png", "card_id": 9},
 	
-				{"name": "Antibiotics", "action_points": 5,"sprite_path": "UI/CARD_IMAGES/medic_card.png", "card_id": 10},
-				{"name": "Band Aid", "action_points": 5,"sprite_path": "UI/CARD_IMAGES/medic_card.png", "card_id": 11},
-				{"name": "First Aid Kit", "action_points": 5,"sprite_path": "UI/CARD_IMAGES/medic_card.png", "card_id": 12},
-				{"name": "Pain Killers", "action_points": 5,"sprite_path": "UI/CARD_IMAGES/medic_card.png", "card_id": 13},
-				{"name": "Pain Killers", "action_points": 5,"sprite_path": "UI/CARD_IMAGES/medic_card.png", "card_id": 13},
+				{"name": "Antibiotics", "action_points": 5,"sprite_path": "UI/CARD_IMAGES/item_antibiotics.png", "card_id": 10},
+				{"name": "Band Aid", "action_points": 5,"sprite_path": "UI/CARD_IMAGES/item_bandaid.png", "card_id": 11},
+				{"name": "First Aid Kit", "action_points": 5,"sprite_path": "UI/CARD_IMAGES/item_firstaidkit.png", "card_id": 12},
+				{"name": "Pain Killers", "action_points": 5,"sprite_path": "UI/CARD_IMAGES/item_painkillers.png", "card_id": 13},
+				{"name": "Pain Killers", "action_points": 5,"sprite_path": "UI/CARD_IMAGES/item_painkillers.png", "card_id": 13},
 		
-				{"name":  "Map","action_points": 5,"sprite_path": "UI/CARD_IMAGES/pilot_card.png", "card_id": 14},
-				{"name":  "New Controls", "action_points":5,"sprite_path": "UI/CARD_IMAGES/pilot_card.png", "card_id": 15},
-				{"name":  "Radar", "action_points":5,"sprite_path": "UI/CARD_IMAGES/pilot_card.png", "card_id": 16},
-				{"name":  "Thruster Upgrade", "action_points":5,"sprite_path": "UI/CARD_IMAGES/pilot_card.png", "card_id": 17},
-				{"name":  "Window Wash", "action_points":5,"sprite_path": "UI/CARD_IMAGES/pilot_card.png", "card_id": 18}
+				{"name":  "Map","action_points": 5,"sprite_path": "UI/CARD_IMAGES/item_map.png", "card_id": 14},
+				{"name":  "New Controls", "action_points":5,"sprite_path": "UI/CARD_IMAGES/item_newcontrols.png", "card_id": 15},
+				{"name":  "Radar", "action_points":5,"sprite_path": "UI/CARD_IMAGES/item_radar.png", "card_id": 16},
+				{"name":  "Thruster Upgrade", "action_points":5,"sprite_path": "UI/CARD_IMAGES/item_thrusterupgraded.png", "card_id": 17},
+				{"name":  "Window Wash", "action_points":5,"sprite_path": "UI/CARD_IMAGES/item_windowwash.png", "card_id": 18}
 	],
 	"ISSUECARDS": 
 	[
@@ -70,18 +70,18 @@
 	],
 	"OBJECTIVECARDS" :
 		[
-			{"name": "Big Issue", "description": "Help solving a 15 point issue before drawing a new card!", "ability": "All ship movement is free for a turn.", "card_id": 0},
-			{"name": "Class Items", "description": "Acquire two different class items before drawing a new card.", "ability": "Swap out all item cards for new ones.", "card_id": 1},
-			{"name": "Class Solver", "description": "Solve an issue not assigned to your class before drawing a new card.", "ability": "Three extra action points.", "card_id": 2},
-			{"name": "Issue Helper", "description": "Assist with one issue before drawing a new card.", "ability": "Three extra action points.", "card_id": 3},
-			{"name": "Big Issue Helper", "description": "Help solve a 15 point issue before drawing a new card..", "ability": "Trade this card in to solve an issue immediately.", "card_id": 4},
-			{"name": "Issue Solver Medium", "description": "Solve a 10 point issue solo before drawing a new card.", "ability": "All ship movement is free for a turn.", "card_id": 5},
-			{"name": "Issue Solver Large", "description": "Solve a 15 point issue solo before drawing a new card.", "ability": "The ship will move forawrd an extra space.", "card_id": 6},
-			{"name": "Issue Solver Small", "description": "Solve a 5 point issue solo before drawing a new card.", "ability": "Three extra action points.", "card_id": 7},
-			{"name": "Majority Helper", "description": "Put the most points towards an issue card to solve it.", "ability": "Take an extra item card.", "card_id": 8},
-			{"name": "Personal Issue", "description": "Solve an issue assigned to your class before drawing a new card.", "ability": "Three extra action points.", "card_id": 9},
-			{"name": "point Stash", "description": "Use none of your action points for one turn.", "ability": "Double your action points.", "card_id": 10},
-			{"name": "Unhelpful", "description": "Don't help the player to your right solve an issue.", "ability": "Take an extra item", "card_id": 11},
-			{"name": "Unhelpful", "description": "Don't help the player to your left solve an issue.", "ability": "Re-roll the dice at any point during your turn.", "card_id": 12}
+			{"name": "Big Issue", "description": "Help solving a 15 point issue before drawing a new card!", "ability": "All ship movement is free for a turn.", "sprite_path": "UI/CARD_IMAGES/objective_bigissue.png", "card_id": 0},
+			{"name": "Class Items", "description": "Acquire two different class items before drawing a new card.", "ability": "Swap out all item cards for new ones.", "sprite_path": "UI/CARD_IMAGES/objective_classitems.png", "card_id": 1},
+			{"name": "Class Solver", "description": "Solve an issue not assigned to your class before drawing a new card.", "ability": "Three extra action points.", "sprite_path": "UI/CARD_IMAGES/objective_classsolver.png", "card_id": 2},
+			{"name": "Issue Helper", "description": "Assist with one issue before drawing a new card.", "ability": "Three extra action points.", "sprite_path": "UI/CARD_IMAGES/objective_issuehelpersmall.png", "card_id": 3},
+			{"name": "Big Issue Helper", "description": "Help solve a 15 point issue before drawing a new card..", "ability": "Trade this card in to solve an issue immediately.", "sprite_path": "UI/CARD_IMAGES/objective_issuehelperlarge.png", "card_id": 4},
+			{"name": "Issue Solver Medium", "description": "Solve a 10 point issue solo before drawing a new card.", "ability": "All ship movement is free for a turn.", "sprite_path": "UI/CARD_IMAGES/objective_issuesolvermedium.png", "card_id": 5},
+			{"name": "Issue Solver Large", "description": "Solve a 15 point issue solo before drawing a new card.", "ability": "The ship will move forawrd an extra space.", "sprite_path": "UI/CARD_IMAGES/objective_issuesolverlarge.png", "card_id": 6},
+			{"name": "Issue Solver Small", "description": "Solve a 5 point issue solo before drawing a new card.", "ability": "Three extra action points.", "sprite_path": "UI/CARD_IMAGES/objective_issuesolversmall.png", "card_id": 7},
+			{"name": "Majority Helper", "description": "Put the most points towards an issue card to solve it.", "ability": "Take an extra item card.", "sprite_path": "UI/CARD_IMAGES/objective_majorityhelper.png", "card_id": 8},
+			{"name": "Personal Issue", "description": "Solve an issue assigned to your class before drawing a new card.", "ability": "Three extra action points.", "sprite_path": "UI/CARD_IMAGES/objective_personalissue.png", "card_id": 9},
+			{"name": "point Stash", "description": "Use none of your action points for one turn.", "ability": "Double your action points.", "sprite_path": "UI/CARD_IMAGES/objective_pointstash.png", "card_id": 10},
+			{"name": "Unhelpful", "description": "Don't help the player to your right solve an issue.", "ability": "Take an extra item", "sprite_path": "UI/CARD_IMAGES/objective_unhelpful.png", "card_id": 11},
+			{"name": "Unhelpful", "description": "Don't help the player to your left solve an issue.", "ability": "Re-roll the dice at any point during your turn.", "sprite_path": "UI/CARD_IMAGES/objective_unhelpfulleft.png", "card_id": 12}
 		]
 }

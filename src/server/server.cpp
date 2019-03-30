@@ -257,7 +257,6 @@ void RaceToSpaceServer::run()
           {
             break;
           }
-
           this_lobby->users_ready[data_to_send.content[1]] =
             static_cast<bool>(data_to_send.content[0]);
 
