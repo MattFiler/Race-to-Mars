@@ -176,9 +176,9 @@ void RaceToSpaceServer::run()
             // GO THROUGH THE DECK HERE AND PICK OUT SOME ISSUE CARDS, ADD THEIR
             // IDs TO this_clients_lobby->active_issue_cards - WIN/LOSS
             // CONDITIONS SHOULD THEN BE HANDLED CLIENT SIDE
-            // int issues_tobe_drawn =
-            // amount_to_draw[this_clients_lobby->current_progress_index - 1];
-            int issues_tobe_drawn = 1;
+            int issues_tobe_drawn =
+              amount_to_draw[this_clients_lobby->current_progress_index - 1];
+            // int issues_tobe_drawn = 1;
             int issues_drawn = 0;
 
             for (int j = 0; j < 5; ++j)
