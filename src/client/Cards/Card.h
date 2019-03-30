@@ -32,7 +32,6 @@ class Card
   void setCardSize();
 
   std::string getSprtiepath() { return m_sprite_path; }
-
   ScaledSprite* getSprite() { return m_card_sprite; }
 
  protected:

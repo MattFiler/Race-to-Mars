@@ -1,9 +1,12 @@
 #include "client/Scenes/GameScene.h"
+#include "GameScene.h"
 #include "client/Core/ServiceLocator.h"
 #include "client/NetworkConnection/NetworkConnection.h"
 #include "gamelib/NetworkedData/MessageTypes.h"
 #include "gamelib/NetworkedData/NetworkedData.h"
+
 #include <client/Cards/IssueCard.h>
+#include <client/Cards/ItemCard.h>
 #include <gamelib/Packet.h>
 
 /* Initialise the scene */
@@ -255,7 +258,7 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
         active_issues.emplace_back(
           IssueCard(static_cast<issue_cards>(active_issue_cards[i])));
         active_issues[i].getSprite()->setPos(
-          Vector2(static_cast<float>(i) * 256, 150.0f));
+          Vector2(static_cast<float>(i) * 257, 150.0f));
         slot_occupied[i] = true;
 
         debug_text.print("Creating issue card" +
@@ -388,5 +391,115 @@ void GameScene::render()
       0.5);
     renderer->renderText("PRESS M TO FINISH TURN", 10, 130, 0.5);
     renderer->renderText("PRESS N TO DEBUG TEST ACTION POINTS", 10, 150, 0.5);
+  }
+}
+
+void GameScene::handleIssueCardEvents(issue_cards _card_type)
+{
+  // This function will begin the logic of the issue card depending on what
+  // issue card it is
+  int _card_num = static_cast<int>(_card_type);
+
+  if (_card_num <= 5)
+  {
+    // Comms issue.
+    // Call player roll dice function here.
+  }
+  else if (_card_num >= 6 && _card_num <= 11)
+  {
+    // Engin issue.
+    switch (_card_num)
+    {
+      case 8:
+      {
+        break;
+      }
+      case 10:
+      {
+        // set item card multiplier to 2.
+      }
+      default:
+        break;
+    }
+  }
+  else if (_card_num >= 12 && _card_num <= 17)
+  {
+    // Medic issue.
+    // subtract 3 this turn on all issue cards here.
+    for (auto& active_issue : active_issues)
+    {
+      active_issue.setIssueCardvariable(-3);
+    }
+  }
+  else if (_card_num >= 18 && _card_num <= 23)
+  {
+    // Global issue.
+    switch (_card_num)
+    {
+      case 18:
+      {
+        // Set max items to 5 for local player.
+        break;
+      }
+      case 19:
+      {
+        // This players items are disabled this turn.
+        for (auto& i : item_inventory)
+        {
+          i.setActive(false);
+        }
+        break;
+      }
+      case 20:
+      {
+        // Chicken on board, player 4 - 1 cant play this turn.
+        break;
+      }
+      case 21:
+      {
+        // All issues +3 to completion.
+        for (auto& active_issue : active_issues)
+        {
+          active_issue.setIssueCardvariable(3);
+        }
+        break;
+      }
+      case 22:
+      {
+        // All items are overused, value depreciates by 3 this turn.
+        for (auto& i : item_inventory)
+        {
+          i.setActive(false);
+        }
+        break;
+      }
+      case 23:
+      {
+        // Low rsources - Discard all items from this player.
+        break;
+      }
+      default:
+        break;
+    }
+  }
+  else if (_card_num >= 24 && _card_num <= 29)
+  {
+    // Pilot issue.
+    switch (_card_num)
+    {
+      case 25:
+      {
+        // If this is pilot player, roll dice, if less than 4, move back, else
+        // move forward.
+        break;
+      }
+      case 26:
+      {
+        // Pilot rolls dice, move forward 1/2 that amount, not less than  1.
+        break;
+      }
+      default:
+        break;
+    }
   }
 }

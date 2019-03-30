@@ -20,9 +20,10 @@ class IssueCard : public Card
   ~IssueCard() = default;
   void setCardID(issue_cards _item_card_id);
   void addActionPoints(player_classes _player_class, int _ap_amount);
+  void setIssueCardvariable(int _action_points);
+
   issue_cards getCardID();
-  bool isSolved() { return issue_solved; }
-  Action* m_issue_event = nullptr;
+  bool isSolved();
 
  private:
   issue_cards m_cardID = issue_cards::ISSUE_PLACEHOLDER;
@@ -31,7 +32,9 @@ class IssueCard : public Card
   int m_medic_ap_assigned = 0;
   int m_pilot_ap_assigned = 0;
   int m_total_ap_assigned = 0;
-  bool issue_solved = false;
+  bool m_issue_solved = false;
+
+  int m_issue_card_ap_variable = 0;
 };
 
 #endif // PROJECT_ISSUECARD_H

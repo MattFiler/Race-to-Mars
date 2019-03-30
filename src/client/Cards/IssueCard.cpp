@@ -82,3 +82,13 @@ IssueCard::IssueCard(issue_cards _card_type)
 
   m_card_sprite = new ScaledSprite(this->getSprtiepath());
 }
+
+bool IssueCard::isSolved()
+{
+  return m_action_points + m_issue_card_ap_variable <= m_total_ap_assigned;
+}
+
+void IssueCard::setIssueCardvariable(int _action_points)
+{
+  m_issue_card_ap_variable += _action_points;
+}

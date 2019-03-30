@@ -5,6 +5,7 @@
 #include "client/Board/GameBoard.h"
 #include "client/UI/Cursor.h"
 #include <client/Cards/IssueCard.h>
+#include <client/Cards/ItemCard.h>
 
 // All sprites for the game ui
 struct GameSprites
@@ -34,8 +35,7 @@ class GameScene : public Scene
   game_global_scenes update(const ASGE::GameTime& game_time) override;
   void render() override;
 
-  int test_int2 = 1;
-  bool test_val = false;
+  void handleIssueCardEvents(issue_cards _card_type);
 
  private:
   enum game_state
@@ -50,6 +50,7 @@ class GameScene : public Scene
   bool update_cards = false;
 
   std::vector<IssueCard> active_issues;
+  std::vector<ItemCard> item_inventory;
 
   GameSprites game_sprites; // be in game sprites?
   LobbyPlayer* players[4] = { nullptr, nullptr, nullptr, nullptr };
