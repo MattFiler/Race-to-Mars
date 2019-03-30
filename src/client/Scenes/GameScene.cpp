@@ -255,7 +255,7 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
         active_issues.emplace_back(
           IssueCard(static_cast<issue_cards>(active_issue_cards[i])));
         active_issues[i].getSprite()->setPos(
-          Vector2(static_cast<float>(i) * 340, 200.0f));
+          Vector2(static_cast<float>(i) * 256, 150.0f));
         slot_occupied[i] = true;
 
         debug_text.print("Creating issue card" +
