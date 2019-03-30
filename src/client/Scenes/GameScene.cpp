@@ -410,6 +410,14 @@ void GameScene::handleIssueCardEvents(issue_cards _card_type)
     // Engin issue.
     switch (_card_num)
     {
+      case 6:
+      {
+        break;
+      }
+      case 7:
+      {
+        break;
+      }
       case 8:
       {
         break;
@@ -417,6 +425,10 @@ void GameScene::handleIssueCardEvents(issue_cards _card_type)
       case 10:
       {
         // set item card multiplier to 2.
+        for (auto& i : item_inventory)
+        {
+          i.setActionPointVariable(5);
+        }
       }
       default:
         break;
@@ -469,13 +481,14 @@ void GameScene::handleIssueCardEvents(issue_cards _card_type)
         // All items are overused, value depreciates by 3 this turn.
         for (auto& i : item_inventory)
         {
-          i.setActive(false);
+          i.setActionPointVariable(-3);
         }
         break;
       }
       case 23:
       {
         // Low rsources - Discard all items from this player.
+        item_inventory.clear();
         break;
       }
       default:
@@ -489,13 +502,14 @@ void GameScene::handleIssueCardEvents(issue_cards _card_type)
     {
       case 25:
       {
-        // If this is pilot player, roll dice, if less than 4, move back, else
+        // If this is a pilot player, roll dice, if less than 4, move back, else
         // move forward.
         break;
       }
       case 26:
       {
-        // Pilot rolls dice, move forward 1/2 that amount, not less than  1.
+        // If this player is the pilot, roll dice, if above 4, move ship
+        // forward.
         break;
       }
       default:

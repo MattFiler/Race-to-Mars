@@ -3,29 +3,33 @@
 void IssueCard::setCardID(issue_cards _item_card_id)
 {
   this->m_cardID = _item_card_id;
-  switch (static_cast<int>(_item_card_id))
-  {
-    case 12:
-    {
-    }
-    case 13:
-    {
-    }
-    case 14:
-    {
-    }
-    case 15:
-    {
-    }
-    case 16:
-    {
-    }
-    case 17:
-    {
-    }
-    default:
-      break;
-  }
+  //  switch (static_cast<int>(_item_card_id))
+  //  {
+  //    case 12:
+  //    {
+  //      break;
+  //    }
+  //    case 13:
+  //    {
+  //      break;
+  //    }
+  //    case 14:
+  //    {
+  //      break;
+  //    }
+  //    case 15:
+  //    {
+  //      break;
+  //    }
+  //    case 16:
+  //    {
+  //      break;
+  //    }
+  //    case 17:
+  //    {
+  //      break;
+  //    }
+  //  }
 }
 
 void IssueCard::addActionPoints(player_classes _player_class, int _ap_amount)

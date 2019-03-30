@@ -299,6 +299,7 @@ void RaceToSpaceServer::run()
           {
             [[clang::fallthrough]];
           }
+          break;
         }
           // Otherwise, it's a message that needs to be forwarded to everyone in
           // the lobby
@@ -318,6 +319,7 @@ void RaceToSpaceServer::run()
                    data_to_send.content[7],
                    data_to_send.content[8],
                    data_to_send.content[9]);
+          break;
         }
       }
     });

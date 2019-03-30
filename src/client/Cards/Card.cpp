@@ -7,6 +7,11 @@ Card::Card()
   renderer = Locator::getRenderer();
 }
 
+void Card::render()
+{
+  renderer->renderSprite(*m_card_sprite->getSprite());
+}
+
 void Card::setCardName(const std::string& _item_name)
 {
   m_card_name = _item_name;
@@ -30,11 +35,6 @@ void Card::setCardDescription(const std::string& _description_text)
 void Card::setAbilityText(const std::string& _ability_text)
 {
   m_ability_text = _ability_text;
-}
-
-void Card::render()
-{
-  renderer->renderSprite(*m_card_sprite->getSprite());
 }
 
 void Card::setCardSize() {}
