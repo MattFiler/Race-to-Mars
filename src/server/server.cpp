@@ -371,6 +371,8 @@ void RaceToSpaceServer::sendData(server_client& client,
   data_to_send.content[7] = _content_8;
   data_to_send.content[8] = _content_9;
   data_to_send.content[9] = _content_10;
+  data_to_send.content[10] = _content_10;
+  data_to_send.content[11] = _content_11;
   packet_to_send << data_to_send;
 
   if (user_id == static_cast<unsigned int>(-1))
