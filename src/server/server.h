@@ -38,7 +38,8 @@ class RaceToSpaceServer
                 int _content_9 = 0,
                 int _content_10 = 0,
                 int _content_11 = 0,
-                int _content_12 = 0);
+                int _content_12 = 0,
+                int _content_13 = 0);
 
   Lobby* getLobbyByID(int lobby_id);
   int amount_to_draw[15]{ 2, 3, 1, 1, 2, 2, 1, 1, 3, 2, 1, 3, 2, 1, 2 };

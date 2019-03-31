@@ -6,6 +6,7 @@
 #include "client/UI/Cursor.h"
 #include <client/Cards/IssueCard.h>
 #include <client/Cards/ItemCard.h>
+#include <client/Cards/ObjectiveCard.h>
 
 // All sprites for the game ui
 struct GameSprites
@@ -48,9 +49,13 @@ class GameScene : public Scene
   GameBoard m_board;
   Menu pause_menu;
   bool update_cards = false;
+  bool update_obj_card = false;
 
   std::vector<IssueCard> active_issues;
   std::vector<ItemCard> item_inventory;
+
+  std::vector<ObjectiveCard> active_obj_card;
+  std::vector<ObjectiveCard> completed_obj_cards;
 
   GameSprites game_sprites; // be in game sprites?
   LobbyPlayer* players[4] = { nullptr, nullptr, nullptr, nullptr };

@@ -189,15 +189,16 @@ void RaceToSpaceServer::run()
                 this_clients_lobby->active_issue_cards[j] =
                   this_clients_lobby->issue_deck.back();
                 debug_text.print(
-                  "adding issue" +
+                  "adding issue " +
                   std::to_string(this_clients_lobby->issue_deck.back()) +
-                  "to active issues.");
+                  " to active issues.");
                 this_clients_lobby->issue_deck.pop_back();
                 ++issues_drawn;
               }
             }
             // If this is an objective card spot, give a new objective card
-            if (this_clients_lobby->current_progress_index % 3)
+            if (this_clients_lobby->current_progress_index % 3 == 0 &&
+                this_clients_lobby->current_progress_index != 0)
             {
               // OBJECTIVE CARDS ARE A WIP!!
               for (int i = 0; i < 4; ++i)
@@ -205,9 +206,9 @@ void RaceToSpaceServer::run()
                 this_clients_lobby->active_objective_cards[i] =
                   this_clients_lobby->objective_deck.back();
                 debug_text.print(
-                  "adding objective card" +
+                  "adding objective card " +
                   std::to_string(this_clients_lobby->objective_deck.back()) +
-                  "to player:" + std::to_string(i));
+                  " to player: " + std::to_string(i));
                 this_clients_lobby->objective_deck.pop_back();
               }
             }
@@ -225,6 +226,10 @@ void RaceToSpaceServer::run()
                    this_clients_lobby->active_issue_cards[2],
                    this_clients_lobby->active_issue_cards[3],
                    this_clients_lobby->active_issue_cards[4],
+                   this_clients_lobby->active_objective_cards[0],
+                   this_clients_lobby->active_objective_cards[1],
+                   this_clients_lobby->active_objective_cards[2],
+                   this_clients_lobby->active_objective_cards[3],
                    static_cast<int>(full_rotation));
           break;
         }
@@ -269,7 +274,7 @@ void RaceToSpaceServer::run()
           this_lobby->users_ready[data_to_send.content[1]] =
             static_cast<bool>(data_to_send.content[0]);
 
-          // See how many in the lobby are ready
+          // See how many in the lobby are ready.
           int ready_count = 0;
           for (int i = 0; i < max_lobby_size; i++)
           {
@@ -325,7 +330,10 @@ void RaceToSpaceServer::run()
                    data_to_send.content[6],
                    data_to_send.content[7],
                    data_to_send.content[8],
-                   data_to_send.content[9]);
+                   data_to_send.content[9],
+                   data_to_send.content[10],
+                   data_to_send.content[11],
+                   data_to_send.content[12]);
         }
       }
     });
@@ -356,7 +364,8 @@ void RaceToSpaceServer::sendData(server_client& client,
                                  int _content_9,
                                  int _content_10,
                                  int _content_11,
-                                 int _content_12)
+                                 int _content_12,
+                                 int _content_13)
 {
   Packet packet_to_send;
   NetworkedData data_to_send;
@@ -373,6 +382,8 @@ void RaceToSpaceServer::sendData(server_client& client,
   data_to_send.content[9] = _content_10;
   data_to_send.content[10] = _content_10;
   data_to_send.content[11] = _content_11;
+  data_to_send.content[12] = _content_12;
+  data_to_send.content[13] = _content_13;
   packet_to_send << data_to_send;
 
   if (user_id == static_cast<unsigned int>(-1))

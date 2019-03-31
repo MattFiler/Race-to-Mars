@@ -13,6 +13,9 @@
 class ObjectiveCard : public Card
 {
  public:
+  explicit ObjectiveCard(objective_cards _card_type);
+  ~ObjectiveCard() = default;
+
   void setCardID(objective_cards _obj_card_id);
 
  private:

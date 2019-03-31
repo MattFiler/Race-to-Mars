@@ -7,6 +7,7 @@
 
 #include <client/Cards/IssueCard.h>
 #include <client/Cards/ItemCard.h>
+#include <client/Cards/ObjectiveCard.h>
 #include <gamelib/Packet.h>
 
 /* Initialise the scene */
@@ -105,8 +106,9 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
 
         // checking to see if full rotation. If yes, create new issue cards
         // client side.
-        if (received_data.content[11])
+        if (received_data.content[15])
         {
+          // if current turn is % 3 then set new obj card to true.
           // check to see if any cards changed during turn.
           if (active_issue_cards[i] != received_data.content[i + 3])
           {
@@ -117,6 +119,16 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
           }
         }
       }
+
+      if (current_progress_index % 3 == 0 && current_progress_index != 0)
+      {
+        update_obj_card = true;
+        active_client_objective_card =
+          received_data.content[8 + received_data.content[1]];
+        debug_text.print("Adding obj card for client " +
+                         std::to_string(my_player_index));
+      }
+
       current_scene_lock_active = false;
       debug_text.print("The server ended the current go, and passed "
                        "active-ness to client " +
@@ -268,9 +280,21 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
     update_cards = false;
   }
 
+  if (update_obj_card)
+  {
+    // delete current obj card.
+    // emplace back new obj card of type passed in from data.
+    active_obj_card.clear();
+    active_obj_card.emplace_back(ObjectiveCard(
+      static_cast<objective_cards>(active_client_objective_card)));
+    debug_text.print("Creating obj card" +
+                     std::to_string(active_client_objective_card));
+    update_obj_card = false;
+  }
+
   if (players[my_player_index]->is_active)
   {
-    // If we're not syncing, handle hover sprite update
+    // If we're not syncing, handle hover sprite update.
     if (!current_scene_lock_active)
     {
       Locator::getCursor()->setCursorActive(m_board.isHoveringOverInteractable(

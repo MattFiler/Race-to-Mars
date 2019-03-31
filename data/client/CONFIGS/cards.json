@@ -35,7 +35,7 @@
 	[
 			{"name": "Dispatch Probe", "description": "The radar intercepts some strange signals, send out a probe to check on it.", "action_points": 15, "sprite_path": "UI/CARD_IMAGES/comm_dispatchprobe.png", "card_id": 0},
 			{"name": "Distress Signal", "description": "You intercept a signal from space. Spend ome time decoding it.", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/comm_distresssignal.png", "card_id": 1},
-			{"name": "Earth Transmission", "description": "There's a message from Earth, reply and update them on your progress.", "action_points": 5, "sprite_path": "comm_earthtransmission.png", "card_id": 2},
+			{"name": "Earth Transmission", "description": "There's a message from Earth, reply and update them on your progress.", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/comm_earthtransmission.png", "card_id": 2},
 			{"name": "External Communications Issue", "description": "You can't communicate with home, fix the issue before it's too late!", "action_points": 10, "sprite_path": "UI/CARD_IMAGES/comm_externalcomms.png", "card_id": 3},
 			{"name": "Good Communication!", "description": "Discard this card next turn. All players receive an extra roll, keep your highest roll.", "action_points": 0, "sprite_path": "UI/CARD_IMAGES/comm_goodcomm.png", "card_id": 4},
 			{"name": "Internal Comms Issue", "description": "The onboard communications are down, fix it immediately!.", "action_points": 10, "sprite_path": "UI/CARD_IMAGES/comm_internalcomm.png", "card_id": 5},
