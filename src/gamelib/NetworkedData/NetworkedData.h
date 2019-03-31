@@ -88,7 +88,11 @@ enum data_roles
    *   [5] = issue card in slot 3 (may not change)
    *   [6] = issue card in slot 4 (may not change)
    *   [7] = issue card in slot 5 (may not change)
-   *   [8] = was this a new "full rotation" (1=yes,0=no)
+   *   [8] = objective card for player 1
+   *   [9] = objective card for player 2
+   *   [10] = objective card for player 3
+   *   [11] = objective card for player 4
+   *   [12] = was this a new "full rotation" (1=yes,0=no)
    */
 
   CLIENT_MOVING_PLAYER_TOKEN,
@@ -108,7 +112,7 @@ enum data_roles
 struct NetworkedData
 {
   data_roles role = data_roles::NO_ROLE;
-  int content[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+  int content[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 };
 
 #endif // PROJECT_NETWORKEDDATA_H

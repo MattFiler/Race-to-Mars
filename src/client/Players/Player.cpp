@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "gamelib/Constants.h"
+#include <gamelib/Math/SimpleMath.h>
 
 Player::Player()
 {
@@ -35,4 +36,9 @@ void Player::setup()
     Vector2(config["counter_width"], config["counter_height"]));
   lobby_sprite = new ScaledSprite(getLobbySpritePath());
   game_tab_sprite = new ScaledSprite(getGameTabSpritePath());
+}
+
+int Player::getDiceRoll()
+{
+  return math.generateRandInt(1, 6);
 }

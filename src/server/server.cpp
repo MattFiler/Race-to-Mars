@@ -53,8 +53,8 @@ void RaceToSpaceServer::initialise()
     }
   }
 
-  // Create deck of Issue IDS. 24 cards total.
-  for (int i = 0; i < 2; ++i)
+  // Create deck of Objective IDS. 36 cards total.
+  for (int i = 0; i < 3; ++i)
   {
     for (int j = 0; j < 12; ++j)
     {
@@ -178,7 +178,6 @@ void RaceToSpaceServer::run()
             // CONDITIONS SHOULD THEN BE HANDLED CLIENT SIDE
             int issues_tobe_drawn =
               amount_to_draw[this_clients_lobby->current_progress_index - 1];
-            // int issues_tobe_drawn = 1;
             int issues_drawn = 0;
 
             for (int j = 0; j < 5; ++j)
@@ -198,10 +197,20 @@ void RaceToSpaceServer::run()
               }
             }
             // If this is an objective card spot, give a new objective card
-            // if (this_clients_lobby->current_progress_index % 3)
-            //{
-            // OBJECTIVE CARDS ARE A WIP!!
-            //}
+            if (this_clients_lobby->current_progress_index % 3)
+            {
+              // OBJECTIVE CARDS ARE A WIP!!
+              for (int i = 0; i < 4; ++i)
+              {
+                this_clients_lobby->active_objective_cards[i] =
+                  this_clients_lobby->objective_deck.back();
+                debug_text.print(
+                  "adding objective card" +
+                  std::to_string(this_clients_lobby->objective_deck.back()) +
+                  "to player:" + std::to_string(i));
+                this_clients_lobby->objective_deck.pop_back();
+              }
+            }
           }
 
           // Forward current game data to all clients in this lobby
@@ -300,7 +309,7 @@ void RaceToSpaceServer::run()
           }
         }
           // Otherwise, it's a message that needs to be forwarded to everyone in
-          // the lobby
+          // the lobby.
         default:
         {
         SEND_TO_ALL:
@@ -345,7 +354,9 @@ void RaceToSpaceServer::sendData(server_client& client,
                                  int _content_7,
                                  int _content_8,
                                  int _content_9,
-                                 int _content_10)
+                                 int _content_10,
+                                 int _content_11,
+                                 int _content_12)
 {
   Packet packet_to_send;
   NetworkedData data_to_send;

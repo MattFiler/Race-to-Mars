@@ -6,7 +6,9 @@
 #include "gamelib/FileHandler/FileHandler.h"
 #include "gamelib/Localisation/Localisation.h"
 #include <Engine/Renderer.h>
+#include <gamelib/Math/SimpleMath.h>
 #include <json.hpp>
+
 using json = nlohmann::json;
 
 /*
@@ -49,6 +51,7 @@ class Player
   }
 
   void render(game_global_scenes game_scene);
+  int getDiceRoll();
 
  protected:
   void retargetConfig(const std::string& name)
@@ -64,6 +67,11 @@ class Player
   ScaledSprite* lobby_sprite = nullptr;
   ScaledSprite* game_tab_sprite = nullptr;
   json config;
+
+  int current_action_points = 0;
+
+ private:
+  SimpleMath math;
 };
 
 #endif // PROJECT_PLAYER_H

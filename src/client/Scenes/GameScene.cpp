@@ -105,7 +105,7 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
 
         // checking to see if full rotation. If yes, create new issue cards
         // client side.
-        if (received_data.content[8])
+        if (received_data.content[11])
         {
           // check to see if any cards changed during turn.
           if (active_issue_cards[i] != received_data.content[i + 3])
