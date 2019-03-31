@@ -112,7 +112,7 @@ enum data_roles
 struct NetworkedData
 {
   data_roles role = data_roles::NO_ROLE;
-  int content[16] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+  int content[15] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 };
 
 #endif // PROJECT_NETWORKEDDATA_H

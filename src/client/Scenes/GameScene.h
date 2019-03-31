@@ -73,6 +73,8 @@ class GameScene : public Scene
   // BELOW IS ALL TEMP SHIT READY FOR JACK TO ADD HIS CARD IMPLEMENTATIONS
   int active_issue_cards[5] = { -1, -1, -1, -1, -1 };
   bool slot_occupied[5] = { false, false, false, false, false };
+  int objective_cards_inplay[4] = { -1, -1, -1, -1 };
+
   int active_client_objective_card = -1; // hmm, maybe keep this data for every
                                          // client?
 };

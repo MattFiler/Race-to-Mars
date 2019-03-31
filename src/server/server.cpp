@@ -333,7 +333,9 @@ void RaceToSpaceServer::run()
                    data_to_send.content[9],
                    data_to_send.content[10],
                    data_to_send.content[11],
-                   data_to_send.content[12]);
+                   data_to_send.content[12],
+                   data_to_send.content[13],
+                   data_to_send.content[14]);
         }
       }
     });
@@ -365,7 +367,9 @@ void RaceToSpaceServer::sendData(server_client& client,
                                  int _content_10,
                                  int _content_11,
                                  int _content_12,
-                                 int _content_13)
+                                 int _content_13,
+                                 int _content_14,
+                                 int content_15)
 {
   Packet packet_to_send;
   NetworkedData data_to_send;

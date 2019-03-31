@@ -106,7 +106,9 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
 
         // checking to see if full rotation. If yes, create new issue cards
         // client side.
-        if (received_data.content[15])
+        debug_text.print("The current rotation is currently: " +
+                         std::to_string(received_data.content[12]));
+        if (received_data.content[13])
         {
           // if current turn is % 3 then set new obj card to true.
           // check to see if any cards changed during turn.
@@ -124,9 +126,15 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       {
         update_obj_card = true;
         active_client_objective_card =
-          received_data.content[8 + received_data.content[1]];
-        debug_text.print("Adding obj card for client " +
-                         std::to_string(my_player_index));
+          received_data.content[8 + my_player_index]; // For some reason the
+                                                      // gameclient is
+                                                      // receiveing +1 extra
+                                                      // .content[x]???
+        // so this works for client 0 & 2 but not for 3 & 4.
+        debug_text.print(
+          "Adding obj card for client " + std::to_string(my_player_index) +
+          "of type: " +
+          std::to_string(received_data.content[active_client_objective_card]));
       }
 
       current_scene_lock_active = false;
@@ -368,6 +376,12 @@ void GameScene::render()
       {
         active_issue.render();
       }
+
+      for (auto& current_obj : active_obj_card)
+      {
+        current_obj.render();
+      }
+
       break;
     }
     case game_state::LOCAL_PAUSE:
