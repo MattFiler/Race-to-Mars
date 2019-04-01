@@ -3,6 +3,9 @@
 
 #include "client/Board/ItemDeck.h"
 #include "client/Board/Ship.h"
+#include "client/Cards/IssueCard.h"
+#include "client/Cards/ItemCard.h"
+#include "client/Cards/ObjectiveCard.h"
 #include "client/Players/AllPlayers.h"
 #include "gamelib/Debug/DebugText.h"
 #include <Engine/Renderer.h>
@@ -20,16 +23,41 @@ class GameBoard
   bool isHoveringOverInteractable(Vector2 hover_pos);
   ShipRoom getClickedInteractable(Vector2 clicked_pos);
 
+  void setActiveIssueCards(int active_cards[5], bool is_new_rotation);
+  void setActiveObjectiveCard(int card_index);
+
+  void updateActiveIssueCards();
+  void updateActiveObjectiveCard();
+
   void render();
 
  private:
-  bool cursorPosFallsIntoClickable(Vector2 pos);
+  /* Players */
   Players* m_players = nullptr;
+
+  /* Ship */
   Ship m_ship;
   ShipRoom* clicked_room = nullptr;
-  // ItemDeck m_item_deck;
 
+  /* Cards */
+  void handleIssueCardEvents(issue_cards _card_type);
+
+  std::vector<IssueCard> active_issues;
+  std::vector<ItemCard> item_inventory;
+
+  ObjectiveCard* active_obj_card = nullptr;
+  std::vector<ObjectiveCard> completed_obj_cards;
+
+  int active_issue_cards[5] = { -1, -1, -1, -1, -1 };
+  int objective_cards_inplay[4] = { -1, -1, -1, -1 };
+
+  bool update_issues = false;
+  int new_obj_card = -1;
+
+  /* Misc */
+  bool cursorPosFallsIntoClickable(Vector2 pos);
   DebugText debug_text;
+  GameConfig game_config;
 };
 
 #endif // PROJECT_GAMEBOARD_H

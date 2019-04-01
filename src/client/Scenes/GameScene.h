@@ -49,19 +49,11 @@ class GameScene : public Scene
 
   GameBoard m_board;
   Menu pause_menu;
-  bool update_cards = false;
-
-  std::vector<IssueCard> active_issues;
-  std::vector<ItemCard> item_inventory;
-
-  ObjectiveCard* active_obj_card = nullptr;
-  std::vector<ObjectiveCard> completed_obj_cards;
 
   GameSprites game_sprites; // be in game sprites?
   LobbyPlayer* players[4] = { nullptr, nullptr, nullptr, nullptr };
   int my_player_index = -1;
 
-  int max_issue_cards = 5;
   int max_progress_index = 19; // win condition
 
   bool has_disconnected = false; // did local client disconnect?
@@ -70,10 +62,5 @@ class GameScene : public Scene
   bool current_scene_lock_active = false; // optional "scene lock" to freeze
                                           // client interaction - useful for the
                                           // end of a turn?
-
-  int active_issue_cards[5] = { -1, -1, -1, -1, -1 };
-  int objective_cards_inplay[4] = { -1, -1, -1, -1 };
-
-  int new_client_objective = -1; // maybe keep this data for every client?
 };
 #endif // PROJECT_GAMESCENE_H

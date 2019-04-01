@@ -110,47 +110,26 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       current_progress_index = received_data.content[2];
 
       // Re-sync issue cards every turn
-      for (size_t i = 0; i < active_issues.size(); ++i)
-      {
-        if (active_issues[i].isSolved())
-        {
-          active_issues.erase(active_issues.begin() + static_cast<int>(i));
-          active_issue_cards[i] = -1;
-        }
-      }
+      int active_issue_cards[5] = { received_data.content[3],
+                                    received_data.content[4],
+                                    received_data.content[5],
+                                    received_data.content[6],
+                                    received_data.content[7] };
+      m_board.setActiveIssueCards(active_issue_cards,
+                                  static_cast<bool>(received_data.content[12]));
 
-      if (active_issues.size() >= static_cast<size_t>(max_issue_cards))
-      {
-        // Swap To Lose Game State.
-      }
-
-      for (int i = 0; i < max_issue_cards; ++i)
-      {
-        debug_text.print("The current rotation is currently: " +
-                         std::to_string(received_data.content[12]));
-        if (received_data.content[12])
-        {
-          // if current turn is % 3 then set new obj card to true.
-          // check to see if any cards changed during turn.
-          if (active_issue_cards[i] != received_data.content[i + 3])
-          {
-            active_issue_cards[i] = received_data.content[i + 3];
-            // Creating a new issue card and adding it to the back of the
-            // current issues vector for rendering and points.
-            update_cards = true;
-          }
-        }
-      }
-
+      // Pull a new objective card if required
       if (current_progress_index % 3 == 0 && current_progress_index != 0)
       {
-        new_client_objective = received_data.content[8 + my_player_index];
+        m_board.setActiveObjectiveCard(
+          received_data.content[8 + my_player_index]);
         debug_text.print(
           "Adding obj card for client " + std::to_string(my_player_index) +
           "of type: " +
           std::to_string(received_data.content[8 + my_player_index]));
       }
 
+      // End the scene lock
       current_scene_lock_active = false;
       debug_text.print("The server ended the current go, and passed "
                        "active-ness to client " +
@@ -284,33 +263,9 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
 /* Update function */
 game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
 {
-  if (update_cards)
-  {
-    for (int i = 0; i < max_issue_cards; ++i)
-    {
-      if (active_issue_cards[i] != -1)
-      {
-        active_issues.emplace_back(
-          IssueCard(static_cast<issue_cards>(active_issue_cards[i])));
-        active_issues[i].getSprite()->setPos(
-          Vector2(static_cast<float>(i) * 257, 150.0f));
-
-        debug_text.print("Creating issue card" +
-                         std::to_string(active_issue_cards[i]));
-      }
-    }
-    update_cards = false;
-  }
-
-  if (new_client_objective != -1)
-  {
-    delete active_obj_card;
-    active_obj_card =
-      new ObjectiveCard(static_cast<objective_cards>(new_client_objective));
-    debug_text.print("Creating objective card" +
-                     std::to_string(new_client_objective));
-    new_client_objective = -1;
-  }
+  // Update cards if required
+  m_board.updateActiveIssueCards();
+  m_board.updateActiveObjectiveCard();
 
   if (players[my_player_index]->is_active)
   {
@@ -384,18 +339,6 @@ void GameScene::render()
         static_cast<float>(current_progress_index * 50));
       renderer->renderSprite(*game_sprites.progress_marker->getSprite());
 
-      // Issue cards
-      for (auto& active_issue : active_issues)
-      {
-        active_issue.render();
-      }
-
-      // Objective card
-      if (active_obj_card != nullptr)
-      {
-        active_obj_card->render();
-      }
-
       break;
     }
     case game_state::LOCAL_PAUSE:
@@ -447,129 +390,5 @@ void GameScene::render()
       0.5);
     renderer->renderText("PRESS M TO FINISH TURN", 10, 130, 0.5);
     renderer->renderText("PRESS N TO DEBUG TEST ACTION POINTS", 10, 150, 0.5);
-  }
-}
-
-void GameScene::handleIssueCardEvents(issue_cards _card_type)
-{
-  // This function will begin the logic of the issue card depending on what
-  // issue card it is
-  int _card_num = static_cast<int>(_card_type);
-
-  if (_card_num <= 5)
-  {
-    // Comms issue.
-    // Call player roll dice function here.
-  }
-  else if (_card_num >= 6 && _card_num <= 11)
-  {
-    // Engin issue.
-    switch (_card_num)
-    {
-      case 6:
-      {
-        break;
-      }
-      case 7:
-      {
-        break;
-      }
-      case 8:
-      {
-        break;
-      }
-      case 10:
-      {
-        // set item card multiplier to 2.
-        for (auto& i : item_inventory)
-        {
-          i.setActionPointVariable(5);
-        }
-      }
-      default:
-        break;
-    }
-  }
-  else if (_card_num >= 12 && _card_num <= 17)
-  {
-    // Medic issue.
-    // subtract 3 this turn on all issue cards here.
-    for (auto& active_issue : active_issues)
-    {
-      active_issue.setIssueCardvariable(-3);
-    }
-  }
-  else if (_card_num >= 18 && _card_num <= 23)
-  {
-    // Global issue.
-    switch (_card_num)
-    {
-      case 18:
-      {
-        // Set max items to 5 for local player.
-        break;
-      }
-      case 19:
-      {
-        // This players items are disabled this turn.
-        for (auto& i : item_inventory)
-        {
-          i.setActive(false);
-        }
-        break;
-      }
-      case 20:
-      {
-        // Chicken on board, player 4 - 1 cant play this turn.
-        break;
-      }
-      case 21:
-      {
-        // All issues +3 to completion.
-        for (auto& active_issue : active_issues)
-        {
-          active_issue.setIssueCardvariable(3);
-        }
-        break;
-      }
-      case 22:
-      {
-        // All items are overused, value depreciates by 3 this turn.
-        for (auto& i : item_inventory)
-        {
-          i.setActionPointVariable(-3);
-        }
-        break;
-      }
-      case 23:
-      {
-        // Low rsources - Discard all items from this player.
-        item_inventory.clear();
-        break;
-      }
-      default:
-        break;
-    }
-  }
-  else if (_card_num >= 24 && _card_num <= 29)
-  {
-    // Pilot issue.
-    switch (_card_num)
-    {
-      case 25:
-      {
-        // If this is a pilot player, roll dice, if less than 4, move back, else
-        // move forward.
-        break;
-      }
-      case 26:
-      {
-        // If this player is the pilot, roll dice, if above 4, move ship
-        // forward.
-        break;
-      }
-      default:
-        break;
-    }
   }
 }
