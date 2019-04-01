@@ -115,13 +115,17 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
                                     received_data.content[5],
                                     received_data.content[6],
                                     received_data.content[7] };
-      m_board.setActiveIssueCards(active_issue_cards,
-                                  static_cast<bool>(received_data.content[12]));
 
-      // Pull a new objective card if required
+      if (received_data.content[12])
+      {
+        board.setActiveIssueCards(active_issue_cards,
+                                  static_cast<bool>(received_data.content[12]));
+      }
+
+      // Pull a new objective card if required.
       if (current_progress_index % 3 == 0 && current_progress_index != 0)
       {
-        m_board.setActiveObjectiveCard(
+        board.setActiveObjectiveCard(
           received_data.content[8 + my_player_index]);
         debug_text.print(
           "Adding obj card for client " + std::to_string(my_player_index) +
@@ -238,9 +242,9 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
     Vector2 mouse_pos = Vector2(Locator::getCursor()->getPosition().x,
                                 Locator::getCursor()->getPosition().y);
     if (!current_scene_lock_active && players[my_player_index]->is_active &&
-        m_board.isHoveringOverInteractable(mouse_pos))
+        board.isHoveringOverInteractable(mouse_pos))
     {
-      ShipRoom this_room = m_board.getClickedInteractable(mouse_pos);
+      ShipRoom this_room = board.getClickedInteractable(mouse_pos);
       debug_text.print("Clicked on an interactable part of the board!");
       debug_text.print("CLICKED: " + this_room.getName());
 
@@ -264,15 +268,15 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
 game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
 {
   // Update cards if required
-  m_board.updateActiveIssueCards();
-  m_board.updateActiveObjectiveCard();
+  board.updateActiveIssueCards();
+  board.updateActiveObjectiveCard();
 
   if (players[my_player_index]->is_active)
   {
     // If we're not syncing, handle hover sprite update.
     if (!current_scene_lock_active)
     {
-      Locator::getCursor()->setCursorActive(m_board.isHoveringOverInteractable(
+      Locator::getCursor()->setCursorActive(board.isHoveringOverInteractable(
         Vector2(Locator::getCursor()->getPosition().x,
                 Locator::getCursor()->getPosition().y)));
     }
@@ -300,7 +304,7 @@ void GameScene::render()
     {
       // Board and background
       renderer->renderSprite(*game_sprites.background->getSprite());
-      m_board.render();
+      board.render();
 
       float active_marker_pos = -180.0f;
       for (int i = 0; i < 4; i++)

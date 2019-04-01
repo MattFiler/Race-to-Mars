@@ -61,11 +61,12 @@ void GameBoard::setActiveIssueCards(int card_index[5], bool is_new_rotation)
   {
     if (is_new_rotation)
     {
-      // if current turn is % 3 then set new obj card to true.
       // check to see if any cards changed during turn.
       if (active_issue_cards[i] != card_index[i])
       {
         active_issue_cards[i] = card_index[i];
+
+        // sets the slot to active so no other card can take this position.
         // Creating a new issue card and adding it to the back of the
         // current issues vector for rendering and points.
         update_issues = true;
@@ -98,13 +99,13 @@ void GameBoard::updateActiveIssueCards()
   {
     for (int i = 0; i < game_config.max_issue_cards; ++i)
     {
-      if (active_issue_cards[i] != -1)
+      if (active_issue_cards[i] != -1 && slot_active[i] == false)
       {
         active_issues.emplace_back(
           IssueCard(static_cast<issue_cards>(active_issue_cards[i])));
         active_issues[i].getSprite()->setPos(
           Vector2(static_cast<float>(i) * 257, 150.0f));
-
+        slot_active[i] = true;
         debug_text.print("Creating issue card " +
                          std::to_string(active_issue_cards[i]) + ".");
       }

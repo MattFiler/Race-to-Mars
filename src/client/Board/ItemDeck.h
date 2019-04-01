@@ -16,7 +16,7 @@
 
 using json = nlohmann::json;
 
-class ItemDeck
+class ItemDeck : OnBoardObject
 {
  public:
   ItemDeck();

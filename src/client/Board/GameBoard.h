@@ -50,6 +50,9 @@ class GameBoard
 
   int active_issue_cards[5] = { -1, -1, -1, -1, -1 };
   int objective_cards_inplay[4] = { -1, -1, -1, -1 };
+  // Slot active is to keep track of available slots to place new cards since
+  // if active_issue_card[x] != -1 can be overridden by another card.
+  bool slot_active[5] = { false, false, false, false, false };
 
   bool update_issues = false;
   int new_obj_card = -1;

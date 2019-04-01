@@ -47,7 +47,7 @@ class GameScene : public Scene
     LOOKING_AT_PLAYER_INFO // The player info popup
   };
 
-  GameBoard m_board;
+  GameBoard board;
   Menu pause_menu;
 
   GameSprites game_sprites; // be in game sprites?
