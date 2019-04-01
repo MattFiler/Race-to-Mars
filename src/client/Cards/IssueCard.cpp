@@ -2,7 +2,7 @@
 
 void IssueCard::setCardID(issue_cards _item_card_id)
 {
-  m_cardID = _item_card_id;
+  cardID = _item_card_id;
 }
 
 void IssueCard::addActionPoints(player_classes _player_class, int _ap_amount)
@@ -16,33 +16,33 @@ void IssueCard::addActionPoints(player_classes _player_class, int _ap_amount)
     }
     case player_classes::COMMUNICATIONS:
     {
-      m_comms_ap_assigned += _ap_amount;
+      comms_ap_assigned += _ap_amount;
       break;
     }
     case player_classes::ENGINEER:
     {
-      m_engineer_ap_assigned += _ap_amount;
+      engineer_ap_assigned += _ap_amount;
       break;
     }
     case player_classes::MEDIC:
     {
-      m_medic_ap_assigned += _ap_amount;
+      medic_ap_assigned += _ap_amount;
       break;
     }
     case player_classes ::PILOT:
     {
-      m_pilot_ap_assigned += _ap_amount;
+      pilot_ap_assigned += _ap_amount;
       break;
     }
     default:
       break;
   }
-  m_total_ap_assigned += _ap_amount;
+  total_ap_assigned += _ap_amount;
 }
 
 issue_cards IssueCard::getCardID()
 {
-  return m_cardID;
+  return cardID;
 }
 
 IssueCard::IssueCard(issue_cards _card_type)
@@ -51,20 +51,20 @@ IssueCard::IssueCard(issue_cards _card_type)
 
   auto card_type = static_cast<size_t>(_card_type);
 
-  m_card_name = card_config["ISSUECARDS"][card_type]["name"];
-  m_card_decription = card_config["ISSUECARDS"][card_type]["description"];
-  m_action_points = card_config["ISSUECARDS"][card_type]["action_points"];
-  m_cardID = card_config["ISSUECARDS"][card_type]["card_id"];
+  card_name = card_config["ISSUECARDS"][card_type]["name"];
+  card_decription = card_config["ISSUECARDS"][card_type]["description"];
+  action_points = card_config["ISSUECARDS"][card_type]["action_points"];
+  cardID = card_config["ISSUECARDS"][card_type]["card_id"];
   setSprite(card_config["ISSUECARDS"][card_type]["sprite_path"]);
 }
 
 bool IssueCard::isSolved()
 {
   // return true if total assigned ap's is more than needed ap.
-  return m_action_points + m_issue_card_ap_variable <= m_total_ap_assigned;
+  return action_points + issue_card_ap_variable <= total_ap_assigned;
 }
 
 void IssueCard::setIssueCardvariable(int _action_points)
 {
-  m_issue_card_ap_variable += _action_points;
+  issue_card_ap_variable += _action_points;
 }

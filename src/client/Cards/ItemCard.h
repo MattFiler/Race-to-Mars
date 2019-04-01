@@ -21,10 +21,10 @@ class ItemCard : public Card
   int assignActionPoints();
 
  private:
-  item_cards m_cardID = item_cards ::ITEM_PLACEHOLDER;
-  bool m_activated = true;
-  int m_action_points = 5;
-  int m_action_point_varibale = 0;
+  item_cards cardID = item_cards ::ITEM_PLACEHOLDER;
+  bool activated = true;
+  int action_points = 5;
+  int action_point_varibale = 0;
 };
 
 #endif // PROJECT_ITEMCARD_H

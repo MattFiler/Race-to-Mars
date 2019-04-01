@@ -26,15 +26,15 @@ class IssueCard : public Card
   bool isSolved();
 
  private:
-  issue_cards m_cardID = issue_cards::ISSUE_PLACEHOLDER;
-  int m_comms_ap_assigned = 0;
-  int m_engineer_ap_assigned = 0;
-  int m_medic_ap_assigned = 0;
-  int m_pilot_ap_assigned = 0;
-  int m_total_ap_assigned = 0;
-  bool m_issue_solved = false;
+  issue_cards cardID = issue_cards::ISSUE_PLACEHOLDER;
+  int comms_ap_assigned = 0;
+  int engineer_ap_assigned = 0;
+  int medic_ap_assigned = 0;
+  int pilot_ap_assigned = 0;
+  int total_ap_assigned = 0;
+  bool issue_solved = false;
 
-  int m_issue_card_ap_variable = 0;
+  int issue_card_ap_variable = 0;
 };
 
 #endif // PROJECT_ISSUECARD_H

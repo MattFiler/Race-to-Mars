@@ -110,13 +110,16 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       current_progress_index = received_data.content[2];
 
       // Re-sync issue cards every turn
-      for (size_t i = 0; i < active_issues.size(); ++i)
+      if (received_data.content[12])
       {
-        if (active_issues[i].isSolved())
+        for (size_t i = 0; i < active_issues.size(); ++i)
         {
-          active_issues.erase(active_issues.begin() + static_cast<int>(i));
-          active_issue_cards[i] = -1;
-          slot_occupied[i] = false;
+          if (active_issues[i].isSolved())
+          {
+            active_issues.erase(active_issues.begin() + static_cast<int>(i));
+            active_issue_cards[i] = -1;
+            slot_occupied[i] = false;
+          }
         }
       }
 

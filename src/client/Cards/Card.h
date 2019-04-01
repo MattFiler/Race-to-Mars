@@ -24,10 +24,10 @@ class Card : public OnBoardObject
   ~Card() = default;
 
  protected:
-  std::string m_card_name = "Temp Name";
-  std::string m_card_decription = "Temp desc";
-  std::string m_ability_text = "Temp Ability Text";
-  int m_action_points = 0;
+  std::string card_name = "Temp Name";
+  std::string card_decription = "Temp desc";
+  std::string ability_text = "Temp Ability Text";
+  int action_points = 0;
 
   FileHandler file_handler;
   json card_config;
