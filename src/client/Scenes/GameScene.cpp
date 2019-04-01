@@ -101,12 +101,11 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       // Forget them!
       players[received_data.content[0]]->performDisconnect();
 
-      // Uhh so yeah we should probably work in a handler for this :)
-      // E.G. save scores in the background? , don't allow another to replace? ,
-      // etc.
-      debug_text.print("A PLAYER DISCONNECTED FROM THE LOBBY - WHAT THE HELL "
-                       "DO WE DO NOW?!",
-                       1);
+      // While connecting/disconnecting works properly now, it might be nice to
+      // implement some more validation to it - at the moment anyone can rejoin
+      // and replace the original player. Similarly, it's untested if it works
+      // with more than one player leaving.
+
       break;
     }
 
@@ -120,12 +119,6 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
         players[received_data.content[0]]->current_class =
           static_cast<player_classes>(received_data.content[2]);
       }
-
-      // And yeah, should really handle this too! Might get complicated with
-      // scores, etc - maybe don't allow it?
-      debug_text.print("A NEW PLAYER CONNECTED TO THE LOBBY - AGAIN, WHAT THE "
-                       "HELL DO WE DO!?!?",
-                       1);
       break;
     }
 
