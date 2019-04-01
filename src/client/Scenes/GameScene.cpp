@@ -41,13 +41,21 @@ void GameScene::init()
                                                   "progress_marker_padded.png");
   game_sprites.progress_marker->yPos(89.0f); // increment this as we progress
   game_sprites.sync_overlay = new ScaledSprite("UI/INGAME_UI/syncing.png");
+  game_sprites.disconnect_overlay = new ScaledSprite("UI/INGAME_UI/"
+                                                     "syncing_notext.png");
 }
 
 /* Handles connecting to the server */
-void GameScene::networkConnected() {}
+void GameScene::networkConnected()
+{
+  has_disconnected = false;
+}
 
 /* Handles disconnecting from the server */
-void GameScene::networkDisconnected() {}
+void GameScene::networkDisconnected()
+{
+  has_disconnected = true;
+}
 
 /* Handles receiving data from the server */
 void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
@@ -401,6 +409,10 @@ void GameScene::render()
   if (current_scene_lock_active)
   {
     renderer->renderSprite(*game_sprites.sync_overlay->getSprite());
+  }
+  if (has_disconnected)
+  {
+    renderer->renderSprite(*game_sprites.disconnect_overlay->getSprite());
   }
 
   // client debugging
