@@ -17,6 +17,11 @@ enum game_local_scenes
   IS_PAUSED
 };
 
+struct GameConfig
+{
+  int max_issue_cards = 5;
+};
+
 // Resolution (set at runtime)
 struct GameResolution
 {
