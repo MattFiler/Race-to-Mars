@@ -52,7 +52,6 @@ class GameScene : public Scene
 
   GameSprites game_sprites; // be in game sprites?
   LobbyPlayer* players[4] = { nullptr, nullptr, nullptr, nullptr };
-  int my_player_index = -1;
 
   int max_progress_index = 19; // win condition
 

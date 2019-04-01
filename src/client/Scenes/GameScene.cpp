@@ -24,7 +24,7 @@ void GameScene::init()
     players[i] = &Locator::getPlayers()->players[i];
     if (players[i]->is_this_client)
     {
-      my_player_index = i;
+      Locator::getPlayers()->my_player_index = i;
     }
   }
 
@@ -84,7 +84,7 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     case data_roles::CLIENT_CONNECTED_TO_LOBBY:
     {
       // A player that's not us connected to the lobby, update our info
-      if (received_data.content[0] != my_player_index)
+      if (received_data.content[0] != Locator::getPlayers()->my_player_index)
       {
         players[received_data.content[0]]->is_ready = true;
         players[received_data.content[0]]->current_class =
@@ -126,11 +126,12 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       if (current_progress_index % 3 == 0 && current_progress_index != 0)
       {
         board.setActiveObjectiveCard(
-          received_data.content[8 + my_player_index]);
+          received_data.content[8 + Locator::getPlayers()->my_player_index]);
         debug_text.print(
-          "Adding obj card for client " + std::to_string(my_player_index) +
-          "of type: " +
-          std::to_string(received_data.content[8 + my_player_index]));
+          "Adding obj card for client " +
+          std::to_string(Locator::getPlayers()->my_player_index) + "of type: " +
+          std::to_string(
+            received_data.content[8 + Locator::getPlayers()->my_player_index]));
       }
 
       // End the scene lock
@@ -142,7 +143,7 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     }
     case data_roles::CLIENT_MOVING_PLAYER_TOKEN:
     {
-      if (received_data.content[0] != my_player_index)
+      if (received_data.content[0] != Locator::getPlayers()->my_player_index)
       {
         // Move a player token if its not ours (local lag is gross!)
         Locator::getPlayers()
@@ -191,19 +192,21 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
         current_state = game_state::LOCAL_PAUSE;
         debug_text.print("Opening pause menu.");
       }
-      if (keys.keyReleased("End Turn") && players[my_player_index]->is_active)
+      if (keys.keyReleased("End Turn") &&
+          players[Locator::getPlayers()->my_player_index]->is_active)
       {
         Locator::getClient()->sendData(data_roles::CLIENT_WANTS_TO_END_TURN,
-                                       my_player_index);
+                                       Locator::getPlayers()->my_player_index);
         current_scene_lock_active = true;
         debug_text.print("Requesting to end my go!!");
       }
       if (keys.keyReleased("Debug Spend AP") &&
-          players[my_player_index]->is_active)
+          players[Locator::getPlayers()->my_player_index]->is_active)
       {
         // Debug: change my action points to 10
-        Locator::getClient()->sendData(
-          data_roles::CLIENT_ACTION_POINTS_CHANGED, my_player_index, 10);
+        Locator::getClient()->sendData(data_roles::CLIENT_ACTION_POINTS_CHANGED,
+                                       Locator::getPlayers()->my_player_index,
+                                       10);
         debug_text.print("Debug: changing my action points to 10!");
       }
       break;
@@ -221,7 +224,8 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
         {
           // Alert everyone we're leaving and then return to menu
           Locator::getClient()->sendData(
-            data_roles::CLIENT_DISCONNECTING_FROM_LOBBY, my_player_index);
+            data_roles::CLIENT_DISCONNECTING_FROM_LOBBY,
+            Locator::getPlayers()->my_player_index);
           next_scene = game_global_scenes::MAIN_MENU;
           debug_text.print("Returning to main menu and disconnecting from "
                            "lobby.");
@@ -241,14 +245,15 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
   {
     Vector2 mouse_pos = Vector2(Locator::getCursor()->getPosition().x,
                                 Locator::getCursor()->getPosition().y);
-    if (!current_scene_lock_active && players[my_player_index]->is_active)
+    if (!current_scene_lock_active &&
+        players[Locator::getPlayers()->my_player_index]->is_active)
     {
-      switch (m_board.isHoveringOverInteractable(mouse_pos))
+      switch (board.isHoveringOverInteractable(mouse_pos))
       {
         // Clicked on an objective card
         case hovered_type::HOVERED_OVER_OBJECTIVE_CARD:
         {
-          ObjectiveCard* this_card = m_board.getClickedObjectiveCard(mouse_pos);
+          ObjectiveCard* this_card = board.getClickedObjectiveCard(mouse_pos);
           debug_text.print("Clicked on an interactable part of the board!");
           debug_text.print("CLICKED: OBJECTIVE CARD " +
                            std::to_string(this_card->getCardID()));
@@ -259,7 +264,7 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
         // Clicked on an issue card
         case hovered_type::HOVERED_OVER_ISSUE_CARD:
         {
-          IssueCard* this_card = m_board.getClickedIssueCard(mouse_pos);
+          IssueCard* this_card = board.getClickedIssueCard(mouse_pos);
           debug_text.print("Clicked on an interactable part of the board!");
           debug_text.print("CLICKED: ISSUE CARD " +
                            std::to_string(this_card->getCardID()));
@@ -272,16 +277,17 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
         {
           // Get new movement position
           Vector2 new_pos =
-            m_board.getClickedInteractableRoom(mouse_pos).getPosForPlayer(
-              players[my_player_index]->current_class);
+            board.getClickedInteractableRoom(mouse_pos).getPosForPlayer(
+              players[Locator::getPlayers()->my_player_index]->current_class);
 
           // Move, and let everyone know we're moving
           Locator::getClient()->sendData(data_roles::CLIENT_MOVING_PLAYER_TOKEN,
-                                         my_player_index,
+                                         Locator::getPlayers()->my_player_index,
                                          static_cast<int>(new_pos.x),
                                          static_cast<int>(new_pos.y));
           Locator::getPlayers()
-            ->getPlayer(players[my_player_index]->current_class)
+            ->getPlayer(
+              players[Locator::getPlayers()->my_player_index]->current_class)
             ->setPos(new_pos);
           debug_text.print("Moving my player token to this room.");
           break;
@@ -304,13 +310,13 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
   board.updateActiveIssueCards();
   board.updateActiveObjectiveCard();
 
-  if (players[my_player_index]->is_active)
+  if (players[Locator::getPlayers()->my_player_index]->is_active)
   {
     // If we're not syncing, handle hover sprite update.
     if (!current_scene_lock_active)
     {
       Locator::getCursor()->setCursorActive(
-        m_board.isHoveringOverInteractable(
+        board.isHoveringOverInteractable(
           Vector2(Locator::getCursor()->getPosition().x,
                   Locator::getCursor()->getPosition().y)) !=
         hovered_type::DID_NOT_HOVER_OVER_ANYTHING);
@@ -399,31 +405,38 @@ void GameScene::render()
   // client debugging
   if (debug_text.enabled)
   {
-    renderer->renderText("IS_ACTIVE: " +
-                           std::to_string(players[my_player_index]->is_active),
-                         10,
-                         30,
-                         0.5);
+    renderer->renderText(
+      "IS_ACTIVE: " +
+        std::to_string(
+          players[Locator::getPlayers()->my_player_index]->is_active),
+      10,
+      30,
+      0.5);
     renderer->renderText(
       "CURRENT_CLASS: " +
-        std::to_string(players[my_player_index]->current_class),
+        std::to_string(
+          players[Locator::getPlayers()->my_player_index]->current_class),
       10,
       50,
       0.5);
     renderer->renderText(
       "HAS_CONNECTED: " +
-        std::to_string(players[my_player_index]->has_connected),
+        std::to_string(
+          players[Locator::getPlayers()->my_player_index]->has_connected),
       10,
       70,
       0.5);
-    renderer->renderText("IS_READY: " +
-                           std::to_string(players[my_player_index]->is_ready),
-                         10,
-                         90,
-                         0.5);
+    renderer->renderText(
+      "IS_READY: " +
+        std::to_string(
+          players[Locator::getPlayers()->my_player_index]->is_ready),
+      10,
+      90,
+      0.5);
     renderer->renderText(
       "ACTION_POINTS: " +
-        std::to_string(players[my_player_index]->action_points),
+        std::to_string(
+          players[Locator::getPlayers()->my_player_index]->action_points),
       10,
       110,
       0.5);

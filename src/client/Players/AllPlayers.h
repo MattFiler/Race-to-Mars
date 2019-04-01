@@ -57,6 +57,9 @@ struct Players
   Pilot player_pilot;
   Player player_uninitialised;
 
+  // Local Player Index
+  int my_player_index = -1;
+
   // Class client data
   LobbyPlayer players[4];
 };
