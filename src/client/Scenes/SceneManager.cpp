@@ -5,11 +5,11 @@
 #include <exception>
 
 /* Set the current scene */
-void SceneManager::setCurrentScene(game_global_scenes new_scene)
+bool SceneManager::setCurrentScene(game_global_scenes new_scene)
 {
   if (new_scene == current_scene_id || new_scene == game_global_scenes::DEFAULT)
   {
-    return;
+    return true;
   }
   current_scene_id = new_scene;
   switch (new_scene)
@@ -31,19 +31,20 @@ void SceneManager::setCurrentScene(game_global_scenes new_scene)
     }
     case game_global_scenes::QUIT_GAME:
     {
-      // TODO: Implement quitting!
-      throw std::runtime_error("QUITTING GAME ISN'T SUPPORTED YET LOL");
+      return false;
     }
     default:
     {
-      debug_text.print("Attempted to access a scene which is unhandled.");
+      debug_text.print("Attempted to access a scene which is unhandled.", 2);
       break;
     }
   }
   current_scene->init();
+  return true;
 }
 
-void SceneManager::update(const ASGE::GameTime& game_time)
+/* Update current scene */
+bool SceneManager::update(const ASGE::GameTime& game_time)
 {
-  setCurrentScene(current_scene->update(game_time));
+  return setCurrentScene(current_scene->update(game_time));
 }

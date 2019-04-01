@@ -15,6 +15,7 @@ class ItemCard : public Card
 {
  public:
   void setCardID(item_cards _item_card_id);
+  item_cards getCardID() { return m_cardID; };
   void setActive(bool _active);
   void setActionPointVariable(int _action_point);
 

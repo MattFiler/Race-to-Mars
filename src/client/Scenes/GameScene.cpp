@@ -241,25 +241,58 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
   {
     Vector2 mouse_pos = Vector2(Locator::getCursor()->getPosition().x,
                                 Locator::getCursor()->getPosition().y);
-    if (!current_scene_lock_active && players[my_player_index]->is_active &&
-        board.isHoveringOverInteractable(mouse_pos))
+    if (!current_scene_lock_active && players[my_player_index]->is_active)
     {
-      ShipRoom this_room = board.getClickedInteractable(mouse_pos);
-      debug_text.print("Clicked on an interactable part of the board!");
-      debug_text.print("CLICKED: " + this_room.getName());
+      switch (m_board.isHoveringOverInteractable(mouse_pos))
+      {
+        // Clicked on an objective card
+        case hovered_type::HOVERED_OVER_OBJECTIVE_CARD:
+        {
+          ObjectiveCard* this_card = m_board.getClickedObjectiveCard(mouse_pos);
+          debug_text.print("Clicked on an interactable part of the board!");
+          debug_text.print("CLICKED: OBJECTIVE CARD " +
+                           std::to_string(this_card->getCardID()));
 
-      Vector2 new_pos =
-        this_room.getPosForPlayer(players[my_player_index]->current_class);
+          break;
+        }
 
-      // let everyone know we're moving
-      Locator::getClient()->sendData(data_roles::CLIENT_MOVING_PLAYER_TOKEN,
-                                     my_player_index,
-                                     static_cast<int>(new_pos.x),
-                                     static_cast<int>(new_pos.y));
-      Locator::getPlayers()
-        ->getPlayer(players[my_player_index]->current_class)
-        ->setPos(new_pos);
-      debug_text.print("Moving my player token to this room.");
+        // Clicked on an issue card
+        case hovered_type::HOVERED_OVER_ISSUE_CARD:
+        {
+          IssueCard* this_card = m_board.getClickedIssueCard(mouse_pos);
+          debug_text.print("Clicked on an interactable part of the board!");
+          debug_text.print("CLICKED: ISSUE CARD " +
+                           std::to_string(this_card->getCardID()));
+
+          break;
+        }
+
+        // Clicked within a room on the ship
+        case hovered_type::HOVERED_OVER_SHIP_ROOM:
+        {
+          // Get new movement position
+          Vector2 new_pos =
+            m_board.getClickedInteractableRoom(mouse_pos).getPosForPlayer(
+              players[my_player_index]->current_class);
+
+          // Move, and let everyone know we're moving
+          Locator::getClient()->sendData(data_roles::CLIENT_MOVING_PLAYER_TOKEN,
+                                         my_player_index,
+                                         static_cast<int>(new_pos.x),
+                                         static_cast<int>(new_pos.y));
+          Locator::getPlayers()
+            ->getPlayer(players[my_player_index]->current_class)
+            ->setPos(new_pos);
+          debug_text.print("Moving my player token to this room.");
+          break;
+        }
+
+        // Didn't click on anything
+        default:
+        {
+          return;
+        }
+      }
     }
   }
 }
@@ -276,9 +309,11 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
     // If we're not syncing, handle hover sprite update.
     if (!current_scene_lock_active)
     {
-      Locator::getCursor()->setCursorActive(board.isHoveringOverInteractable(
-        Vector2(Locator::getCursor()->getPosition().x,
-                Locator::getCursor()->getPosition().y)));
+      Locator::getCursor()->setCursorActive(
+        m_board.isHoveringOverInteractable(
+          Vector2(Locator::getCursor()->getPosition().x,
+                  Locator::getCursor()->getPosition().y)) !=
+        hovered_type::DID_NOT_HOVER_OVER_ANYTHING);
     }
   }
   else
@@ -393,6 +428,6 @@ void GameScene::render()
       110,
       0.5);
     renderer->renderText("PRESS M TO FINISH TURN", 10, 130, 0.5);
-    renderer->renderText("PRESS N TO DEBUG TEST ACTION POINTS", 10, 150, 0.5);
+    renderer->renderText("PRESS L TO DEBUG TEST ACTION POINTS", 10, 150, 0.5);
   }
 }

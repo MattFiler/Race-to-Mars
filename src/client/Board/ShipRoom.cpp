@@ -68,7 +68,7 @@ std::string ShipRoom::getName()
   return friendly_name;
 }
 
-/* Get the localised name of the room */
+/* Is the position within our bounding box? */
 bool ShipRoom::isInBoundingBox(Vector2 _pos)
 {
   return bounding_box.isInside(_pos);

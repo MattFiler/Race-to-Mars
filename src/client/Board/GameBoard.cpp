@@ -1,27 +1,40 @@
 #include "GameBoard.h"
 #include "gamelib/Constants.h"
 
-/* Check to see if we're HOVERING over an interactable item  */
-bool GameBoard::isHoveringOverInteractable(Vector2 hover_pos)
+/* Check to see if we're hovering over an interactable item  */
+hovered_type GameBoard::isHoveringOverInteractable(Vector2 hover_pos)
 {
+  // Check ship rooms
   for (ShipRoom& room : m_ship.getRooms())
   {
     if (room.isInBoundingBox(hover_pos))
     {
-      return true;
+      return hovered_type::HOVERED_OVER_SHIP_ROOM;
     }
   }
 
-  //  if(m_item_deck.isInBoundingBox(hover_pos))
-  //  {
-  //    return true;
-  //  }
-  return false;
+  // Check issue cards
+  for (IssueCard& card : active_issues)
+  {
+    if (card.isInBoundingBox(hover_pos))
+    {
+      return hovered_type::HOVERED_OVER_ISSUE_CARD;
+    }
+  }
+
+  // Check objective card
+  if (active_obj_card != nullptr && active_obj_card->isInBoundingBox(hover_pos))
+  {
+    return hovered_type::HOVERED_OVER_OBJECTIVE_CARD;
+  }
+
+  return hovered_type::DID_NOT_HOVER_OVER_ANYTHING;
 }
 
-/* Return CLICKED interactable item (check for click first)  */
-ShipRoom GameBoard::getClickedInteractable(Vector2 clicked_pos)
+/* Return clicked interactable room  */
+ShipRoom GameBoard::getClickedInteractableRoom(Vector2 clicked_pos)
 {
+  // Check rooms
   for (ShipRoom& room : m_ship.getRooms())
   {
     if (room.isInBoundingBox(clicked_pos))
@@ -29,9 +42,41 @@ ShipRoom GameBoard::getClickedInteractable(Vector2 clicked_pos)
       return room;
     }
   }
-  throw std::runtime_error("Tried to access clicked item, but none were found. "
-                           "Call isHoveringOverInteractable first to "
-                           "validate!");
+
+  // Didn't match any
+  throw "This function must be called based on the result of "
+        "isHoveringOverInteractable.";
+}
+
+/* Return clicked issue card  */
+IssueCard* GameBoard::getClickedIssueCard(Vector2 clicked_pos)
+{
+  // Check issue card deck
+  for (IssueCard& card : active_issues)
+  {
+    if (card.isInBoundingBox(clicked_pos))
+    {
+      return &card;
+    }
+  }
+
+  // Didn't match any
+  throw "This function must be called based on the result of "
+        "isHoveringOverInteractable.";
+}
+
+/* Return clicked objective card  */
+ObjectiveCard* GameBoard::getClickedObjectiveCard(Vector2 clicked_pos)
+{
+  // Check objective card
+  if (active_obj_card->isInBoundingBox(clicked_pos))
+  {
+    return active_obj_card;
+  }
+
+  // Didn't match any
+  throw "This function must be called based on the result of "
+        "isHoveringOverInteractable.";
 }
 
 /* Set the active objective card to update */
