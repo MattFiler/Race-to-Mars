@@ -100,12 +100,23 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       current_progress_index = received_data.content[2];
 
       // Re-sync issue cards every turn
+      for (size_t i = 0; i < active_issues.size(); ++i)
+      {
+        if (active_issues[i].isSolved())
+        {
+          active_issues.erase(active_issues.begin() + static_cast<int>(i));
+          active_issue_cards[i] = -1;
+          slot_occupied[i] = false;
+        }
+      }
+
+      if (active_issues.size() >= static_cast<size_t>(max_issue_cards))
+      {
+        // Swap To Lose Game State.
+      }
+
       for (int i = 0; i < max_issue_cards; ++i)
       {
-        // check to see if game is lost here and send set END_GAME to true
-
-        // checking to see if full rotation. If yes, create new issue cards
-        // client side.
         debug_text.print("The current rotation is currently: " +
                          std::to_string(received_data.content[12]));
         if (received_data.content[12])
@@ -126,15 +137,11 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       {
         update_obj_card = true;
         active_client_objective_card =
-          received_data.content[8 + my_player_index]; // For some reason the
-                                                      // gameclient is
-                                                      // receiveing +1 extra
-                                                      // .content[x]???
-        // so this works for client 0 & 2 but not for 3 & 4.
+          received_data.content[8 + my_player_index];
         debug_text.print(
           "Adding obj card for client " + std::to_string(my_player_index) +
           "of type: " +
-          std::to_string(received_data.content[active_client_objective_card]));
+          std::to_string(received_data.content[8 + my_player_index]));
       }
 
       current_scene_lock_active = false;

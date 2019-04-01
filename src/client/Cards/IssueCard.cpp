@@ -89,6 +89,7 @@ IssueCard::IssueCard(issue_cards _card_type)
 
 bool IssueCard::isSolved()
 {
+  // return true if total assigned ap's is more than needed ap.
   return m_action_points + m_issue_card_ap_variable <= m_total_ap_assigned;
 }
 
