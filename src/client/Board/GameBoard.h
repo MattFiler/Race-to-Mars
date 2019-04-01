@@ -14,14 +14,24 @@
  * cards, active counters, active player tokens, etc - then all rendering can be
  * done by calling this class' render function. */
 
+enum hovered_type
+{
+  HOVERED_OVER_SHIP_ROOM,
+  HOVERED_OVER_ISSUE_CARD,
+  HOVERED_OVER_OBJECTIVE_CARD,
+  DID_NOT_HOVER_OVER_ANYTHING
+};
+
 class GameBoard
 {
  public:
   GameBoard() { m_players = Locator::getPlayers(); };
   ~GameBoard() = default;
 
-  bool isHoveringOverInteractable(Vector2 hover_pos);
-  ShipRoom getClickedInteractable(Vector2 clicked_pos);
+  hovered_type isHoveringOverInteractable(Vector2 hover_pos);
+  ShipRoom getClickedInteractableRoom(Vector2 clicked_pos);
+  IssueCard* getClickedIssueCard(Vector2 clicked_pos);
+  ObjectiveCard* getClickedObjectiveCard(Vector2 clicked_pos);
 
   void setActiveIssueCards(int active_cards[5], bool is_new_rotation);
   void setActiveObjectiveCard(int card_index);

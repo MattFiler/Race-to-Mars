@@ -19,10 +19,10 @@ class IssueCard : public Card
   explicit IssueCard(issue_cards _card_type);
   ~IssueCard() = default;
   void setCardID(issue_cards _item_card_id);
+  issue_cards getCardID() { return m_cardID; };
   void addActionPoints(player_classes _player_class, int _ap_amount);
   void setIssueCardvariable(int _action_points);
 
-  issue_cards getCardID();
   bool isSolved();
 
  private:

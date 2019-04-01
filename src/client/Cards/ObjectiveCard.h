@@ -17,6 +17,7 @@ class ObjectiveCard : public Card
   ~ObjectiveCard() = default;
 
   void setCardID(objective_cards _obj_card_id);
+  objective_cards getCardID() { return m_cardID; };
 
  private:
   objective_cards m_cardID = objective_cards::OBJECTIVE_PLACEHOLDER;
