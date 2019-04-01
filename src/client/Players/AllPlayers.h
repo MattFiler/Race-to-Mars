@@ -59,4 +59,7 @@ struct Players
 
   // Class client data
   LobbyPlayer players[4];
+
+  // Did join in progress? If so, initiate sync.
+  bool joined_in_progress = false;
 };

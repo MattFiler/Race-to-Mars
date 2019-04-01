@@ -72,6 +72,7 @@ enum data_roles
   SERVER_STARTS_GAME,
   /* ^ All clients in the lobby are ready, signal to start the game.
    *   [0] = the client to start playing first
+   *   [1] = are we joining in-progress (1=yes,0=no)
    */
 
   CLIENT_WANTS_TO_END_TURN,
@@ -98,14 +99,43 @@ enum data_roles
   CLIENT_MOVING_PLAYER_TOKEN,
   /* ^ The active client moved their player token.
    *   [0] = the client index
-   *   [1] = new token position (x)
-   *   [2] = new token position (y)
+   *   [1] = the room index
    */
 
   CLIENT_ACTION_POINTS_CHANGED,
   /* ^ The active client spent or gained action points.
    *   [0] = the client index
    *   [1] = the new action point count
+   */
+
+  CLIENT_REQUESTS_SYNC,
+  /* ^ The newly joined client wants a data sync for joining an in-progress
+     game. */
+
+  SERVER_SYNCS_CARD_INFO,
+  /* ^ The server is sending card and score data to a reconnecting player.
+   *   [0] = issue card in slot 1
+   *   [1] = issue card in slot 2
+   *   [2] = issue card in slot 3
+   *   [3] = issue card in slot 4
+   *   [4] = issue card in slot 5
+   *   [5] = objective card for player 1
+   *   [6] = objective card for player 2
+   *   [7] = objective card for player 3
+   *   [8] = objective card for player 4
+   *   [9] = the action points for player 1
+   *   [10] = the action points for player 2
+   *   [11] = the action points for player 3
+   *   [12] = the action points for player 4
+   */
+
+  SERVER_SYNCS_POSITION_INFO,
+  /* ^ The server is sending position info to a reconnecting player.
+   *   [0] = the room of client 1
+   *   [1] = the room of client 2
+   *   [2] = the room of client 3
+   *   [3] = the room of client 4
+   *   [4] = the ship's position
    */
 };
 

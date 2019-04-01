@@ -16,7 +16,6 @@ void GameScene::init()
   pause_menu.addMenuSprite("INGAME_UI/pause_bg.jpg");
   pause_menu.addMenuItem("MENU_CONTINUE");
   pause_menu.addMenuItem("MENU_QUIT");
-  // m_deck.setup();
 
   // Get a reference to the client lobby data array
   for (int i = 0; i < 4; i++)
@@ -43,6 +42,34 @@ void GameScene::init()
   game_sprites.sync_overlay = new ScaledSprite("UI/INGAME_UI/syncing.png");
   game_sprites.disconnect_overlay = new ScaledSprite("UI/INGAME_UI/"
                                                      "syncing_notext.png");
+
+  // If we joined in progress, request a data sync from the server
+  if (Locator::getPlayers()->joined_in_progress)
+  {
+    Locator::getClient()->sendData(data_roles::CLIENT_REQUESTS_SYNC, 0);
+  }
+  // Else, manually position our player based on their starting room
+  else
+  {
+    ShipRoom this_room = m_board.getRoom(static_cast<ship_rooms>(
+      Locator::getPlayers()
+        ->getPlayer(players[my_player_index]->current_class)
+        ->getStartingRoom()));
+
+    // Get new movement position
+    Vector2 new_pos =
+      this_room.getPosForPlayer(players[my_player_index]->current_class);
+
+    // Move, and let everyone know we're moving
+    Locator::getClient()->sendData(data_roles::CLIENT_MOVING_PLAYER_TOKEN,
+                                   my_player_index,
+                                   static_cast<int>(this_room.getEnum()));
+    Locator::getPlayers()
+      ->getPlayer(players[my_player_index]->current_class)
+      ->setPos(new_pos);
+    debug_text.print("Starting my player token in room '" +
+                     this_room.getName() + "'.");
+  }
 }
 
 /* Handles connecting to the server */
@@ -68,6 +95,7 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
   // Handle all relevant data packets for this scene
   switch (received_data.role)
   {
+    // A client has disconnected from the game
     case data_roles::CLIENT_DISCONNECTING_FROM_LOBBY:
     {
       // Forget them!
@@ -81,6 +109,8 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
                        1);
       break;
     }
+
+    // A new client has connected to the lobby
     case data_roles::CLIENT_CONNECTED_TO_LOBBY:
     {
       // A player that's not us connected to the lobby, update our info
@@ -98,6 +128,8 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
                        1);
       break;
     }
+
+    // The server has ended the current turn, update our game accordingly
     case data_roles::SERVER_ENDED_CLIENT_TURN:
     {
       // Update active player flag
@@ -136,20 +168,30 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
                        std::to_string(received_data.content[1]) + ".");
       break;
     }
+
+    // The active client has moved their player token, update it on our screen
     case data_roles::CLIENT_MOVING_PLAYER_TOKEN:
     {
       if (received_data.content[0] != my_player_index)
       {
-        // Move a player token if its not ours (local lag is gross!)
+        ShipRoom this_room =
+          m_board.getRoom(static_cast<ship_rooms>(received_data.content[1]));
+
+        // Get new movement position and move to it
+        Vector2 new_pos = this_room.getPosForPlayer(
+          players[received_data.content[0]]->current_class);
         Locator::getPlayers()
           ->getPlayer(players[received_data.content[0]]->current_class)
-          ->setPos(Vector2(static_cast<float>(received_data.content[1]),
-                           static_cast<float>(received_data.content[2])));
-        debug_text.print("A player on the server moved their counter! We're "
-                         "gonna do that too.");
+          ->setPos(new_pos);
+
+        debug_text.print("Moving player " +
+                         std::to_string(received_data.content[0]) +
+                         " to room '" + this_room.getName() + "'.");
       }
       break;
     }
+
+    // The active client's action points have changed, update it for us
     case data_roles::CLIENT_ACTION_POINTS_CHANGED:
     {
       // Update another player's action point count
@@ -158,6 +200,68 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       debug_text.print("A player spent or received action points.");
       break;
     }
+
+    // If connecting to an in-progress game, the server needs to sync
+    // information to us
+    case data_roles::SERVER_SYNCS_CARD_INFO:
+    {
+      // Sync issue cards
+      int issue_cards[5] = { received_data.content[0],
+                             received_data.content[1],
+                             received_data.content[2],
+                             received_data.content[3],
+                             received_data.content[4] };
+      m_board.setActiveIssueCards(issue_cards, true); // should sync ship
+                                                      // position here too
+      debug_text.print("Sync: updated active issue cards.");
+      for (int i = 0; i < 5; i++)
+      {
+        debug_text.print("Sync: issue card 1: " +
+                         std::to_string(received_data.content[i]));
+      }
+
+      // Sync my objective card
+      m_board.setActiveObjectiveCard(
+        received_data.content[5 + my_player_index]);
+      debug_text.print(
+        "Sync: updated my objective card to " +
+        std::to_string(received_data.content[5 + my_player_index]) + ".");
+
+      // Sync action points
+      for (int i = 0; i < 4; i++)
+      {
+        players[i]->action_points = received_data.content[9 + i];
+        debug_text.print("Sync: updated player " + std::to_string(i) +
+                         "'s points to " +
+                         std::to_string(players[i]->action_points) + ".");
+      }
+      break;
+    }
+    case data_roles::SERVER_SYNCS_POSITION_INFO:
+    {
+      for (int i = 0; i < 4; i++)
+      {
+        ShipRoom this_room =
+          m_board.getRoom(static_cast<ship_rooms>(received_data.content[i]));
+
+        // Get new movement position and move to it
+        Vector2 new_pos = this_room.getPosForPlayer(players[i]->current_class);
+        Locator::getPlayers()
+          ->getPlayer(players[i]->current_class)
+          ->setPos(new_pos);
+
+        debug_text.print("Sync: moved player " + std::to_string(i) +
+                         " to room '" + this_room.getName() + "'.");
+      }
+
+      // Sync ship board progress
+      current_progress_index = received_data.content[4];
+      debug_text.print("Sync: moved ship to position " +
+                       std::to_string(current_progress_index));
+      break;
+    }
+
+    // Anything else is unhandled
     default:
     {
       debug_text.print("An unhandled data packet was received, of type " +
@@ -266,20 +370,21 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
         // Clicked within a room on the ship
         case hovered_type::HOVERED_OVER_SHIP_ROOM:
         {
+          ShipRoom this_room = m_board.getClickedInteractableRoom(mouse_pos);
+
           // Get new movement position
           Vector2 new_pos =
-            m_board.getClickedInteractableRoom(mouse_pos).getPosForPlayer(
-              players[my_player_index]->current_class);
+            this_room.getPosForPlayer(players[my_player_index]->current_class);
 
           // Move, and let everyone know we're moving
           Locator::getClient()->sendData(data_roles::CLIENT_MOVING_PLAYER_TOKEN,
                                          my_player_index,
-                                         static_cast<int>(new_pos.x),
-                                         static_cast<int>(new_pos.y));
+                                         static_cast<int>(this_room.getEnum()));
           Locator::getPlayers()
             ->getPlayer(players[my_player_index]->current_class)
             ->setPos(new_pos);
-          debug_text.print("Moving my player token to this room.");
+          debug_text.print("Moving my player token to room '" +
+                           this_room.getName() + "'.");
           break;
         }
 

@@ -39,6 +39,8 @@ class GameBoard
   void updateActiveIssueCards();
   void updateActiveObjectiveCard();
 
+  ShipRoom getRoom(ship_rooms _room);
+
   void render();
 
  private:
@@ -65,7 +67,6 @@ class GameBoard
   int new_obj_card = -1;
 
   /* Misc */
-  bool cursorPosFallsIntoClickable(Vector2 pos);
   DebugText debug_text;
   GameConfig game_config;
 };

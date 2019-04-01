@@ -180,6 +180,19 @@ void GameBoard::render()
   }
 }
 
+/* Get the room position for a player */
+ShipRoom GameBoard::getRoom(ship_rooms _room)
+{
+  for (ShipRoom& room : m_ship.getRooms())
+  {
+    if (room.getEnum() == _room)
+    {
+      return room;
+    }
+  }
+  throw "Could not find requested room.";
+}
+
 /* Handle the events caused by issue cards */
 void GameBoard::handleIssueCardEvents(issue_cards _card_type)
 {
