@@ -33,47 +33,9 @@ void RaceToSpaceServer::initialise()
   // Create the first lobby
   lobbies.emplace_back(latest_lobby_id);
   latest_lobby_id++;
-  // Create deck of Issue IDS. 60 cards total.
-  for (int i = 0; i < 2; ++i)
-  {
-    for (int j = 0; j < 30; ++j)
-    {
-      // Create for most recent lobby.
-      lobbies.back().issue_deck.push_back(j);
-    }
-  }
 
-  // Create deck of Item IDS. 38 cards total.
-  for (int i = 0; i < 2; ++i)
-  {
-    for (int j = 0; j < 19; ++j)
-    {
-      // Create for most recent lobby.
-      lobbies.back().item_deck.push_back(j);
-    }
-  }
-
-  // Create deck of Objective IDS. 36 cards total.
-  for (int i = 0; i < 3; ++i)
-  {
-    for (int j = 0; j < 12; ++j)
-    {
-      // Create for most recent lobby.
-      lobbies.back().objective_deck.push_back(j);
-    }
-  }
-
-  auto seed =
-    std::chrono::high_resolution_clock::now().time_since_epoch().count();
-  std::mt19937 gen(seed);
-  // Shuffle decks.
-  std::shuffle(
-    lobbies.back().issue_deck.begin(), lobbies.back().issue_deck.end(), gen);
-  std::shuffle(
-    lobbies.back().item_deck.begin(), lobbies.back().item_deck.end(), gen);
-  std::shuffle(lobbies.back().objective_deck.begin(),
-               lobbies.back().objective_deck.end(),
-               gen);
+  // create deck for first lobby here.
+  initLobbyDecks();
 
   // Start listening for network traffic
   network_server.start_listening(
@@ -493,11 +455,12 @@ void RaceToSpaceServer::connectToLobby(server_client& client)
                      -1);
 
     lobby_client_index = 0;
-
     new_lobby.user_ids[lobby_client_index] = client.get_id();
     new_lobby.user_count++;
     client.lobby_id = new_lobby.lobby_id;
     client.lobby_index = static_cast<int>(lobbies.size() - 1);
+    // create and shuffle decks here. create a function which calls here.
+    initLobbyDecks();
   }
 
   // Now client is in a lobby, assign them a free class
@@ -580,4 +543,49 @@ Lobby* RaceToSpaceServer::getLobbyByID(int lobby_id)
                    "couldn't get their lobby's info to do so!",
                    2);
   return nullptr;
+}
+
+void RaceToSpaceServer::initLobbyDecks()
+{
+  // Create deck of Issue IDS. 60 cards total.
+  for (int i = 0; i < 2; ++i)
+  {
+    for (int j = 0; j < 30; ++j)
+    {
+      // Create for most recent lobby.
+      lobbies.back().issue_deck.push_back(j);
+    }
+  }
+
+  // Create deck of Item IDS. 38 cards total.
+  for (int i = 0; i < 2; ++i)
+  {
+    for (int j = 0; j < 19; ++j)
+    {
+      // Create for most recent lobby.
+      lobbies.back().item_deck.push_back(j);
+    }
+  }
+
+  // Create deck of Objective IDS. 36 cards total.
+  for (int i = 0; i < 3; ++i)
+  {
+    for (int j = 0; j < 12; ++j)
+    {
+      // Create for most recent lobby.
+      lobbies.back().objective_deck.push_back(j);
+    }
+  }
+
+  auto seed =
+    std::chrono::high_resolution_clock::now().time_since_epoch().count();
+  std::mt19937 gen(seed);
+  // Shuffle decks.
+  std::shuffle(
+    lobbies.back().issue_deck.begin(), lobbies.back().issue_deck.end(), gen);
+  std::shuffle(
+    lobbies.back().item_deck.begin(), lobbies.back().item_deck.end(), gen);
+  std::shuffle(lobbies.back().objective_deck.begin(),
+               lobbies.back().objective_deck.end(),
+               gen);
 }

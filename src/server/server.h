@@ -22,6 +22,7 @@ class RaceToSpaceServer
 
   void connectToLobby(server_client& client);
   void disconnectFromLobby(int client_id);
+  void initLobbyDecks();
 
  private:
   void sendData(server_client& client,
@@ -44,7 +45,8 @@ class RaceToSpaceServer
                 int _content_15 = 0);
 
   Lobby* getLobbyByID(int lobby_id);
-  int amount_to_draw[15]{ 2, 3, 1, 1, 2, 2, 1, 1, 3, 2, 1, 3, 2, 1, 2 };
+  //  int amount_to_draw[15]{ 2, 3, 1, 1, 2, 2, 1, 1, 3, 2, 1, 3, 2, 1, 2 };
+  int amount_to_draw[15]{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
   enetpp::server<server_client> network_server;
   unsigned int next_uid = 0;
   DebugText debug_text;
