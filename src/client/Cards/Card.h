@@ -16,40 +16,20 @@
  *
  */
 
-class Card
+class Card : public OnBoardObject
 {
  public:
-  Card();
+  Card() = default;
   ~Card() = default;
 
-  void render();
-
-  void setCardName(const std::string& _item_name);
-  void setSpritePath(const std::string& _sprite_path);
-  void setCardDescription(const std::string& _description_text);
-  void setAbilityText(const std::string& _ability_text);
-  void setActionPoints(int _action_points);
-  void setCardSize();
-
-  std::string getSprtiepath() { return m_sprite_path; }
-  ScaledSprite* getSprite() { return m_card_sprite; }
-
  protected:
-  ASGE::Renderer* renderer = nullptr;
-
   std::string m_card_name = "Temp Name";
   std::string m_card_decription = "Temp desc";
-  std::string m_sprite_path = "data/UI/CARD_IMAGES/global_card.png";
   std::string m_ability_text = "Temp Ability Text";
   int m_action_points = 0;
 
-  ScaledSprite* m_card_sprite = nullptr;
-
   FileHandler file_handler;
   json card_config;
-
- private:
-  /* Stuff here */
 };
 
 #endif // PROJECT_CARD_H
