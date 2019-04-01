@@ -100,6 +100,7 @@ void GameBoard::setActiveIssueCards(int card_index[5], bool is_new_rotation)
   if (active_issues.size() >= static_cast<size_t>(game_config.max_issue_cards))
   {
     // Swap To Lose Game State.
+    lost_game = true;
   }
 
   for (int i = 0; i < game_config.max_issue_cards; ++i)
@@ -205,6 +206,10 @@ void GameBoard::handleIssueCardEvents(issue_cards _card_type)
   {
     // Comms issue.
     // Call player roll dice function here.
+    Locator::getPlayers()
+      ->getPlayer(
+        static_cast<player_classes>(Locator::getPlayers()->my_player_index))
+      ->setDiceRolls(1);
   }
   else if (_card_num >= 6 && _card_num <= 11)
   {
@@ -312,6 +317,9 @@ void GameBoard::handleIssueCardEvents(issue_cards _card_type)
         // If this player is the pilot, roll dice, if above 4, move ship
         // forward.
         break;
+      }
+      case 27:
+      {
       }
       default:
         break;

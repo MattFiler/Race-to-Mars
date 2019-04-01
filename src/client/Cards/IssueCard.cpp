@@ -34,8 +34,6 @@ void IssueCard::addActionPoints(player_classes _player_class, int _ap_amount)
       pilot_ap_assigned += _ap_amount;
       break;
     }
-    default:
-      break;
   }
   total_ap_assigned += _ap_amount;
 }

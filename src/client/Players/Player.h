@@ -43,6 +43,8 @@ class Player
 
   float getWidth() { return counter.getSprite()->height(); }
   float getHeight() { return counter.getSprite()->width(); }
+  void setDiceRolls(int _dice_roll) { amount_of_rolls += _dice_roll; }
+  void setMaxItems(int _max_items) { max_items = _max_items; }
 
   void makeUninitialised()
   {
@@ -69,6 +71,8 @@ class Player
   json config;
 
   int current_action_points = 0;
+  int max_items = 2;
+  int amount_of_rolls = 1;
 
  private:
   SimpleMath math;

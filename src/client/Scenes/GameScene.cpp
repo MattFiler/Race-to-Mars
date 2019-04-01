@@ -102,15 +102,12 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     {
       // Forget them!
       players[received_data.content[0]]->performDisconnect();
-
       // While connecting/disconnecting works properly now, it might be nice to
       // implement some more validation to it - at the moment anyone can rejoin
       // and replace the original player. Similarly, it's untested if it works
       // with more than one player leaving.
-
       break;
     }
-
     // A new client has connected to the lobby
     case data_roles::CLIENT_CONNECTED_TO_LOBBY:
     {
@@ -123,7 +120,6 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       }
       break;
     }
-
     // The server has ended the current turn, update our game accordingly
     case data_roles::SERVER_ENDED_CLIENT_TURN:
     {
@@ -132,23 +128,19 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       {
         players[i]->is_active = (received_data.content[1] == i);
       }
-
       // Re-sync progress index every turn
       current_progress_index = received_data.content[2];
-
       // Re-sync issue cards every turn
       int active_issue_cards[5] = { received_data.content[3],
                                     received_data.content[4],
                                     received_data.content[5],
                                     received_data.content[6],
                                     received_data.content[7] };
-
       if (received_data.content[12])
       {
         board.setActiveIssueCards(active_issue_cards,
                                   static_cast<bool>(received_data.content[12]));
       }
-
       // Pull a new objective card if required.
       if (current_progress_index % 3 == 0 && current_progress_index != 0)
       {
@@ -160,7 +152,6 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
           std::to_string(
             received_data.content[8 + Locator::getPlayers()->my_player_index]));
       }
-
       // End the scene lock
       current_scene_lock_active = false;
       debug_text.print("The server ended the current go, and passed "
@@ -168,7 +159,6 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
                        std::to_string(received_data.content[1]) + ".");
       break;
     }
-
     // The active client has moved their player token, update it on our screen
     case data_roles::CLIENT_MOVING_PLAYER_TOKEN:
     {
@@ -183,14 +173,12 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
         Locator::getPlayers()
           ->getPlayer(players[received_data.content[0]]->current_class)
           ->setPos(new_pos);
-
         debug_text.print("Moving player " +
                          std::to_string(received_data.content[0]) +
                          " to room '" + this_room.getName() + "'.");
       }
       break;
     }
-
     // The active client's action points have changed, update it for us
     case data_roles::CLIENT_ACTION_POINTS_CHANGED:
     {
@@ -200,7 +188,6 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       debug_text.print("A player spent or received action points.");
       break;
     }
-
     // If connecting to an in-progress game, the server needs to sync
     // information to us
     case data_roles::SERVER_SYNCS_CARD_INFO:
@@ -219,7 +206,6 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
         debug_text.print("Sync: issue card 1: " +
                          std::to_string(received_data.content[i]));
       }
-
       // Sync my objective card
       board.setActiveObjectiveCard(
         received_data.content[5 + Locator::getPlayers()->my_player_index]);
@@ -228,7 +214,6 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
         std::to_string(
           received_data.content[5 + Locator::getPlayers()->my_player_index]) +
         ".");
-
       // Sync action points
       for (int i = 0; i < 4; i++)
       {
@@ -245,7 +230,6 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       {
         ShipRoom this_room =
           board.getRoom(static_cast<ship_rooms>(received_data.content[i]));
-
         // Get new movement position and move to it
         Vector2 new_pos = this_room.getPosForPlayer(players[i]->current_class);
         Locator::getPlayers()
@@ -255,14 +239,12 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
         debug_text.print("Sync: moved player " + std::to_string(i) +
                          " to room '" + this_room.getName() + "'.");
       }
-
       // Sync ship board progress
       current_progress_index = received_data.content[4];
       debug_text.print("Sync: moved ship to position " +
                        std::to_string(current_progress_index));
       break;
     }
-
     // Anything else is unhandled
     default:
     {

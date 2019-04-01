@@ -22,6 +22,14 @@ void Player::render(game_global_scenes game_scene)
       renderer->renderSprite(*lobby_sprite->getSprite());
       break;
     }
+    case game_global_scenes ::MAIN_MENU:
+    {
+      break;
+    }
+    case game_global_scenes ::DEFAULT:
+    {
+      break;
+    }
     default:
     {
       break;

@@ -69,6 +69,8 @@ class GameBoard
   bool update_issues = false;
   int new_obj_card = -1;
 
+  bool lost_game = false;
+
   /* Misc */
   DebugText debug_text;
   GameConfig game_config;
