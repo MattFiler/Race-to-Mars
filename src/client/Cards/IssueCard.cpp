@@ -2,34 +2,7 @@
 
 void IssueCard::setCardID(issue_cards _item_card_id)
 {
-  this->m_cardID = _item_card_id;
-  //  switch (static_cast<int>(_item_card_id))
-  //  {
-  //    case 12:
-  //    {
-  //      break;
-  //    }
-  //    case 13:
-  //    {
-  //      break;
-  //    }
-  //    case 14:
-  //    {
-  //      break;
-  //    }
-  //    case 15:
-  //    {
-  //      break;
-  //    }
-  //    case 16:
-  //    {
-  //      break;
-  //    }
-  //    case 17:
-  //    {
-  //      break;
-  //    }
-  //  }
+  m_cardID = _item_card_id;
 }
 
 void IssueCard::addActionPoints(player_classes _player_class, int _ap_amount)
@@ -38,8 +11,8 @@ void IssueCard::addActionPoints(player_classes _player_class, int _ap_amount)
   {
     case player_classes::UNASSIGNED:
     {
-      throw("Unassigned player tried to assign action points. THATS "
-            "IMPOSSIBRU.");
+      debug_text.print("Unassigned player put action points on card!", 2);
+      break;
     }
     case player_classes::COMMUNICATIONS:
     {
@@ -78,13 +51,11 @@ IssueCard::IssueCard(issue_cards _card_type)
 
   auto card_type = static_cast<size_t>(_card_type);
 
-  this->setCardName(card_config["ISSUECARDS"][card_type]["name"]);
-  this->setCardDescription(card_config["ISSUECARDS"][card_type]["description"]);
-  this->setActionPoints(card_config["ISSUECARDS"][card_type]["action_points"]);
-  this->setSpritePath(card_config["ISSUECARDS"][card_type]["sprite_path"]);
-  this->setActionPoints(card_config["ISSUECARDS"][card_type]["card_id"]);
-
-  m_card_sprite = new ScaledSprite(this->getSprtiepath());
+  m_card_name = card_config["ISSUECARDS"][card_type]["name"];
+  m_card_decription = card_config["ISSUECARDS"][card_type]["description"];
+  m_action_points = card_config["ISSUECARDS"][card_type]["action_points"];
+  m_cardID = card_config["ISSUECARDS"][card_type]["card_id"];
+  setSprite(card_config["ISSUECARDS"][card_type]["sprite_path"]);
 }
 
 bool IssueCard::isSolved()

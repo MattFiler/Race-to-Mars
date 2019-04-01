@@ -292,7 +292,8 @@ void RaceToSpaceServer::run()
             // Everyone in lobby is ready, signal to all of them that we
             // should start the game.
             debug_text.print("Starting gameplay in lobby " +
-                             std::to_string(this_lobby->lobby_id) + ".");
+                               std::to_string(this_lobby->lobby_id) + ".",
+                             -1);
             int starting_player = 0; // The id of the starting client, maybe
                                      // randomise this?
             this_lobby->player_that_started_id = starting_player;
@@ -422,7 +423,8 @@ void RaceToSpaceServer::sendData(server_client& client,
     if (!has_sent && player_count == 0)
     {
       debug_text.print("ERROR: Failed to send data to clients in requested "
-                       "lobby.");
+                       "lobby.",
+                       2);
     }
   }
   else if (user_id == static_cast<unsigned int>(-2))
@@ -487,7 +489,8 @@ void RaceToSpaceServer::connectToLobby(server_client& client)
     latest_lobby_id++;
 
     debug_text.print("Created new lobby instance. There are " +
-                     std::to_string(lobbies.size()) + " active lobbies.");
+                       std::to_string(lobbies.size()) + " active lobbies.",
+                     -1);
 
     lobby_client_index = 0;
 
@@ -552,7 +555,9 @@ void RaceToSpaceServer::disconnectFromLobby(int client_id)
         {
           lobbies.erase(lobbies.begin() + real_lobby_id);
           debug_text.print("Destroying unpopulated lobby. There are " +
-                           std::to_string(lobbies.size()) + " active lobbies.");
+                             std::to_string(lobbies.size()) +
+                             " active lobbies.",
+                           -1);
         }
       }
     }
@@ -572,6 +577,7 @@ Lobby* RaceToSpaceServer::getLobbyByID(int lobby_id)
   }
 
   debug_text.print("ERROR - Client wanted to end turn, but we "
-                   "couldn't get their lobby's info to do so!");
+                   "couldn't get their lobby's info to do so!",
+                   2);
   return nullptr;
 }

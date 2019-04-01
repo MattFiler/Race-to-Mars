@@ -41,13 +41,21 @@ void GameScene::init()
                                                   "progress_marker_padded.png");
   game_sprites.progress_marker->yPos(89.0f); // increment this as we progress
   game_sprites.sync_overlay = new ScaledSprite("UI/INGAME_UI/syncing.png");
+  game_sprites.disconnect_overlay = new ScaledSprite("UI/INGAME_UI/"
+                                                     "syncing_notext.png");
 }
 
 /* Handles connecting to the server */
-void GameScene::networkConnected() {}
+void GameScene::networkConnected()
+{
+  has_disconnected = false;
+}
 
 /* Handles disconnecting from the server */
-void GameScene::networkDisconnected() {}
+void GameScene::networkDisconnected()
+{
+  has_disconnected = true;
+}
 
 /* Handles receiving data from the server */
 void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
@@ -69,7 +77,8 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       // E.G. save scores in the background? , don't allow another to replace? ,
       // etc.
       debug_text.print("A PLAYER DISCONNECTED FROM THE LOBBY - WHAT THE HELL "
-                       "DO WE DO NOW?!");
+                       "DO WE DO NOW?!",
+                       1);
       break;
     }
     case data_roles::CLIENT_CONNECTED_TO_LOBBY:
@@ -85,7 +94,8 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       // And yeah, should really handle this too! Might get complicated with
       // scores, etc - maybe don't allow it?
       debug_text.print("A NEW PLAYER CONNECTED TO THE LOBBY - AGAIN, WHAT THE "
-                       "HELL DO WE DO!?!?");
+                       "HELL DO WE DO!?!?",
+                       1);
       break;
     }
     case data_roles::SERVER_ENDED_CLIENT_TURN:
@@ -175,7 +185,8 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     default:
     {
       debug_text.print("An unhandled data packet was received, of type " +
-                       std::to_string(received_data.role) + "!");
+                         std::to_string(received_data.role) + "!",
+                       1);
       break;
     }
   }
@@ -302,7 +313,7 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
     active_obj_card.clear();
     active_obj_card.emplace_back(ObjectiveCard(
       static_cast<objective_cards>(active_client_objective_card)));
-    debug_text.print("Creating obj card" +
+    debug_text.print("Creating objective card" +
                      std::to_string(active_client_objective_card));
     update_obj_card = false;
   }
@@ -401,6 +412,10 @@ void GameScene::render()
   if (current_scene_lock_active)
   {
     renderer->renderSprite(*game_sprites.sync_overlay->getSprite());
+  }
+  if (has_disconnected)
+  {
+    renderer->renderSprite(*game_sprites.disconnect_overlay->getSprite());
   }
 
   // client debugging
