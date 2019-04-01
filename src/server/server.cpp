@@ -87,17 +87,18 @@ void RaceToSpaceServer::run()
                    client.get_id(),
                    data_roles::SERVER_GIVES_LOBBY_INFO,
                    lobbies.at(client.lobby_index).lobby_id,
-                   lobbies.at(client.lobby_index).user_classes[0],
-                   lobbies.at(client.lobby_index).user_classes[1],
-                   lobbies.at(client.lobby_index).user_classes[2],
-                   lobbies.at(client.lobby_index).user_classes[3],
-                   lobbies.at(client.lobby_index).users_ready[0],
-                   lobbies.at(client.lobby_index).users_ready[1],
-                   lobbies.at(client.lobby_index).users_ready[2],
-                   lobbies.at(client.lobby_index).users_ready[3],
+                   lobbies.at(client.lobby_index).players[0].class_type,
+                   lobbies.at(client.lobby_index).players[1].class_type,
+                   lobbies.at(client.lobby_index).players[2].class_type,
+                   lobbies.at(client.lobby_index).players[3].class_type,
+                   lobbies.at(client.lobby_index).players[0].is_ready,
+                   lobbies.at(client.lobby_index).players[1].is_ready,
+                   lobbies.at(client.lobby_index).players[2].is_ready,
+                   lobbies.at(client.lobby_index).players[3].is_ready,
                    client.client_index);
           break;
         }
+
           // The currently active client wants to end their turn, so we need to
           // progress the game - this may be as simple as going to the next
           // player, but if we've done a full rotation in this lobby, new issue
@@ -195,6 +196,44 @@ void RaceToSpaceServer::run()
                    static_cast<int>(full_rotation));
           break;
         }
+
+          // Sync lobby info to a player that joined the game in progress
+        case data_roles::CLIENT_REQUESTS_SYNC:
+        {
+          Lobby* this_lobby = getLobbyByID(client.lobby_id);
+          if (this_lobby == nullptr)
+          {
+            break;
+          }
+
+          // Sync information to that game
+          sendData(client,
+                   client.get_id(),
+                   data_roles::SERVER_SYNCS_CARD_INFO,
+                   this_lobby->active_issue_cards[0],
+                   this_lobby->active_issue_cards[1],
+                   this_lobby->active_issue_cards[2],
+                   this_lobby->active_issue_cards[3],
+                   this_lobby->active_issue_cards[4],
+                   this_lobby->active_objective_cards[0],
+                   this_lobby->active_objective_cards[1],
+                   this_lobby->active_objective_cards[2],
+                   this_lobby->active_objective_cards[3],
+                   this_lobby->players[0].action_points,
+                   this_lobby->players[1].action_points,
+                   this_lobby->players[2].action_points,
+                   this_lobby->players[3].action_points);
+          sendData(client,
+                   client.get_id(),
+                   data_roles::SERVER_SYNCS_POSITION_INFO,
+                   this_lobby->players[0].room_position,
+                   this_lobby->players[1].room_position,
+                   this_lobby->players[2].room_position,
+                   this_lobby->players[3].room_position,
+                   this_lobby->current_progress_index);
+          break;
+        }
+
           // Client spent or gained action points, update the lobby before
           // sending to all - we can use this data for reconnecting players to
           // keep them updated on game progress
@@ -207,7 +246,7 @@ void RaceToSpaceServer::run()
           }
 
           // Update client's action point count for us
-          this_clients_lobby->user_action_points[data_to_send.content[0]] =
+          this_clients_lobby->players[data_to_send.content[0]].action_points =
             data_to_send.content[1];
           debug_text.print(
             "Client " + std::to_string(data_to_send.content[0]) + " now has " +
@@ -216,6 +255,7 @@ void RaceToSpaceServer::run()
           goto SEND_TO_ALL; // Would rather not use goto, but there isn't much
                             // choice here.
         }
+
           // If a client is leaving a lobby, action that before letting the
           // lobby know
         case data_roles::CLIENT_DISCONNECTING_FROM_LOBBY:
@@ -223,6 +263,24 @@ void RaceToSpaceServer::run()
           disconnectFromLobby(static_cast<int>(client.get_id()));
           goto SEND_TO_ALL;
         }
+
+        // If client moves in the ship, save that first for syncing to
+        // reconnecting players
+        case data_roles::CLIENT_MOVING_PLAYER_TOKEN:
+        {
+          Lobby* this_lobby = getLobbyByID(client.lobby_id);
+          if (this_lobby == nullptr)
+          {
+            break;
+          }
+          debug_text.print("Client " + std::to_string(data_to_send.content[0]) +
+                           " is now in room " +
+                           std::to_string(data_to_send.content[1]));
+          this_lobby->players[data_to_send.content[0]].room_position =
+            static_cast<ship_rooms>(data_to_send.content[1]);
+          goto SEND_TO_ALL;
+        }
+
           // We need to store lobby ready state before sending it out, so new
           // players are up to date
         case data_roles::CLIENT_CHANGED_LOBBY_READY_STATE:
@@ -233,14 +291,14 @@ void RaceToSpaceServer::run()
           {
             break;
           }
-          this_lobby->users_ready[data_to_send.content[1]] =
+          this_lobby->players[data_to_send.content[1]].is_ready =
             static_cast<bool>(data_to_send.content[0]);
 
           // See how many in the lobby are ready.
           int ready_count = 0;
           for (int i = 0; i < max_lobby_size; i++)
           {
-            if (this_lobby->users_ready[i])
+            if (this_lobby->players[i].is_ready)
             {
               ready_count++;
             }
@@ -249,22 +307,41 @@ void RaceToSpaceServer::run()
                            std::to_string(this_lobby->lobby_id) +
                            " are ready to start.");
 
+          // All clients are ready to start
           if (ready_count == max_lobby_size)
           {
-            // Everyone in lobby is ready, signal to all of them that we
-            // should start the game.
-            debug_text.print("Starting gameplay in lobby " +
-                               std::to_string(this_lobby->lobby_id) + ".",
-                             -1);
-            int starting_player = 0; // The id of the starting client, maybe
-                                     // randomise this?
-            this_lobby->player_that_started_id = starting_player;
-            this_lobby->currently_active_player = starting_player;
-            did_send = true;
-            sendData(client,
-                     static_cast<unsigned int>(-1),
-                     data_roles::SERVER_STARTS_GAME,
-                     starting_player);
+            // If a game is already in progress, join it
+            if (this_lobby->game_in_progress)
+            {
+              debug_text.print("Player is joining a game in progress in "
+                               "lobby " +
+                                 std::to_string(this_lobby->lobby_id) + ".",
+                               -1);
+              // Tell client to start the local game
+              sendData(client,
+                       static_cast<unsigned int>(-2),
+                       data_roles::SERVER_STARTS_GAME,
+                       this_lobby->currently_active_player,
+                       1);
+            }
+            // Else, start a new game
+            else
+            {
+              debug_text.print("Starting gameplay in lobby " +
+                                 std::to_string(this_lobby->lobby_id) + ".",
+                               -1);
+              int starting_player = 0; // The id of the starting client, maybe
+                                       // randomise this?
+              this_lobby->game_in_progress = true;
+              this_lobby->player_that_started_id = starting_player;
+              this_lobby->currently_active_player = starting_player;
+              did_send = true;
+              sendData(client,
+                       static_cast<unsigned int>(-1),
+                       data_roles::SERVER_STARTS_GAME,
+                       starting_player,
+                       0);
+            }
           }
 
           if (did_send)
@@ -276,6 +353,7 @@ void RaceToSpaceServer::run()
             [[clang::fallthrough]];
           }
         }
+
           // Otherwise, it's a message that needs to be forwarded to everyone in
           // the lobby.
         default:
@@ -369,10 +447,10 @@ void RaceToSpaceServer::sendData(server_client& client,
         player_count = this_lobby.user_count;
         for (int i = 0; i < max_lobby_size; i++)
         {
-          if (this_lobby.user_ids[i] != -1)
+          if (this_lobby.players[i].id != -1)
           {
             network_server.send_packet_to(
-              static_cast<enet_uint8>(this_lobby.user_ids[i]),
+              static_cast<enet_uint8>(this_lobby.players[i].id),
               0,
               reinterpret_cast<const enet_uint8*>(packet_to_send.data()),
               static_cast<unsigned int>(packet_to_send.length()),
@@ -428,13 +506,13 @@ void RaceToSpaceServer::connectToLobby(server_client& client)
     {
       for (int i = 0; i < max_lobby_size; i++)
       {
-        if (this_lobby.user_ids[i] == -1)
+        if (this_lobby.players[i].id == -1)
         {
           lobby_client_index = i; // find us an empty slot (someone may have
                                   // left, so we're not in sequence)
         }
       }
-      this_lobby.user_ids[lobby_client_index] = client.get_id();
+      this_lobby.players[lobby_client_index].id = client.get_id();
       this_lobby.user_count++;
       client.lobby_id = this_lobby.lobby_id;
       client.lobby_index = lobby_index;
@@ -455,7 +533,8 @@ void RaceToSpaceServer::connectToLobby(server_client& client)
                      -1);
 
     lobby_client_index = 0;
-    new_lobby.user_ids[lobby_client_index] = client.get_id();
+
+    new_lobby.players[lobby_client_index].id = client.get_id();
     new_lobby.user_count++;
     client.lobby_id = new_lobby.lobby_id;
     client.lobby_index = static_cast<int>(lobbies.size() - 1);
@@ -467,7 +546,7 @@ void RaceToSpaceServer::connectToLobby(server_client& client)
   bool classes_taken[4] = { false, false, false, false };
   for (int i = 0; i < max_lobby_size; i++)
   {
-    int taken_class = lobbies.at(client.lobby_index).user_classes[i];
+    int taken_class = lobbies.at(client.lobby_index).players[i].class_type;
     if (taken_class != -1)
     {
       classes_taken[taken_class] = true;
@@ -477,7 +556,7 @@ void RaceToSpaceServer::connectToLobby(server_client& client)
   {
     if (!classes_taken[i])
     {
-      lobbies.at(client.lobby_index).user_classes[lobby_client_index] =
+      lobbies.at(client.lobby_index).players[lobby_client_index].class_type =
         static_cast<player_classes>(i);
       break;
     }
@@ -488,7 +567,7 @@ void RaceToSpaceServer::connectToLobby(server_client& client)
     "Client " + std::to_string(client.get_id()) + " has joined lobby " +
     std::to_string(client.lobby_id) + " as role " +
     std::to_string(
-      lobbies.at(client.lobby_index).user_classes[lobby_client_index]) +
+      lobbies.at(client.lobby_index).players[lobby_client_index].class_type) +
     ".");
 }
 
@@ -500,13 +579,13 @@ void RaceToSpaceServer::disconnectFromLobby(int client_id)
   {
     for (int i = 0; i < max_lobby_size; i++)
     {
-      if (this_lobby.user_ids[i] == client_id)
+      if (this_lobby.players[i].id == client_id)
       {
         // Disconnect from lobby
         this_lobby.user_count--;
-        this_lobby.user_ids[i] = -1;
-        this_lobby.users_ready[i] = false;
-        this_lobby.user_classes[i] = player_classes::UNASSIGNED;
+        this_lobby.players[i].id = -1;
+        this_lobby.players[i].is_ready = false;
+        this_lobby.players[i].class_type = player_classes::UNASSIGNED;
 
         debug_text.print("Client " + std::to_string(client_id) +
                          " has left lobby " +
@@ -539,8 +618,8 @@ Lobby* RaceToSpaceServer::getLobbyByID(int lobby_id)
     }
   }
 
-  debug_text.print("ERROR - Client wanted to end turn, but we "
-                   "couldn't get their lobby's info to do so!",
+  debug_text.print("ERROR - Couldn't retrieve lobby info for lobby " +
+                     std::to_string(lobby_id) + "!",
                    2);
   return nullptr;
 }
