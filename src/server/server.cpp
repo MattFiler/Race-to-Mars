@@ -369,7 +369,7 @@ void RaceToSpaceServer::sendData(server_client& client,
                                  int _content_12,
                                  int _content_13,
                                  int _content_14,
-                                 int content_15)
+                                 int _content_15)
 {
   Packet packet_to_send;
   NetworkedData data_to_send;
@@ -384,10 +384,11 @@ void RaceToSpaceServer::sendData(server_client& client,
   data_to_send.content[7] = _content_8;
   data_to_send.content[8] = _content_9;
   data_to_send.content[9] = _content_10;
-  data_to_send.content[10] = _content_10;
-  data_to_send.content[11] = _content_11;
-  data_to_send.content[12] = _content_12;
-  data_to_send.content[13] = _content_13;
+  data_to_send.content[10] = _content_11;
+  data_to_send.content[11] = _content_12;
+  data_to_send.content[12] = _content_13;
+  data_to_send.content[13] = _content_14,
+  data_to_send.content[14] = _content_15;
   packet_to_send << data_to_send;
 
   if (user_id == static_cast<unsigned int>(-1))

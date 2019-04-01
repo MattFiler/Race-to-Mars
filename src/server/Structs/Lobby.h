@@ -25,7 +25,7 @@ struct Lobby
   std::vector<int> item_deck;
   std::vector<int> objective_deck;
   int active_issue_cards[5] = { -1, -1, -1, -1, -1 };
-  int active_objective_cards[4];
+  int active_objective_cards[4] = { -1, -1, -1, -1 };
 
   /* Game state information */
   int user_count = 0;

@@ -108,7 +108,7 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
         // client side.
         debug_text.print("The current rotation is currently: " +
                          std::to_string(received_data.content[12]));
-        if (received_data.content[13])
+        if (received_data.content[12])
         {
           // if current turn is % 3 then set new obj card to true.
           // check to see if any cards changed during turn.
