@@ -116,7 +116,6 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
         {
           active_issues.erase(active_issues.begin() + static_cast<int>(i));
           active_issue_cards[i] = -1;
-          slot_occupied[i] = false;
         }
       }
 
@@ -145,9 +144,7 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
 
       if (current_progress_index % 3 == 0 && current_progress_index != 0)
       {
-        update_obj_card = true;
-        active_client_objective_card =
-          received_data.content[8 + my_player_index];
+        new_client_objective = received_data.content[8 + my_player_index];
         debug_text.print(
           "Adding obj card for client " + std::to_string(my_player_index) +
           "of type: " +
@@ -291,13 +288,12 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
   {
     for (int i = 0; i < max_issue_cards; ++i)
     {
-      if (active_issue_cards[i] != -1 && !slot_occupied[i])
+      if (active_issue_cards[i] != -1)
       {
         active_issues.emplace_back(
           IssueCard(static_cast<issue_cards>(active_issue_cards[i])));
         active_issues[i].getSprite()->setPos(
           Vector2(static_cast<float>(i) * 257, 150.0f));
-        slot_occupied[i] = true;
 
         debug_text.print("Creating issue card" +
                          std::to_string(active_issue_cards[i]));
@@ -306,16 +302,14 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
     update_cards = false;
   }
 
-  if (update_obj_card)
+  if (new_client_objective != -1)
   {
-    // delete current obj card.
-    // emplace back new obj card of type passed in from data.
-    active_obj_card.clear();
-    active_obj_card.emplace_back(ObjectiveCard(
-      static_cast<objective_cards>(active_client_objective_card)));
+    delete active_obj_card;
+    active_obj_card =
+      new ObjectiveCard(static_cast<objective_cards>(new_client_objective));
     debug_text.print("Creating objective card" +
-                     std::to_string(active_client_objective_card));
-    update_obj_card = false;
+                     std::to_string(new_client_objective));
+    new_client_objective = -1;
   }
 
   if (players[my_player_index]->is_active)
@@ -390,14 +384,16 @@ void GameScene::render()
         static_cast<float>(current_progress_index * 50));
       renderer->renderSprite(*game_sprites.progress_marker->getSprite());
 
+      // Issue cards
       for (auto& active_issue : active_issues)
       {
         active_issue.render();
       }
 
-      for (auto& current_obj : active_obj_card)
+      // Objective card
+      if (active_obj_card != nullptr)
       {
-        current_obj.render();
+        active_obj_card->render();
       }
 
       break;

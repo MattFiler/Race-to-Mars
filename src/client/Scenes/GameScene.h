@@ -50,12 +50,11 @@ class GameScene : public Scene
   GameBoard m_board;
   Menu pause_menu;
   bool update_cards = false;
-  bool update_obj_card = false;
 
   std::vector<IssueCard> active_issues;
   std::vector<ItemCard> item_inventory;
 
-  std::vector<ObjectiveCard> active_obj_card;
+  ObjectiveCard* active_obj_card = nullptr;
   std::vector<ObjectiveCard> completed_obj_cards;
 
   GameSprites game_sprites; // be in game sprites?
@@ -72,12 +71,9 @@ class GameScene : public Scene
                                           // client interaction - useful for the
                                           // end of a turn?
 
-  // BELOW IS ALL TEMP SHIT READY FOR JACK TO ADD HIS CARD IMPLEMENTATIONS
   int active_issue_cards[5] = { -1, -1, -1, -1, -1 };
-  bool slot_occupied[5] = { false, false, false, false, false };
   int objective_cards_inplay[4] = { -1, -1, -1, -1 };
 
-  int active_client_objective_card = -1; // hmm, maybe keep this data for every
-                                         // client?
+  int new_client_objective = -1; // maybe keep this data for every client?
 };
 #endif // PROJECT_GAMESCENE_H
