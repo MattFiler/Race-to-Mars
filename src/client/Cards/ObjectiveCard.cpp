@@ -8,7 +8,8 @@ ObjectiveCard::ObjectiveCard(objective_cards _card_type)
 
   m_card_name = card_config["OBJECTIVECARDS"][card_type]["name"];
   // m_card_decription =
-  // card_config["OBJECTIVECARDS"][card_type]["description"]; m_action_points =
+  // card_config["OBJECTIVECARDS"][card_type]["description"];
+  // m_action_points =
   // card_config["OBJECTIVECARDS"][card_type]["action_points"];
   m_cardID = card_config["OBJECTIVECARDS"][card_type]["card_id"];
   setSprite(card_config["OBJECTIVECARDS"][card_type]["sprite_path"]);

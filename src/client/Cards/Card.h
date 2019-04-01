@@ -3,6 +3,7 @@
 
 #include "../Core/ServiceLocator.h"
 #include "client/UI/OnBoardObject.h"
+#include "gamelib/Debug/DebugText.h"
 #include "gamelib/NetworkedData/Cards.h"
 #include <Engine/Renderer.h>
 #include <Engine/Sprite.h>
@@ -30,6 +31,7 @@ class Card : public OnBoardObject
 
   FileHandler file_handler;
   json card_config;
+  DebugText debug_text;
 };
 
 #endif // PROJECT_CARD_H

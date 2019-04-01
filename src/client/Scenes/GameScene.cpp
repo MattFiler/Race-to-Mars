@@ -77,7 +77,8 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       // E.G. save scores in the background? , don't allow another to replace? ,
       // etc.
       debug_text.print("A PLAYER DISCONNECTED FROM THE LOBBY - WHAT THE HELL "
-                       "DO WE DO NOW?!");
+                       "DO WE DO NOW?!",
+                       1);
       break;
     }
     case data_roles::CLIENT_CONNECTED_TO_LOBBY:
@@ -93,7 +94,8 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       // And yeah, should really handle this too! Might get complicated with
       // scores, etc - maybe don't allow it?
       debug_text.print("A NEW PLAYER CONNECTED TO THE LOBBY - AGAIN, WHAT THE "
-                       "HELL DO WE DO!?!?");
+                       "HELL DO WE DO!?!?",
+                       1);
       break;
     }
     case data_roles::SERVER_ENDED_CLIENT_TURN:
@@ -183,7 +185,8 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     default:
     {
       debug_text.print("An unhandled data packet was received, of type " +
-                       std::to_string(received_data.role) + "!");
+                         std::to_string(received_data.role) + "!",
+                       1);
       break;
     }
   }
@@ -310,7 +313,7 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
     active_obj_card.clear();
     active_obj_card.emplace_back(ObjectiveCard(
       static_cast<objective_cards>(active_client_objective_card)));
-    debug_text.print("Creating obj card" +
+    debug_text.print("Creating objective card" +
                      std::to_string(active_client_objective_card));
     update_obj_card = false;
   }

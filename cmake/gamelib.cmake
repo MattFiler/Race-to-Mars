@@ -41,7 +41,8 @@ set_target_properties(GameLib
 target_include_directories(GameLib
         PUBLIC
         "${CMAKE_CURRENT_SOURCE_DIR}"
-        "${CMAKE_SOURCE_DIR}/external/nlohmann")
+        "${CMAKE_SOURCE_DIR}/external/nlohmann"
+        "${CMAKE_SOURCE_DIR}/external/termcolor")
 
 include(build/compilation)
 include(build/flags)

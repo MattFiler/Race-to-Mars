@@ -66,7 +66,7 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
                                        my_player_index,
                                        players[my_player_index]->is_ready,
                                        players[my_player_index]->current_class);
-        debug_text.print("We synced to the lobby!");
+        debug_text.print("We synced to the lobby!", -1);
         has_connected = true;
       }
       break;
@@ -119,7 +119,7 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     }
     default:
     {
-      debug_text.print("An unhandled data packet was received");
+      debug_text.print("An unhandled data packet was received", 1);
       break;
     }
   }
