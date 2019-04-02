@@ -20,7 +20,7 @@
 class Card : public OnBoardObject
 {
  public:
-  Card() = default;
+  Card();
   ~Card() = default;
 
  protected:

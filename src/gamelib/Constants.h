@@ -28,7 +28,18 @@ enum render_order
   PRIORITY_UI,
   PRIORITY_TEXT,
   PRIORITY_UI_2,
-  PRIORITY_CARDS,
+  PRIORITY_CARD_1_SHADOW, // these are used dynamically
+  PRIORITY_CARD_1,
+  PRIORITY_CARD_2_SHADOW, // these are used dynamically
+  PRIORITY_CARD_2,        // these are used dynamically
+  PRIORITY_CARD_3_SHADOW, // these are used dynamically
+  PRIORITY_CARD_3,        // these are used dynamically
+  PRIORITY_CARD_4_SHADOW, // these are used dynamically
+  PRIORITY_CARD_4,        // these are used dynamically
+  PRIORITY_CARD_5_SHADOW, // these are used dynamically
+  PRIORITY_CARD_5,        // these are used dynamically
+  PRIORITY_CARD_6_SHADOW, // these are used dynamically
+  PRIORITY_CARD_6,
   PRIORITY_TOPMOST,
   PRIORITY_OVERLAYS,
   PRIORITY_CURSOR
@@ -50,6 +61,9 @@ struct CardOffsets
   Vector2 ingame_start = Vector2(1100, 70); // Position of card 1
   Vector2 ingame_offset = Vector2(0, 75);   // Offset from 1
   Vector2 ingame_size = Vector2(124, 175);  // Size of card
+
+  // Misc
+  Vector2 shadow_offset = Vector2(80, 80); // Single-card shadow
 };
 
 // Resolution (set at runtime)

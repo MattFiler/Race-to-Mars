@@ -150,8 +150,6 @@ bool GameBoard::updateActiveIssueCards()
       {
         active_issues.emplace_back(
           IssueCard(static_cast<issue_cards>(active_issue_cards[i])));
-        active_issues[i].setPosition(
-          Vector2(static_cast<float>(i) * 257, 150.0f));
         slot_active[i] = true;
         debug_text.print("Creating issue card " +
                          std::to_string(active_issue_cards[i]) + ".");
@@ -179,28 +177,29 @@ void GameBoard::render(game_state _state)
     // Position cards and resize appropriately
     if (_state == game_state::NEW_ISSUE_CARDS_POPUP)
     {
+      active_issue.setDimensions(card_offsets.popup_size);
       active_issue.setPosition(
         card_offsets.popup_start +
         (card_offsets.popup_offset * static_cast<float>(card_index)));
-      active_issue.setDimensions(card_offsets.popup_size);
     }
     else
     {
+      active_issue.setDimensions(card_offsets.ingame_size);
       active_issue.setPosition(
         card_offsets.ingame_start +
         (card_offsets.ingame_offset * static_cast<float>(card_index)));
-      active_issue.setDimensions(card_offsets.ingame_size);
     }
-    card_index++;
 
     // Render
-    active_issue.render();
+    active_issue.render(
+      static_cast<render_order>(render_order::PRIORITY_CARD_1 + card_index));
+    card_index++;
   }
 
   // Objective card
   if (active_obj_card != nullptr)
   {
-    active_obj_card->render();
+    active_obj_card->render(render_order::PRIORITY_CARD_6);
   }
 }
 

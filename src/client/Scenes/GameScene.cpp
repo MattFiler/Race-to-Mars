@@ -43,11 +43,14 @@ void GameScene::init()
   game_sprites.disconnect_overlay = new ScaledSprite("UI/INGAME_UI/"
                                                      "syncing_notext.png");
   game_sprites.issue_popup = new ScaledSprite("UI/INGAME_UI/new_issues_bg.png");
+
+  /*
   for (int i = 0; i < 5; i++)
   {
     game_sprites.issue_popup_shadow[i] =
       new ScaledSprite("UI/INGAME_UI/cards_" + std::to_string(i + 1) + ".png");
   }
+   */
 
   // If we joined in progress, request a data sync from the server
   if (Locator::getPlayers()->joined_in_progress)
@@ -548,10 +551,12 @@ void GameScene::render()
       {
         renderer->renderSprite(*game_sprites.issue_popup->getSprite(),
                                render_order::PRIORITY_UI_2);
+        /*
         renderer->renderSprite(
           *game_sprites.issue_popup_shadow[board.activeIssuesCount() - 1]
              ->getSprite(),
-          render_order::PRIORITY_CARDS);
+          render_order::PRIORITY_CARD_1);
+          */
       }
 
       break;
