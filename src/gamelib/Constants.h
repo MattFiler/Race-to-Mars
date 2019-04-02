@@ -14,9 +14,11 @@ enum game_global_scenes
 
 enum game_state
 {
-  PLAYING,        // The regular in-game state
-  LOCAL_PAUSE,    // The quit menu
-  NEW_CARDS_POPUP // The player info popup
+  PLAYING,                  // The regular in-game state
+  LOCAL_PAUSE,              // The quit menu
+  NEW_ISSUE_CARDS_POPUP,    // New round, show issue cards
+  NEW_OBJECTIVE_CARD_POPUP, // New objective card added
+  IS_ROLLING_DICE           // Active player rolls dice
 };
 
 enum render_order

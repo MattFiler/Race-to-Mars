@@ -177,7 +177,7 @@ void GameBoard::render(game_state _state)
   for (auto& active_issue : active_issues)
   {
     // Position cards and resize appropriately
-    if (_state == game_state::NEW_CARDS_POPUP)
+    if (_state == game_state::NEW_ISSUE_CARDS_POPUP)
     {
       active_issue.setPosition(
         card_offsets.popup_start +

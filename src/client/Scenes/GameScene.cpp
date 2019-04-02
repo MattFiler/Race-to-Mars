@@ -269,9 +269,16 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
 
   switch (current_state)
   {
-    case game_state::NEW_CARDS_POPUP:
+    case game_state::NEW_ISSUE_CARDS_POPUP:
     {
-      // --
+      break;
+    }
+    case game_state::NEW_OBJECTIVE_CARD_POPUP:
+    {
+      break;
+    }
+    case game_state::IS_ROLLING_DICE:
+    {
       break;
     }
     case game_state::PLAYING:
@@ -331,39 +338,42 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
 {
   auto click = static_cast<const ASGE::ClickEvent*>(data.get());
 
-  if (click->action == ASGE::E_MOUSE_CLICK)
+  Vector2 mouse_pos = Vector2(Locator::getCursor()->getPosition().x,
+                              Locator::getCursor()->getPosition().y);
+  hovered_type current_hover = board.isHoveringOverInteractable(mouse_pos);
+
+  if (click->action != ASGE::E_MOUSE_CLICK)
   {
-    Vector2 mouse_pos = Vector2(Locator::getCursor()->getPosition().x,
-                                Locator::getCursor()->getPosition().y);
-    if (!current_scene_lock_active &&
-        players[Locator::getPlayers()->my_player_index]->is_active)
+    return;
+  }
+
+  switch (current_state)
+  {
+    case game_state::NEW_ISSUE_CARDS_POPUP:
     {
-      switch (board.isHoveringOverInteractable(mouse_pos))
+      break;
+    }
+    case game_state::NEW_OBJECTIVE_CARD_POPUP:
+    {
+      break;
+    }
+    case game_state::IS_ROLLING_DICE:
+    {
+      break;
+    }
+    case game_state::PLAYING:
+    {
+      // Disallow interaction when scene lock is active
+      if (current_scene_lock_active)
       {
-        // Clicked on an objective card
-        case hovered_type::HOVERED_OVER_OBJECTIVE_CARD:
-        {
-          ObjectiveCard* this_card = board.getClickedObjectiveCard(mouse_pos);
-          debug_text.print("Clicked on an interactable part of the board!");
-          debug_text.print("CLICKED: OBJECTIVE CARD " +
-                           std::to_string(this_card->getCardID()));
+        break;
+      }
 
-          break;
-        }
-
-        // Clicked on an issue card
-        case hovered_type::HOVERED_OVER_ISSUE_CARD:
-        {
-          IssueCard* this_card = board.getClickedIssueCard(mouse_pos);
-          debug_text.print("Clicked on an interactable part of the board!");
-          debug_text.print("CLICKED: ISSUE CARD " +
-                           std::to_string(this_card->getCardID()));
-
-          break;
-        }
-
+      /* WHEN CLIENT IS ACTIVE */
+      if (players[Locator::getPlayers()->my_player_index]->is_active)
+      {
         // Clicked within a room on the ship
-        case hovered_type::HOVERED_OVER_SHIP_ROOM:
+        if (current_hover == hovered_type::HOVERED_OVER_SHIP_ROOM)
         {
           ShipRoom this_room = board.getClickedInteractableRoom(mouse_pos);
 
@@ -381,15 +391,30 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
             ->setPos(new_pos);
           debug_text.print("Moving my player token to room '" +
                            this_room.getName() + "'.");
-          break;
-        }
-
-        // Didn't click on anything
-        default:
-        {
-          return;
         }
       }
+
+      /* WHEN CLIENT IS ACTIVE/INACTIVE */
+      // Clicked on an objective card
+      if (current_hover == hovered_type::HOVERED_OVER_OBJECTIVE_CARD)
+      {
+        ObjectiveCard* this_card = board.getClickedObjectiveCard(mouse_pos);
+        debug_text.print("Clicked on an interactable part of the board!");
+        debug_text.print("CLICKED: OBJECTIVE CARD " +
+                         std::to_string(this_card->getCardID()));
+      }
+      // Clicked on an issue card
+      if (current_hover == hovered_type::HOVERED_OVER_ISSUE_CARD)
+      {
+        IssueCard* this_card = board.getClickedIssueCard(mouse_pos);
+        debug_text.print("Clicked on an interactable part of the board!");
+        debug_text.print("CLICKED: ISSUE CARD " +
+                         std::to_string(this_card->getCardID()));
+      }
+    }
+    case game_state::LOCAL_PAUSE:
+    {
+      break;
     }
   }
 }
@@ -403,15 +428,15 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
     // When updating the cards, set the state to popup, this will go into a
     // scripted popup event to show the new cards then hide them after a set
     // time.
-    current_state = game_state::NEW_CARDS_POPUP;
+    current_state = game_state::NEW_ISSUE_CARDS_POPUP;
   }
-  board.updateActiveObjectiveCard(); // returns true if updated, this should be
-                                     // used to trigger some UI event to
+  board.updateActiveObjectiveCard(); // returns true if updated, this should
+                                     // be used to trigger some UI event to
                                      // highlight that you've got a new
                                      // objective card
 
   // Timeout popup after a given time
-  if (current_state == game_state::NEW_CARDS_POPUP)
+  if (current_state == game_state::NEW_ISSUE_CARDS_POPUP)
   {
     popup_timer += game_time.delta.count() / 1000;
 
@@ -449,9 +474,17 @@ void GameScene::render()
 {
   switch (current_state)
   {
-    case game_state::NEW_CARDS_POPUP:
+    case game_state::NEW_ISSUE_CARDS_POPUP:
     {
       // Yes clang, I do want to use a switch case for its intended purpose!
+      [[clang::fallthrough]];
+    }
+    case game_state::NEW_OBJECTIVE_CARD_POPUP:
+    {
+      [[clang::fallthrough]];
+    }
+    case game_state::IS_ROLLING_DICE:
+    {
       [[clang::fallthrough]];
     }
     case game_state::PLAYING:
@@ -511,7 +544,7 @@ void GameScene::render()
                              render_order::PRIORITY_UI);
 
       // If card popup is active, render it too
-      if (current_state == game_state::NEW_CARDS_POPUP)
+      if (current_state == game_state::NEW_ISSUE_CARDS_POPUP)
       {
         renderer->renderSprite(*game_sprites.issue_popup->getSprite(),
                                render_order::PRIORITY_UI_2);
