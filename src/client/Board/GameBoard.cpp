@@ -154,6 +154,7 @@ void GameBoard::updateActiveIssueCards()
         slot_active[i] = true;
         debug_text.print("Creating issue card " +
                          std::to_string(active_issue_cards[i]) + ".");
+        handleIssueCardEvents(static_cast<issue_cards>(active_issue_cards[i]));
       }
     }
     update_issues = false;
@@ -271,6 +272,12 @@ void GameBoard::handleIssueCardEvents(issue_cards _card_type)
       case 20:
       {
         // Chicken on board, player 4 - 1 cant play this turn.
+        // Currently only disables the player index 1.
+        if (Locator::getPlayers()->my_player_index == 1)
+        {
+          Locator::getPlayers()->getPlayer(static_cast<player_classes>(
+            Locator::getPlayers()->my_player_index));
+        }
         break;
       }
       case 21:
@@ -310,16 +317,31 @@ void GameBoard::handleIssueCardEvents(issue_cards _card_type)
       {
         // If this is a pilot player, roll dice, if less than 4, move back, else
         // move forward.
+        if (Locator::getPlayers()->my_player_index ==
+            static_cast<int>(player_classes::PILOT))
+        {
+          pilot_blckhole = true;
+          Locator::getPlayers()
+            ->getPlayer(static_cast<player_classes>(
+              Locator::getPlayers()->my_player_index))
+            ->setDiceRolls(1);
+        }
         break;
       }
       case 26:
       {
         // If this player is the pilot, roll dice, if above 4, move ship
         // forward.
+        if (Locator::getPlayers()->my_player_index ==
+            static_cast<int>(player_classes::PILOT))
+        {
+          pilot_moveforward = true;
+          Locator::getPlayers()
+            ->getPlayer(static_cast<player_classes>(
+              Locator::getPlayers()->my_player_index))
+            ->setDiceRolls(1);
+        }
         break;
-      }
-      case 27:
-      {
       }
       default:
         break;

@@ -57,6 +57,9 @@ class GameBoard
   std::vector<IssueCard> active_issues;
   std::vector<ItemCard> item_inventory;
 
+  bool pilot_blckhole = false;
+  bool pilot_moveforward = false;
+
   ObjectiveCard* active_obj_card = nullptr;
   std::vector<ObjectiveCard> completed_obj_cards;
 

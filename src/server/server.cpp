@@ -353,6 +353,9 @@ void RaceToSpaceServer::run()
             [[clang::fallthrough]];
           }
         }
+        case data_roles::CLIENT_CHANGE_PROGRESS_INDEX:
+        {
+        }
 
           // Otherwise, it's a message that needs to be forwarded to everyone in
           // the lobby.

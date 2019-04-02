@@ -137,6 +137,11 @@ enum data_roles
    *   [3] = the room of client 4
    *   [4] = the ship's position
    */
+
+  CLIENT_CHANGE_PROGRESS_INDEX
+  /* ^ The server is sending position info to a reconnecting player.
+   *   [0] = the new current progress index.
+   */
 };
 
 struct NetworkedData
