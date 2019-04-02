@@ -302,23 +302,24 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
     }
     case game_state::LOCAL_PAUSE:
     {
-      if (pause_menu.itemWasSelected(keys))
+      if (!pause_menu.itemWasSelected(keys))
       {
-        if (pause_menu.selectedItemWas("MENU_CONTINUE"))
-        {
-          current_state = game_state::PLAYING;
-          debug_text.print("Closing pause menu.");
-        }
-        else if (pause_menu.selectedItemWas("MENU_QUIT"))
-        {
-          // Alert everyone we're leaving and then return to menu
-          Locator::getClient()->sendData(
-            data_roles::CLIENT_DISCONNECTING_FROM_LOBBY,
-            Locator::getPlayers()->my_player_index);
-          next_scene = game_global_scenes::MAIN_MENU;
-          debug_text.print("Returning to main menu and disconnecting from "
-                           "lobby.");
-        }
+        break;
+      }
+      if (pause_menu.selectedItemWas("MENU_CONTINUE"))
+      {
+        current_state = game_state::PLAYING;
+        debug_text.print("Closing pause menu.");
+      }
+      else if (pause_menu.selectedItemWas("MENU_QUIT"))
+      {
+        // Alert everyone we're leaving and then return to menu
+        Locator::getClient()->sendData(
+          data_roles::CLIENT_DISCONNECTING_FROM_LOBBY,
+          Locator::getPlayers()->my_player_index);
+        next_scene = game_global_scenes::MAIN_MENU;
+        debug_text.print("Returning to main menu and disconnecting from "
+                         "lobby.");
       }
       break;
     }
