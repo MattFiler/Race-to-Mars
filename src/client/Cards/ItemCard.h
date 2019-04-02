@@ -22,9 +22,8 @@ class ItemCard : public Card
   int assignActionPoints();
 
  private:
-  item_cards cardID = item_cards ::ITEM_PLACEHOLDER;
+  item_cards cardID = item_cards::ITEM_PLACEHOLDER;
   bool activated = true;
-  int action_points = 5;
   int action_point_varibale = 0;
 };
 

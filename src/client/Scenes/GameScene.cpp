@@ -131,13 +131,13 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       // Re-sync progress index every turn
       current_progress_index = received_data.content[2];
       // Re-sync issue cards every turn
-      int active_issue_cards[5] = { received_data.content[3],
-                                    received_data.content[4],
-                                    received_data.content[5],
-                                    received_data.content[6],
-                                    received_data.content[7] };
       if (received_data.content[12])
       {
+        int active_issue_cards[5] = { received_data.content[3],
+                                      received_data.content[4],
+                                      received_data.content[5],
+                                      received_data.content[6],
+                                      received_data.content[7] };
         board.setActiveIssueCards(active_issue_cards,
                                   static_cast<bool>(received_data.content[12]));
       }
