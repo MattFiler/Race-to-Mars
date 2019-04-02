@@ -40,6 +40,8 @@ class GameBoard
   bool updateActiveIssueCards();
   bool updateActiveObjectiveCard();
 
+  int activeIssuesCount();
+
   ShipRoom getRoom(ship_rooms _room);
 
   void render(game_state _state);

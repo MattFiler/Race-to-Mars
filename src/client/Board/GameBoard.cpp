@@ -220,6 +220,19 @@ ShipRoom GameBoard::getRoom(ship_rooms _room)
   throw "Could not find requested room.";
 }
 
+int GameBoard::activeIssuesCount()
+{
+  int count = 0;
+  for (int i = 0; i < 5; i++)
+  {
+    if (slot_active[i])
+    {
+      count++;
+    }
+  }
+  return count;
+}
+
 /* Handle the events caused by issue cards */
 void GameBoard::handleIssueCardEvents(issue_cards _card_type)
 {
