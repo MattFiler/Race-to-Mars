@@ -139,7 +139,7 @@ enum data_roles
    */
 
   CLIENT_CHANGE_PROGRESS_INDEX
-  /* ^ The server is sending position info to a reconnecting player.
+  /* ^ The client is sending the new progress index to the server.
    *   [0] = the new current progress index.
    */
 };

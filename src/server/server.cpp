@@ -74,7 +74,7 @@ void RaceToSpaceServer::run()
       packet_data >> data_to_send;
 
       // If client requests lobby info, we need to send that directly to the
-      // client that wants it
+      // client that wants it.
       switch (data_to_send.role)
       {
         case data_roles::CLIENT_REQUESTS_TO_JOIN_LOBBY:
@@ -353,8 +353,21 @@ void RaceToSpaceServer::run()
             [[clang::fallthrough]];
           }
         }
+        // Updates the new progress index for all clients after dice roll issue
+        // event on client.
         case data_roles::CLIENT_CHANGE_PROGRESS_INDEX:
         {
+          Lobby* this_clients_lobby = getLobbyByID(client.lobby_id);
+          if (this_clients_lobby == nullptr)
+          {
+            break;
+          }
+          this_clients_lobby->current_progress_index = data_to_send.content[0];
+          sendData(client,
+                   static_cast<unsigned int>(-2),
+                   data_roles::SERVER_STARTS_GAME,
+                   this_clients_lobby->currently_active_player,
+                   1);
         }
 
           // Otherwise, it's a message that needs to be forwarded to everyone in

@@ -129,14 +129,14 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     // The server has ended the current turn, update our game accordingly
     case data_roles::SERVER_ENDED_CLIENT_TURN:
     {
-      // Update active player flag
+      // Update active player flag.
       for (int i = 0; i < 4; i++)
       {
         players[i]->is_active = (received_data.content[1] == i);
       }
-      // Re-sync progress index every turn
+      // Re-sync progress index every turn.
       current_progress_index = received_data.content[2];
-      // Re-sync issue cards every turn
+      // Re-sync issue cards every turn.
       if (received_data.content[12])
       {
         int active_issue_cards[5] = { received_data.content[3],
@@ -158,14 +158,14 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
           std::to_string(
             received_data.content[8 + Locator::getPlayers()->my_player_index]));
       }
-      // End the scene lock
+      // End the scene lock.
       current_scene_lock_active = false;
       debug_text.print("The server ended the current go, and passed "
                        "active-ness to client " +
                        std::to_string(received_data.content[1]) + ".");
       break;
     }
-    // The active client has moved their player token, update it on our screen
+    // The active client has moved their player token, update it on our screen.
     case data_roles::CLIENT_MOVING_PLAYER_TOKEN:
     {
       if (received_data.content[0] != Locator::getPlayers()->my_player_index)
@@ -173,7 +173,7 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
         ShipRoom this_room =
           board.getRoom(static_cast<ship_rooms>(received_data.content[1]));
 
-        // Get new movement position and move to it
+        // Get new movement position and move to it.
         Vector2 new_pos = this_room.getPosForPlayer(
           players[received_data.content[0]]->current_class);
         Locator::getPlayers()
@@ -185,7 +185,7 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       }
       break;
     }
-    // The active client's action points have changed, update it for us
+    // The active client's action points have changed, update it for us.
     case data_roles::CLIENT_ACTION_POINTS_CHANGED:
     {
       // Update another player's action point count
@@ -195,10 +195,10 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       break;
     }
     // If connecting to an in-progress game, the server needs to sync
-    // information to us
+    // information to us.
     case data_roles::SERVER_SYNCS_CARD_INFO:
     {
-      // Sync issue cards
+      // Sync issue cards.
       int issue_cards[5] = { received_data.content[0],
                              received_data.content[1],
                              received_data.content[2],
@@ -251,7 +251,15 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
                        std::to_string(current_progress_index));
       break;
     }
-    // Anything else is unhandled
+    case data_roles::CLIENT_CHANGE_PROGRESS_INDEX:
+    {
+      // debug_text.print("Changing current_progress index from:" +
+      // std::to_string(current_progress_index));
+      // current_progress_index = received_data.content[0];
+      // debug_text.print(". to:" + std::to_string(current_progress_index));
+      break;
+    }
+    // Anything else is unhandled.
     default:
     {
       debug_text.print("An unhandled data packet was received, of type " +
@@ -292,7 +300,7 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
       if (keys.keyReleased("Debug Spend AP") &&
           players[Locator::getPlayers()->my_player_index]->is_active)
       {
-        // Debug: change my action points to 10
+        // Debug: change my action points to 10.
         Locator::getClient()->sendData(data_roles::CLIENT_ACTION_POINTS_CHANGED,
                                        Locator::getPlayers()->my_player_index,
                                        10);
@@ -346,7 +354,6 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
           debug_text.print("Clicked on an interactable part of the board!");
           debug_text.print("CLICKED: OBJECTIVE CARD " +
                            std::to_string(this_card->getCardID()));
-
           break;
         }
 

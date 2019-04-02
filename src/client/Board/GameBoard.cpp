@@ -1,5 +1,9 @@
 #include "GameBoard.h"
+#include "client/Core/ServiceLocator.h"
+#include "client/NetworkConnection/NetworkConnection.h"
 #include "gamelib/Constants.h"
+#include "gamelib/NetworkedData/MessageTypes.h"
+#include "gamelib/NetworkedData/NetworkedData.h"
 
 /* Check to see if we're hovering over an interactable item  */
 hovered_type GameBoard::isHoveringOverInteractable(Vector2 hover_pos)
@@ -337,7 +341,7 @@ void GameBoard::handleIssueCardEvents(issue_cards _card_type)
       }
       case 23:
       {
-        // Low rsources - Discard all items from this player.
+        // Low resources - Discard all items from this player.
         item_inventory.clear();
         break;
       }
@@ -377,6 +381,10 @@ void GameBoard::handleIssueCardEvents(issue_cards _card_type)
             ->getPlayer(static_cast<player_classes>(
               Locator::getPlayers()->my_player_index))
             ->setDiceRolls(1);
+
+          // Temp change progress index.
+          //          Locator::getClient()->sendData(
+          //            data_roles::CLIENT_CHANGE_PROGRESS_INDEX, );
         }
         break;
       }
