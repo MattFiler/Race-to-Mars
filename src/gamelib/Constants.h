@@ -12,11 +12,11 @@ enum game_global_scenes
   QUIT_GAME
 };
 
-// Maybe have game sections here? E.G. assigning counters, syncing, etc.
-enum game_local_scenes
+enum game_state
 {
-  PLAYING_GAME,
-  IS_PAUSED
+  PLAYING,        // The regular in-game state
+  LOCAL_PAUSE,    // The quit menu
+  NEW_CARDS_POPUP // The player info popup
 };
 
 struct GameConfig

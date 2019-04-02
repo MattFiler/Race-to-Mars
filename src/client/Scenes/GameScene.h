@@ -41,13 +41,6 @@ class GameScene : public Scene
   void handleIssueCardEvents(issue_cards _card_type);
 
  private:
-  enum game_state
-  {
-    PLAYING,        // The regular in-game state
-    LOCAL_PAUSE,    // The quit menu
-    NEW_CARDS_POPUP // The player info popup
-  };
-
   GameBoard board;
   Menu pause_menu;
 
@@ -55,6 +48,7 @@ class GameScene : public Scene
   LobbyPlayer* players[4] = { nullptr, nullptr, nullptr, nullptr };
 
   int max_progress_index = 19; // win condition
+  double popup_timer = 0.0f;
 
   bool has_disconnected = false; // did local client disconnect?
   game_state current_state = game_state::PLAYING;

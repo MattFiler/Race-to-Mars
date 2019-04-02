@@ -152,7 +152,7 @@ bool GameBoard::updateActiveIssueCards()
       {
         active_issues.emplace_back(
           IssueCard(static_cast<issue_cards>(active_issue_cards[i])));
-        active_issues[i].getSprite()->setPos(
+        active_issues[i].setPosition(
           Vector2(static_cast<float>(i) * 257, 150.0f));
         slot_active[i] = true;
         debug_text.print("Creating issue card " +
@@ -166,7 +166,7 @@ bool GameBoard::updateActiveIssueCards()
 }
 
 /* Render the board */
-void GameBoard::render()
+void GameBoard::render(game_state _state)
 {
   // Ship
   m_ship.render();
@@ -175,8 +175,27 @@ void GameBoard::render()
   m_players->render(game_global_scenes::IN_GAME);
 
   // Issue cards
+  int card_index = 0;
   for (auto& active_issue : active_issues)
   {
+    // Position cards and resize appropriately
+    if (_state == game_state::NEW_CARDS_POPUP)
+    {
+      active_issue.setPosition(
+        card_offsets.popup_start +
+        (card_offsets.popup_offset * static_cast<float>(card_index)));
+      active_issue.setDimensions(card_offsets.popup_size);
+    }
+    else
+    {
+      active_issue.setPosition(
+        card_offsets.ingame_start +
+        (card_offsets.ingame_offset * static_cast<float>(card_index)));
+      active_issue.setDimensions(card_offsets.ingame_size);
+    }
+    card_index++;
+
+    // Render
     active_issue.render();
   }
 

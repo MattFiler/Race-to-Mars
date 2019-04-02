@@ -7,6 +7,7 @@
 #include "client/Cards/ItemCard.h"
 #include "client/Cards/ObjectiveCard.h"
 #include "client/Players/AllPlayers.h"
+#include "gamelib/Constants.h"
 #include "gamelib/Debug/DebugText.h"
 #include <Engine/Renderer.h>
 
@@ -41,7 +42,7 @@ class GameBoard
 
   ShipRoom getRoom(ship_rooms _room);
 
-  void render();
+  void render(game_state _state);
 
  private:
   /* Players */
@@ -68,6 +69,7 @@ class GameBoard
 
   bool update_issues = false;
   int new_obj_card = -1;
+  CardOffsets card_offsets;
 
   bool lost_game = false;
 

@@ -394,12 +394,28 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
   // Update cards if required
   if (board.updateActiveIssueCards())
   {
+    // When updating the cards, set the state to popup, this will go into a
+    // scripted popup event to show the new cards then hide them after a set
+    // time.
     current_state = game_state::NEW_CARDS_POPUP;
   }
   board.updateActiveObjectiveCard(); // returns true if updated, this should be
                                      // used to trigger some UI event to
                                      // highlight that you've got a new
                                      // objective card
+
+  // Timeout popup after a given time
+  if (current_state == game_state::NEW_CARDS_POPUP)
+  {
+    popup_timer += game_time.delta.count() / 1000;
+
+    // If popup has been on screen for 5 secs, hide it
+    if (popup_timer > 5.0f)
+    {
+      current_state = game_state::PLAYING;
+      popup_timer = 0.0f;
+    }
+  }
 
   if (players[Locator::getPlayers()->my_player_index]->is_active)
   {
@@ -436,7 +452,7 @@ void GameScene::render()
     {
       // Board and background
       renderer->renderSprite(*game_sprites.background->getSprite());
-      board.render();
+      board.render(current_state);
 
       float active_marker_pos = -180.0f;
       for (int i = 0; i < 4; i++)
@@ -452,10 +468,15 @@ void GameScene::render()
                                   ->getPlayer(players[i]->current_class)
                                   ->getGameTabSprite()
                                   ->getSprite());
-        renderer->renderText(std::to_string(players[i]->action_points),
-                             225,
-                             static_cast<int>(this_pos + 100),
-                             ASGE::COLOURS::WHITE);
+
+        // draw score if player is connected
+        if (players[i]->current_class != player_classes::UNASSIGNED)
+        {
+          renderer->renderText(std::to_string(players[i]->action_points),
+                               225,
+                               static_cast<int>(this_pos + 100),
+                               ASGE::COLOURS::WHITE);
+        }
 
         // log position for active player marker.
         if (players[i]->is_active)
@@ -478,7 +499,10 @@ void GameScene::render()
       // If card popup is active, render it too
       if (current_state == game_state::NEW_CARDS_POPUP)
       {
-        renderer->renderSprite(*game_sprites.issue_popup->getSprite());
+        // This currently renders in the wrong order! Cards render in the board,
+        // which is below this - so we render over them. Think we'll have to
+        // move this sprite to the board object, which is kinda weird.
+        // renderer->renderSprite(*game_sprites.issue_popup->getSprite());
       }
 
       break;
