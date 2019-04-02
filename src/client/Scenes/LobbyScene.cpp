@@ -277,7 +277,7 @@ void LobbyScene::render()
   if (should_start_game)
   {
     renderer->renderSprite(*lobby_sprites.game_countdown_ui->getSprite(),
-                           render_order::PRIORITY_OVERLAYS);
+                           render_order::PRIORITY_UI_2);
     renderer->renderText(
       localiser.getString("LOBBY_COUNTDOWN_" +
                           std::to_string(static_cast<int>(game_countdown + 1))),

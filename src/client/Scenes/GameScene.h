@@ -19,6 +19,9 @@ struct GameSprites
   ScaledSprite* sync_overlay = nullptr;
   ScaledSprite* disconnect_overlay = nullptr;
   ScaledSprite* issue_popup = nullptr;
+  ScaledSprite* issue_popup_shadow[5] = {
+    nullptr, nullptr, nullptr, nullptr, nullptr
+  };
 };
 
 class GameScene : public Scene
