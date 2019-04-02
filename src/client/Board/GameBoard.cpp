@@ -122,7 +122,7 @@ void GameBoard::setActiveIssueCards(int card_index[5], bool is_new_rotation)
 }
 
 /* Set the client's active objective card */
-void GameBoard::updateActiveObjectiveCard()
+bool GameBoard::updateActiveObjectiveCard()
 {
   if (new_obj_card != -1)
   {
@@ -135,21 +135,24 @@ void GameBoard::updateActiveObjectiveCard()
     debug_text.print("Active objective card set to " +
                      std::to_string(new_obj_card) + ".");
     new_obj_card = -1;
+
+    return true;
   }
+  return false;
 }
 
 /* Update the active issue cards if required */
-void GameBoard::updateActiveIssueCards()
+bool GameBoard::updateActiveIssueCards()
 {
   if (update_issues)
   {
     for (int i = 0; i < game_config.max_issue_cards; ++i)
     {
-      if (active_issue_cards[i] != -1 && slot_active[i] == false)
+      if (active_issue_cards[i] != -1 && !slot_active[i])
       {
         active_issues.emplace_back(
           IssueCard(static_cast<issue_cards>(active_issue_cards[i])));
-        active_issues[i].getSprite()->setPos(
+        active_issues[i].setPosition(
           Vector2(static_cast<float>(i) * 257, 150.0f));
         slot_active[i] = true;
         debug_text.print("Creating issue card " +
@@ -158,11 +161,13 @@ void GameBoard::updateActiveIssueCards()
       }
     }
     update_issues = false;
+    return true;
   }
+  return false;
 }
 
 /* Render the board */
-void GameBoard::render()
+void GameBoard::render(game_state _state)
 {
   // Ship
   m_ship.render();
@@ -171,8 +176,27 @@ void GameBoard::render()
   m_players->render(game_global_scenes::IN_GAME);
 
   // Issue cards
+  int card_index = 0;
   for (auto& active_issue : active_issues)
   {
+    // Position cards and resize appropriately
+    if (_state == game_state::NEW_CARDS_POPUP)
+    {
+      active_issue.setPosition(
+        card_offsets.popup_start +
+        (card_offsets.popup_offset * static_cast<float>(card_index)));
+      active_issue.setDimensions(card_offsets.popup_size);
+    }
+    else
+    {
+      active_issue.setPosition(
+        card_offsets.ingame_start +
+        (card_offsets.ingame_offset * static_cast<float>(card_index)));
+      active_issue.setDimensions(card_offsets.ingame_size);
+    }
+    card_index++;
+
+    // Render
     active_issue.render();
   }
 

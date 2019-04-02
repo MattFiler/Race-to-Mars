@@ -11,17 +11,10 @@ Vector2 ItemDeck::getCentre()
 
 bool ItemDeck::isInBoundingBox(Vector2 _pos)
 {
-  return bounding_box.isInside(_pos);
-}
-
-void ItemDeck::render()
-{
-  sprite.render();
+  return sprite->getBoundingBox().isInside(_pos);
 }
 
 ItemDeck::ItemDeck()
 {
-  renderer = Locator::getRenderer();
-
-  sprite.setSprite("data/UI/BOARD/item_card_back.png");
+  setSprite("data/UI/BOARD/item_card_back.png");
 }

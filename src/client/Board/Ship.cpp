@@ -27,5 +27,5 @@ Ship::Ship()
 /* Render the ship */
 void Ship::render()
 {
-  sprite.render();
+  sprite.render(render_order::PRIORITY_MIDDLE);
 }

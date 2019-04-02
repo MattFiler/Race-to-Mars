@@ -27,10 +27,7 @@ class ItemDeck : OnBoardObject
   void render();
 
  private:
-  ASGE::Renderer* renderer;
-  OnBoardObject sprite;
   FileHandler file_handler{};
-  BoundingBox bounding_box;
   Localisation localiser{};
   Vector2 centre_point{};
   json config_deck;

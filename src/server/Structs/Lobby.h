@@ -23,7 +23,7 @@ struct Lobby
   int lobby_id = -1;
 
   /* Game client information */
-  PlayerInLobby players[4];
+  PlayerInLobby players[4]{};
 
   /* Game card information */
   std::vector<int> issue_deck;
