@@ -29,6 +29,12 @@ void OnBoardObject::setDimensions(Vector2 _dims)
   sprite->height(_dims.y);
 }
 
+/* Is the position within our bounding box? */
+bool OnBoardObject::isInBoundingBox(Vector2 _pos)
+{
+  return sprite->getBoundingBox().isInside(_pos);
+}
+
 /* Render the counter's sprite */
 void OnBoardObject::render()
 {

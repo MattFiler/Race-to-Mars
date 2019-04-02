@@ -57,6 +57,12 @@ struct Players
   Pilot player_pilot;
   Player player_uninitialised;
 
+  // Local Player Index
+  int my_player_index = -1;
+
   // Class client data
   LobbyPlayer players[4];
+
+  // Did join in progress? If so, initiate sync.
+  bool joined_in_progress = false;
 };

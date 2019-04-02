@@ -1,17 +1,49 @@
 #include "DebugText.h"
-#include "gamelib/Constants.h"
 #include <chrono>
 #include <ctime>
+#include <termcolor.hpp>
 
 /* Print a string if debug outputs are enabled */
-void DebugText::print(const std::string& debug_string)
+void DebugText::print(const std::string& debug_string, int severity)
 {
   if (enabled)
   {
+    // Work out time to log
     time_t now = time(0);
     std::string now_time = ctime(&now);
-    ASGE::DebugPrinter{} << now_time.substr(0, now_time.length() - 1) << " - "
-                         << debug_string << std::endl;
+
+    // Output by colour
+    switch (severity)
+    {
+      case -1:
+      {
+        ASGE::DebugPrinter{} << now_time.substr(0, now_time.length() - 1)
+                             << " - " << termcolor::green << debug_string
+                             << std::endl;
+        break;
+      }
+      default:
+      {
+        ASGE::DebugPrinter{} << now_time.substr(0, now_time.length() - 1)
+                             << " - " << termcolor::white << debug_string
+                             << std::endl;
+        break;
+      }
+      case 1:
+      {
+        ASGE::DebugPrinter{} << now_time.substr(0, now_time.length() - 1)
+                             << " - " << termcolor::yellow << debug_string
+                             << std::endl;
+        break;
+      }
+      case 2:
+      {
+        ASGE::DebugPrinter{} << now_time.substr(0, now_time.length() - 1)
+                             << " - " << termcolor::red << debug_string
+                             << std::endl;
+        break;
+      }
+    }
   }
 }
 

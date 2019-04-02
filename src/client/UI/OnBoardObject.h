@@ -32,6 +32,8 @@ class OnBoardObject
   void setDimensions(Vector2 _dims);
   Vector2 getDimensions() { return dimensions; }
 
+  bool isInBoundingBox(Vector2 _pos);
+
   void render();
 
  protected:

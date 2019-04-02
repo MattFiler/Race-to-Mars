@@ -12,13 +12,14 @@
 		"counter_sprite": "UI/PLAYER_COUNTERS/communications.png",
 		"lobby_sprite": "UI/LOBBY/player_comms.png",
 		"ingame_tab_sprite": "UI/INGAME_UI/comms_tab.png",
+		"start_room": 3,
 		"friendly_name": "PLAYER_COMMS"
 	},
 	"PILOT": {
 		"counter_sprite": "UI/PLAYER_COUNTERS/pilot.png",
 		"lobby_sprite": "UI/LOBBY/player_pilot.png",
 		"ingame_tab_sprite": "UI/INGAME_UI/pilot_tab.png",
-		"start_room": 1,
+		"start_room": 4,
 		"friendly_name": "PLAYER_PILOT"
 	},
 	"ENGINEER": {
@@ -32,7 +33,7 @@
 		"counter_sprite": "UI/PLAYER_COUNTERS/medic.png",
 		"lobby_sprite": "UI/LOBBY/player_medic.png",
 		"ingame_tab_sprite": "UI/INGAME_UI/medic_tab.png",
-		"start_room": 3,
+		"start_room": 1,
 		"friendly_name": "PLAYER_MEDIC"
 	}
 }

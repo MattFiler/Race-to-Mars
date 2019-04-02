@@ -42,6 +42,7 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
   // Handle all relevant data packets for this scene
   switch (received_data.role)
   {
+    // Server gives the lobby information we require, utilise it!
     case data_roles::SERVER_GIVES_LOBBY_INFO:
     {
       if (!has_connected)
@@ -66,11 +67,14 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
                                        my_player_index,
                                        players[my_player_index]->is_ready,
                                        players[my_player_index]->current_class);
-        debug_text.print("We synced to the lobby!");
+        debug_text.print("We synced to the lobby!", -1);
         has_connected = true;
       }
       break;
     }
+
+    // A new client has connected to the lobby, update our records with their
+    // data
     case data_roles::CLIENT_CONNECTED_TO_LOBBY:
     {
       // A player that's not us connected to the lobby, update our info
@@ -84,6 +88,8 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       debug_text.print("A player connected to the lobby!");
       break;
     }
+
+    // A client has disconnected from the lobby
     case data_roles::CLIENT_DISCONNECTING_FROM_LOBBY:
     {
       // Forget them!
@@ -92,6 +98,8 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       debug_text.print("A player disconnected from the lobby!");
       break;
     }
+
+    // A client has readied/unreadied in the lobby
     case data_roles::CLIENT_CHANGED_LOBBY_READY_STATE:
     {
       // Player is now ready/unready when they weren't before
@@ -103,6 +111,8 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       }
       break;
     }
+
+    // The server has told us to start the game
     case data_roles::SERVER_STARTS_GAME:
     {
       // The server has told us this lobby should start
@@ -111,15 +121,19 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
         players[i]->is_ready = true;
         players[i]->is_active = false; // make sure we have no active conflicts
       }
+      Locator::getPlayers()->joined_in_progress =
+        static_cast<bool>(received_data.content[1]);
       players[received_data.content[0]]->is_active = true; // client to start
       should_start_game = true;
       can_change_ready_state = false;
       debug_text.print("Server told us to start the game!");
       break;
     }
+
+      // Anything else is unhandled
     default:
     {
-      debug_text.print("An unhandled data packet was received");
+      debug_text.print("An unhandled data packet was received", 1);
       break;
     }
   }
