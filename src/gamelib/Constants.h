@@ -1,6 +1,8 @@
 #ifndef PROJECT_CONSTANTS_H
 #define PROJECT_CONSTANTS_H
 
+#include "gamelib/Math/Vector2.h"
+
 enum game_global_scenes
 {
   DEFAULT = -1,
@@ -20,6 +22,19 @@ enum game_local_scenes
 struct GameConfig
 {
   int max_issue_cards = 5;
+};
+
+struct CardOffsets
+{
+  // Popup
+  Vector2 popup_start = Vector2(86, 205); // Position of card 1
+  Vector2 popup_offset = Vector2(222, 0); // Offset from 1
+  Vector2 popup_size = Vector2(222, 310); // Size of card
+
+  // In-game
+  Vector2 ingame_start = Vector2(1100, 70); // Position of card 1
+  Vector2 ingame_offset = Vector2(0, 75);   // Offset from 1
+  Vector2 ingame_size = Vector2(124, 175);  // Size of card
 };
 
 // Resolution (set at runtime)

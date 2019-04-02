@@ -122,7 +122,7 @@ void GameBoard::setActiveIssueCards(int card_index[5], bool is_new_rotation)
 }
 
 /* Set the client's active objective card */
-void GameBoard::updateActiveObjectiveCard()
+bool GameBoard::updateActiveObjectiveCard()
 {
   if (new_obj_card != -1)
   {
@@ -135,17 +135,20 @@ void GameBoard::updateActiveObjectiveCard()
     debug_text.print("Active objective card set to " +
                      std::to_string(new_obj_card) + ".");
     new_obj_card = -1;
+
+    return true;
   }
+  return false;
 }
 
 /* Update the active issue cards if required */
-void GameBoard::updateActiveIssueCards()
+bool GameBoard::updateActiveIssueCards()
 {
   if (update_issues)
   {
     for (int i = 0; i < game_config.max_issue_cards; ++i)
     {
-      if (active_issue_cards[i] != -1 && slot_active[i] == false)
+      if (active_issue_cards[i] != -1 && !slot_active[i])
       {
         active_issues.emplace_back(
           IssueCard(static_cast<issue_cards>(active_issue_cards[i])));
@@ -157,7 +160,9 @@ void GameBoard::updateActiveIssueCards()
       }
     }
     update_issues = false;
+    return true;
   }
+  return false;
 }
 
 /* Render the board */

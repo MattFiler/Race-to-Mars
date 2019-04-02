@@ -18,6 +18,7 @@ struct GameSprites
   ScaledSprite* progress_marker = nullptr;
   ScaledSprite* sync_overlay = nullptr;
   ScaledSprite* disconnect_overlay = nullptr;
+  ScaledSprite* issue_popup = nullptr;
 };
 
 class GameScene : public Scene
@@ -42,15 +43,15 @@ class GameScene : public Scene
  private:
   enum game_state
   {
-    PLAYING,               // The regular in-game state
-    LOCAL_PAUSE,           // The quit menu
-    LOOKING_AT_PLAYER_INFO // The player info popup
+    PLAYING,        // The regular in-game state
+    LOCAL_PAUSE,    // The quit menu
+    NEW_CARDS_POPUP // The player info popup
   };
 
   GameBoard board;
   Menu pause_menu;
 
-  GameSprites game_sprites; // be in game sprites?
+  GameSprites game_sprites;
   LobbyPlayer* players[4] = { nullptr, nullptr, nullptr, nullptr };
 
   int max_progress_index = 19; // win condition

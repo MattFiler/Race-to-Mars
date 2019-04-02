@@ -42,6 +42,7 @@ void GameScene::init()
   game_sprites.sync_overlay = new ScaledSprite("UI/INGAME_UI/syncing.png");
   game_sprites.disconnect_overlay = new ScaledSprite("UI/INGAME_UI/"
                                                      "syncing_notext.png");
+  game_sprites.issue_popup = new ScaledSprite("UI/INGAME_UI/new_issues_bg.png");
 
   // If we joined in progress, request a data sync from the server
   if (Locator::getPlayers()->joined_in_progress)
@@ -263,7 +264,7 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
 
   switch (current_state)
   {
-    case game_state::LOOKING_AT_PLAYER_INFO:
+    case game_state::NEW_CARDS_POPUP:
     {
       // --
       break;
@@ -391,8 +392,14 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
 game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
 {
   // Update cards if required
-  board.updateActiveIssueCards();
-  board.updateActiveObjectiveCard();
+  if (board.updateActiveIssueCards())
+  {
+    current_state = game_state::NEW_CARDS_POPUP;
+  }
+  board.updateActiveObjectiveCard(); // returns true if updated, this should be
+                                     // used to trigger some UI event to
+                                     // highlight that you've got a new
+                                     // objective card
 
   if (players[Locator::getPlayers()->my_player_index]->is_active)
   {
@@ -420,7 +427,7 @@ void GameScene::render()
 {
   switch (current_state)
   {
-    case game_state::LOOKING_AT_PLAYER_INFO:
+    case game_state::NEW_CARDS_POPUP:
     {
       // Yes clang, I do want to use a switch case for its intended purpose!
       [[clang::fallthrough]];
@@ -467,6 +474,12 @@ void GameScene::render()
       game_sprites.progress_marker->yPos(
         static_cast<float>(current_progress_index * 50));
       renderer->renderSprite(*game_sprites.progress_marker->getSprite());
+
+      // If card popup is active, render it too
+      if (current_state == game_state::NEW_CARDS_POPUP)
+      {
+        renderer->renderSprite(*game_sprites.issue_popup->getSprite());
+      }
 
       break;
     }

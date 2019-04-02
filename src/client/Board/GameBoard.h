@@ -36,8 +36,8 @@ class GameBoard
   void setActiveIssueCards(int active_cards[5], bool is_new_rotation);
   void setActiveObjectiveCard(int card_index);
 
-  void updateActiveIssueCards();
-  void updateActiveObjectiveCard();
+  bool updateActiveIssueCards();
+  bool updateActiveObjectiveCard();
 
   ShipRoom getRoom(ship_rooms _room);
 
