@@ -105,51 +105,52 @@ void GameBoard::setActiveIssueCards(int card_index[5], bool is_new_rotation)
 
   for (int i = 0; i < game_config.max_issue_cards; ++i)
   {
-    if (is_new_rotation)
+    // check to see if any cards changed during turn.
+    if (is_new_rotation && active_issue_cards[i] != card_index[i])
     {
-      // check to see if any cards changed during turn.
-      if (active_issue_cards[i] != card_index[i])
-      {
-        active_issue_cards[i] = card_index[i];
+      active_issue_cards[i] = card_index[i];
 
-        // sets the slot to active so no other card can take this position.
-        // Creating a new issue card and adding it to the back of the
-        // current issues vector for rendering and points.
-        update_issues = true;
-      }
+      // sets the slot to active so no other card can take this position.
+      // Creating a new issue card and adding it to the back of the
+      // current issues vector for rendering and points.
+      update_issues = true;
     }
   }
 }
 
 /* Set the client's active objective card */
-void GameBoard::updateActiveObjectiveCard()
+bool GameBoard::updateActiveObjectiveCard()
 {
-  if (new_obj_card != -1)
+  if (new_obj_card == -1)
   {
-    if (active_obj_card != nullptr)
-    {
-      delete active_obj_card;
-    }
-    active_obj_card =
-      new ObjectiveCard(static_cast<objective_cards>(new_obj_card));
-    debug_text.print("Active objective card set to " +
-                     std::to_string(new_obj_card) + ".");
-    new_obj_card = -1;
+    return false;
   }
+
+  if (active_obj_card != nullptr)
+  {
+    delete active_obj_card;
+  }
+  active_obj_card =
+    new ObjectiveCard(static_cast<objective_cards>(new_obj_card));
+  debug_text.print("Active objective card set to " +
+                   std::to_string(new_obj_card) + ".");
+  new_obj_card = -1;
+
+  return true;
 }
 
 /* Update the active issue cards if required */
-void GameBoard::updateActiveIssueCards()
+bool GameBoard::updateActiveIssueCards()
 {
   if (update_issues)
   {
     for (int i = 0; i < game_config.max_issue_cards; ++i)
     {
-      if (active_issue_cards[i] != -1 && slot_active[i] == false)
+      if (active_issue_cards[i] != -1 && !slot_active[i])
       {
         active_issues.emplace_back(
           IssueCard(static_cast<issue_cards>(active_issue_cards[i])));
-        active_issues[i].getSprite()->setPos(
+        active_issues[i].setPosition(
           Vector2(static_cast<float>(i) * 257, 150.0f));
         slot_active[i] = true;
         debug_text.print("Creating issue card " +
@@ -157,11 +158,13 @@ void GameBoard::updateActiveIssueCards()
       }
     }
     update_issues = false;
+    return true;
   }
+  return false;
 }
 
 /* Render the board */
-void GameBoard::render()
+void GameBoard::render(game_state _state)
 {
   // Ship
   m_ship.render();
@@ -170,8 +173,27 @@ void GameBoard::render()
   m_players->render(game_global_scenes::IN_GAME);
 
   // Issue cards
+  int card_index = 0;
   for (auto& active_issue : active_issues)
   {
+    // Position cards and resize appropriately
+    if (_state == game_state::NEW_CARDS_POPUP)
+    {
+      active_issue.setPosition(
+        card_offsets.popup_start +
+        (card_offsets.popup_offset * static_cast<float>(card_index)));
+      active_issue.setDimensions(card_offsets.popup_size);
+    }
+    else
+    {
+      active_issue.setPosition(
+        card_offsets.ingame_start +
+        (card_offsets.ingame_offset * static_cast<float>(card_index)));
+      active_issue.setDimensions(card_offsets.ingame_size);
+    }
+    card_index++;
+
+    // Render
     active_issue.render();
   }
 
@@ -193,6 +215,19 @@ ShipRoom GameBoard::getRoom(ship_rooms _room)
     }
   }
   throw "Could not find requested room.";
+}
+
+int GameBoard::activeIssuesCount()
+{
+  int count = 0;
+  for (int i = 0; i < 5; i++)
+  {
+    if (slot_active[i])
+    {
+      count++;
+    }
+  }
+  return count;
 }
 
 /* Handle the events caused by issue cards */
@@ -235,6 +270,7 @@ void GameBoard::handleIssueCardEvents(issue_cards _card_type)
         {
           i.setActionPointVariable(5);
         }
+        break;
       }
       default:
         break;

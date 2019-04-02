@@ -104,7 +104,8 @@ void Menu::render()
   // Render sprites
   for (ScaledSprite& item_sprite : menu_sprites)
   {
-    renderer->renderSprite(*item_sprite.getSprite());
+    renderer->renderSprite(*item_sprite.getSprite(),
+                           render_order::PRIORITY_BACKGROUND);
   }
 
   // Render text
@@ -116,7 +117,8 @@ void Menu::render()
                          static_cast<int>(menu_text_offsets[index]),
                          1,
                          (current_menu_index == index) ? active_text_colour
-                                                       : inactive_text_colour);
+                                                       : inactive_text_colour,
+                         render_order::PRIORITY_TEXT);
     index++;
   }
 }

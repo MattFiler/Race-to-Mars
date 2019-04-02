@@ -18,6 +18,10 @@ struct GameSprites
   ScaledSprite* progress_marker = nullptr;
   ScaledSprite* sync_overlay = nullptr;
   ScaledSprite* disconnect_overlay = nullptr;
+  ScaledSprite* issue_popup = nullptr;
+  ScaledSprite* issue_popup_shadow[5] = {
+    nullptr, nullptr, nullptr, nullptr, nullptr
+  };
 };
 
 class GameScene : public Scene
@@ -40,20 +44,14 @@ class GameScene : public Scene
   void handleIssueCardEvents(issue_cards _card_type);
 
  private:
-  enum game_state
-  {
-    PLAYING,               // The regular in-game state
-    LOCAL_PAUSE,           // The quit menu
-    LOOKING_AT_PLAYER_INFO // The player info popup
-  };
-
   GameBoard board;
   Menu pause_menu;
 
-  GameSprites game_sprites; // be in game sprites?
+  GameSprites game_sprites;
   LobbyPlayer* players[4] = { nullptr, nullptr, nullptr, nullptr };
 
   int max_progress_index = 19; // win condition
+  double popup_timer = 0.0f;
 
   bool has_disconnected = false; // did local client disconnect?
   game_state current_state = game_state::PLAYING;

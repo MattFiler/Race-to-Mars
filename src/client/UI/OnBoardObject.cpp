@@ -36,7 +36,7 @@ bool OnBoardObject::isInBoundingBox(Vector2 _pos)
 }
 
 /* Render the counter's sprite */
-void OnBoardObject::render()
+void OnBoardObject::render(render_order _order)
 {
-  renderer->renderSprite(*sprite->getSprite());
+  renderer->renderSprite(*sprite->getSprite(), _order);
 }
