@@ -244,7 +244,8 @@ void LobbyScene::render()
     renderer->renderSprite(*Locator::getPlayers()
                               ->getPlayer(players[i]->current_class)
                               ->getLobbySprite()
-                              ->getSprite());
+                              ->getSprite(),
+                           render_order::PRIORITY_MIDDLE);
 
     // Render ready-up prompt when appropriate
     if (lobby_sprites.ready_marker[i] != nullptr)
@@ -252,13 +253,15 @@ void LobbyScene::render()
       if (players[i]->is_ready)
       {
         lobby_sprites.ready_marker[i]->xPos(this_pos);
-        renderer->renderSprite(*lobby_sprites.ready_marker[i]->getSprite());
+        renderer->renderSprite(*lobby_sprites.ready_marker[i]->getSprite(),
+                               render_order::PRIORITY_UI);
       }
       else
       {
         lobby_sprites.ready_prompt_marker[i]->xPos(this_pos);
         renderer->renderSprite(
-          *lobby_sprites.ready_prompt_marker[i]->getSprite());
+          *lobby_sprites.ready_prompt_marker[i]->getSprite(),
+          render_order::PRIORITY_UI);
       }
     }
   }
@@ -266,18 +269,22 @@ void LobbyScene::render()
   // Render our marker when connected
   if (my_player_index != -1)
   {
-    renderer->renderSprite(*lobby_sprites.this_is_you->getSprite());
+    renderer->renderSprite(*lobby_sprites.this_is_you->getSprite(),
+                           render_order::PRIORITY_UI);
   }
 
   // Render game countdown when active
   if (should_start_game)
   {
-    renderer->renderSprite(*lobby_sprites.game_countdown_ui->getSprite());
+    renderer->renderSprite(*lobby_sprites.game_countdown_ui->getSprite(),
+                           render_order::PRIORITY_OVERLAYS);
     renderer->renderText(
       localiser.getString("LOBBY_COUNTDOWN_" +
                           std::to_string(static_cast<int>(game_countdown + 1))),
       45,
       698,
-      ASGE::COLOURS::WHITE);
+      1,
+      ASGE::COLOURS::WHITE,
+      render_order::PRIORITY_TOPMOST);
   }
 }

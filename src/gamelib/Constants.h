@@ -19,6 +19,19 @@ enum game_state
   NEW_CARDS_POPUP // The player info popup
 };
 
+enum render_order
+{
+  PRIORITY_BACKGROUND,
+  PRIORITY_MIDDLE,
+  PRIORITY_UI,
+  PRIORITY_TEXT,
+  PRIORITY_OVERLAYS,
+  PRIORITY_UI_2,
+  PRIORITY_CARDS,
+  PRIORITY_TOPMOST,
+  PRIORITY_CURSOR
+};
+
 struct GameConfig
 {
   int max_issue_cards = 5;

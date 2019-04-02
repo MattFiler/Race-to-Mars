@@ -451,7 +451,8 @@ void GameScene::render()
     case game_state::PLAYING:
     {
       // Board and background
-      renderer->renderSprite(*game_sprites.background->getSprite());
+      renderer->renderSprite(*game_sprites.background->getSprite(),
+                             render_order::PRIORITY_BACKGROUND);
       board.render(current_state);
 
       float active_marker_pos = -180.0f;
@@ -467,7 +468,8 @@ void GameScene::render()
         renderer->renderSprite(*Locator::getPlayers()
                                   ->getPlayer(players[i]->current_class)
                                   ->getGameTabSprite()
-                                  ->getSprite());
+                                  ->getSprite(),
+                               render_order::PRIORITY_UI);
 
         // draw score if player is connected
         if (players[i]->current_class != player_classes::UNASSIGNED)
@@ -475,7 +477,9 @@ void GameScene::render()
           renderer->renderText(std::to_string(players[i]->action_points),
                                225,
                                static_cast<int>(this_pos + 100),
-                               ASGE::COLOURS::WHITE);
+                               1,
+                               ASGE::COLOURS::WHITE,
+                               render_order::PRIORITY_TEXT);
         }
 
         // log position for active player marker.
@@ -486,23 +490,25 @@ void GameScene::render()
       }
 
       // Activity markers
-      renderer->renderSprite(*game_sprites.inactive_player_marker->getSprite());
+      renderer->renderSprite(*game_sprites.inactive_player_marker->getSprite(),
+                             render_order::PRIORITY_UI);
       game_sprites.active_player_marker->yPos(active_marker_pos);
-      renderer->renderSprite(*game_sprites.active_player_marker->getSprite());
+      renderer->renderSprite(*game_sprites.active_player_marker->getSprite(),
+                             render_order::PRIORITY_UI);
 
       // Progress meters
-      renderer->renderSprite(*game_sprites.progress_meter->getSprite());
+      renderer->renderSprite(*game_sprites.progress_meter->getSprite(),
+                             render_order::PRIORITY_UI);
       game_sprites.progress_marker->yPos(
         static_cast<float>(current_progress_index * 50));
-      renderer->renderSprite(*game_sprites.progress_marker->getSprite());
+      renderer->renderSprite(*game_sprites.progress_marker->getSprite(),
+                             render_order::PRIORITY_UI);
 
       // If card popup is active, render it too
       if (current_state == game_state::NEW_CARDS_POPUP)
       {
-        // This currently renders in the wrong order! Cards render in the board,
-        // which is below this - so we render over them. Think we'll have to
-        // move this sprite to the board object, which is kinda weird.
-        // renderer->renderSprite(*game_sprites.issue_popup->getSprite());
+        renderer->renderSprite(*game_sprites.issue_popup->getSprite(),
+                               render_order::PRIORITY_UI_2);
       }
 
       break;
@@ -516,11 +522,13 @@ void GameScene::render()
   // syncing)
   if (current_scene_lock_active)
   {
-    renderer->renderSprite(*game_sprites.sync_overlay->getSprite());
+    renderer->renderSprite(*game_sprites.sync_overlay->getSprite(),
+                           render_order::PRIORITY_OVERLAYS);
   }
   if (has_disconnected)
   {
-    renderer->renderSprite(*game_sprites.disconnect_overlay->getSprite());
+    renderer->renderSprite(*game_sprites.disconnect_overlay->getSprite(),
+                           render_order::PRIORITY_OVERLAYS);
   }
 
   // client debugging
@@ -532,36 +540,56 @@ void GameScene::render()
           players[Locator::getPlayers()->my_player_index]->is_active),
       10,
       30,
-      0.5);
+      0.5,
+      ASGE::COLOURS::WHITE,
+      render_order::PRIORITY_TEXT);
     renderer->renderText(
       "CURRENT_CLASS: " +
         std::to_string(
           players[Locator::getPlayers()->my_player_index]->current_class),
       10,
       50,
-      0.5);
+      0.5,
+      ASGE::COLOURS::WHITE,
+      render_order::PRIORITY_TEXT);
     renderer->renderText(
       "HAS_CONNECTED: " +
         std::to_string(
           players[Locator::getPlayers()->my_player_index]->has_connected),
       10,
       70,
-      0.5);
+      0.5,
+      ASGE::COLOURS::WHITE,
+      render_order::PRIORITY_TEXT);
     renderer->renderText(
       "IS_READY: " +
         std::to_string(
           players[Locator::getPlayers()->my_player_index]->is_ready),
       10,
       90,
-      0.5);
+      0.5,
+      ASGE::COLOURS::WHITE,
+      render_order::PRIORITY_TEXT);
     renderer->renderText(
       "ACTION_POINTS: " +
         std::to_string(
           players[Locator::getPlayers()->my_player_index]->action_points),
       10,
       110,
-      0.5);
-    renderer->renderText("PRESS M TO FINISH TURN", 10, 130, 0.5);
-    renderer->renderText("PRESS L TO DEBUG TEST ACTION POINTS", 10, 150, 0.5);
+      0.5,
+      ASGE::COLOURS::WHITE,
+      render_order::PRIORITY_TEXT);
+    renderer->renderText("PRESS M TO FINISH TURN",
+                         10,
+                         130,
+                         0.5,
+                         ASGE::COLOURS::WHITE,
+                         render_order::PRIORITY_TEXT);
+    renderer->renderText("PRESS L TO DEBUG TEST ACTION POINTS",
+                         10,
+                         150,
+                         0.5,
+                         ASGE::COLOURS::WHITE,
+                         render_order::PRIORITY_TEXT);
   }
 }
