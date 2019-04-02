@@ -1,8 +1,6 @@
 #include "OnBoardObject.h"
 #include "gamelib/Constants.h"
 
-#include "gamelib/Debug/DebugText.h"
-
 OnBoardObject::OnBoardObject()
 {
   renderer = Locator::getRenderer();
@@ -53,10 +51,6 @@ void OnBoardObject::setDimensions(Vector2 _dims, bool force)
   }
 
   shadow_scalar = _dims.x / dimensions.x;
-  DebugText text;
-  text.print(std::to_string(shadow_scalar));
-  text.print(std::to_string(_dims.x));
-  text.print(std::to_string(_dims.y));
   dimensions.update(_dims.x, _dims.y);
   sprite->width(_dims.x);
   sprite->height(_dims.y);

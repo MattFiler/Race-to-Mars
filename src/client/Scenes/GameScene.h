@@ -19,6 +19,7 @@ struct GameSprites
   ScaledSprite* sync_overlay = nullptr;
   ScaledSprite* disconnect_overlay = nullptr;
   ScaledSprite* issue_popup = nullptr;
+  ScaledSprite* objective_popup = nullptr;
 };
 
 class GameScene : public Scene
@@ -46,6 +47,14 @@ class GameScene : public Scene
 
   GameSprites game_sprites;
   LobbyPlayer* players[4] = { nullptr, nullptr, nullptr, nullptr };
+
+  // Clicked cards from the popup - this all needs to be moved to its own class
+  // as it doesn't belong here. Will be done!
+  ObjectiveCard* clicked_obj_card = nullptr;
+  IssueCard* clicked_issue_card = nullptr;
+
+  bool is_new_turn = false;
+  bool got_new_obj_card = false;
 
   int max_progress_index = 19; // win condition
   double popup_timer = 0.0f;

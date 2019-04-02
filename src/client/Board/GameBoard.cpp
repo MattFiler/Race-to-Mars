@@ -1,38 +1,41 @@
 #include "GameBoard.h"
 #include "gamelib/Constants.h"
 
-/* Check to see if we're hovering over an interactable item  */
-hovered_type GameBoard::isHoveringOverInteractable(Vector2 hover_pos)
+/* Check to see if we're hovering over an interactable room  */
+bool GameBoard::isHoveringOverRoom(Vector2 hover_pos)
 {
-  // Check ship rooms
   for (ShipRoom& room : m_ship.getRooms())
   {
     if (room.isInBoundingBox(hover_pos))
     {
-      return hovered_type::HOVERED_OVER_SHIP_ROOM;
+      return true;
     }
   }
+  return false;
+}
 
-  // Check issue cards
+/* Check to see if we're hovering over an issue card  */
+bool GameBoard::isHoveringOverIssueCard(Vector2 hover_pos)
+{
   for (IssueCard& card : active_issues)
   {
     if (card.isInBoundingBox(hover_pos))
     {
-      return hovered_type::HOVERED_OVER_ISSUE_CARD;
+      return true;
     }
   }
+  return false;
+}
 
-  // Check objective card
-  if (active_obj_card != nullptr && active_obj_card->isInBoundingBox(hover_pos))
-  {
-    return hovered_type::HOVERED_OVER_OBJECTIVE_CARD;
-  }
-
-  return hovered_type::DID_NOT_HOVER_OVER_ANYTHING;
+/* Check to see if we're hovering over an objective card  */
+bool GameBoard::isHoveringOverObjectiveCard(Vector2 hover_pos)
+{
+  return (active_obj_card != nullptr &&
+          active_obj_card->isInBoundingBox(hover_pos));
 }
 
 /* Return clicked interactable room  */
-ShipRoom GameBoard::getClickedInteractableRoom(Vector2 clicked_pos)
+ShipRoom GameBoard::getClickedRoom(Vector2 clicked_pos)
 {
   // Check rooms
   for (ShipRoom& room : m_ship.getRooms())
@@ -45,7 +48,7 @@ ShipRoom GameBoard::getClickedInteractableRoom(Vector2 clicked_pos)
 
   // Didn't match any
   throw "This function must be called based on the result of "
-        "isHoveringOverInteractable.";
+        "isHoveringOverRoom.";
 }
 
 /* Return clicked issue card  */
@@ -62,7 +65,7 @@ IssueCard* GameBoard::getClickedIssueCard(Vector2 clicked_pos)
 
   // Didn't match any
   throw "This function must be called based on the result of "
-        "isHoveringOverInteractable.";
+        "isHoveringOverIssueCard.";
 }
 
 /* Return clicked objective card  */
@@ -76,7 +79,7 @@ ObjectiveCard* GameBoard::getClickedObjectiveCard(Vector2 clicked_pos)
 
   // Didn't match any
   throw "This function must be called based on the result of "
-        "isHoveringOverInteractable.";
+        "isHoveringOverObjectiveCard.";
 }
 
 /* Set the active objective card to update */
@@ -170,36 +173,53 @@ void GameBoard::render(game_state _state)
   // Players
   m_players->render(game_global_scenes::IN_GAME);
 
-  // Issue cards
-  int card_index = 0;
-  for (auto& active_issue : active_issues)
+  if (_state == game_state::OBJECTIVE_CARD_POPUP)
   {
-    // Position cards and resize appropriately
-    if (_state == game_state::NEW_ISSUE_CARDS_POPUP)
+    // Position card and resize appropriately if it exists (should do)
+    if (active_obj_card != nullptr)
     {
-      active_issue.setDimensions(card_offsets.popup_size);
-      active_issue.setPosition(
-        card_offsets.popup_start +
-        (card_offsets.popup_offset * static_cast<float>(card_index)));
+      active_obj_card->setDimensions(card_offsets.obj_popup_size);
+      active_obj_card->setPosition(card_offsets.obj_popup_pos);
+      active_obj_card->render(render_order::PRIORITY_CARD_6);
     }
-    else
-    {
-      active_issue.setDimensions(card_offsets.ingame_size);
-      active_issue.setPosition(
-        card_offsets.ingame_start +
-        (card_offsets.ingame_offset * static_cast<float>(card_index)));
-    }
-
-    // Render
-    active_issue.render(
-      static_cast<render_order>(render_order::PRIORITY_CARD_1 + card_index));
-    card_index++;
   }
-
-  // Objective card
-  if (active_obj_card != nullptr)
+  else
   {
-    active_obj_card->render(render_order::PRIORITY_CARD_6);
+    int card_index = 0;
+    for (auto& active_issue : active_issues)
+    {
+      // Position cards and resize appropriately
+      if (_state == game_state::ISSUE_CARDS_POPUP)
+      {
+        active_issue.setDimensions(card_offsets.issue_popup_size);
+        active_issue.setPosition(
+          card_offsets.issue_popup_start +
+          (card_offsets.issue_popup_offset * static_cast<float>(card_index)));
+      }
+      else
+      {
+        active_issue.setDimensions(card_offsets.issue_ingame_size);
+        active_issue.setPosition(
+          card_offsets.issue_ingame_start +
+          (card_offsets.issue_ingame_offset * static_cast<float>(card_index)));
+      }
+
+      // Render
+      active_issue.render(
+        static_cast<render_order>(render_order::PRIORITY_CARD_1 + card_index));
+      card_index++;
+    }
+
+    // Render objective card in-game
+    if (_state != game_state::ISSUE_CARDS_POPUP)
+    {
+      if (active_obj_card != nullptr)
+      {
+        active_obj_card->setDimensions(card_offsets.obj_ingame_size);
+        active_obj_card->setPosition(card_offsets.obj_ingame_pos);
+        active_obj_card->render(render_order::PRIORITY_CARD_6);
+      }
+    }
   }
 }
 

@@ -29,8 +29,11 @@ class GameBoard
   GameBoard() { m_players = Locator::getPlayers(); };
   ~GameBoard() = default;
 
-  hovered_type isHoveringOverInteractable(Vector2 hover_pos);
-  ShipRoom getClickedInteractableRoom(Vector2 clicked_pos);
+  bool isHoveringOverRoom(Vector2 hover_pos);
+  bool isHoveringOverIssueCard(Vector2 hover_pos);
+  bool isHoveringOverObjectiveCard(Vector2 hover_pos);
+
+  ShipRoom getClickedRoom(Vector2 clicked_pos);
   IssueCard* getClickedIssueCard(Vector2 clicked_pos);
   ObjectiveCard* getClickedObjectiveCard(Vector2 clicked_pos);
 
@@ -52,7 +55,6 @@ class GameBoard
 
   /* Ship */
   Ship m_ship;
-  ShipRoom* clicked_room = nullptr;
 
   /* Cards */
   void handleIssueCardEvents(issue_cards _card_type);
