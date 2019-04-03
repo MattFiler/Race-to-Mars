@@ -55,8 +55,9 @@ struct Players
   Pilot player_pilot;
   Player player_uninitialised;
 
-  // Local Player Index
+  // Data needed in game board
   int my_player_index = -1;
+  int current_progress_index = 0;
 
   // Class client data
   LobbyPlayer players[4];

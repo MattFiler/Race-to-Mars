@@ -399,10 +399,13 @@ void GameBoard::handleIssueCardEvents(issue_cards _card_type)
             ->getPlayer(static_cast<player_classes>(
               Locator::getPlayers()->my_player_index))
             ->setDiceRolls(1);
-
-          // Temp change progress index.
-          //          Locator::getClient()->sendData(
-          //            data_roles::CLIENT_CHANGE_PROGRESS_INDEX, );
+          /* this is just to test if this feature is working, needs to moved to
+           * when player rolls dice and issue has been activated. see below.
+           *
+           * */
+          Locator::getClient()->sendData(
+            data_roles::CLIENT_CHANGE_PROGRESS_INDEX,
+            Locator::getPlayers()->current_progress_index - 2);
         }
         break;
       }
