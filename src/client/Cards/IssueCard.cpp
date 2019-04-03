@@ -41,7 +41,6 @@ void IssueCard::addActionPoints(player_classes _player_class, int _ap_amount)
 IssueCard::IssueCard(issue_cards _card_type)
 {
   card_config = file_handler.openAsJSON("CONFIGS/cards.json");
-
   auto card_type = static_cast<size_t>(_card_type);
 
   card_name = card_config["ISSUECARDS"][card_type]["name"];

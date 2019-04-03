@@ -101,6 +101,7 @@ void GameBoard::setActiveIssueCards(int card_index[5], bool is_new_rotation)
     {
       active_issues.erase(active_issues.begin() + static_cast<int>(i));
       active_issue_cards[i] = -1;
+      slot_active[i] = false;
     }
   }
 
@@ -225,6 +226,13 @@ void GameBoard::render(game_state _state)
         active_obj_card->render(render_order::PRIORITY_CARD_6);
       }
     }
+
+    // Render roll btn in-game
+    {
+      if (_state == game_state::IS_ROLLING_DICE)
+      {
+      }
+    }
   }
 }
 
@@ -264,7 +272,8 @@ void GameBoard::handleIssueCardEvents(issue_cards _card_type)
   if (_card_num <= 5)
   {
     // Comms issue.
-    // Call player roll dice function here.
+    // Set player state to roll dice and set what kind of event was triggered
+    // to do the appropriate action with the dice roll.
     Locator::getPlayers()
       ->getPlayer(
         static_cast<player_classes>(Locator::getPlayers()->my_player_index))
@@ -413,4 +422,9 @@ void GameBoard::handleIssueCardEvents(issue_cards _card_type)
         break;
     }
   }
+}
+
+bool GameBoard::isHoveringOverRollDiceBtn(Vector2 hover_pos)
+{
+  return false;
 }

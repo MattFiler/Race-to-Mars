@@ -45,6 +45,7 @@ void GameScene::init()
   game_sprites.issue_popup = new ScaledSprite("UI/INGAME_UI/new_issues_bg.png");
   game_sprites.objective_popup = new ScaledSprite("UI/INGAME_UI/"
                                                   "new_obj_bg.png");
+  game_sprites.roll_dice = new ScaledSprite("UI/INGAME_UI/roll_btn.png");
 
   // If we joined in progress, request a data sync from the server
   if (Locator::getPlayers()->joined_in_progress)
@@ -588,6 +589,18 @@ void GameScene::render()
         ((Locator::getPlayers()->current_progress_index + 3.5) * 30)));
       renderer->renderSprite(*game_sprites.progress_marker->getSprite(),
                              render_order::PRIORITY_UI);
+
+      // Roll Dice Btn
+      if (current_state == game_state::PLAYING)
+      {
+        game_sprites.roll_dice->getSprite()->colour(ASGE::COLOURS::GREY);
+      }
+      else if (current_state == game_state::IS_ROLLING_DICE)
+      {
+        game_sprites.roll_dice->getSprite()->colour();
+      }
+      renderer->renderSprite(*game_sprites.roll_dice->getSprite(),
+                             render_order::PRIORITY_UI_2);
 
       // If card popup is active, render it too
       if (current_state == game_state::ISSUE_CARDS_POPUP)

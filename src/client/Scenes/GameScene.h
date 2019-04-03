@@ -20,6 +20,7 @@ struct GameSprites
   ScaledSprite* disconnect_overlay = nullptr;
   ScaledSprite* issue_popup = nullptr;
   ScaledSprite* objective_popup = nullptr;
+  ScaledSprite* roll_dice = nullptr;
 };
 
 class GameScene : public Scene
