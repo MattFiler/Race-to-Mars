@@ -43,11 +43,8 @@ void GameScene::init()
   game_sprites.disconnect_overlay = new ScaledSprite("UI/INGAME_UI/"
                                                      "syncing_notext.png");
   game_sprites.issue_popup = new ScaledSprite("UI/INGAME_UI/new_issues_bg.png");
-  for (int i = 0; i < 5; i++)
-  {
-    game_sprites.issue_popup_shadow[i] =
-      new ScaledSprite("UI/INGAME_UI/cards_" + std::to_string(i + 1) + ".png");
-  }
+  game_sprites.objective_popup = new ScaledSprite("UI/INGAME_UI/"
+                                                  "new_obj_bg.png");
 
   // If we joined in progress, request a data sync from the server
   if (Locator::getPlayers()->joined_in_progress)
@@ -220,7 +217,7 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
         std::to_string(
           received_data.content[5 + Locator::getPlayers()->my_player_index]) +
         ".");
-      // Sync action points
+      // Sync action points.
       for (int i = 0; i < 4; i++)
       {
         players[i]->action_points = received_data.content[9 + i];
@@ -241,6 +238,14 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
         Locator::getPlayers()
           ->getPlayer(players[i]->current_class)
           ->setPos(new_pos);
+
+        // Broadcast out the position of us to keep all clients informed
+        if (i == Locator::getPlayers()->my_player_index)
+        {
+          Locator::getClient()->sendData(data_roles::CLIENT_MOVING_PLAYER_TOKEN,
+                                         Locator::getPlayers()->my_player_index,
+                                         static_cast<int>(this_room.getEnum()));
+        }
 
         debug_text.print("Sync: moved player " + std::to_string(i) +
                          " to room '" + this_room.getName() + "'.");
@@ -277,9 +282,26 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
 
   switch (current_state)
   {
-    case game_state::NEW_CARDS_POPUP:
+    case game_state::ISSUE_CARDS_POPUP:
     {
-      // --
+      if (keys.keyReleased("Back") && !is_new_turn)
+      {
+        current_state = game_state::PLAYING;
+        debug_text.print("Closing issue card popup.");
+      }
+      break;
+    }
+    case game_state::OBJECTIVE_CARD_POPUP:
+    {
+      if (keys.keyReleased("Back") && !got_new_obj_card)
+      {
+        current_state = game_state::PLAYING;
+        debug_text.print("Closing objective popup.");
+      }
+      break;
+    }
+    case game_state::IS_ROLLING_DICE:
+    {
       break;
     }
     case game_state::PLAYING:
@@ -310,23 +332,24 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
     }
     case game_state::LOCAL_PAUSE:
     {
-      if (pause_menu.itemWasSelected(keys))
+      if (!pause_menu.itemWasSelected(keys))
       {
-        if (pause_menu.selectedItemWas("MENU_CONTINUE"))
-        {
-          current_state = game_state::PLAYING;
-          debug_text.print("Closing pause menu.");
-        }
-        else if (pause_menu.selectedItemWas("MENU_QUIT"))
-        {
-          // Alert everyone we're leaving and then return to menu
-          Locator::getClient()->sendData(
-            data_roles::CLIENT_DISCONNECTING_FROM_LOBBY,
-            Locator::getPlayers()->my_player_index);
-          next_scene = game_global_scenes::MAIN_MENU;
-          debug_text.print("Returning to main menu and disconnecting from "
-                           "lobby.");
-        }
+        break;
+      }
+      if (pause_menu.selectedItemWas("MENU_CONTINUE"))
+      {
+        current_state = game_state::PLAYING;
+        debug_text.print("Closing pause menu.");
+      }
+      else if (pause_menu.selectedItemWas("MENU_QUIT"))
+      {
+        // Alert everyone we're leaving and then return to menu
+        Locator::getClient()->sendData(
+          data_roles::CLIENT_DISCONNECTING_FROM_LOBBY,
+          Locator::getPlayers()->my_player_index);
+        next_scene = game_global_scenes::MAIN_MENU;
+        debug_text.print("Returning to main menu and disconnecting from "
+                         "lobby.");
       }
       break;
     }
@@ -338,40 +361,43 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
 {
   auto click = static_cast<const ASGE::ClickEvent*>(data.get());
 
-  if (click->action == ASGE::E_MOUSE_CLICK)
+  Vector2 mouse_pos = Vector2(Locator::getCursor()->getPosition().x,
+                              Locator::getCursor()->getPosition().y);
+
+  if (click->action != ASGE::E_MOUSE_CLICK)
   {
-    Vector2 mouse_pos = Vector2(Locator::getCursor()->getPosition().x,
-                                Locator::getCursor()->getPosition().y);
-    if (!current_scene_lock_active &&
-        players[Locator::getPlayers()->my_player_index]->is_active)
+    return;
+  }
+
+  switch (current_state)
+  {
+    case game_state::ISSUE_CARDS_POPUP:
     {
-      switch (board.isHoveringOverInteractable(mouse_pos))
+      break;
+    }
+    case game_state::OBJECTIVE_CARD_POPUP:
+    {
+      break;
+    }
+    case game_state::IS_ROLLING_DICE:
+    {
+      break;
+    }
+    case game_state::PLAYING:
+    {
+      // Disallow interaction when scene lock is active
+      if (current_scene_lock_active)
       {
-        // Clicked on an objective card
-        case hovered_type::HOVERED_OVER_OBJECTIVE_CARD:
-        {
-          ObjectiveCard* this_card = board.getClickedObjectiveCard(mouse_pos);
-          debug_text.print("Clicked on an interactable part of the board!");
-          debug_text.print("CLICKED: OBJECTIVE CARD " +
-                           std::to_string(this_card->getCardID()));
-          break;
-        }
+        break;
+      }
 
-        // Clicked on an issue card
-        case hovered_type::HOVERED_OVER_ISSUE_CARD:
-        {
-          IssueCard* this_card = board.getClickedIssueCard(mouse_pos);
-          debug_text.print("Clicked on an interactable part of the board!");
-          debug_text.print("CLICKED: ISSUE CARD " +
-                           std::to_string(this_card->getCardID()));
-
-          break;
-        }
-
+      /* WHEN CLIENT IS ACTIVE */
+      if (players[Locator::getPlayers()->my_player_index]->is_active)
+      {
         // Clicked within a room on the ship
-        case hovered_type::HOVERED_OVER_SHIP_ROOM:
+        if (board.isHoveringOverRoom(mouse_pos))
         {
-          ShipRoom this_room = board.getClickedInteractableRoom(mouse_pos);
+          ShipRoom this_room = board.getClickedRoom(mouse_pos);
 
           // Get new movement position
           Vector2 new_pos = this_room.getPosForPlayer(
@@ -387,15 +413,26 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
             ->setPos(new_pos);
           debug_text.print("Moving my player token to room '" +
                            this_room.getName() + "'.");
-          break;
-        }
-
-        // Didn't click on anything
-        default:
-        {
-          return;
         }
       }
+
+      /* WHEN CLIENT IS ACTIVE/INACTIVE */
+      // Clicked on an objective card
+      if (board.isHoveringOverObjectiveCard(mouse_pos))
+      {
+        clicked_obj_card = board.getClickedObjectiveCard(mouse_pos);
+        current_state = game_state::OBJECTIVE_CARD_POPUP;
+      }
+      // Clicked on an issue card
+      if (board.isHoveringOverIssueCard(mouse_pos))
+      {
+        clicked_issue_card = board.getClickedIssueCard(mouse_pos);
+        current_state = game_state::ISSUE_CARDS_POPUP;
+      }
+    }
+    case game_state::LOCAL_PAUSE:
+    {
+      break;
     }
   }
 }
@@ -403,50 +440,73 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
 /* Update function */
 game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
 {
-  // Update cards if required
+  // Update cards if required & log result
   if (board.updateActiveIssueCards())
   {
-    // When updating the cards, set the state to popup, this will go into a
-    // scripted popup event to show the new cards then hide them after a set
-    // time.
-    current_state = game_state::NEW_CARDS_POPUP;
+    current_state = game_state::ISSUE_CARDS_POPUP;
+    is_new_turn = true;
   }
-  board.updateActiveObjectiveCard(); // returns true if updated, this should be
-                                     // used to trigger some UI event to
-                                     // highlight that you've got a new
-                                     // objective card
+  if (board.updateActiveObjectiveCard())
+  {
+    got_new_obj_card = true;
+  }
 
-  // Timeout popup after a given time
-  if (current_state == game_state::NEW_CARDS_POPUP)
+  // Timeout new round popup after a given time
+  if (is_new_turn && current_state == game_state::ISSUE_CARDS_POPUP)
   {
     popup_timer += game_time.delta.count() / 1000;
 
     // If popup has been on screen for 5 secs, hide it
     if (popup_timer > 5.0f)
     {
-      current_state = game_state::PLAYING;
+      if (got_new_obj_card)
+      {
+        current_state = game_state::OBJECTIVE_CARD_POPUP;
+      }
+      else
+      {
+        current_state = game_state::PLAYING; // Maybe go to rolling dice state
+                                             // here?!
+      }
       popup_timer = 0.0f;
+      is_new_turn = false;
     }
   }
 
-  if (players[Locator::getPlayers()->my_player_index]->is_active)
+  // Do the same for the new objective card popup
+  if (got_new_obj_card && current_state == game_state::OBJECTIVE_CARD_POPUP)
   {
-    // If we're not syncing, handle hover sprite update.
-    if (!current_scene_lock_active)
+    popup_timer += game_time.delta.count() / 1000;
+
+    // If popup has been on screen for 5 secs, hide it
+    if (popup_timer > 5.0f)
     {
-      Locator::getCursor()->setCursorActive(
-        board.isHoveringOverInteractable(
-          Vector2(Locator::getCursor()->getPosition().x,
-                  Locator::getCursor()->getPosition().y)) !=
-        hovered_type::DID_NOT_HOVER_OVER_ANYTHING);
+      current_state = game_state::PLAYING; // Maybe go to rolling dice state
+                                           // here?!
+      popup_timer = 0.0f;
+      got_new_obj_card = false;
     }
   }
-  else
+
+  /* CURSOR UPDATE */
+  Vector2 mouse_pos = Vector2(Locator::getCursor()->getPosition().x,
+                              Locator::getCursor()->getPosition().y);
+
+  // Always update to hover cursor for cards
+  bool cursor_active = (board.isHoveringOverIssueCard(mouse_pos) ||
+                        board.isHoveringOverObjectiveCard(mouse_pos));
+
+  // If we're the active player, aren't syncing, and don't already have an
+  // active player, check if we're hovering over a room
+  if (players[Locator::getPlayers()->my_player_index]->is_active &&
+      !current_scene_lock_active && !cursor_active)
   {
-    // It isn't our go, but we might be able to still do stuff, or need to
-    // update bits?
-    Locator::getCursor()->setCursorActive(false);
+    cursor_active = board.isHoveringOverRoom(mouse_pos);
   }
+
+  // Finally, actually update it
+  Locator::getCursor()->setCursorActive(cursor_active);
+
   return next_scene;
 }
 
@@ -455,9 +515,17 @@ void GameScene::render()
 {
   switch (current_state)
   {
-    case game_state::NEW_CARDS_POPUP:
+    case game_state::ISSUE_CARDS_POPUP:
     {
       // Yes clang, I do want to use a switch case for its intended purpose!
+      [[clang::fallthrough]];
+    }
+    case game_state::OBJECTIVE_CARD_POPUP:
+    {
+      [[clang::fallthrough]];
+    }
+    case game_state::IS_ROLLING_DICE:
+    {
       [[clang::fallthrough]];
     }
     case game_state::PLAYING:
@@ -506,7 +574,7 @@ void GameScene::render()
                              render_order::PRIORITY_UI);
       game_sprites.active_player_marker->yPos(active_marker_pos);
       renderer->renderSprite(*game_sprites.active_player_marker->getSprite(),
-                             render_order::PRIORITY_UI);
+                             render_order::PRIORITY_UI_2);
 
       // Progress meters
       renderer->renderSprite(*game_sprites.progress_meter->getSprite(),
@@ -517,14 +585,15 @@ void GameScene::render()
                              render_order::PRIORITY_UI);
 
       // If card popup is active, render it too
-      if (current_state == game_state::NEW_CARDS_POPUP)
+      if (current_state == game_state::ISSUE_CARDS_POPUP)
       {
         renderer->renderSprite(*game_sprites.issue_popup->getSprite(),
-                               render_order::PRIORITY_UI_2);
-        renderer->renderSprite(
-          *game_sprites.issue_popup_shadow[board.activeIssuesCount() - 1]
-             ->getSprite(),
-          render_order::PRIORITY_CARDS);
+                               render_order::PRIORITY_UI_3);
+      }
+      else if (current_state == game_state::OBJECTIVE_CARD_POPUP)
+      {
+        renderer->renderSprite(*game_sprites.objective_popup->getSprite(),
+                               render_order::PRIORITY_UI_3);
       }
 
       break;

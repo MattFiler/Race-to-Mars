@@ -43,8 +43,6 @@ struct Players
       }
       default:
       {
-        // This is used in the lobby (and is fine), if in-game, is a logic
-        // error!
         return &player_uninitialised;
       }
     }

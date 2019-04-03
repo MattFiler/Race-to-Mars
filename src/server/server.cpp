@@ -280,6 +280,25 @@ void RaceToSpaceServer::run()
             static_cast<ship_rooms>(data_to_send.content[1]);
           goto SEND_TO_ALL;
         }
+          // Updates the new progress index for all clients after dice roll
+          // issue event on client.
+        case data_roles::CLIENT_CHANGE_PROGRESS_INDEX:
+        {
+          Lobby* this_lobby = getLobbyByID(client.lobby_id);
+          if (this_lobby == nullptr)
+          {
+            break;
+          }
+          debug_text.print("Changing progress from: " +
+                           std::to_string(this_lobby->current_progress_index) +
+                           " to:" + std::to_string(data_to_send.content[0]));
+          this_lobby->current_progress_index = data_to_send.content[0];
+          sendData(client,
+                   static_cast<unsigned int>(-2),
+                   data_roles::CLIENT_CHANGE_PROGRESS_INDEX,
+                   data_to_send.content[0]);
+          break;
+        }
 
           // We need to store lobby ready state before sending it out, so new
           // players are up to date
@@ -343,7 +362,6 @@ void RaceToSpaceServer::run()
                        0);
             }
           }
-
           if (did_send)
           {
             break;
@@ -353,23 +371,6 @@ void RaceToSpaceServer::run()
             [[clang::fallthrough]];
           }
         }
-        // Updates the new progress index for all clients after dice roll issue
-        // event on client.
-        case data_roles::CLIENT_CHANGE_PROGRESS_INDEX:
-        {
-          Lobby* this_clients_lobby = getLobbyByID(client.lobby_id);
-          if (this_clients_lobby == nullptr)
-          {
-            break;
-          }
-          this_clients_lobby->current_progress_index = data_to_send.content[0];
-          sendData(client,
-                   static_cast<unsigned int>(-2),
-                   data_roles::SERVER_STARTS_GAME,
-                   this_clients_lobby->currently_active_player,
-                   1);
-        }
-
           // Otherwise, it's a message that needs to be forwarded to everyone in
           // the lobby.
         default:
