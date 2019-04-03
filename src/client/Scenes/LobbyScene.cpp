@@ -5,13 +5,6 @@
 #include "../Players/ClientPlayer.h"
 #include <exception>
 
-// This bit is gonna get a refactor - so labelled TEST for now :)
-#include "../Players/CommunicationsPlayer.h"
-#include "../Players/EngineerPlayer.h"
-#include "../Players/MedicPlayer.h"
-#include "../Players/PilotPlayer.h"
-// End of mess (look for function TEST_ below where it continues)
-
 /* Initialise the scene */
 void LobbyScene::init()
 {
@@ -49,6 +42,7 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
   // Handle all relevant data packets for this scene
   switch (received_data.role)
   {
+    // Server gives the lobby information we require, utilise it!
     case data_roles::SERVER_GIVES_LOBBY_INFO:
     {
       if (!has_connected)
@@ -62,25 +56,25 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
             static_cast<player_classes>(received_data.content[i + 1]);
           players[i]->is_ready =
             static_cast<player_classes>(received_data.content[i + 5]);
-
           if (players[i]->current_class != player_classes::UNASSIGNED)
           {
             players[i]->has_connected = true;
           }
           players[i]->is_this_client = (i == my_player_index);
         }
-
         // Notify all clients in the lobby that we've connected
         Locator::getClient()->sendData(data_roles::CLIENT_CONNECTED_TO_LOBBY,
                                        my_player_index,
                                        players[my_player_index]->is_ready,
                                        players[my_player_index]->current_class);
-        debug_text.print("We synced to the lobby!");
-
+        debug_text.print("We synced to the lobby!", -1);
         has_connected = true;
       }
       break;
     }
+
+    // A new client has connected to the lobby, update our records with their
+    // data
     case data_roles::CLIENT_CONNECTED_TO_LOBBY:
     {
       // A player that's not us connected to the lobby, update our info
@@ -91,10 +85,11 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
         players[received_data.content[0]]->current_class =
           static_cast<player_classes>(received_data.content[2]);
       }
-
       debug_text.print("A player connected to the lobby!");
       break;
     }
+
+    // A client has disconnected from the lobby
     case data_roles::CLIENT_DISCONNECTING_FROM_LOBBY:
     {
       // Forget them!
@@ -103,6 +98,8 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       debug_text.print("A player disconnected from the lobby!");
       break;
     }
+
+    // A client has readied/unreadied in the lobby
     case data_roles::CLIENT_CHANGED_LOBBY_READY_STATE:
     {
       // Player is now ready/unready when they weren't before
@@ -114,6 +111,8 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       }
       break;
     }
+
+    // The server has told us to start the game
     case data_roles::SERVER_STARTS_GAME:
     {
       // The server has told us this lobby should start
@@ -122,15 +121,19 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
         players[i]->is_ready = true;
         players[i]->is_active = false; // make sure we have no active conflicts
       }
+      Locator::getPlayers()->joined_in_progress =
+        static_cast<bool>(received_data.content[1]);
       players[received_data.content[0]]->is_active = true; // client to start
       should_start_game = true;
       can_change_ready_state = false;
       debug_text.print("Server told us to start the game!");
       break;
     }
+
+      // Anything else is unhandled
     default:
     {
-      debug_text.print("An unhandled data packet was received");
+      debug_text.print("An unhandled data packet was received", 1);
       break;
     }
   }
@@ -162,28 +165,25 @@ void LobbyScene::keyHandler(const ASGE::SharedEventData data)
   }
 
   /* DEBUGGING */
-  if (debug_text.enabled)
+  if (debug_text.enabled && keys.keyReleased("Debug Skip Readyup"))
   {
-    if (keys.keyReleased("Debug Skip Readyup"))
+    // DEBUG ONLY LOCAL GAME START
+    int player_count = 0;
+    for (int i = 0; i < 4; i++)
     {
-      // DEBUG ONLY LOCAL GAME START
-      int player_count = 0;
-      for (int i = 0; i < 4; i++)
+      if (players[i]->has_connected)
       {
-        if (players[i]->has_connected)
-        {
-          player_count++;
-        }
+        player_count++;
       }
-      if (player_count > 1)
-      {
-        debug_text.print("Debug Skip Readyup only functions with one player in "
-                         "the lobby.");
-        return;
-      }
-      players[my_player_index]->is_active = true;
-      should_start_game = true;
     }
+    if (player_count > 1)
+    {
+      debug_text.print("Debug Skip Readyup only functions with one player in "
+                       "the lobby.");
+      return;
+    }
+    players[my_player_index]->is_active = true;
+    should_start_game = true;
   }
 }
 
@@ -244,7 +244,8 @@ void LobbyScene::render()
     renderer->renderSprite(*Locator::getPlayers()
                               ->getPlayer(players[i]->current_class)
                               ->getLobbySprite()
-                              ->getSprite());
+                              ->getSprite(),
+                           render_order::PRIORITY_MIDDLE);
 
     // Render ready-up prompt when appropriate
     if (lobby_sprites.ready_marker[i] != nullptr)
@@ -252,13 +253,15 @@ void LobbyScene::render()
       if (players[i]->is_ready)
       {
         lobby_sprites.ready_marker[i]->xPos(this_pos);
-        renderer->renderSprite(*lobby_sprites.ready_marker[i]->getSprite());
+        renderer->renderSprite(*lobby_sprites.ready_marker[i]->getSprite(),
+                               render_order::PRIORITY_UI);
       }
       else
       {
         lobby_sprites.ready_prompt_marker[i]->xPos(this_pos);
         renderer->renderSprite(
-          *lobby_sprites.ready_prompt_marker[i]->getSprite());
+          *lobby_sprites.ready_prompt_marker[i]->getSprite(),
+          render_order::PRIORITY_UI);
       }
     }
   }
@@ -266,18 +269,22 @@ void LobbyScene::render()
   // Render our marker when connected
   if (my_player_index != -1)
   {
-    renderer->renderSprite(*lobby_sprites.this_is_you->getSprite());
+    renderer->renderSprite(*lobby_sprites.this_is_you->getSprite(),
+                           render_order::PRIORITY_UI);
   }
 
   // Render game countdown when active
   if (should_start_game)
   {
-    renderer->renderSprite(*lobby_sprites.game_countdown_ui->getSprite());
+    renderer->renderSprite(*lobby_sprites.game_countdown_ui->getSprite(),
+                           render_order::PRIORITY_UI_2);
     renderer->renderText(
       localiser.getString("LOBBY_COUNTDOWN_" +
                           std::to_string(static_cast<int>(game_countdown + 1))),
       45,
       698,
-      ASGE::COLOURS::WHITE);
+      1,
+      ASGE::COLOURS::WHITE,
+      render_order::PRIORITY_TOPMOST);
   }
 }

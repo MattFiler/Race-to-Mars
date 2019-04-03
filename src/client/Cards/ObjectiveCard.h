@@ -13,10 +13,14 @@
 class ObjectiveCard : public Card
 {
  public:
+  explicit ObjectiveCard(objective_cards _card_type);
+  ~ObjectiveCard() = default;
+
   void setCardID(objective_cards _obj_card_id);
+  objective_cards getCardID() { return cardID; };
 
  private:
-  objective_cards m_cardID = objective_cards::OBJECTIVE_PLACEHOLDER;
+  objective_cards cardID = objective_cards::OBJECTIVE_PLACEHOLDER;
 };
 
 #endif // PROJECT_OBJECTIVECARD_H

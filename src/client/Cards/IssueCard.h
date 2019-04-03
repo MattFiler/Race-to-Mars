@@ -19,21 +19,22 @@ class IssueCard : public Card
   explicit IssueCard(issue_cards _card_type);
   ~IssueCard() = default;
   void setCardID(issue_cards _item_card_id);
+  issue_cards getCardID() { return cardID; };
   void addActionPoints(player_classes _player_class, int _ap_amount);
-  issue_cards getCardID();
-  bool isSolved() { return issue_solved; }
-  Action* m_issue_event = nullptr;
+  void setIssueCardvariable(int _action_points);
+
+  bool isSolved();
 
  private:
-  issue_cards m_cardID = issue_cards::ISSUE_PLACEHOLDER;
-
-  int m_comms_ap_assigned = 0;
-  int m_engineer_ap_assigned = 0;
-  int m_medic_ap_assigned = 0;
-  int m_pilot_ap_assigned = 0;
-  int m_total_ap_assigned = 0;
-
+  issue_cards cardID = issue_cards::ISSUE_PLACEHOLDER;
+  int comms_ap_assigned = 0;
+  int engineer_ap_assigned = 0;
+  int medic_ap_assigned = 0;
+  int pilot_ap_assigned = 0;
+  int total_ap_assigned = 0;
   bool issue_solved = false;
+
+  int issue_card_ap_variable = 0;
 };
 
 #endif // PROJECT_ISSUECARD_H

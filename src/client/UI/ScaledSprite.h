@@ -3,6 +3,7 @@
 
 #include "client/Core/ServiceLocator.h"
 #include "gamelib/Constants.h"
+#include "gamelib/Math/BoundingBox.h"
 #include "gamelib/Math/Vector2.h"
 #include <Engine/Renderer.h>
 #include <Engine/Sprite.h>
@@ -20,20 +21,22 @@ class ScaledSprite
   void height(float height);
   float height() { return sprite->height(); };
 
-  void xPos(float x);
+  void xPos(float x_pos);
   float xPos() { return sprite->xPos(); };
 
-  void yPos(float y);
+  void yPos(float y_pos);
   float yPos() { return sprite->yPos(); };
 
   void setPos(Vector2 new_pos);
   Vector2 getPos() { return Vector2(sprite->xPos(), sprite->yPos()); };
 
   ASGE::Sprite* getSprite() { return sprite; };
+  BoundingBox getBoundingBox() { return bounding_box; };
 
  private:
   ASGE::Renderer* renderer = nullptr;
   ASGE::Sprite* sprite = nullptr;
+  BoundingBox bounding_box;
 };
 
 #endif // PROJECT_SCALEDSPRITE_H

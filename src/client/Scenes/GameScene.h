@@ -5,6 +5,8 @@
 #include "client/Board/GameBoard.h"
 #include "client/UI/Cursor.h"
 #include <client/Cards/IssueCard.h>
+#include <client/Cards/ItemCard.h>
+#include <client/Cards/ObjectiveCard.h>
 
 // All sprites for the game ui
 struct GameSprites
@@ -15,6 +17,9 @@ struct GameSprites
   ScaledSprite* progress_meter = nullptr;
   ScaledSprite* progress_marker = nullptr;
   ScaledSprite* sync_overlay = nullptr;
+  ScaledSprite* disconnect_overlay = nullptr;
+  ScaledSprite* issue_popup = nullptr;
+  ScaledSprite* objective_popup = nullptr;
 };
 
 class GameScene : public Scene
@@ -34,39 +39,31 @@ class GameScene : public Scene
   game_global_scenes update(const ASGE::GameTime& game_time) override;
   void render() override;
 
-  int test_int2 = 1;
-  bool test_val = false;
+  void handleIssueCardEvents(issue_cards _card_type);
 
  private:
-  enum game_state
-  {
-    PLAYING,               // The regular in-game state
-    LOCAL_PAUSE,           // The quit menu
-    LOOKING_AT_PLAYER_INFO // The player info popup
-  };
-
-  GameBoard m_board;
+  GameBoard board;
   Menu pause_menu;
-  // Deck m_deck;
-
-  std::vector<IssueCard> active_issues;
 
   GameSprites game_sprites;
   LobbyPlayer* players[4] = { nullptr, nullptr, nullptr, nullptr };
-  int my_player_index = -1;
 
-  int max_issue_cards = 5;
+  // Clicked cards from the popup - this all needs to be moved to its own class
+  // as it doesn't belong here. Will be done!
+  ObjectiveCard* clicked_obj_card = nullptr;
+  IssueCard* clicked_issue_card = nullptr;
+
+  bool is_new_turn = false;
+  bool got_new_obj_card = false;
+
   int max_progress_index = 19; // win condition
+  double popup_timer = 0.0f;
 
+  bool has_disconnected = false; // did local client disconnect?
   game_state current_state = game_state::PLAYING;
   int current_progress_index = 0;
   bool current_scene_lock_active = false; // optional "scene lock" to freeze
                                           // client interaction - useful for the
                                           // end of a turn?
-
-  // BELOW IS ALL TEMP SHIT READY FOR JACK TO ADD HIS CARD IMPLEMENTATIONS
-  int active_issue_cards[5] = { -1, -1, -1, -1, -1 };
-  int active_client_objective_card = -1; // hmm, maybe keep this data for every
-                                         // client?
 };
 #endif // PROJECT_GAMESCENE_H

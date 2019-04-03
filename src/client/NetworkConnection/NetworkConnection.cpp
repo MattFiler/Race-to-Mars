@@ -90,7 +90,12 @@ void NetworkConnection::sendData(data_roles _role,
                                  int _content_7,
                                  int _content_8,
                                  int _content_9,
-                                 int _content_10)
+                                 int _content_10,
+                                 int _content_11,
+                                 int _content_12,
+                                 int _content_13,
+                                 int _content_14,
+                                 int _content_15)
 {
   NetworkedData data;
   data.role = _role;
@@ -104,6 +109,11 @@ void NetworkConnection::sendData(data_roles _role,
   data.content[7] = _content_8;
   data.content[8] = _content_9;
   data.content[9] = _content_10;
+  data.content[10] = _content_11;
+  data.content[11] = _content_12;
+  data.content[12] = _content_13;
+  data.content[13] = _content_14;
+  data.content[14] = _content_15;
 
   Packet packet;
   packet << data;

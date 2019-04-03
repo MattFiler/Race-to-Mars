@@ -1,7 +1,6 @@
 #ifndef PROJECT_VECTOR2_H
 #define PROJECT_VECTOR2_H
 
-#include "../Constants.h"
 #include <algorithm>
 #include <math.h>
 

@@ -2,30 +2,7 @@
 
 void IssueCard::setCardID(issue_cards _item_card_id)
 {
-  this->m_cardID = _item_card_id;
-  switch (static_cast<int>(_item_card_id))
-  {
-    case 12:
-    {
-    }
-    case 13:
-    {
-    }
-    case 14:
-    {
-    }
-    case 15:
-    {
-    }
-    case 16:
-    {
-    }
-    case 17:
-    {
-    }
-    default:
-      break;
-  }
+  cardID = _item_card_id;
 }
 
 void IssueCard::addActionPoints(player_classes _player_class, int _ap_amount)
@@ -34,55 +11,53 @@ void IssueCard::addActionPoints(player_classes _player_class, int _ap_amount)
   {
     case player_classes::UNASSIGNED:
     {
-      throw("Unassigned player tried to assign action points. THATS "
-            "IMPOSSIBRU.");
+      debug_text.print("Unassigned player put action points on card!", 2);
+      break;
     }
     case player_classes::COMMUNICATIONS:
     {
-      m_comms_ap_assigned += _ap_amount;
+      comms_ap_assigned += _ap_amount;
       break;
     }
     case player_classes::ENGINEER:
     {
-      m_engineer_ap_assigned += _ap_amount;
+      engineer_ap_assigned += _ap_amount;
       break;
     }
     case player_classes::MEDIC:
     {
-      m_medic_ap_assigned += _ap_amount;
+      medic_ap_assigned += _ap_amount;
       break;
     }
     case player_classes ::PILOT:
     {
-      m_pilot_ap_assigned += _ap_amount;
+      pilot_ap_assigned += _ap_amount;
       break;
     }
-    default:
-      break;
   }
-  m_total_ap_assigned += _ap_amount;
-}
-
-issue_cards IssueCard::getCardID()
-{
-  return m_cardID;
+  total_ap_assigned += _ap_amount;
 }
 
 IssueCard::IssueCard(issue_cards _card_type)
 {
   card_config = file_handler.openAsJSON("CONFIGS/cards.json");
-  //  this->setCardName(
-  //    card_config["ISSUECARDS"][static_cast<size_t>(_card_type)][0]);
-  //  this->setCardDescription(
-  //    card_config["ISSUECARDS"][static_cast<size_t>(_card_type)][1]);
-  //  this->setActionPoints(
-  //    card_config["ISSUECARDS"][static_cast<size_t>(_card_type)][2]);
-  //  this->setSprite(
-  //    card_config["ISSUECARDS"][static_cast<size_t>(_card_type)][3]);
 
-  this->setCardName("Default");
-  this->setCardDescription("Default Desc.");
-  this->setActionPoints(999);
-  this->setSpritePath("UI/PLAYER_COUNTERS/issueplaceholder.png");
-  this->setCardID(_card_type);
+  auto card_type = static_cast<size_t>(_card_type);
+
+  card_name = card_config["ISSUECARDS"][card_type]["name"];
+  card_decription = card_config["ISSUECARDS"][card_type]["description"];
+  action_points = card_config["ISSUECARDS"][card_type]["action_points"];
+  cardID = card_config["ISSUECARDS"][card_type]["card_id"];
+  setSprite(card_config["ISSUECARDS"][card_type]["sprite_path"]);
+}
+
+bool IssueCard::isSolved()
+{
+  // return true if total assigned ap's is more than needed ap.
+  return action_points + issue_card_ap_variable <= total_ap_assigned;
+}
+
+void IssueCard::setIssueCardvariable(int _action_points)
+{
+  issue_card_ap_variable += _action_points;
 }

@@ -3,7 +3,11 @@
 
 #include "client/Board/ItemDeck.h"
 #include "client/Board/Ship.h"
+#include "client/Cards/IssueCard.h"
+#include "client/Cards/ItemCard.h"
+#include "client/Cards/ObjectiveCard.h"
 #include "client/Players/AllPlayers.h"
+#include "gamelib/Constants.h"
 #include "gamelib/Debug/DebugText.h"
 #include <Engine/Renderer.h>
 
@@ -11,25 +15,71 @@
  * cards, active counters, active player tokens, etc - then all rendering can be
  * done by calling this class' render function. */
 
+enum hovered_type
+{
+  HOVERED_OVER_SHIP_ROOM,
+  HOVERED_OVER_ISSUE_CARD,
+  HOVERED_OVER_OBJECTIVE_CARD,
+  DID_NOT_HOVER_OVER_ANYTHING
+};
+
 class GameBoard
 {
  public:
   GameBoard() { m_players = Locator::getPlayers(); };
   ~GameBoard() = default;
 
-  bool isHoveringOverInteractable(Vector2 hover_pos);
-  ShipRoom getClickedInteractable(Vector2 clicked_pos);
+  bool isHoveringOverRoom(Vector2 hover_pos);
+  bool isHoveringOverIssueCard(Vector2 hover_pos);
+  bool isHoveringOverObjectiveCard(Vector2 hover_pos);
 
-  void render();
+  ShipRoom getClickedRoom(Vector2 clicked_pos);
+  IssueCard* getClickedIssueCard(Vector2 clicked_pos);
+  ObjectiveCard* getClickedObjectiveCard(Vector2 clicked_pos);
+
+  void setActiveIssueCards(int active_cards[5], bool is_new_rotation);
+  void setActiveObjectiveCard(int card_index);
+
+  bool updateActiveIssueCards();
+  bool updateActiveObjectiveCard();
+
+  int activeIssuesCount();
+
+  ShipRoom getRoom(ship_rooms _room);
+
+  void render(game_state _state);
 
  private:
-  bool cursorPosFallsIntoClickable(Vector2 pos);
+  /* Players */
   Players* m_players = nullptr;
-  Ship m_ship;
-  ShipRoom* clicked_room = nullptr;
-  // ItemDeck m_item_deck;
 
+  /* Ship */
+  Ship m_ship;
+
+  /* Cards */
+  void handleIssueCardEvents(issue_cards _card_type);
+
+  std::vector<IssueCard> active_issues;
+  std::vector<ItemCard> item_inventory;
+
+  ObjectiveCard* active_obj_card = nullptr;
+  std::vector<ObjectiveCard> completed_obj_cards;
+
+  int active_issue_cards[5] = { -1, -1, -1, -1, -1 };
+  int objective_cards_inplay[4] = { -1, -1, -1, -1 };
+  // Slot active is to keep track of available slots to place new cards since
+  // if active_issue_card[x] != -1 can be overridden by another card.
+  bool slot_active[5] = { false, false, false, false, false };
+
+  bool update_issues = false;
+  int new_obj_card = -1;
+  CardOffsets card_offsets;
+
+  bool lost_game = false;
+
+  /* Misc */
   DebugText debug_text;
+  GameConfig game_config;
 };
 
 #endif // PROJECT_GAMEBOARD_H

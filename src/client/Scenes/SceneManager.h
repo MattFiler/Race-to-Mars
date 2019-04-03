@@ -13,7 +13,7 @@ class SceneManager
   SceneManager() = default;
   ~SceneManager() = default;
 
-  void setCurrentScene(game_global_scenes new_scene);
+  bool setCurrentScene(game_global_scenes new_scene);
   game_global_scenes getCurrentScene() { return current_scene_id; };
 
   // Call appropriate networking functions
@@ -33,7 +33,7 @@ class SceneManager
   {
     current_scene->clickHandler(data);
   };
-  void update(const ASGE::GameTime& game_time);
+  bool update(const ASGE::GameTime& game_time);
   void render() { current_scene->render(); };
 
  private:

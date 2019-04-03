@@ -13,17 +13,22 @@ using json = nlohmann::json;
 class ShipRoom
 {
  public:
-  ShipRoom(const std::string& room_name, Vector2 board_offset);
+  ShipRoom(const std::string& room_name,
+           Vector2 board_offset,
+           ship_rooms room_enum);
   ~ShipRoom() = default;
 
   Vector2 getPosForPlayer(player_classes _player);
   std::string getName();
+  ship_rooms getEnum() { return this_room_enum; };
   bool isInBoundingBox(Vector2 _pos);
 
  private:
   FileHandler file_handler;
   BoundingBox bounding_box;
   Localisation localiser;
+
+  ship_rooms this_room_enum;
 
   Vector2 centre_point;
   std::string friendly_name;

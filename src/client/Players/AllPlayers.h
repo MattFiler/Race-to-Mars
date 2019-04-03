@@ -43,8 +43,6 @@ struct Players
       }
       default:
       {
-        // This is used in the lobby (and is fine), if in-game, is a logic
-        // error!
         return &player_uninitialised;
       }
     }
@@ -57,6 +55,12 @@ struct Players
   Pilot player_pilot;
   Player player_uninitialised;
 
+  // Local Player Index
+  int my_player_index = -1;
+
   // Class client data
   LobbyPlayer players[4];
+
+  // Did join in progress? If so, initiate sync.
+  bool joined_in_progress = false;
 };

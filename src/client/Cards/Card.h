@@ -3,6 +3,7 @@
 
 #include "../Core/ServiceLocator.h"
 #include "client/UI/OnBoardObject.h"
+#include "gamelib/Debug/DebugText.h"
 #include "gamelib/NetworkedData/Cards.h"
 #include <Engine/Renderer.h>
 #include <Engine/Sprite.h>
@@ -16,39 +17,21 @@
  *
  */
 
-class Card
+class Card : public OnBoardObject
 {
  public:
   Card();
   ~Card() = default;
 
-  void render();
-
-  void setCardName(std::string _item_name);
-  void setSpritePath(std::string _sprite_path);
-  void setCardDescription(std::string _description_text);
-  void setAbilityText(std::string _ability_text);
-  void setActionPoints(int _action_points);
-  void setCardSize();
-
-  std::string getSprtiepath() { return m_sprite_path; }
-
  protected:
-  ASGE::Renderer* renderer = nullptr;
-
-  std::string m_card_name = "";
-  std::string m_card_decription = "";
-  std::string m_sprite_path = "";
-  std::string m_ability_text = "";
-  int m_action_points = 0;
-
-  ScaledSprite* m_card_sprite;
+  std::string card_name = "Temp Name";
+  std::string card_decription = "Temp desc";
+  std::string ability_text = "Temp Ability Text";
+  int action_points = 0;
 
   FileHandler file_handler;
   json card_config;
-
- private:
-  /* Stuff here */
+  DebugText debug_text;
 };
 
 #endif // PROJECT_CARD_H

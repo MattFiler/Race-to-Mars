@@ -72,6 +72,7 @@ enum data_roles
   SERVER_STARTS_GAME,
   /* ^ All clients in the lobby are ready, signal to start the game.
    *   [0] = the client to start playing first
+   *   [1] = are we joining in-progress (1=yes,0=no)
    */
 
   CLIENT_WANTS_TO_END_TURN,
@@ -88,62 +89,60 @@ enum data_roles
    *   [5] = issue card in slot 3 (may not change)
    *   [6] = issue card in slot 4 (may not change)
    *   [7] = issue card in slot 5 (may not change)
-   *   [8] = was this a new "full rotation" (1=yes,0=no)
+   *   [8] = objective card for player 1
+   *   [9] = objective card for player 2
+   *   [10] = objective card for player 3
+   *   [11] = objective card for player 4
+   *   [12] = was this a new "full rotation" (1=yes,0=no)
    */
 
   CLIENT_MOVING_PLAYER_TOKEN,
   /* ^ The active client moved their player token.
    *   [0] = the client index
-   *   [1] = new token position (x)
-   *   [2] = new token position (y)
+   *   [1] = the room index
    */
 
-  /* Any below here are SPECULATIVE and not actually implemented! */
-
-  PLAYER_MOVED_WITHIN_SHIP,
-  /* ^ The active player has moved within the ship.
-   *   [0] = player's new room index
-   *   [1] = player's previous room index
-   *   [2] = player's action points after move
-   *   [3] = player's index
+  CLIENT_ACTION_POINTS_CHANGED,
+  /* ^ The active client spent or gained action points.
+   *   [0] = the client index
+   *   [1] = the new action point count
    */
 
-  PLAYER_ASSIGNED_ACTION_POINTS,
-  /* ^ The active player has assigned action points to an issue.
-   *   [0] = the card points were assigned to
-   *   [1] = the number of action points assigned
-   *   [2] = if the card was completed (0/1)
-   *   [3] = the player's new action point total
-   *   [4] = the player's index
+  CLIENT_REQUESTS_SYNC,
+  /* ^ The newly joined client wants a data sync for joining an in-progress
+     game. */
+
+  SERVER_SYNCS_CARD_INFO,
+  /* ^ The server is sending card and score data to a reconnecting player.
+   *   [0] = issue card in slot 1
+   *   [1] = issue card in slot 2
+   *   [2] = issue card in slot 3
+   *   [3] = issue card in slot 4
+   *   [4] = issue card in slot 5
+   *   [5] = objective card for player 1
+   *   [6] = objective card for player 2
+   *   [7] = objective card for player 3
+   *   [8] = objective card for player 4
+   *   [9] = the action points for player 1
+   *   [10] = the action points for player 2
+   *   [11] = the action points for player 3
+   *   [12] = the action points for player 4
    */
 
-  PLAYER_ENDED_TURN,
-  /* ^ The active player ended their turn.
-   *   [0] = the player's ID that just ended their go
-   *   [1] = the next player (if back the beginning, ship needs to increment)
-   */
-
-  PLAYER_DREW_ITEM,
-  /* ^ The active player drew an item from the supply room.
-   *   [0] = the player's ID that drew the item
-   *   [1] = the ID of the item card they acquired
-   *   [2] = their remaining action points
-   */
-
-  NEW_ISSUE_CARD_ADDED,
-  /* ^ A new issue card has been added to the board.
-   *   [0] = the id of the new issue card
-   *   [1] = the id of the new issue card (optional - if zero, data is blank)
-   *   [2] = the id of the new issue card (optional - if zero, data is blank)
-   *   [3] = the id of the new issue card (optional - if zero, data is blank)
-   *   [4] = the id of the new issue card (optional - if zero, data is blank)
+  SERVER_SYNCS_POSITION_INFO,
+  /* ^ The server is sending position info to a reconnecting player.
+   *   [0] = the room of client 1
+   *   [1] = the room of client 2
+   *   [2] = the room of client 3
+   *   [3] = the room of client 4
+   *   [4] = the ship's position
    */
 };
 
 struct NetworkedData
 {
   data_roles role = data_roles::NO_ROLE;
-  int content[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+  int content[15] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 };
 
 #endif // PROJECT_NETWORKEDDATA_H

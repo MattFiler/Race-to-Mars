@@ -2,7 +2,9 @@
 #include "../Core/ServiceLocator.h"
 #include "../Players/AllPlayers.h"
 
-ShipRoom::ShipRoom(const std::string& room_name, Vector2 board_offset)
+ShipRoom::ShipRoom(const std::string& room_name,
+                   Vector2 board_offset,
+                   ship_rooms room_enum)
 {
   json room_config = file_handler.loadConfig("ship_rooms.json", room_name);
 
@@ -20,6 +22,8 @@ ShipRoom::ShipRoom(const std::string& room_name, Vector2 board_offset)
     (static_cast<float>(room_config["bounding_box_pos"][1])) + board_offset.y +
       (static_cast<float>(room_config["bounding_box_size"][1]) / 2));
   friendly_name = localiser.getString(room_config["friendly_name"]);
+
+  this_room_enum = room_enum;
 }
 
 /* Get the centre of the room */
@@ -68,7 +72,7 @@ std::string ShipRoom::getName()
   return friendly_name;
 }
 
-/* Get the localised name of the room */
+/* Is the position within our bounding box? */
 bool ShipRoom::isInBoundingBox(Vector2 _pos)
 {
   return bounding_box.isInside(_pos);
