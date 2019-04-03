@@ -325,7 +325,6 @@ void RaceToSpaceServer::run()
           debug_text.print(std::to_string(ready_count) + " clients in lobby " +
                            std::to_string(this_lobby->lobby_id) +
                            " are ready to start.");
-
           // All clients are ready to start
           if (ready_count == max_lobby_size)
           {
@@ -345,6 +344,7 @@ void RaceToSpaceServer::run()
             }
             // Else, start a new game
             else
+
             {
               debug_text.print("Starting gameplay in lobby " +
                                  std::to_string(this_lobby->lobby_id) + ".",

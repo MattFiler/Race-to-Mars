@@ -61,7 +61,7 @@ class GameScene : public Scene
 
   bool has_disconnected = false; // did local client disconnect?
   game_state current_state = game_state::PLAYING;
-  int current_progress_index = 0;
+  // int current_progress_index = 0;
   bool current_scene_lock_active = false; // optional "scene lock" to freeze
                                           // client interaction - useful for the
                                           // end of a turn?

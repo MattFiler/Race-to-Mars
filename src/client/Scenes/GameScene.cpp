@@ -132,7 +132,7 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
         players[i]->is_active = (received_data.content[1] == i);
       }
       // Re-sync progress index every turn.
-      current_progress_index = received_data.content[2];
+      Locator::getPlayers()->current_progress_index = received_data.content[2];
       // Re-sync issue cards every turn.
       if (received_data.content[12])
       {
@@ -145,7 +145,8 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
                                   static_cast<bool>(received_data.content[12]));
       }
       // Pull a new objective card if required.
-      if (current_progress_index % 3 == 0 && current_progress_index != 0)
+      if (Locator::getPlayers()->current_progress_index % 3 == 0 &&
+          Locator::getPlayers()->current_progress_index != 0)
       {
         board.setActiveObjectiveCard(
           received_data.content[8 + Locator::getPlayers()->my_player_index]);
@@ -251,17 +252,21 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
                          " to room '" + this_room.getName() + "'.");
       }
       // Sync ship board progress
-      current_progress_index = received_data.content[4];
-      debug_text.print("Sync: moved ship to position " +
-                       std::to_string(current_progress_index));
+      Locator::getPlayers()->current_progress_index = received_data.content[4];
+      debug_text.print(
+        "Sync: moved ship to position " +
+        std::to_string(Locator::getPlayers()->current_progress_index));
       break;
     }
     case data_roles::CLIENT_CHANGE_PROGRESS_INDEX:
     {
-      // debug_text.print("Changing current_progress index from:" +
-      // std::to_string(current_progress_index));
-      // current_progress_index = received_data.content[0];
-      // debug_text.print(". to:" + std::to_string(current_progress_index));
+      debug_text.print(
+        "Changing current_progress index from:" +
+        std::to_string(Locator::getPlayers()->current_progress_index));
+      Locator::getPlayers()->current_progress_index = received_data.content[0];
+      debug_text.print(
+        ". to:" +
+        std::to_string(Locator::getPlayers()->current_progress_index));
       break;
     }
     // Anything else is unhandled.
@@ -579,8 +584,8 @@ void GameScene::render()
       // Progress meters
       renderer->renderSprite(*game_sprites.progress_meter->getSprite(),
                              render_order::PRIORITY_UI);
-      game_sprites.progress_marker->yPos(
-        static_cast<float>(current_progress_index * 50));
+      game_sprites.progress_marker->yPos(static_cast<float>(
+        ((Locator::getPlayers()->current_progress_index + 3.5) * 30)));
       renderer->renderSprite(*game_sprites.progress_marker->getSprite(),
                              render_order::PRIORITY_UI);
 
