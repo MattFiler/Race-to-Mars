@@ -79,7 +79,7 @@ set(HEADER_FILES
         ../src/client/Actions/RollDiceAction.cpp
         ../src/client/Actions/RollDiceAction.h
         ../src/client/Board/ItemDeck.cpp
-        ../src/client/Board/ItemDeck.h ../src/gamelib/Math/SimpleMath.cpp ../src/gamelib/Math/SimpleMath.h ../src/gamelib/NetworkedData/DataShare.h)
+        ../src/client/Board/ItemDeck.h ../src/gamelib/Math/SimpleMath.cpp ../src/gamelib/Math/SimpleMath.h ../src/gamelib/NetworkedData/DataShare.h ../src/client/AnimatedSprite.cpp ../src/client/AnimatedSprite.h)
 
 ## the executable
 add_executable(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES})
