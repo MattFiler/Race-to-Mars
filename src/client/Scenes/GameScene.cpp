@@ -226,46 +226,47 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     // The active client has moved their player token, update it on our screen.
     case data_roles::CLIENT_MOVING_PLAYER_TOKEN:
     {
-      if (received_data.content[0] != Locator::getPlayers()->my_player_index)
+      if (received_data.content[0] == Locator::getPlayers()->my_player_index)
       {
-        ShipRoom this_room =
-          board.getRoom(static_cast<ship_rooms>(received_data.content[1]));
-
-        // Get new movement position and move to it.
-        Vector2 new_pos = this_room.getPosForPlayer(
-          players[received_data.content[0]]->current_class);
-        Locator::getPlayers()
-          ->getPlayer(players[received_data.content[0]]->current_class)
-          ->setPos(new_pos);
-        debug_text.print("Moving player " +
-                         std::to_string(received_data.content[0]) +
-                         " to room '" + this_room.getName() + "'.");
+        break;
       }
+
+      ShipRoom this_room =
+        board.getRoom(static_cast<ship_rooms>(received_data.content[1]));
+
+      // Get new movement position and move to it.
+      Vector2 new_pos = this_room.getPosForPlayer(
+        players[received_data.content[0]]->current_class);
+      Locator::getPlayers()
+        ->getPlayer(players[received_data.content[0]]->current_class)
+        ->setPos(new_pos);
+      debug_text.print("Moving player " +
+                       std::to_string(received_data.content[0]) + " to room '" +
+                       this_room.getName() + "'.");
       break;
     }
     // The active client's action points have changed, update it for us.
     case data_roles::CLIENT_ACTION_POINTS_CHANGED:
     {
       // Update another player's action point count
-      if (received_data.content[0] != Locator::getPlayers()->my_player_index)
+      if (received_data.content[0] == Locator::getPlayers()->my_player_index)
       {
-        players[received_data.content[0]]->action_points =
-          received_data.content[2];
+        break;
+      }
 
-        if (received_data.content[3] != -1)
-        {
-          board.assignActionPointToIssue(
-            players[received_data.content[0]]->current_class,
-            received_data.content[3],
-            received_data.content[1] - received_data.content[2]);
-          debug_text.print("Player " +
-                           std::to_string(received_data.content[0]) +
-                           " assigned " +
-                           std::to_string(received_data.content[1] -
-                                          received_data.content[2]) +
-                           " points to card " +
-                           std::to_string(received_data.content[3]) + ".");
-        }
+      players[received_data.content[0]]->action_points =
+        received_data.content[2];
+
+      if (received_data.content[3] != -1)
+      {
+        board.assignActionPointToIssue(
+          players[received_data.content[0]]->current_class,
+          received_data.content[3],
+          received_data.content[1] - received_data.content[2]);
+        debug_text.print(
+          "Player " + std::to_string(received_data.content[0]) + " assigned " +
+          std::to_string(received_data.content[1] - received_data.content[2]) +
+          " points to card " + std::to_string(received_data.content[3]) + ".");
       }
       break;
     }

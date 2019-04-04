@@ -375,11 +375,7 @@ void RaceToSpaceServer::run()
                        0);
             }
           }
-          if (did_send)
-          {
-            break;
-          }
-          else
+          if (!did_send)
           {
             sendToAll(client, data_to_send);
             break;
