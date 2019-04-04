@@ -32,7 +32,7 @@ struct CardOffsets
 
   // Issue card popup buttons
   Vector2 issue_popup_ap_btn_start = Vector2(106, 543); // Position of button 1
-  Vector2 issue_popup_ap_btn_offset = Vector2(145, 0);  // Offset of each button
+  Vector2 issue_popup_ap_btn_offset = Vector2(221, 0);  // Offset of each button
 
   // Issue card in-game
   Vector2 issue_ingame_start = Vector2(1100, 70); // Position of card 1

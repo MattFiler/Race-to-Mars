@@ -55,9 +55,9 @@ void GameScene::init()
   objective_card_popup.createSprite("UI/INGAME_UI/new_obj_bg.png");
   dice_roll_popup.createSprite("UI/INGAME_UI/dice_roll_bg.png");
 
-  // Create buttons for issue card popup
   for (int i = 0; i < 5; i++)
   {
+    // Create buttons for issue card popup
     ClickableButton& new_btn = issue_card_popup.createButton("UI/INGAME_UI/"
                                                              "assign_ap_button_"
                                                              "noshadow.png");
@@ -65,12 +65,23 @@ void GameScene::init()
       card_offsets.issue_popup_ap_btn_start +
       (card_offsets.issue_popup_ap_btn_offset * static_cast<float>(i)));
     new_btn.setActive(false);
+
+    // Create point overlays for issue card popup
+    ScaledSprite& new_sprite = issue_card_popup.createSprite("UI/INGAME_UI/"
+                                                             "score_overlay_"
+                                                             "cutout.png");
+    new_sprite.setPos(
+      card_offsets.issue_popup_start +
+      (card_offsets.issue_popup_offset * static_cast<float>(i)));
+    new_sprite.setDims(card_offsets.issue_popup_size);
+    new_sprite.hide();
   }
 
   // If we joined in progress, request a data sync from the server
   if (Locator::getPlayers()->joined_in_progress)
   {
-    Locator::getClient()->sendData(data_roles::CLIENT_REQUESTS_SYNC, 0);
+    Locator::getNetworkInterface()->sendData(data_roles::CLIENT_REQUESTS_SYNC,
+                                             0);
   }
   // Else, manually position our player based on their starting room
   else
@@ -86,9 +97,10 @@ void GameScene::init()
       players[Locator::getPlayers()->my_player_index]->current_class);
 
     // Move, and let everyone know we're moving
-    Locator::getClient()->sendData(data_roles::CLIENT_MOVING_PLAYER_TOKEN,
-                                   Locator::getPlayers()->my_player_index,
-                                   static_cast<int>(this_room.getEnum()));
+    Locator::getNetworkInterface()->sendData(
+      data_roles::CLIENT_MOVING_PLAYER_TOKEN,
+      Locator::getPlayers()->my_player_index,
+      static_cast<int>(this_room.getEnum()));
     Locator::getPlayers()
       ->getPlayer(
         players[Locator::getPlayers()->my_player_index]->current_class)
@@ -208,9 +220,26 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     case data_roles::CLIENT_ACTION_POINTS_CHANGED:
     {
       // Update another player's action point count
-      players[received_data.content[0]]->action_points =
-        received_data.content[1];
-      debug_text.print("A player spent or received action points.");
+      if (received_data.content[0] != Locator::getPlayers()->my_player_index)
+      {
+        players[received_data.content[0]]->action_points =
+          received_data.content[2];
+
+        if (received_data.content[3] != -1)
+        {
+          board.assignActionPointToIssue(
+            players[received_data.content[0]]->current_class,
+            received_data.content[3],
+            received_data.content[1] - received_data.content[2]);
+          debug_text.print("Player " +
+                           std::to_string(received_data.content[0]) +
+                           " assigned " +
+                           std::to_string(received_data.content[1] -
+                                          received_data.content[2]) +
+                           " points to card " +
+                           std::to_string(received_data.content[3]) + ".");
+        }
+      }
       break;
     }
     // If connecting to an in-progress game, the server needs to sync
@@ -264,9 +293,10 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
         // Broadcast out the position of us to keep all clients informed
         if (i == Locator::getPlayers()->my_player_index)
         {
-          Locator::getClient()->sendData(data_roles::CLIENT_MOVING_PLAYER_TOKEN,
-                                         Locator::getPlayers()->my_player_index,
-                                         static_cast<int>(this_room.getEnum()));
+          Locator::getNetworkInterface()->sendData(
+            data_roles::CLIENT_MOVING_PLAYER_TOKEN,
+            Locator::getPlayers()->my_player_index,
+            static_cast<int>(this_room.getEnum()));
         }
 
         debug_text.print("Sync: moved player " + std::to_string(i) +
@@ -329,8 +359,9 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
       if (keys.keyReleased("End Turn") &&
           players[Locator::getPlayers()->my_player_index]->is_active)
       {
-        Locator::getClient()->sendData(data_roles::CLIENT_WANTS_TO_END_TURN,
-                                       Locator::getPlayers()->my_player_index);
+        Locator::getNetworkInterface()->sendData(
+          data_roles::CLIENT_WANTS_TO_END_TURN,
+          Locator::getPlayers()->my_player_index);
         current_scene_lock_active = true;
         debug_text.print("Requesting to end my go!!");
       }
@@ -338,10 +369,15 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
           players[Locator::getPlayers()->my_player_index]->is_active)
       {
         // Debug: change my action points to 10.
-        Locator::getClient()->sendData(data_roles::CLIENT_ACTION_POINTS_CHANGED,
-                                       Locator::getPlayers()->my_player_index,
-                                       10);
-        debug_text.print("Debug: changing my action points to 10!");
+        int new_ap = 10;
+        Locator::getNetworkInterface()->sendData(
+          data_roles::CLIENT_ACTION_POINTS_CHANGED,
+          Locator::getPlayers()->my_player_index,
+          players[Locator::getPlayers()->my_player_index]->action_points,
+          new_ap,
+          -1);
+        players[Locator::getPlayers()->my_player_index]->action_points = new_ap;
+        debug_text.print("Debug: changed my action points to 10!");
       }
       break;
     }
@@ -359,7 +395,7 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
       else if (pause_menu.selectedItemWas("MENU_QUIT"))
       {
         // Alert everyone we're leaving and then return to menu
-        Locator::getClient()->sendData(
+        Locator::getNetworkInterface()->sendData(
           data_roles::CLIENT_DISCONNECTING_FROM_LOBBY,
           Locator::getPlayers()->my_player_index);
         next_scene = game_global_scenes::MAIN_MENU;
@@ -392,6 +428,51 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
     issue_card_popup.clickHandler(mouse_pos);
     objective_card_popup.clickHandler(mouse_pos);
     dice_roll_popup.clickHandler(mouse_pos);
+
+    // Handle interactions for all active buttons in issue popup when visible
+    if (issue_card_popup.isVisible())
+    {
+      int ap_button_index = 0;
+      for (ClickableButton* button : issue_card_popup.getInternalButtons())
+      {
+        if (button->isActive())
+        {
+          if (button->clicked())
+          {
+            int& my_action_points =
+              players[Locator::getPlayers()->my_player_index]->action_points;
+            int points_to_assign = 1;
+            if (my_action_points >= points_to_assign)
+            {
+              // Assign action point to the selected issue - this currently
+              // assigns ONE action point, maybe in future have buttons for
+              // varying amounts?
+              Locator::getNetworkInterface()->sendData(
+                data_roles::CLIENT_ACTION_POINTS_CHANGED,
+                Locator::getPlayers()->my_player_index,
+                my_action_points,
+                my_action_points - points_to_assign,
+                ap_button_index);
+              board.assignActionPointToIssue(
+                players[Locator::getPlayers()->my_player_index]->current_class,
+                ap_button_index,
+                points_to_assign);
+              my_action_points -= points_to_assign;
+              debug_text.print("Assigned action points! My total is now " +
+                               std::to_string(my_action_points) + ".");
+            }
+            else
+            {
+              // BEEP BOOP WE DON'T HAVE ENOUGH ACTION POINTS, some kind of UI
+              // prompt here would be nice!
+              debug_text.print("COULD NOT ASSIGN ACTION POINTS! WE HAVE " +
+                               std::to_string(my_action_points) + ".");
+            }
+          }
+          ap_button_index++;
+        }
+      }
+    }
     return;
   }
 
@@ -419,9 +500,10 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
             players[Locator::getPlayers()->my_player_index]->current_class);
 
           // Move, and let everyone know we're moving
-          Locator::getClient()->sendData(data_roles::CLIENT_MOVING_PLAYER_TOKEN,
-                                         Locator::getPlayers()->my_player_index,
-                                         static_cast<int>(this_room.getEnum()));
+          Locator::getNetworkInterface()->sendData(
+            data_roles::CLIENT_MOVING_PLAYER_TOKEN,
+            Locator::getPlayers()->my_player_index,
+            static_cast<int>(this_room.getEnum()));
           Locator::getPlayers()
             ->getPlayer(
               players[Locator::getPlayers()->my_player_index]->current_class)
@@ -465,6 +547,27 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
             }
             button->setActive(true);
             button_index++;
+          }
+        }
+        // Show/hide all card overlays as required (card overlays match the card
+        // size, so we can filter them this way)
+        int card_overlay_index = 0;
+        for (ScaledSprite* sprite : issue_card_popup.getInternalSprites())
+        {
+          if (sprite->getBoundingBox().width ==
+                card_offsets.issue_popup_size.x &&
+              sprite->getBoundingBox().height ==
+                card_offsets.issue_popup_size.y)
+          {
+            if (card_overlay_index < board.activeIssuesCount())
+            {
+              sprite->show();
+            }
+            else
+            {
+              sprite->hide();
+            }
+            card_overlay_index++;
           }
         }
         issue_card_popup.show();
@@ -630,6 +733,31 @@ void GameScene::render()
   issue_card_popup.render();
   objective_card_popup.render();
   dice_roll_popup.render();
+
+  // Show the assigned action points per card if visible
+  if (issue_card_popup.isVisible())
+  {
+    issue_card_popup.clearAllRenderText();
+    for (IssueCard& card : board.getIssueCards())
+    {
+      issue_card_popup.renderTextAtPosition(
+        std::to_string(card.getAssignedPoints(player_classes::MEDIC)),
+        card.getPosition() + Vector2(80 * card.getSprite()->getScalar(),
+                                     290 * card.getSprite()->getScalar()));
+      issue_card_popup.renderTextAtPosition(
+        std::to_string(card.getAssignedPoints(player_classes::COMMUNICATIONS)),
+        card.getPosition() + Vector2(183 * card.getSprite()->getScalar(),
+                                     290 * card.getSprite()->getScalar()));
+      issue_card_popup.renderTextAtPosition(
+        std::to_string(card.getAssignedPoints(player_classes::PILOT)),
+        card.getPosition() + Vector2(183 * card.getSprite()->getScalar(),
+                                     329 * card.getSprite()->getScalar()));
+      issue_card_popup.renderTextAtPosition(
+        std::to_string(card.getAssignedPoints(player_classes::ENGINEER)),
+        card.getPosition() + Vector2(80 * card.getSprite()->getScalar(),
+                                     329 * card.getSprite()->getScalar()));
+    }
+  }
 
   // If active, render the "scene lock" overlay (cuts out interaction while
   // syncing)

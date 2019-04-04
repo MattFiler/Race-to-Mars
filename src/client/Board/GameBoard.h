@@ -39,6 +39,9 @@ class GameBoard
   int activeIssuesCount();
   ObjectiveCard* getObjectiveCard();
 
+  void
+  assignActionPointToIssue(player_classes _class, int _issue, int _points = 1);
+
   ShipRoom getRoom(ship_rooms _room);
 
   void render(bool _obj_popup, bool _issue_popup);

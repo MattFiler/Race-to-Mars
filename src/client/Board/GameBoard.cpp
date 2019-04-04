@@ -170,6 +170,14 @@ bool GameBoard::updateActiveIssueCards()
   return false;
 }
 
+/* Assign action points to specified issue card */
+void GameBoard::assignActionPointToIssue(player_classes _class,
+                                         int _issue,
+                                         int _points)
+{
+  active_issues.at(_issue).addActionPoints(_class, _points);
+}
+
 /* Render the board */
 void GameBoard::render(bool _obj_popup, bool _issue_popup)
 {
@@ -417,7 +425,7 @@ void GameBoard::handleIssueCardEvents(issue_cards _card_type)
            * when player rolls dice and issue has been activated. see below.
            *
            * */
-          Locator::getClient()->sendData(
+          Locator::getNetworkInterface()->sendData(
             data_roles::CLIENT_CHANGE_PROGRESS_INDEX,
             Locator::getPlayers()->current_progress_index - 2);
         }

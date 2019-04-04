@@ -77,6 +77,14 @@ ClickableButton& PopupWindow::referenceButton(ClickableButton& ref_button)
   return ref_button;
 }
 
+/* Add text to render at a specified position */
+void PopupWindow::renderTextAtPosition(const std::string& text,
+                                       Vector2 position)
+{
+  popup_text.push_back(text);
+  popup_text_pos.push_back(position);
+}
+
 /* Position the close button */
 void PopupWindow::positionCloseButton(Vector2 _pos)
 {
@@ -171,22 +179,41 @@ void PopupWindow::render()
   close_button->render();
 
   // Render other added buttons
-  for (ClickableButton* button : popup_buttons)
+  for (ClickableButton* button : popup_buttons_referenced)
   {
     button->render();
   }
-  for (ClickableButton* button : popup_buttons_referenced)
+  for (ClickableButton* button : popup_buttons)
   {
     button->render();
   }
 
   // Render popup contents
-  for (ScaledSprite* content : popup_sprites)
-  {
-    renderer->renderSprite(*content->getSprite());
-  }
   for (ScaledSprite* content : popup_sprites_referenced)
   {
     renderer->renderSprite(*content->getSprite());
   }
+  for (ScaledSprite* content : popup_sprites)
+  {
+    renderer->renderSprite(*content->getSprite());
+  }
+
+  // Render currently added text
+  int text_index = 0;
+  for (std::string& text : popup_text)
+  {
+    Vector2 position = popup_text_pos.at(text_index);
+    renderer->renderText(text,
+                         static_cast<int>(position.x),
+                         static_cast<int>(position.y),
+                         ASGE::COLOURS::WHITE);
+    text_index++;
+  }
+}
+
+/* Clear all render text */
+void PopupWindow::clearAllRenderText()
+{
+  popup_text.clear();
+  popup_text_pos.clear();
 }
