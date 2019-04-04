@@ -54,6 +54,7 @@ class GameScene : public Scene
 
   bool is_new_turn = false;
   bool got_new_obj_card = false;
+  bool got_new_obj_this_turn = false;
 
   CardOffsets card_offsets;
 

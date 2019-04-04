@@ -179,7 +179,8 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       }
       // Pull a new objective card if required.
       if (Locator::getPlayers()->current_progress_index % 3 == 0 &&
-          Locator::getPlayers()->current_progress_index != 0)
+          Locator::getPlayers()->current_progress_index != 0 &&
+          !got_new_obj_this_turn)
       {
         board.setActiveObjectiveCard(
           received_data.content[8 + Locator::getPlayers()->my_player_index]);
@@ -607,10 +608,13 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
     // Show popup
     issue_card_popup.showForTime(5);
     is_new_turn = true;
+    got_new_obj_this_turn = false;
   }
   if (board.updateActiveObjectiveCard())
   {
     got_new_obj_card = true;
+    got_new_obj_this_turn = true;
+    debug_text.print("got_new_obj_card");
   }
 
   // Show objective popup if needed
