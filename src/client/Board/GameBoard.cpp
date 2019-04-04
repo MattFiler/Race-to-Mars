@@ -223,14 +223,11 @@ void GameBoard::render(bool _obj_popup, bool _issue_popup)
     }
 
     // Render objective card in-game
-    if (!_issue_popup)
+    if (!_issue_popup && active_obj_card != nullptr)
     {
-      if (active_obj_card != nullptr)
-      {
-        active_obj_card->setDimensions(card_offsets.obj_ingame_size);
-        active_obj_card->setPosition(card_offsets.obj_ingame_pos);
-        active_obj_card->render();
-      }
+      active_obj_card->setDimensions(card_offsets.obj_ingame_size);
+      active_obj_card->setPosition(card_offsets.obj_ingame_pos);
+      active_obj_card->render();
     }
   }
 }
