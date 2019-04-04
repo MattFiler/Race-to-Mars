@@ -203,6 +203,8 @@ void RaceToSpace::update(const ASGE::GameTime& game_time)
   double x_pos, y_pos;
   inputs.get()->getCursorPos(x_pos, y_pos);
   cursor_pointer.updatePosition(x_pos, y_pos);
+  cursor_pointer.setCursorActive(false); // this is then overridden by
+                                         // hover-able items
   if (!scene_manager.update(game_time))
   {
     signalExit();

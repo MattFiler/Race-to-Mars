@@ -10,13 +10,20 @@ ClickableButton::ClickableButton(const std::string& sprite_path)
 }
 
 /* Clicked inside the button */
-bool ClickableButton::clicked()
+bool ClickableButton::update()
 {
+  sprite->getSprite()->opacity(0.5f);
   if (is_active)
   {
     Vector2 _pos = Vector2(Locator::getCursor()->getPosition().x,
                            Locator::getCursor()->getPosition().y);
-    return sprite->getBoundingBox().isInside(_pos);
+    if (sprite->getBoundingBox().isInside(_pos))
+    {
+      Locator::getCursor()->setCursorActive(true);
+      sprite->getSprite()->opacity(1.0f);
+      return true;
+    }
+    return false;
   }
   else
   {

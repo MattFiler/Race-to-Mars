@@ -116,8 +116,16 @@ void PopupWindow::hide()
 /* Update the popup */
 void PopupWindow::update(const ASGE::GameTime& game_time)
 {
-  // Don't update if inactive or manually opened
-  if (!is_active || timeout == -1)
+  // Don't update anything if inactive
+  if (!is_active)
+  {
+    return;
+  }
+
+  close_button->update();
+
+  // Don't update timer if manually opened
+  if (timeout == -1)
   {
     return;
   }

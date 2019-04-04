@@ -16,7 +16,8 @@ class ClickableButton
   void setPos(Vector2 _pos);
   Vector2 getPos();
 
-  bool clicked();
+  bool update();
+  bool clicked() { return update(); }; // alt syntax
 
   void render();
 

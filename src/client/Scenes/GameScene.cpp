@@ -498,29 +498,34 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
     is_new_turn = false;
   }
 
-  /* CURSOR */
+  /* STATE-SPECIFIC CURSOR */
+
+  // While our cursor hover state is handled by individual buttons, more generic
+  // game stuff like the card hovering needs to be handled here. By default, the
+  // cursor is set to inactive at the start of every update call, this will then
+  // override that to true if needed.
+
   Vector2 mouse_pos = Vector2(Locator::getCursor()->getPosition().x,
                               Locator::getCursor()->getPosition().y);
 
-  bool cursor_active = false;
   if (!objective_card_popup.isVisible() && !issue_card_popup.isVisible() &&
       !dice_roll_popup.isVisible())
   {
     // Update to hover cursor for cards
-    cursor_active = (board.isHoveringOverIssueCard(mouse_pos) ||
-                     board.isHoveringOverObjectiveCard(mouse_pos));
+    if (board.isHoveringOverIssueCard(mouse_pos) ||
+        board.isHoveringOverObjectiveCard(mouse_pos))
+    {
+      Locator::getCursor()->setCursorActive(true);
+    }
 
     // If we're the active player, aren't syncing, and don't already have an
     // active player, check if we're hovering over a room
     if (players[Locator::getPlayers()->my_player_index]->is_active &&
-        !current_scene_lock_active && !cursor_active)
+        !current_scene_lock_active && board.isHoveringOverRoom(mouse_pos))
     {
-      cursor_active = board.isHoveringOverRoom(mouse_pos);
+      Locator::getCursor()->setCursorActive(true);
     }
   }
-
-  // Finally, actually update it
-  Locator::getCursor()->setCursorActive(cursor_active);
 
   return next_scene;
 }
