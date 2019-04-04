@@ -14,6 +14,7 @@ class PopupWindow
   ~PopupWindow();
 
   void keyHandler(KeyHandler keys);
+  void clickHandler(Vector2 mouse_pos);
 
   ScaledSprite& createSprite(const std::string& sprite_path);
   void clearAllInternalSprites() { popup_sprites.clear(); };

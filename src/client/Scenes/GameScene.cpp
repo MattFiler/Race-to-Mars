@@ -53,6 +53,7 @@ void GameScene::init()
   // Create popup title sprites
   issue_card_popup.createSprite("UI/INGAME_UI/new_issues_bg.png");
   objective_card_popup.createSprite("UI/INGAME_UI/new_obj_bg.png");
+  dice_roll_popup.createSprite("UI/INGAME_UI/dice_roll_bg.png");
 
   // If we joined in progress, request a data sync from the server
   if (Locator::getPlayers()->joined_in_progress)
@@ -294,14 +295,16 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
   keys.registerEvent(static_cast<const ASGE::KeyEvent*>(data.get()));
 
   // Force all inputs to popups when visible
-  if (issue_card_popup.isVisible() || objective_card_popup.isVisible())
+  if (issue_card_popup.isVisible() || objective_card_popup.isVisible() ||
+      dice_roll_popup.isVisible())
   {
     issue_card_popup.keyHandler(keys);
     objective_card_popup.keyHandler(keys);
+    dice_roll_popup.keyHandler(keys);
     return;
   }
 
-  // Game inputs
+  // Game input states
   switch (current_state)
   {
     case game_state::PLAYING:
@@ -361,8 +364,8 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
 {
   auto click = static_cast<const ASGE::ClickEvent*>(data.get());
 
-  // Disable interaction when popup is visible
-  if (issue_card_popup.isVisible() || objective_card_popup.isVisible())
+  // Only handle clicks if we actually clicked!
+  if (click->action != ASGE::E_MOUSE_CLICK)
   {
     return;
   }
@@ -370,11 +373,17 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
   Vector2 mouse_pos = Vector2(Locator::getCursor()->getPosition().x,
                               Locator::getCursor()->getPosition().y);
 
-  if (click->action != ASGE::E_MOUSE_CLICK)
+  // Force all inputs to popups when active
+  if (issue_card_popup.isVisible() || objective_card_popup.isVisible() ||
+      dice_roll_popup.isVisible())
   {
+    issue_card_popup.clickHandler(mouse_pos);
+    objective_card_popup.clickHandler(mouse_pos);
+    dice_roll_popup.clickHandler(mouse_pos);
     return;
   }
 
+  // Game input states
   switch (current_state)
   {
     case game_state::PLAYING:
@@ -449,6 +458,7 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
   // Update popups
   issue_card_popup.update(game_time);
   objective_card_popup.update(game_time);
+  dice_roll_popup.update(game_time);
 
   // Update cards if required and show popup if needed
   if (board.updateActiveIssueCards())
@@ -461,6 +471,7 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
       issue_card_popup.referenceSprite(*issue_card.getSprite());
     }
     issue_card_popup.showForTime(5);
+    is_new_turn = true;
   }
   if (board.updateActiveObjectiveCard())
   {
@@ -478,12 +489,22 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
     got_new_obj_card = false;
   }
 
+  // Show dice roll popup if a new active turn
+  if (is_new_turn &&
+      players[Locator::getPlayers()->my_player_index]->is_active &&
+      !issue_card_popup.isVisible() && !objective_card_popup.isVisible())
+  {
+    dice_roll_popup.show();
+    is_new_turn = false;
+  }
+
   /* CURSOR */
   Vector2 mouse_pos = Vector2(Locator::getCursor()->getPosition().x,
                               Locator::getCursor()->getPosition().y);
 
   bool cursor_active = false;
-  if (!objective_card_popup.isVisible() && !issue_card_popup.isVisible())
+  if (!objective_card_popup.isVisible() && !issue_card_popup.isVisible() &&
+      !dice_roll_popup.isVisible())
   {
     // Update to hover cursor for cards
     cursor_active = (board.isHoveringOverIssueCard(mouse_pos) ||
@@ -577,6 +598,7 @@ void GameScene::render()
   // Render popups if needed
   issue_card_popup.render();
   objective_card_popup.render();
+  dice_roll_popup.render();
 
   // If active, render the "scene lock" overlay (cuts out interaction while
   // syncing)

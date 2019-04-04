@@ -27,6 +27,12 @@ void PopupWindow::keyHandler(KeyHandler keys)
   }
 }
 
+/* Handle mouse inputs */
+void PopupWindow::clickHandler(Vector2 mouse_pos)
+{
+  // CLICK BUTTONS HERE?!
+}
+
 /* Create a sprite for the popup */
 ScaledSprite& PopupWindow::createSprite(const std::string& sprite_path)
 {

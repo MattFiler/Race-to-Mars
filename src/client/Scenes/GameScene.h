@@ -49,8 +49,10 @@ class GameScene : public Scene
   GameSprites game_sprites;
   LobbyPlayer* players[4] = { nullptr, nullptr, nullptr, nullptr };
 
+  /* POPUPS */
   PopupWindow issue_card_popup;
   PopupWindow objective_card_popup;
+  PopupWindow dice_roll_popup;
 
   bool is_new_turn = false;
   bool got_new_obj_card = false;
