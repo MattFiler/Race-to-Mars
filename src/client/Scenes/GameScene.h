@@ -40,6 +40,8 @@ class GameScene : public Scene
   game_global_scenes update(const ASGE::GameTime& game_time) override;
   void render() override;
 
+  void handleIssueCardEvents(issue_cards _card_type);
+
  private:
   GameBoard board;
   Menu pause_menu;

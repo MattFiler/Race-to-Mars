@@ -400,7 +400,7 @@ void GameBoard::handleIssueCardEvents(issue_cards _card_type)
         if (Locator::getPlayers()->my_player_index ==
             static_cast<int>(player_classes::PILOT))
         {
-          pilot_blckhole = true;
+          pilot_blackhole = true;
           Locator::getPlayers()
             ->getPlayer(static_cast<player_classes>(
               Locator::getPlayers()->my_player_index))
@@ -415,7 +415,19 @@ void GameBoard::handleIssueCardEvents(issue_cards _card_type)
         if (Locator::getPlayers()->my_player_index !=
             static_cast<int>(player_classes::PILOT))
         {
-          break;
+          bonus_movement = true;
+          Locator::getPlayers()
+            ->getPlayer(static_cast<player_classes>(
+              Locator::getPlayers()->my_player_index))
+            ->setDiceRolls(1);
+          /* this is just to test if this feature is working, needs to moved to
+           * when player rolls dice and issue has been activated. see below.
+           *
+           * */
+          Locator::getClient()->sendData(
+            data_roles::CLIENT_CHANGE_PROGRESS_INDEX,
+            Locator::getPlayers()->current_progress_index - 2);
+          // break; - from merge, unsure if needs to be kept?
         }
 
         pilot_moveforward = true;
@@ -436,4 +448,37 @@ void GameBoard::handleIssueCardEvents(issue_cards _card_type)
         break;
     }
   }
+}
+
+void GameBoard::setActiveItemCard(int card_index)
+{
+  for (int i = 0; i < Locator::getPlayers()
+                        ->getPlayer(static_cast<player_classes>(
+                          Locator::getPlayers()->my_player_index))
+                        ->getMaxItems();
+       ++i)
+  {
+    if (active_item_card[i] == -1)
+    {
+      active_item_card[i] = card_index;
+    }
+  }
+}
+
+bool GameBoard::updateActiveItemCard()
+{
+  //  for(int i = 0; i <
+  //  Locator::getPlayers()->getPlayer(static_cast<player_classes>(Locator::getPlayers()->my_player_index))->getMaxItems();
+  //  ++i)
+  //  {
+  //    if (active_item_card[i] != -1 && !slot_active[i])
+  //    {
+  //      item_inventory.emplace_back(static_cast<item_cards>(active_item_card[i]));
+  //      item_slot_active[i] = true;
+  //      debug_text.print("Creating item card: " +
+  //                       std::to_string(active_issue_cards[i]));
+  //      return true;
+  //    }
+  //  }
+  return false;
 }

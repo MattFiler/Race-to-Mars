@@ -279,6 +279,15 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       }
       break;
     }
+    // client requested item card, if this client is == to the one that
+    // requested, add item card to current items.
+    case data_roles::CLIENT_REQUESTED_ITEM_CARD:
+    {
+      debug_text.print("adding item card of type" +
+                       std::to_string(received_data.content[1]));
+      board.setActiveItemCard(received_data.content[1]);
+      break;
+    }
     case data_roles::SERVER_SYNCS_POSITION_INFO:
     {
       for (int i = 0; i < 4; i++)
@@ -379,6 +388,11 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
           -1);
         players[Locator::getPlayers()->my_player_index]->action_points = new_ap;
         debug_text.print("Debug: changed my action points to 10!");
+      }
+      if (keys.keyReleased("Debug Buy Item"))
+      {
+        Locator::getClient()->sendData(data_roles::CLIENT_REQUESTED_ITEM_CARD,
+                                       Locator::getPlayers()->my_player_index);
       }
       break;
     }
