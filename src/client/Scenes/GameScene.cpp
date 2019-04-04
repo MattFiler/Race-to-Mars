@@ -549,27 +549,6 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
             button_index++;
           }
         }
-        // Show/hide all card overlays as required (card overlays match the card
-        // size, so we can filter them this way)
-        int card_overlay_index = 0;
-        for (ScaledSprite* sprite : issue_card_popup.getInternalSprites())
-        {
-          if (sprite->getBoundingBox().width ==
-                card_offsets.issue_popup_size.x &&
-              sprite->getBoundingBox().height ==
-                card_offsets.issue_popup_size.y)
-          {
-            if (card_overlay_index < board.activeIssuesCount())
-            {
-              sprite->show();
-            }
-            else
-            {
-              sprite->hide();
-            }
-            card_overlay_index++;
-          }
-        }
         issue_card_popup.show();
       }
     }
@@ -606,6 +585,28 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
     {
       issue_card_popup.referenceSprite(*issue_card.getSprite());
     }
+
+    // Show/hide all card overlays as required (card overlays match the card
+    // size, so we can filter them this way)
+    int card_overlay_index = 0;
+    for (ScaledSprite* sprite : issue_card_popup.getInternalSprites())
+    {
+      if (sprite->getBoundingBox().width == card_offsets.issue_popup_size.x &&
+          sprite->getBoundingBox().height == card_offsets.issue_popup_size.y)
+      {
+        if (card_overlay_index < board.activeIssuesCount())
+        {
+          sprite->show();
+        }
+        else
+        {
+          sprite->hide();
+        }
+        card_overlay_index++;
+      }
+    }
+
+    // Show popup
     issue_card_popup.showForTime(5);
     is_new_turn = true;
   }
@@ -615,7 +616,7 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
   }
 
   // Show objective popup if needed
-  if (got_new_obj_card && !issue_card_popup.isVisible())
+  if (is_new_turn && got_new_obj_card && !issue_card_popup.isVisible())
   {
     objective_card_popup.clearAllReferencedSprites();
     objective_card_popup.referenceSprite(*game_sprites.popup_card_shadows[0]);

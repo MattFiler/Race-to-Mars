@@ -3,6 +3,8 @@
 /* Setup the card */
 IssueCard::IssueCard(issue_cards _card_type)
 {
+  debug_text.print("CREATING NEW CARD INSTANCE");
+
   card_config = file_handler.openAsJSON("CONFIGS/cards.json");
   auto card_type = static_cast<size_t>(_card_type);
 

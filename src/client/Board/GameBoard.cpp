@@ -95,6 +95,7 @@ void GameBoard::setActiveObjectiveCard(int card_index)
 /* Set active issue cards to update */
 void GameBoard::setActiveIssueCards(int card_index[5], bool is_new_rotation)
 {
+  // Remove solved issues
   for (size_t i = 0; i < active_issues.size(); ++i)
   {
     if (active_issues[i].isSolved())
