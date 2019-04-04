@@ -22,7 +22,7 @@ void DebugText::print(const std::string& debug_string, int severity)
                              << std::endl;
         break;
       }
-      default:
+      case 0:
       {
         ASGE::DebugPrinter{} << now_time.substr(0, now_time.length() - 1)
                              << " - " << termcolor::white << debug_string

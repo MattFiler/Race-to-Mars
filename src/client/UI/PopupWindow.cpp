@@ -34,7 +34,7 @@ void PopupWindow::keyHandler(KeyHandler keys)
 }
 
 /* Handle mouse inputs */
-void PopupWindow::clickHandler(Vector2 mouse_pos)
+void PopupWindow::clickHandler()
 {
   // Was manually opened, check for close request
   if (timeout == -1)

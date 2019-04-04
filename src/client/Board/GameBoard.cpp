@@ -135,10 +135,7 @@ bool GameBoard::updateActiveObjectiveCard()
     return false;
   }
 
-  if (active_obj_card != nullptr)
-  {
-    delete active_obj_card;
-  }
+  delete active_obj_card;
   active_obj_card =
     new ObjectiveCard(static_cast<objective_cards>(new_obj_card));
   debug_text.print("Active objective card set to " +
@@ -151,24 +148,25 @@ bool GameBoard::updateActiveObjectiveCard()
 /* Update the active issue cards if required */
 bool GameBoard::updateActiveIssueCards()
 {
-  if (update_issues)
+  if (!update_issues)
   {
-    for (int i = 0; i < game_config.max_issue_cards; ++i)
-    {
-      if (active_issue_cards[i] != -1 && !slot_active[i])
-      {
-        active_issues.emplace_back(
-          IssueCard(static_cast<issue_cards>(active_issue_cards[i])));
-        slot_active[i] = true;
-        debug_text.print("Creating issue card " +
-                         std::to_string(active_issue_cards[i]) + ".");
-        handleIssueCardEvents(static_cast<issue_cards>(active_issue_cards[i]));
-      }
-    }
-    update_issues = false;
-    return true;
+    return false;
   }
-  return false;
+
+  for (int i = 0; i < game_config.max_issue_cards; ++i)
+  {
+    if (active_issue_cards[i] != -1 && !slot_active[i])
+    {
+      active_issues.emplace_back(
+        IssueCard(static_cast<issue_cards>(active_issue_cards[i])));
+      slot_active[i] = true;
+      debug_text.print("Creating issue card " +
+                       std::to_string(active_issue_cards[i]) + ".");
+      handleIssueCardEvents(static_cast<issue_cards>(active_issue_cards[i]));
+    }
+  }
+  update_issues = false;
+  return true;
 }
 
 /* Assign action points to specified issue card */
@@ -414,22 +412,24 @@ void GameBoard::handleIssueCardEvents(issue_cards _card_type)
       {
         // If this player is the pilot, roll dice, if above 4, move ship
         // forward.
-        if (Locator::getPlayers()->my_player_index ==
+        if (Locator::getPlayers()->my_player_index !=
             static_cast<int>(player_classes::PILOT))
         {
-          pilot_moveforward = true;
-          Locator::getPlayers()
-            ->getPlayer(static_cast<player_classes>(
-              Locator::getPlayers()->my_player_index))
-            ->setDiceRolls(1);
-          /* this is just to test if this feature is working, needs to moved to
-           * when player rolls dice and issue has been activated. see below.
-           *
-           * */
-          Locator::getNetworkInterface()->sendData(
-            data_roles::CLIENT_CHANGE_PROGRESS_INDEX,
-            Locator::getPlayers()->current_progress_index - 2);
+          break;
         }
+
+        pilot_moveforward = true;
+        Locator::getPlayers()
+          ->getPlayer(
+            static_cast<player_classes>(Locator::getPlayers()->my_player_index))
+          ->setDiceRolls(1);
+        /* this is just to test if this feature is working, needs to moved to
+         * when player rolls dice and issue has been activated. see below.
+         *
+         * */
+        Locator::getNetworkInterface()->sendData(
+          data_roles::CLIENT_CHANGE_PROGRESS_INDEX,
+          Locator::getPlayers()->current_progress_index - 2);
         break;
       }
       default:

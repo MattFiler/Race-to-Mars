@@ -425,9 +425,9 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
   if (issue_card_popup.isVisible() || objective_card_popup.isVisible() ||
       dice_roll_popup.isVisible())
   {
-    issue_card_popup.clickHandler(mouse_pos);
-    objective_card_popup.clickHandler(mouse_pos);
-    dice_roll_popup.clickHandler(mouse_pos);
+    issue_card_popup.clickHandler();
+    objective_card_popup.clickHandler();
+    dice_roll_popup.clickHandler();
 
     // Handle interactions for all active buttons in issue popup when visible
     if (issue_card_popup.isVisible())
@@ -684,7 +684,8 @@ void GameScene::render()
       {
         float this_pos = static_cast<float>(180 * i);
 
-        // Player tab
+        // Player tab - maybe only render this if they're in-game, as players
+        // cued up in the lobby still show this otherwise
         Locator::getPlayers()
           ->getPlayer(players[i]->current_class)
           ->getGameTabSprite()
