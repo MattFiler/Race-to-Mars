@@ -72,11 +72,11 @@ bool OnBoardObject::isInBoundingBox(Vector2 _pos)
 /* Render the counter's sprite */
 void OnBoardObject::render(render_order _order)
 {
-  renderer->renderSprite(*sprite->getSprite(), _order);
   if (has_shadow)
   {
     // shadow render order should always be one below current
     renderer->renderSprite(*sprite_shadow->getSprite(),
                            static_cast<render_order>(_order - 1));
   }
+  renderer->renderSprite(*sprite->getSprite(), _order);
 }

@@ -72,7 +72,7 @@ bool RaceToSpace::init()
   Locator::setupCursor(&cursor_pointer);
 
   // Setup renderer config
-  renderer->setSpriteMode(ASGE::SpriteSortMode::FRONT_TO_BACK);
+  // renderer->setSpriteMode(ASGE::SpriteSortMode::FRONT_TO_BACK);
 
   // Initialise our players & pass to locator
   all_players = new Players();

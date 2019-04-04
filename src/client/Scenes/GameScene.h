@@ -4,6 +4,7 @@
 #include "Scene.h"
 #include "client/Board/GameBoard.h"
 #include "client/UI/Cursor.h"
+#include "client/UI/PopupWindow.h"
 #include <client/Cards/IssueCard.h>
 #include <client/Cards/ItemCard.h>
 #include <client/Cards/ObjectiveCard.h>
@@ -18,16 +19,13 @@ struct GameSprites
   ScaledSprite* progress_marker = nullptr;
   ScaledSprite* sync_overlay = nullptr;
   ScaledSprite* disconnect_overlay = nullptr;
-  ScaledSprite* issue_popup = nullptr;
-  ScaledSprite* objective_popup = nullptr;
-  ScaledSprite* roll_dice = nullptr;
 };
 
 class GameScene : public Scene
 {
  public:
   GameScene() { debug_text.print("entered game scene."); };
-  ~GameScene() = default;
+  ~GameScene() override = default;
 
   void init() override;
 
@@ -48,10 +46,8 @@ class GameScene : public Scene
   GameSprites game_sprites;
   LobbyPlayer* players[4] = { nullptr, nullptr, nullptr, nullptr };
 
-  // Clicked cards from the popup - this all needs to be moved to its own class
-  // as it doesn't belong here. Will be done!
-  ObjectiveCard* clicked_obj_card = nullptr;
-  IssueCard* clicked_issue_card = nullptr;
+  PopupWindow issue_card_popup;
+  PopupWindow objective_card_popup;
 
   bool is_new_turn = false;
   bool got_new_obj_card = false;

@@ -171,7 +171,7 @@ bool GameBoard::updateActiveIssueCards()
 }
 
 /* Render the board */
-void GameBoard::render(game_state _state)
+void GameBoard::render(bool _obj_popup, bool _issue_popup)
 {
   // Ship
   m_ship.render();
@@ -179,7 +179,7 @@ void GameBoard::render(game_state _state)
   // Players
   m_players->render(game_global_scenes::IN_GAME);
 
-  if (_state == game_state::OBJECTIVE_CARD_POPUP)
+  if (_obj_popup)
   {
     // Position card and resize appropriately if it exists (should do)
     if (active_obj_card != nullptr)
@@ -195,7 +195,7 @@ void GameBoard::render(game_state _state)
     for (auto& active_issue : active_issues)
     {
       // Position cards and resize appropriately
-      if (_state == game_state::ISSUE_CARDS_POPUP)
+      if (_issue_popup)
       {
         active_issue.setDimensions(card_offsets.issue_popup_size);
         active_issue.setPosition(
@@ -217,20 +217,13 @@ void GameBoard::render(game_state _state)
     }
 
     // Render objective card in-game
-    if (_state != game_state::ISSUE_CARDS_POPUP)
+    if (!_issue_popup)
     {
       if (active_obj_card != nullptr)
       {
         active_obj_card->setDimensions(card_offsets.obj_ingame_size);
         active_obj_card->setPosition(card_offsets.obj_ingame_pos);
         active_obj_card->render(render_order::PRIORITY_CARD_6);
-      }
-    }
-
-    // Render roll btn in-game
-    {
-      if (_state == game_state::IS_ROLLING_DICE)
-      {
       }
     }
   }
@@ -249,6 +242,13 @@ ShipRoom GameBoard::getRoom(ship_rooms _room)
   throw "Could not find requested room.";
 }
 
+/* Get the active issue cards */
+std::vector<IssueCard> GameBoard::getIssueCards()
+{
+  return active_issues;
+}
+
+/* Get the count of issue cards */
 int GameBoard::activeIssuesCount()
 {
   int count = 0;
@@ -260,6 +260,12 @@ int GameBoard::activeIssuesCount()
     }
   }
   return count;
+}
+
+/* Get the active objective card */
+ObjectiveCard* GameBoard::getObjectiveCard()
+{
+  return active_obj_card;
 }
 
 /* Handle the events caused by issue cards */
@@ -422,9 +428,4 @@ void GameBoard::handleIssueCardEvents(issue_cards _card_type)
         break;
     }
   }
-}
-
-bool GameBoard::isHoveringOverRollDiceBtn(Vector2 hover_pos)
-{
-  return false;
 }

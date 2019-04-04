@@ -14,11 +14,8 @@ enum game_global_scenes
 
 enum game_state
 {
-  PLAYING,              // The regular in-game state
-  LOCAL_PAUSE,          // The quit menu
-  ISSUE_CARDS_POPUP,    // New round, show issue cards
-  OBJECTIVE_CARD_POPUP, // New objective card added
-  IS_ROLLING_DICE       // Active player rolls dice
+  PLAYING,     // The regular in-game state
+  LOCAL_PAUSE, // The quit menu
 };
 
 enum render_order
@@ -29,6 +26,7 @@ enum render_order
   PRIORITY_TEXT,
   PRIORITY_UI_2,
   PRIORITY_UI_3,
+  PRIORITY_UI_4,
   PRIORITY_CARD_1_SHADOW, // these are used dynamically
   PRIORITY_CARD_1,
   PRIORITY_CARD_2_SHADOW, // these are used dynamically
@@ -43,7 +41,8 @@ enum render_order
   PRIORITY_CARD_6,
   PRIORITY_TOPMOST,
   PRIORITY_OVERLAYS,
-  PRIORITY_CURSOR
+  PRIORITY_CURSOR,
+  PRIORITY_DEBUG_ABSOLUTE_TOP
 };
 
 struct GameConfig

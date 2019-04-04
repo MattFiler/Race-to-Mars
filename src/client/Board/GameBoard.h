@@ -15,15 +15,6 @@
  * cards, active counters, active player tokens, etc - then all rendering can be
  * done by calling this class' render function. */
 
-enum hovered_type
-{
-  HOVERED_OVER_SHIP_ROOM,
-  HOVERED_OVER_ISSUE_CARD,
-  HOVERED_OVER_OBJECTIVE_CARD,
-  HOVERED_OVER_ROLL_DICE,
-  DID_NOT_HOVER_OVER_ANYTHING
-};
-
 class GameBoard
 {
  public:
@@ -33,7 +24,6 @@ class GameBoard
   bool isHoveringOverRoom(Vector2 hover_pos);
   bool isHoveringOverIssueCard(Vector2 hover_pos);
   bool isHoveringOverObjectiveCard(Vector2 hover_pos);
-  bool isHoveringOverRollDiceBtn(Vector2 hover_pos);
 
   ShipRoom getClickedRoom(Vector2 clicked_pos);
   IssueCard* getClickedIssueCard(Vector2 clicked_pos);
@@ -46,11 +36,13 @@ class GameBoard
   bool updateActiveIssueCards();
   bool updateActiveObjectiveCard();
 
+  std::vector<IssueCard> getIssueCards();
   int activeIssuesCount();
+  ObjectiveCard* getObjectiveCard();
 
   ShipRoom getRoom(ship_rooms _room);
 
-  void render(game_state _state);
+  void render(bool _obj_popup, bool _issue_popup);
 
  private:
   /* Players */
@@ -61,9 +53,6 @@ class GameBoard
 
   /* Cards */
   void handleIssueCardEvents(issue_cards _card_type);
-
-  /* Dice Roll BTN */
-  ScaledSprite* roll_btn_sprite = nullptr;
 
   std::vector<IssueCard> active_issues;
   std::vector<ItemCard> item_inventory;

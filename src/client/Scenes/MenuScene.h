@@ -8,7 +8,7 @@ class MenuScene : public Scene
 {
  public:
   MenuScene() = default;
-  ~MenuScene() = default;
+  ~MenuScene() override = default;
 
   void init() override;
   void networkConnected() override;
