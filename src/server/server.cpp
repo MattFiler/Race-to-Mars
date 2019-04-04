@@ -378,8 +378,8 @@ void RaceToSpaceServer::run()
           if (!did_send)
           {
             sendToAll(client, data_to_send);
-            break;
           }
+          break;
         }
           // Otherwise, it's a message that needs to be forwarded to everyone in
           // the lobby.
