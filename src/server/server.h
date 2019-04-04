@@ -25,6 +25,8 @@ class RaceToSpaceServer
   void initLobbyDecks();
 
  private:
+  void sendToAll(server_client& client, NetworkedData data_to_send);
+
   void sendData(server_client& client,
                 unsigned int user_id,
                 data_roles _role,

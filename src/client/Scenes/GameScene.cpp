@@ -488,29 +488,27 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
       }
 
       /* WHEN CLIENT IS ACTIVE */
-      if (players[Locator::getPlayers()->my_player_index]->is_active)
+      // Clicked within a room on the ship
+      if (players[Locator::getPlayers()->my_player_index]->is_active &&
+          board.isHoveringOverRoom(mouse_pos))
       {
-        // Clicked within a room on the ship
-        if (board.isHoveringOverRoom(mouse_pos))
-        {
-          ShipRoom this_room = board.getClickedRoom(mouse_pos);
+        ShipRoom this_room = board.getClickedRoom(mouse_pos);
 
-          // Get new movement position
-          Vector2 new_pos = this_room.getPosForPlayer(
-            players[Locator::getPlayers()->my_player_index]->current_class);
+        // Get new movement position
+        Vector2 new_pos = this_room.getPosForPlayer(
+          players[Locator::getPlayers()->my_player_index]->current_class);
 
-          // Move, and let everyone know we're moving
-          Locator::getNetworkInterface()->sendData(
-            data_roles::CLIENT_MOVING_PLAYER_TOKEN,
-            Locator::getPlayers()->my_player_index,
-            static_cast<int>(this_room.getEnum()));
-          Locator::getPlayers()
-            ->getPlayer(
-              players[Locator::getPlayers()->my_player_index]->current_class)
-            ->setPos(new_pos);
-          debug_text.print("Moving my player token to room '" +
-                           this_room.getName() + "'.");
-        }
+        // Move, and let everyone know we're moving
+        Locator::getNetworkInterface()->sendData(
+          data_roles::CLIENT_MOVING_PLAYER_TOKEN,
+          Locator::getPlayers()->my_player_index,
+          static_cast<int>(this_room.getEnum()));
+        Locator::getPlayers()
+          ->getPlayer(
+            players[Locator::getPlayers()->my_player_index]->current_class)
+          ->setPos(new_pos);
+        debug_text.print("Moving my player token to room '" +
+                         this_room.getName() + "'.");
       }
 
       /* WHEN CLIENT IS ACTIVE/INACTIVE */
