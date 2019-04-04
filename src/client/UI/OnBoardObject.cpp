@@ -36,9 +36,9 @@ void OnBoardObject::setPosition(Vector2 _position, bool force)
   {
     // potentially expand shadow support for other offsets & dimensions?
     sprite_shadow->xPos(position.x -
-                        (card_offsets.shadow_offset.x * shadow_scalar));
+                        (card_offsets.card_shadow_offset.x * shadow_scalar));
     sprite_shadow->yPos(position.y -
-                        (card_offsets.shadow_offset.y * shadow_scalar));
+                        (card_offsets.card_shadow_offset.y * shadow_scalar));
   }
 }
 
@@ -56,10 +56,10 @@ void OnBoardObject::setDimensions(Vector2 _dims, bool force)
   sprite->height(_dims.y);
   if (has_shadow)
   {
-    sprite_shadow->width(_dims.x +
-                         (card_offsets.shadow_offset.x * shadow_scalar * 2));
-    sprite_shadow->height(_dims.y +
-                          (card_offsets.shadow_offset.y * shadow_scalar * 2));
+    sprite_shadow->width(
+      _dims.x + (card_offsets.card_shadow_offset.x * shadow_scalar * 2));
+    sprite_shadow->height(
+      _dims.y + (card_offsets.card_shadow_offset.y * shadow_scalar * 2));
   }
 }
 

@@ -57,6 +57,8 @@ class GameScene : public Scene
   bool is_new_turn = false;
   bool got_new_obj_card = false;
 
+  CardOffsets card_offsets;
+
   int max_progress_index = 19; // win condition
   double popup_timer = 0.0f;
 

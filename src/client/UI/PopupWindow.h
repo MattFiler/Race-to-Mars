@@ -32,6 +32,20 @@ class PopupWindow
   void positionCloseButton(Vector2 _pos);
   Vector2 getCloseButtonPos();
 
+  /* EXTERNALLY USING BUTTONS IS DANGEROUS AS WE MANAGE THEM INTERNALLY! */
+  std::vector<ClickableButton*> getInternalButtons() { return popup_buttons; };
+  std::vector<ClickableButton*> getReferencedButtons()
+  {
+    return popup_buttons_referenced;
+  };
+
+  /* EXTERNALLY USING SPRITES IS DANGEROUS AS WE MANAGE THEM INTERNALLY! */
+  std::vector<ScaledSprite*> getInternalSprites() { return popup_sprites; };
+  std::vector<ScaledSprite*> getReferencedSprites()
+  {
+    return popup_sprites_referenced;
+  };
+
   bool isVisible() { return is_active; };
 
   // Automatic show/hide over time

@@ -108,9 +108,16 @@ void PopupWindow::show()
 /* Close popup if opened with show() */
 void PopupWindow::hide()
 {
+  // Set inactive & reset timeout
   is_active = false;
   timeout = -1;
+
+  // Disable all buttons
   close_button->setActive(false);
+  for (ClickableButton* button : getInternalButtons())
+  {
+    button->setActive(false);
+  }
 }
 
 /* Update the popup */
@@ -122,7 +129,16 @@ void PopupWindow::update(const ASGE::GameTime& game_time)
     return;
   }
 
+  // Update buttons
   close_button->update();
+  for (ClickableButton* button : popup_buttons)
+  {
+    button->update();
+  }
+  for (ClickableButton* button : popup_buttons_referenced)
+  {
+    button->update();
+  }
 
   // Don't update timer if manually opened
   if (timeout == -1)
@@ -134,7 +150,7 @@ void PopupWindow::update(const ASGE::GameTime& game_time)
   timer += game_time.delta.count() / 1000;
   if (timer >= timeout)
   {
-    is_active = false;
+    hide();
     timer = 0;
   }
 }
@@ -151,10 +167,17 @@ void PopupWindow::render()
   // Render popup
   renderer->renderSprite(*sprite->getSprite(), render_order::PRIORITY_UI_3);
 
-  // Was manually opened, render close button
-  if (close_button->isActive())
+  // Render close button if required
+  close_button->render();
+
+  // Render other added buttons
+  for (ClickableButton* button : popup_buttons)
   {
-    close_button->render();
+    button->render();
+  }
+  for (ClickableButton* button : popup_buttons_referenced)
+  {
+    button->render();
   }
 
   // Render popup contents

@@ -55,6 +55,18 @@ void GameScene::init()
   objective_card_popup.createSprite("UI/INGAME_UI/new_obj_bg.png");
   dice_roll_popup.createSprite("UI/INGAME_UI/dice_roll_bg.png");
 
+  // Create buttons for issue card popup
+  for (int i = 0; i < 5; i++)
+  {
+    ClickableButton& new_btn = issue_card_popup.createButton("UI/INGAME_UI/"
+                                                             "assign_ap_button_"
+                                                             "noshadow.png");
+    new_btn.setPos(
+      card_offsets.issue_popup_ap_btn_start +
+      (card_offsets.issue_popup_ap_btn_offset * static_cast<float>(i)));
+    new_btn.setActive(false);
+  }
+
   // If we joined in progress, request a data sync from the server
   if (Locator::getPlayers()->joined_in_progress)
   {
@@ -439,6 +451,21 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
         for (IssueCard& issue_card : board.getIssueCards())
         {
           issue_card_popup.referenceSprite(*issue_card.getSprite());
+        }
+        // If we're the active player, show the opportunity to assign action
+        // points to each card
+        if (players[Locator::getPlayers()->my_player_index]->is_active)
+        {
+          int button_index = 0;
+          for (ClickableButton* button : issue_card_popup.getInternalButtons())
+          {
+            if (button_index == board.activeIssuesCount())
+            {
+              break;
+            }
+            button->setActive(true);
+            button_index++;
+          }
         }
         issue_card_popup.show();
       }
