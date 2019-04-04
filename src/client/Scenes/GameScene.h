@@ -55,7 +55,8 @@ class GameScene : public Scene
   PopupWindow dice_roll_popup;
 
   /* BUTTONS */
-  ClickableButton* end_turn_btn;
+  ClickableButton end_turn_btn = ClickableButton("UI/INGAME_UI/"
+                                                 "end_turn_btn.png");
 
   bool is_new_turn = false;
   bool got_new_obj_card = false;

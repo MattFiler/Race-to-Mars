@@ -19,8 +19,7 @@ GameScene::GameScene()
 /* Destroy! */
 GameScene::~GameScene()
 {
-  delete end_turn_btn;
-  end_turn_btn = nullptr;
+  // Destroy stuff here
 }
 
 /* Initialise the scene */
@@ -68,9 +67,8 @@ void GameScene::init()
   objective_card_popup.createSprite("UI/INGAME_UI/new_obj_bg.png");
   dice_roll_popup.createSprite("UI/INGAME_UI/dice_roll_bg.png");
 
-  // Create button for new turn
-  end_turn_btn = new ClickableButton("UI/INGAME_UI/end_turn_btn.png");
-  end_turn_btn->setPos(Vector2(1042, 626));
+  // Position button for new turn
+  end_turn_btn.setPos(Vector2(1042, 626));
 
   // Issue popup card placeholder
   ScaledSprite& card_placeholder = issue_card_popup.createSprite("UI/"
@@ -556,7 +554,7 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
         }
 
         // Clicked end turn button
-        if (end_turn_btn->clicked())
+        if (end_turn_btn.clicked())
         {
           Locator::getNetworkInterface()->sendData(
             data_roles::CLIENT_WANTS_TO_END_TURN,
@@ -723,14 +721,14 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
   /* MISC */
 
   // End turn button is only active when we are
-  end_turn_btn->setActive(
+  end_turn_btn.setActive(
     players[Locator::getPlayers()->my_player_index]->is_active);
   if (objective_card_popup.isVisible() || issue_card_popup.isVisible() ||
       dice_roll_popup.isVisible())
   {
-    end_turn_btn->setActive(false); // inactive when popups are over us
+    end_turn_btn.setActive(false); // inactive when popups are over us
   }
-  end_turn_btn->update();
+  end_turn_btn.update();
 
   return next_scene;
 }
@@ -792,7 +790,7 @@ void GameScene::render()
       renderer->renderSprite(*game_sprites.progress_marker->getSprite());
 
       // End-turn button
-      end_turn_btn->render();
+      end_turn_btn.render();
 
       break;
     }
