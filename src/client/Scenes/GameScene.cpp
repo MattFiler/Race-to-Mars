@@ -730,6 +730,7 @@ void GameScene::render()
     case game_state::LOCAL_PAUSE:
     {
       pause_menu.render();
+      break;
     }
   }
 

@@ -371,7 +371,8 @@ void RaceToSpaceServer::run()
           }
           else
           {
-            [[clang::fallthrough]];
+            sendToAll(client, data_to_send);
+            break;
           }
         }
           // Otherwise, it's a message that needs to be forwarded to everyone in
