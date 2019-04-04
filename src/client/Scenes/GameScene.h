@@ -19,6 +19,8 @@ struct GameSprites
   ScaledSprite* progress_marker = nullptr;
   ScaledSprite* sync_overlay = nullptr;
   ScaledSprite* disconnect_overlay = nullptr;
+  ScaledSprite* popup_card_shadows[6] = { nullptr, nullptr, nullptr,
+                                          nullptr, nullptr, nullptr };
 };
 
 class GameScene : public Scene

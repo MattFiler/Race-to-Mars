@@ -44,6 +44,15 @@ void GameScene::init()
   game_sprites.sync_overlay = new ScaledSprite("UI/INGAME_UI/syncing.png");
   game_sprites.disconnect_overlay = new ScaledSprite("UI/INGAME_UI/"
                                                      "syncing_notext.png");
+  for (int i = 0; i < 6; i++)
+  {
+    game_sprites.popup_card_shadows[i] =
+      new ScaledSprite("UI/INGAME_UI/cards_" + std::to_string(i) + ".png");
+  }
+
+  // Create popup title sprites
+  issue_card_popup.createSprite("UI/INGAME_UI/new_issues_bg.png");
+  objective_card_popup.createSprite("UI/INGAME_UI/new_obj_bg.png");
 
   // If we joined in progress, request a data sync from the server
   if (Locator::getPlayers()->joined_in_progress)
@@ -407,6 +416,8 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
       {
         objective_card_popup.clearAllReferencedSprites();
         objective_card_popup.referenceSprite(
+          *game_sprites.popup_card_shadows[0]);
+        objective_card_popup.referenceSprite(
           *board.getClickedObjectiveCard(mouse_pos)->getSprite());
         objective_card_popup.show();
       }
@@ -415,7 +426,11 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
       {
         issue_card_popup.clearAllReferencedSprites();
         issue_card_popup.referenceSprite(
-          *board.getClickedIssueCard(mouse_pos)->getSprite());
+          *game_sprites.popup_card_shadows[board.activeIssuesCount()]);
+        for (IssueCard& issue_card : board.getIssueCards())
+        {
+          issue_card_popup.referenceSprite(*issue_card.getSprite());
+        }
         issue_card_popup.show();
       }
     }
@@ -439,6 +454,8 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
   if (board.updateActiveIssueCards())
   {
     issue_card_popup.clearAllReferencedSprites();
+    issue_card_popup.referenceSprite(
+      *game_sprites.popup_card_shadows[board.activeIssuesCount()]);
     for (IssueCard& issue_card : board.getIssueCards())
     {
       issue_card_popup.referenceSprite(*issue_card.getSprite());
@@ -454,6 +471,7 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
   if (got_new_obj_card && !issue_card_popup.isVisible())
   {
     objective_card_popup.clearAllReferencedSprites();
+    objective_card_popup.referenceSprite(*game_sprites.popup_card_shadows[0]);
     objective_card_popup.referenceSprite(
       *board.getObjectiveCard()->getSprite());
     objective_card_popup.showForTime(5);
