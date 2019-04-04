@@ -262,6 +262,12 @@ int GameBoard::activeIssuesCount()
   return count;
 }
 
+/* Get the active objective card */
+ObjectiveCard* GameBoard::getObjectiveCard()
+{
+  return active_obj_card;
+}
+
 /* Handle the events caused by issue cards */
 void GameBoard::handleIssueCardEvents(issue_cards _card_type)
 {

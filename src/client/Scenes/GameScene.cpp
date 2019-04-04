@@ -453,6 +453,9 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
   // Show objective popup if needed
   if (got_new_obj_card && !issue_card_popup.isVisible())
   {
+    objective_card_popup.clearAllReferencedSprites();
+    objective_card_popup.referenceSprite(
+      *board.getObjectiveCard()->getSprite());
     objective_card_popup.showForTime(5);
     got_new_obj_card = false;
   }

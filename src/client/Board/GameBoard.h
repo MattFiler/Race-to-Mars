@@ -37,6 +37,7 @@ class GameBoard
 
   std::vector<IssueCard> getIssueCards();
   int activeIssuesCount();
+  ObjectiveCard* getObjectiveCard();
 
   ShipRoom getRoom(ship_rooms _room);
 
