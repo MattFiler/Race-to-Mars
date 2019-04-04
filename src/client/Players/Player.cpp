@@ -14,13 +14,12 @@ void Player::render(game_global_scenes game_scene)
   {
     case game_global_scenes::IN_GAME:
     {
-      counter.render(render_order::PRIORITY_UI);
+      counter.render();
       break;
     }
     case game_global_scenes::LOBBY:
     {
-      renderer->renderSprite(*lobby_sprite->getSprite(),
-                             render_order::PRIORITY_MIDDLE);
+      renderer->renderSprite(*lobby_sprite->getSprite());
       break;
     }
     case game_global_scenes ::MAIN_MENU:

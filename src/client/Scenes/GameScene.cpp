@@ -490,6 +490,12 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
   // Update cards if required and show popup if needed
   if (board.updateActiveIssueCards())
   {
+    // Hide all old popups
+    issue_card_popup.hide();
+    objective_card_popup.hide();
+    dice_roll_popup.hide();
+
+    // Show issue card popup
     issue_card_popup.clearAllReferencedSprites();
     issue_card_popup.referenceSprite(
       *game_sprites.popup_card_shadows[board.activeIssuesCount()]);
@@ -565,8 +571,7 @@ void GameScene::render()
     case game_state::PLAYING:
     {
       // Board and background
-      renderer->renderSprite(*game_sprites.background->getSprite(),
-                             render_order::PRIORITY_BACKGROUND);
+      renderer->renderSprite(*game_sprites.background->getSprite());
       board.render(objective_card_popup.isVisible(),
                    issue_card_popup.isVisible());
 
@@ -583,8 +588,7 @@ void GameScene::render()
         renderer->renderSprite(*Locator::getPlayers()
                                   ->getPlayer(players[i]->current_class)
                                   ->getGameTabSprite()
-                                  ->getSprite(),
-                               render_order::PRIORITY_UI);
+                                  ->getSprite());
 
         // draw score if player is connected
         if (players[i]->current_class != player_classes::UNASSIGNED)
@@ -593,8 +597,7 @@ void GameScene::render()
                                225,
                                static_cast<int>(this_pos + 100),
                                1,
-                               ASGE::COLOURS::WHITE,
-                               render_order::PRIORITY_TEXT);
+                               ASGE::COLOURS::WHITE);
         }
 
         // log position for active player marker.
@@ -605,19 +608,15 @@ void GameScene::render()
       }
 
       // Activity markers
-      renderer->renderSprite(*game_sprites.inactive_player_marker->getSprite(),
-                             render_order::PRIORITY_UI);
+      renderer->renderSprite(*game_sprites.inactive_player_marker->getSprite());
       game_sprites.active_player_marker->yPos(active_marker_pos);
-      renderer->renderSprite(*game_sprites.active_player_marker->getSprite(),
-                             render_order::PRIORITY_UI_2);
+      renderer->renderSprite(*game_sprites.active_player_marker->getSprite());
 
       // Progress meters
-      renderer->renderSprite(*game_sprites.progress_meter->getSprite(),
-                             render_order::PRIORITY_UI);
+      renderer->renderSprite(*game_sprites.progress_meter->getSprite());
       game_sprites.progress_marker->yPos(static_cast<float>(
         ((Locator::getPlayers()->current_progress_index + 3.5) * 30)));
-      renderer->renderSprite(*game_sprites.progress_marker->getSprite(),
-                             render_order::PRIORITY_UI);
+      renderer->renderSprite(*game_sprites.progress_marker->getSprite());
 
       break;
     }
@@ -636,13 +635,11 @@ void GameScene::render()
   // syncing)
   if (current_scene_lock_active)
   {
-    renderer->renderSprite(*game_sprites.sync_overlay->getSprite(),
-                           render_order::PRIORITY_OVERLAYS);
+    renderer->renderSprite(*game_sprites.sync_overlay->getSprite());
   }
   if (has_disconnected)
   {
-    renderer->renderSprite(*game_sprites.disconnect_overlay->getSprite(),
-                           render_order::PRIORITY_OVERLAYS);
+    renderer->renderSprite(*game_sprites.disconnect_overlay->getSprite());
   }
 
   // client debugging
@@ -655,8 +652,7 @@ void GameScene::render()
       10,
       30,
       0.5,
-      ASGE::COLOURS::WHITE,
-      render_order::PRIORITY_DEBUG_ABSOLUTE_TOP);
+      ASGE::COLOURS::WHITE);
     renderer->renderText(
       "CURRENT_CLASS: " +
         std::to_string(
@@ -664,8 +660,7 @@ void GameScene::render()
       10,
       50,
       0.5,
-      ASGE::COLOURS::WHITE,
-      render_order::PRIORITY_DEBUG_ABSOLUTE_TOP);
+      ASGE::COLOURS::WHITE);
     renderer->renderText(
       "HAS_CONNECTED: " +
         std::to_string(
@@ -673,8 +668,7 @@ void GameScene::render()
       10,
       70,
       0.5,
-      ASGE::COLOURS::WHITE,
-      render_order::PRIORITY_DEBUG_ABSOLUTE_TOP);
+      ASGE::COLOURS::WHITE);
     renderer->renderText(
       "IS_READY: " +
         std::to_string(
@@ -682,8 +676,7 @@ void GameScene::render()
       10,
       90,
       0.5,
-      ASGE::COLOURS::WHITE,
-      render_order::PRIORITY_DEBUG_ABSOLUTE_TOP);
+      ASGE::COLOURS::WHITE);
     renderer->renderText(
       "ACTION_POINTS: " +
         std::to_string(
@@ -691,19 +684,10 @@ void GameScene::render()
       10,
       110,
       0.5,
-      ASGE::COLOURS::WHITE,
-      render_order::PRIORITY_DEBUG_ABSOLUTE_TOP);
-    renderer->renderText("PRESS M TO FINISH TURN",
-                         10,
-                         130,
-                         0.5,
-                         ASGE::COLOURS::WHITE,
-                         render_order::PRIORITY_DEBUG_ABSOLUTE_TOP);
-    renderer->renderText("PRESS L TO DEBUG TEST ACTION POINTS",
-                         10,
-                         150,
-                         0.5,
-                         ASGE::COLOURS::WHITE,
-                         render_order::PRIORITY_DEBUG_ABSOLUTE_TOP);
+      ASGE::COLOURS::WHITE);
+    renderer->renderText(
+      "PRESS M TO FINISH TURN", 10, 130, 0.5, ASGE::COLOURS::WHITE);
+    renderer->renderText(
+      "PRESS L TO DEBUG TEST ACTION POINTS", 10, 150, 0.5, ASGE::COLOURS::WHITE);
   }
 }

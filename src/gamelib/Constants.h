@@ -18,33 +18,6 @@ enum game_state
   LOCAL_PAUSE, // The quit menu
 };
 
-enum render_order
-{
-  PRIORITY_BACKGROUND,
-  PRIORITY_MIDDLE,
-  PRIORITY_UI,
-  PRIORITY_TEXT,
-  PRIORITY_UI_2,
-  PRIORITY_UI_3,
-  PRIORITY_UI_4,
-  PRIORITY_CARD_1_SHADOW, // these are used dynamically
-  PRIORITY_CARD_1,
-  PRIORITY_CARD_2_SHADOW, // these are used dynamically
-  PRIORITY_CARD_2,        // these are used dynamically
-  PRIORITY_CARD_3_SHADOW, // these are used dynamically
-  PRIORITY_CARD_3,        // these are used dynamically
-  PRIORITY_CARD_4_SHADOW, // these are used dynamically
-  PRIORITY_CARD_4,        // these are used dynamically
-  PRIORITY_CARD_5_SHADOW, // these are used dynamically
-  PRIORITY_CARD_5,        // these are used dynamically
-  PRIORITY_CARD_6_SHADOW, // these are used dynamically
-  PRIORITY_CARD_6,
-  PRIORITY_TOPMOST,
-  PRIORITY_OVERLAYS,
-  PRIORITY_CURSOR,
-  PRIORITY_DEBUG_ABSOLUTE_TOP
-};
-
 struct GameConfig
 {
   int max_issue_cards = 5;

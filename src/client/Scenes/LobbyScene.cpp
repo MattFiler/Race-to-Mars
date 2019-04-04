@@ -244,8 +244,7 @@ void LobbyScene::render()
     renderer->renderSprite(*Locator::getPlayers()
                               ->getPlayer(players[i]->current_class)
                               ->getLobbySprite()
-                              ->getSprite(),
-                           render_order::PRIORITY_MIDDLE);
+                              ->getSprite());
 
     // Render ready-up prompt when appropriate
     if (lobby_sprites.ready_marker[i] != nullptr)
@@ -253,15 +252,13 @@ void LobbyScene::render()
       if (players[i]->is_ready)
       {
         lobby_sprites.ready_marker[i]->xPos(this_pos);
-        renderer->renderSprite(*lobby_sprites.ready_marker[i]->getSprite(),
-                               render_order::PRIORITY_UI);
+        renderer->renderSprite(*lobby_sprites.ready_marker[i]->getSprite());
       }
       else
       {
         lobby_sprites.ready_prompt_marker[i]->xPos(this_pos);
         renderer->renderSprite(
-          *lobby_sprites.ready_prompt_marker[i]->getSprite(),
-          render_order::PRIORITY_UI);
+          *lobby_sprites.ready_prompt_marker[i]->getSprite());
       }
     }
   }
@@ -269,22 +266,19 @@ void LobbyScene::render()
   // Render our marker when connected
   if (my_player_index != -1)
   {
-    renderer->renderSprite(*lobby_sprites.this_is_you->getSprite(),
-                           render_order::PRIORITY_UI);
+    renderer->renderSprite(*lobby_sprites.this_is_you->getSprite());
   }
 
   // Render game countdown when active
   if (should_start_game)
   {
-    renderer->renderSprite(*lobby_sprites.game_countdown_ui->getSprite(),
-                           render_order::PRIORITY_UI_2);
+    renderer->renderSprite(*lobby_sprites.game_countdown_ui->getSprite());
     renderer->renderText(
       localiser.getString("LOBBY_COUNTDOWN_" +
                           std::to_string(static_cast<int>(game_countdown + 1))),
       45,
       698,
       1,
-      ASGE::COLOURS::WHITE,
-      render_order::PRIORITY_TOPMOST);
+      ASGE::COLOURS::WHITE);
   }
 }

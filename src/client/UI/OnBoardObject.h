@@ -34,7 +34,7 @@ class OnBoardObject
 
   bool isInBoundingBox(Vector2 _pos);
 
-  void render(render_order _order);
+  void render();
 
  protected:
   ASGE::Renderer* renderer = nullptr;

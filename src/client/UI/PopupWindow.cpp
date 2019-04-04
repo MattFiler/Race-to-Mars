@@ -165,7 +165,7 @@ void PopupWindow::render()
   }
 
   // Render popup
-  renderer->renderSprite(*sprite->getSprite(), render_order::PRIORITY_UI_3);
+  renderer->renderSprite(*sprite->getSprite());
 
   // Render close button if required
   close_button->render();
@@ -183,10 +183,10 @@ void PopupWindow::render()
   // Render popup contents
   for (ScaledSprite* content : popup_sprites)
   {
-    renderer->renderSprite(*content->getSprite(), render_order::PRIORITY_UI_4);
+    renderer->renderSprite(*content->getSprite());
   }
   for (ScaledSprite* content : popup_sprites_referenced)
   {
-    renderer->renderSprite(*content->getSprite(), render_order::PRIORITY_UI_4);
+    renderer->renderSprite(*content->getSprite());
   }
 }
