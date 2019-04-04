@@ -38,8 +38,7 @@ class GameBoard
   ShipRoom getClickedRoom(Vector2 clicked_pos);
   IssueCard* getClickedIssueCard(Vector2 clicked_pos);
   ObjectiveCard* getClickedObjectiveCard(Vector2 clicked_pos);
-
-  void setRollBtn();
+  std::vector<IssueCard> getIssueCards() { return active_issues; }
 
   void setActiveIssueCards(int active_cards[5], bool is_new_rotation);
   void setActiveObjectiveCard(int card_index);
@@ -69,8 +68,8 @@ class GameBoard
   std::vector<IssueCard> active_issues;
   std::vector<ItemCard> item_inventory;
 
-  bool pilot_blckhole = false;
-  bool pilot_moveforward = false;
+  bool pilot_blackhole = false;
+  bool bonus_movement = false;
 
   ObjectiveCard* active_obj_card = nullptr;
   std::vector<ObjectiveCard> completed_obj_cards;

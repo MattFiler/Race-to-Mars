@@ -388,7 +388,7 @@ void GameBoard::handleIssueCardEvents(issue_cards _card_type)
         if (Locator::getPlayers()->my_player_index ==
             static_cast<int>(player_classes::PILOT))
         {
-          pilot_blckhole = true;
+          pilot_blackhole = true;
           Locator::getPlayers()
             ->getPlayer(static_cast<player_classes>(
               Locator::getPlayers()->my_player_index))
@@ -403,7 +403,7 @@ void GameBoard::handleIssueCardEvents(issue_cards _card_type)
         if (Locator::getPlayers()->my_player_index ==
             static_cast<int>(player_classes::PILOT))
         {
-          pilot_moveforward = true;
+          bonus_movement = true;
           Locator::getPlayers()
             ->getPlayer(static_cast<player_classes>(
               Locator::getPlayers()->my_player_index))

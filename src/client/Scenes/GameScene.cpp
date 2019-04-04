@@ -483,7 +483,6 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
   if (got_new_obj_card && current_state == game_state::OBJECTIVE_CARD_POPUP)
   {
     popup_timer += game_time.delta.count() / 1000;
-
     // If popup has been on screen for 5 secs, hide it
     if (popup_timer > 5.0f)
     {
@@ -597,7 +596,7 @@ void GameScene::render()
       }
       else if (current_state == game_state::IS_ROLLING_DICE)
       {
-        game_sprites.roll_dice->getSprite()->colour();
+        game_sprites.roll_dice->getSprite()->colour(ASGE::COLOURS::GREY);
       }
       renderer->renderSprite(*game_sprites.roll_dice->getSprite(),
                              render_order::PRIORITY_UI_2);
@@ -613,7 +612,6 @@ void GameScene::render()
         renderer->renderSprite(*game_sprites.objective_popup->getSprite(),
                                render_order::PRIORITY_UI_3);
       }
-
       break;
     }
     case game_state::LOCAL_PAUSE:
