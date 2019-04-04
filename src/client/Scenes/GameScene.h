@@ -4,6 +4,7 @@
 #include "Scene.h"
 #include "client/Board/GameBoard.h"
 #include "client/UI/Cursor.h"
+#include "client/UI/PopupWindow.h"
 #include <client/Cards/IssueCard.h>
 #include <client/Cards/ItemCard.h>
 #include <client/Cards/ObjectiveCard.h>
@@ -18,17 +19,15 @@ struct GameSprites
   ScaledSprite* progress_marker = nullptr;
   ScaledSprite* sync_overlay = nullptr;
   ScaledSprite* disconnect_overlay = nullptr;
-  ScaledSprite* issue_popup = nullptr;
-  ScaledSprite* issue_popup_shadow[5] = {
-    nullptr, nullptr, nullptr, nullptr, nullptr
-  };
+  ScaledSprite* popup_card_shadows[6] = { nullptr, nullptr, nullptr,
+                                          nullptr, nullptr, nullptr };
 };
 
 class GameScene : public Scene
 {
  public:
-  GameScene() { debug_text.print("entered game scene."); };
-  ~GameScene() = default;
+  GameScene();
+  ~GameScene() override;
 
   void init() override;
 
@@ -50,12 +49,27 @@ class GameScene : public Scene
   GameSprites game_sprites;
   LobbyPlayer* players[4] = { nullptr, nullptr, nullptr, nullptr };
 
+  /* POPUPS */
+  PopupWindow issue_card_popup;
+  PopupWindow objective_card_popup;
+  PopupWindow dice_roll_popup;
+
+  /* BUTTONS */
+  ClickableButton end_turn_btn = ClickableButton("UI/INGAME_UI/"
+                                                 "end_turn_btn.png");
+
+  bool is_new_turn = false;
+  bool got_new_obj_card = false;
+  bool got_new_obj_this_turn = false;
+
+  CardOffsets card_offsets;
+
   int max_progress_index = 19; // win condition
   double popup_timer = 0.0f;
 
   bool has_disconnected = false; // did local client disconnect?
   game_state current_state = game_state::PLAYING;
-  int current_progress_index = 0;
+  // int current_progress_index = 0;
   bool current_scene_lock_active = false; // optional "scene lock" to freeze
                                           // client interaction - useful for the
                                           // end of a turn?

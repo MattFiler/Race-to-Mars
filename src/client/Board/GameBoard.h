@@ -15,36 +15,39 @@
  * cards, active counters, active player tokens, etc - then all rendering can be
  * done by calling this class' render function. */
 
-enum hovered_type
-{
-  HOVERED_OVER_SHIP_ROOM,
-  HOVERED_OVER_ISSUE_CARD,
-  HOVERED_OVER_OBJECTIVE_CARD,
-  DID_NOT_HOVER_OVER_ANYTHING
-};
-
 class GameBoard
 {
  public:
   GameBoard() { m_players = Locator::getPlayers(); };
   ~GameBoard() = default;
 
-  hovered_type isHoveringOverInteractable(Vector2 hover_pos);
-  ShipRoom getClickedInteractableRoom(Vector2 clicked_pos);
+  bool isHoveringOverRoom(Vector2 hover_pos);
+  bool isHoveringOverIssueCard(Vector2 hover_pos);
+  bool isHoveringOverObjectiveCard(Vector2 hover_pos);
+
+  ShipRoom getClickedRoom(Vector2 clicked_pos);
   IssueCard* getClickedIssueCard(Vector2 clicked_pos);
   ObjectiveCard* getClickedObjectiveCard(Vector2 clicked_pos);
+  std::vector<IssueCard> getIssueCards();
 
   void setActiveIssueCards(int active_cards[5], bool is_new_rotation);
   void setActiveObjectiveCard(int card_index);
+  void setActiveItemCard(int card_index);
 
   bool updateActiveIssueCards();
   bool updateActiveObjectiveCard();
+  bool updateActiveItemCard();
 
+  // std::vector<IssueCard> getIssueCards();
   int activeIssuesCount();
+  ObjectiveCard* getObjectiveCard();
+
+  void
+  assignActionPointToIssue(player_classes _class, int _issue, int _points = 1);
 
   ShipRoom getRoom(ship_rooms _room);
 
-  void render(game_state _state);
+  void render(bool _obj_popup, bool _issue_popup);
 
  private:
   /* Players */
@@ -52,7 +55,6 @@ class GameBoard
 
   /* Ship */
   Ship m_ship;
-  ShipRoom* clicked_room = nullptr;
 
   /* Cards */
   void handleIssueCardEvents(issue_cards _card_type);
@@ -60,10 +62,16 @@ class GameBoard
   std::vector<IssueCard> active_issues;
   std::vector<ItemCard> item_inventory;
 
+  bool pilot_blackhole = false;
+  bool bonus_movement = false;
+
   ObjectiveCard* active_obj_card = nullptr;
   std::vector<ObjectiveCard> completed_obj_cards;
 
   int active_issue_cards[5] = { -1, -1, -1, -1, -1 };
+  int active_item_card[5] = { -1, -1, -1, -1, -1 };
+  bool item_slot_active[5] = { false, false, false, false, false };
+
   int objective_cards_inplay[4] = { -1, -1, -1, -1 };
   // Slot active is to keep track of available slots to place new cards since
   // if active_issue_card[x] != -1 can be overridden by another card.

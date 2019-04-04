@@ -105,7 +105,9 @@ enum data_roles
   CLIENT_ACTION_POINTS_CHANGED,
   /* ^ The active client spent or gained action points.
    *   [0] = the client index
-   *   [1] = the new action point count
+   *   [1] = the old action point count
+   *   [2] = the new action point count
+   *   [3] = the card ID they were assigned to (-1 = no card)
    */
 
   CLIENT_REQUESTS_SYNC,
@@ -136,6 +138,17 @@ enum data_roles
    *   [2] = the room of client 3
    *   [3] = the room of client 4
    *   [4] = the ship's position
+   */
+
+  CLIENT_CHANGE_PROGRESS_INDEX,
+  /* ^ The client or server is sending the new progress index to the server and
+   * to the rest of the clients. [0] = the new current progress index.
+   */
+
+  CLIENT_REQUESTED_ITEM_CARD
+  /* ^ The client has requested an item card
+   *   [0] = client ID that pulled the item.
+   *   [1] = item card ID.
    */
 };
 

@@ -50,7 +50,7 @@ void NetworkConnection::networkLoop()
       std::lock_guard<std::mutex> lock(pkt_queue_mtx);
       // take the packet first in line.
       auto& pkt = pkt_queue.front();
-      assert(sizeof(char) == sizeof(enet_uint8));
+      // assert(sizeof(char) == sizeof(enet_uint8));
       auto pkt_length = static_cast<unsigned int>(pkt.length());
       // prepare packet to be send to server.
       auto pkt_data = pkt.data();

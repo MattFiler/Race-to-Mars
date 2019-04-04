@@ -1,38 +1,45 @@
 #include "GameBoard.h"
+#include "client/Core/ServiceLocator.h"
+#include "client/NetworkConnection/NetworkConnection.h"
 #include "gamelib/Constants.h"
+#include "gamelib/NetworkedData/MessageTypes.h"
+#include "gamelib/NetworkedData/NetworkedData.h"
 
-/* Check to see if we're hovering over an interactable item  */
-hovered_type GameBoard::isHoveringOverInteractable(Vector2 hover_pos)
+/* Check to see if we're hovering over an interactable room  */
+bool GameBoard::isHoveringOverRoom(Vector2 hover_pos)
 {
-  // Check ship rooms
   for (ShipRoom& room : m_ship.getRooms())
   {
     if (room.isInBoundingBox(hover_pos))
     {
-      return hovered_type::HOVERED_OVER_SHIP_ROOM;
+      return true;
     }
   }
+  return false;
+}
 
-  // Check issue cards
+/* Check to see if we're hovering over an issue card  */
+bool GameBoard::isHoveringOverIssueCard(Vector2 hover_pos)
+{
   for (IssueCard& card : active_issues)
   {
     if (card.isInBoundingBox(hover_pos))
     {
-      return hovered_type::HOVERED_OVER_ISSUE_CARD;
+      return true;
     }
   }
+  return false;
+}
 
-  // Check objective card
-  if (active_obj_card != nullptr && active_obj_card->isInBoundingBox(hover_pos))
-  {
-    return hovered_type::HOVERED_OVER_OBJECTIVE_CARD;
-  }
-
-  return hovered_type::DID_NOT_HOVER_OVER_ANYTHING;
+/* Check to see if we're hovering over an objective card  */
+bool GameBoard::isHoveringOverObjectiveCard(Vector2 hover_pos)
+{
+  return (active_obj_card != nullptr &&
+          active_obj_card->isInBoundingBox(hover_pos));
 }
 
 /* Return clicked interactable room  */
-ShipRoom GameBoard::getClickedInteractableRoom(Vector2 clicked_pos)
+ShipRoom GameBoard::getClickedRoom(Vector2 clicked_pos)
 {
   // Check rooms
   for (ShipRoom& room : m_ship.getRooms())
@@ -45,7 +52,7 @@ ShipRoom GameBoard::getClickedInteractableRoom(Vector2 clicked_pos)
 
   // Didn't match any
   throw "This function must be called based on the result of "
-        "isHoveringOverInteractable.";
+        "isHoveringOverRoom.";
 }
 
 /* Return clicked issue card  */
@@ -62,7 +69,7 @@ IssueCard* GameBoard::getClickedIssueCard(Vector2 clicked_pos)
 
   // Didn't match any
   throw "This function must be called based on the result of "
-        "isHoveringOverInteractable.";
+        "isHoveringOverIssueCard.";
 }
 
 /* Return clicked objective card  */
@@ -76,7 +83,7 @@ ObjectiveCard* GameBoard::getClickedObjectiveCard(Vector2 clicked_pos)
 
   // Didn't match any
   throw "This function must be called based on the result of "
-        "isHoveringOverInteractable.";
+        "isHoveringOverObjectiveCard.";
 }
 
 /* Set the active objective card to update */
@@ -88,12 +95,14 @@ void GameBoard::setActiveObjectiveCard(int card_index)
 /* Set active issue cards to update */
 void GameBoard::setActiveIssueCards(int card_index[5], bool is_new_rotation)
 {
+  // Remove solved issues
   for (size_t i = 0; i < active_issues.size(); ++i)
   {
     if (active_issues[i].isSolved())
     {
       active_issues.erase(active_issues.begin() + static_cast<int>(i));
       active_issue_cards[i] = -1;
+      slot_active[i] = false;
     }
   }
 
@@ -126,10 +135,7 @@ bool GameBoard::updateActiveObjectiveCard()
     return false;
   }
 
-  if (active_obj_card != nullptr)
-  {
-    delete active_obj_card;
-  }
+  delete active_obj_card;
   active_obj_card =
     new ObjectiveCard(static_cast<objective_cards>(new_obj_card));
   debug_text.print("Active objective card set to " +
@@ -142,29 +148,37 @@ bool GameBoard::updateActiveObjectiveCard()
 /* Update the active issue cards if required */
 bool GameBoard::updateActiveIssueCards()
 {
-  if (update_issues)
+  if (!update_issues)
   {
-    for (int i = 0; i < game_config.max_issue_cards; ++i)
-    {
-      if (active_issue_cards[i] != -1 && !slot_active[i])
-      {
-        active_issues.emplace_back(
-          IssueCard(static_cast<issue_cards>(active_issue_cards[i])));
-        active_issues[i].setPosition(
-          Vector2(static_cast<float>(i) * 257, 150.0f));
-        slot_active[i] = true;
-        debug_text.print("Creating issue card " +
-                         std::to_string(active_issue_cards[i]) + ".");
-      }
-    }
-    update_issues = false;
-    return true;
+    return false;
   }
-  return false;
+
+  for (int i = 0; i < game_config.max_issue_cards; ++i)
+  {
+    if (active_issue_cards[i] != -1 && !slot_active[i])
+    {
+      active_issues.emplace_back(
+        IssueCard(static_cast<issue_cards>(active_issue_cards[i])));
+      slot_active[i] = true;
+      debug_text.print("Creating issue card " +
+                       std::to_string(active_issue_cards[i]) + ".");
+      handleIssueCardEvents(static_cast<issue_cards>(active_issue_cards[i]));
+    }
+  }
+  update_issues = false;
+  return true;
+}
+
+/* Assign action points to specified issue card */
+void GameBoard::assignActionPointToIssue(player_classes _class,
+                                         int _issue,
+                                         int _points)
+{
+  active_issues.at(_issue).addActionPoints(_class, _points);
 }
 
 /* Render the board */
-void GameBoard::render(game_state _state)
+void GameBoard::render(bool _obj_popup, bool _issue_popup)
 {
   // Ship
   m_ship.render();
@@ -172,35 +186,49 @@ void GameBoard::render(game_state _state)
   // Players
   m_players->render(game_global_scenes::IN_GAME);
 
-  // Issue cards
-  int card_index = 0;
-  for (auto& active_issue : active_issues)
+  if (_obj_popup)
   {
-    // Position cards and resize appropriately
-    if (_state == game_state::NEW_CARDS_POPUP)
+    // Position card and resize appropriately if it exists (should do)
+    if (active_obj_card != nullptr)
     {
-      active_issue.setPosition(
-        card_offsets.popup_start +
-        (card_offsets.popup_offset * static_cast<float>(card_index)));
-      active_issue.setDimensions(card_offsets.popup_size);
+      active_obj_card->setDimensions(card_offsets.obj_popup_size);
+      active_obj_card->setPosition(card_offsets.obj_popup_pos);
+      active_obj_card->render();
     }
-    else
-    {
-      active_issue.setPosition(
-        card_offsets.ingame_start +
-        (card_offsets.ingame_offset * static_cast<float>(card_index)));
-      active_issue.setDimensions(card_offsets.ingame_size);
-    }
-    card_index++;
-
-    // Render
-    active_issue.render();
   }
-
-  // Objective card
-  if (active_obj_card != nullptr)
+  else
   {
-    active_obj_card->render();
+    int card_index = 0;
+    for (auto& active_issue : active_issues)
+    {
+      // Position cards and resize appropriately
+      if (_issue_popup)
+      {
+        active_issue.setDimensions(card_offsets.issue_popup_size);
+        active_issue.setPosition(
+          card_offsets.issue_popup_start +
+          (card_offsets.issue_popup_offset * static_cast<float>(card_index)));
+      }
+      else
+      {
+        active_issue.setDimensions(card_offsets.issue_ingame_size);
+        active_issue.setPosition(
+          card_offsets.issue_ingame_start +
+          (card_offsets.issue_ingame_offset * static_cast<float>(card_index)));
+      }
+
+      // Render
+      active_issue.render();
+      card_index++;
+    }
+
+    // Render objective card in-game
+    if (!_issue_popup && active_obj_card != nullptr)
+    {
+      active_obj_card->setDimensions(card_offsets.obj_ingame_size);
+      active_obj_card->setPosition(card_offsets.obj_ingame_pos);
+      active_obj_card->render();
+    }
   }
 }
 
@@ -217,6 +245,13 @@ ShipRoom GameBoard::getRoom(ship_rooms _room)
   throw "Could not find requested room.";
 }
 
+/* Get the active issue cards */
+std::vector<IssueCard> GameBoard::getIssueCards()
+{
+  return active_issues;
+}
+
+/* Get the count of issue cards */
 int GameBoard::activeIssuesCount()
 {
   int count = 0;
@@ -230,6 +265,12 @@ int GameBoard::activeIssuesCount()
   return count;
 }
 
+/* Get the active objective card */
+ObjectiveCard* GameBoard::getObjectiveCard()
+{
+  return active_obj_card;
+}
+
 /* Handle the events caused by issue cards */
 void GameBoard::handleIssueCardEvents(issue_cards _card_type)
 {
@@ -240,7 +281,8 @@ void GameBoard::handleIssueCardEvents(issue_cards _card_type)
   if (_card_num <= 5)
   {
     // Comms issue.
-    // Call player roll dice function here.
+    // Set player state to roll dice and set what kind of event was triggered
+    // to do the appropriate action with the dice roll.
     Locator::getPlayers()
       ->getPlayer(
         static_cast<player_classes>(Locator::getPlayers()->my_player_index))
@@ -307,6 +349,12 @@ void GameBoard::handleIssueCardEvents(issue_cards _card_type)
       case 20:
       {
         // Chicken on board, player 4 - 1 cant play this turn.
+        // Currently only disables the player index 1.
+        if (Locator::getPlayers()->my_player_index == 1)
+        {
+          Locator::getPlayers()->getPlayer(static_cast<player_classes>(
+            Locator::getPlayers()->my_player_index));
+        }
         break;
       }
       case 21:
@@ -329,7 +377,7 @@ void GameBoard::handleIssueCardEvents(issue_cards _card_type)
       }
       case 23:
       {
-        // Low rsources - Discard all items from this player.
+        // Low resources - Discard all items from this player.
         item_inventory.clear();
         break;
       }
@@ -346,19 +394,74 @@ void GameBoard::handleIssueCardEvents(issue_cards _card_type)
       {
         // If this is a pilot player, roll dice, if less than 4, move back, else
         // move forward.
+        if (Locator::getPlayers()->my_player_index ==
+            static_cast<int>(player_classes::PILOT))
+        {
+          pilot_blackhole = true;
+          Locator::getPlayers()
+            ->getPlayer(static_cast<player_classes>(
+              Locator::getPlayers()->my_player_index))
+            ->setDiceRolls(1);
+        }
         break;
       }
       case 26:
       {
         // If this player is the pilot, roll dice, if above 4, move ship
         // forward.
+        if (Locator::getPlayers()->my_player_index !=
+            static_cast<int>(player_classes::PILOT))
+        {
+          bonus_movement = true;
+          Locator::getPlayers()
+            ->getPlayer(static_cast<player_classes>(
+              Locator::getPlayers()->my_player_index))
+            ->setDiceRolls(1);
+          /* this is just to test if this feature is working, needs to moved to
+           * when player rolls dice and issue has been activated. see below.
+           *
+           * */
+          Locator::getNetworkInterface()->sendData(
+            data_roles::CLIENT_CHANGE_PROGRESS_INDEX,
+            Locator::getPlayers()->current_progress_index - 2);
+        }
         break;
-      }
-      case 27:
-      {
       }
       default:
         break;
     }
   }
+}
+
+void GameBoard::setActiveItemCard(int card_index)
+{
+  for (int i = 0; i < Locator::getPlayers()
+                        ->getPlayer(static_cast<player_classes>(
+                          Locator::getPlayers()->my_player_index))
+                        ->getMaxItems();
+       ++i)
+  {
+    if (active_item_card[i] == -1)
+    {
+      active_item_card[i] = card_index;
+    }
+  }
+}
+
+bool GameBoard::updateActiveItemCard()
+{
+  //  for(int i = 0; i <
+  //  Locator::getPlayers()->getPlayer(static_cast<player_classes>(Locator::getPlayers()->my_player_index))->getMaxItems();
+  //  ++i)
+  //  {
+  //    if (active_item_card[i] != -1 && !slot_active[i])
+  //    {
+  //      item_inventory.emplace_back(static_cast<item_cards>(active_item_card[i]));
+  //      item_slot_active[i] = true;
+  //      debug_text.print("Creating item card: " +
+  //                       std::to_string(active_issue_cards[i]));
+  //      return true;
+  //    }
+  //  }
+  return false;
 }

@@ -2,6 +2,7 @@
 #define PROJECT_ISSUECARD_H
 
 #include "Card.h"
+#include "gamelib/Constants.h"
 #include <client/Actions/Action.h>
 #include <gamelib/NetworkedData/Players.h>
 
@@ -22,6 +23,9 @@ class IssueCard : public Card
   issue_cards getCardID() { return cardID; };
   void addActionPoints(player_classes _player_class, int _ap_amount);
   void setIssueCardvariable(int _action_points);
+
+  int getAssignedPointsGlobal() { return total_ap_assigned; };
+  int getAssignedPoints(player_classes _class);
 
   bool isSolved();
 
