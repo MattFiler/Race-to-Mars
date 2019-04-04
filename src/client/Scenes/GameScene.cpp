@@ -10,6 +10,19 @@
 #include <client/Cards/ObjectiveCard.h>
 #include <gamelib/Packet.h>
 
+/* Create */
+GameScene::GameScene()
+{
+  debug_text.print("entered game scene.");
+}
+
+/* Destroy! */
+GameScene::~GameScene()
+{
+  delete end_turn_btn;
+  end_turn_btn = nullptr;
+}
+
 /* Initialise the scene */
 void GameScene::init()
 {
@@ -54,6 +67,19 @@ void GameScene::init()
   issue_card_popup.createSprite("UI/INGAME_UI/new_issues_bg.png");
   objective_card_popup.createSprite("UI/INGAME_UI/new_obj_bg.png");
   dice_roll_popup.createSprite("UI/INGAME_UI/dice_roll_bg.png");
+
+  // Create button for new turn
+  end_turn_btn = new ClickableButton("UI/INGAME_UI/end_turn_btn.png");
+  end_turn_btn->setPos(Vector2(1042, 626));
+
+  // Issue popup card placeholder
+  ScaledSprite& card_placeholder = issue_card_popup.createSprite("UI/"
+                                                                 "CARD_IMAGES/"
+                                                                 "PLACEHOLDER_"
+                                                                 "5.png");
+  card_placeholder.setPos(card_offsets.issue_popup_start);
+  card_placeholder.setDims(Vector2(card_offsets.issue_popup_size.x * 5,
+                                   card_offsets.issue_popup_size.y));
 
   for (int i = 0; i < 5; i++)
   {
@@ -504,27 +530,39 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
       }
 
       /* WHEN CLIENT IS ACTIVE */
-      // Clicked within a room on the ship
-      if (players[Locator::getPlayers()->my_player_index]->is_active &&
-          board.isHoveringOverRoom(mouse_pos))
+      if (players[Locator::getPlayers()->my_player_index]->is_active)
       {
-        ShipRoom this_room = board.getClickedRoom(mouse_pos);
+        // Clicked within a room on the ship
+        if (board.isHoveringOverRoom(mouse_pos))
+        {
+          ShipRoom this_room = board.getClickedRoom(mouse_pos);
 
-        // Get new movement position
-        Vector2 new_pos = this_room.getPosForPlayer(
-          players[Locator::getPlayers()->my_player_index]->current_class);
+          // Get new movement position
+          Vector2 new_pos = this_room.getPosForPlayer(
+            players[Locator::getPlayers()->my_player_index]->current_class);
 
-        // Move, and let everyone know we're moving
-        Locator::getNetworkInterface()->sendData(
-          data_roles::CLIENT_MOVING_PLAYER_TOKEN,
-          Locator::getPlayers()->my_player_index,
-          static_cast<int>(this_room.getEnum()));
-        Locator::getPlayers()
-          ->getPlayer(
-            players[Locator::getPlayers()->my_player_index]->current_class)
-          ->setPos(new_pos);
-        debug_text.print("Moving my player token to room '" +
-                         this_room.getName() + "'.");
+          // Move, and let everyone know we're moving
+          Locator::getNetworkInterface()->sendData(
+            data_roles::CLIENT_MOVING_PLAYER_TOKEN,
+            Locator::getPlayers()->my_player_index,
+            static_cast<int>(this_room.getEnum()));
+          Locator::getPlayers()
+            ->getPlayer(
+              players[Locator::getPlayers()->my_player_index]->current_class)
+            ->setPos(new_pos);
+          debug_text.print("Moving my player token to room '" +
+                           this_room.getName() + "'.");
+        }
+
+        // Clicked end turn button
+        if (end_turn_btn->clicked())
+        {
+          Locator::getNetworkInterface()->sendData(
+            data_roles::CLIENT_WANTS_TO_END_TURN,
+            Locator::getPlayers()->my_player_index);
+          current_scene_lock_active = true;
+          debug_text.print("Requesting to end my go!!");
+        }
       }
 
       /* WHEN CLIENT IS ACTIVE/INACTIVE */
@@ -681,6 +719,18 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
     }
   }
 
+  /* MISC */
+
+  // End turn button is only active when we are
+  end_turn_btn->setActive(
+    players[Locator::getPlayers()->my_player_index]->is_active);
+  if (objective_card_popup.isVisible() || issue_card_popup.isVisible() ||
+      dice_roll_popup.isVisible())
+  {
+    end_turn_btn->setActive(false); // inactive when popups are over us
+  }
+  end_turn_btn->update();
+
   return next_scene;
 }
 
@@ -739,6 +789,9 @@ void GameScene::render()
       game_sprites.progress_marker->yPos(static_cast<float>(
         ((Locator::getPlayers()->current_progress_index + 3.5) * 30)));
       renderer->renderSprite(*game_sprites.progress_marker->getSprite());
+
+      // End-turn button
+      end_turn_btn->render();
 
       break;
     }

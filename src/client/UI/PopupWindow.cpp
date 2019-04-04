@@ -10,6 +10,7 @@ PopupWindow::PopupWindow()
 
   close_button = new ClickableButton("data/UI/INGAME_UI/close_button.png");
   close_button->setPos(Vector2(1193, 83));
+  close_button->setActive(false);
 }
 
 /* Destroy the popup and all contents */
@@ -66,6 +67,8 @@ ScaledSprite& PopupWindow::referenceSprite(ScaledSprite& ref_sprite)
 ClickableButton& PopupWindow::createButton(const std::string& sprite_path)
 {
   ClickableButton* new_button = new ClickableButton(sprite_path);
+  new_button->setActive(false); // start as inactive, as we most likely are
+                                // hidden
   popup_buttons.push_back(new_button);
   return *new_button;
 }
@@ -73,6 +76,8 @@ ClickableButton& PopupWindow::createButton(const std::string& sprite_path)
 /* Add a reference of an existing button for the popup */
 ClickableButton& PopupWindow::referenceButton(ClickableButton& ref_button)
 {
+  ref_button.setActive(false); // start as inactive, as we most likely are
+                               // hidden
   popup_buttons_referenced.push_back(&ref_button);
   return ref_button;
 }

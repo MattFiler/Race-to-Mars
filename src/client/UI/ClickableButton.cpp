@@ -43,10 +43,8 @@ Vector2 ClickableButton::getPos()
 /* Render button */
 void ClickableButton::render()
 {
-  if (is_active)
-  {
-    // Only render if active - we may want to change this in future to perhaps
-    // render a greyed-out sprite if in-active instead of not rendering at all?
-    renderer->renderSprite(*sprite->getSprite());
-  }
+  // if (is_active)
+  //{
+  renderer->renderSprite(*sprite->getSprite());
+  //}
 }

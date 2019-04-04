@@ -26,8 +26,8 @@ struct GameSprites
 class GameScene : public Scene
 {
  public:
-  GameScene() { debug_text.print("entered game scene."); };
-  ~GameScene() override = default;
+  GameScene();
+  ~GameScene() override;
 
   void init() override;
 
@@ -53,6 +53,9 @@ class GameScene : public Scene
   PopupWindow issue_card_popup;
   PopupWindow objective_card_popup;
   PopupWindow dice_roll_popup;
+
+  /* BUTTONS */
+  ClickableButton* end_turn_btn;
 
   bool is_new_turn = false;
   bool got_new_obj_card = false;

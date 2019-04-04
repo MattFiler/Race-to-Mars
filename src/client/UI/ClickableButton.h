@@ -27,7 +27,7 @@ class ClickableButton
  private:
   ASGE::Renderer* renderer = nullptr;
   ScaledSprite* sprite = nullptr;
-  bool is_active = false;
+  bool is_active = true;
 };
 
 #endif // PROJECT_CLICKABLEBUTTON_H
