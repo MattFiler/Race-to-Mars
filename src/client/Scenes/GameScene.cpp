@@ -391,8 +391,9 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
       }
       if (keys.keyReleased("Debug Buy Item"))
       {
-        Locator::getClient()->sendData(data_roles::CLIENT_REQUESTED_ITEM_CARD,
-                                       Locator::getPlayers()->my_player_index);
+        Locator::getNetworkInterface()->sendData(
+          data_roles::CLIENT_REQUESTED_ITEM_CARD,
+          Locator::getPlayers()->my_player_index);
       }
       break;
     }

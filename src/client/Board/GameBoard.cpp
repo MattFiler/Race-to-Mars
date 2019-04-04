@@ -424,24 +424,10 @@ void GameBoard::handleIssueCardEvents(issue_cards _card_type)
            * when player rolls dice and issue has been activated. see below.
            *
            * */
-          Locator::getClient()->sendData(
+          Locator::getNetworkInterface()->sendData(
             data_roles::CLIENT_CHANGE_PROGRESS_INDEX,
             Locator::getPlayers()->current_progress_index - 2);
-          // break; - from merge, unsure if needs to be kept?
         }
-
-        pilot_moveforward = true;
-        Locator::getPlayers()
-          ->getPlayer(
-            static_cast<player_classes>(Locator::getPlayers()->my_player_index))
-          ->setDiceRolls(1);
-        /* this is just to test if this feature is working, needs to moved to
-         * when player rolls dice and issue has been activated. see below.
-         *
-         * */
-        Locator::getNetworkInterface()->sendData(
-          data_roles::CLIENT_CHANGE_PROGRESS_INDEX,
-          Locator::getPlayers()->current_progress_index - 2);
         break;
       }
       default:
