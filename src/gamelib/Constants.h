@@ -18,33 +18,6 @@ enum game_state
   LOCAL_PAUSE, // The quit menu
 };
 
-enum render_order
-{
-  PRIORITY_BACKGROUND,
-  PRIORITY_MIDDLE,
-  PRIORITY_UI,
-  PRIORITY_TEXT,
-  PRIORITY_UI_2,
-  PRIORITY_UI_3,
-  PRIORITY_UI_4,
-  PRIORITY_CARD_1_SHADOW, // these are used dynamically
-  PRIORITY_CARD_1,
-  PRIORITY_CARD_2_SHADOW, // these are used dynamically
-  PRIORITY_CARD_2,        // these are used dynamically
-  PRIORITY_CARD_3_SHADOW, // these are used dynamically
-  PRIORITY_CARD_3,        // these are used dynamically
-  PRIORITY_CARD_4_SHADOW, // these are used dynamically
-  PRIORITY_CARD_4,        // these are used dynamically
-  PRIORITY_CARD_5_SHADOW, // these are used dynamically
-  PRIORITY_CARD_5,        // these are used dynamically
-  PRIORITY_CARD_6_SHADOW, // these are used dynamically
-  PRIORITY_CARD_6,
-  PRIORITY_TOPMOST,
-  PRIORITY_OVERLAYS,
-  PRIORITY_CURSOR,
-  PRIORITY_DEBUG_ABSOLUTE_TOP
-};
-
 struct GameConfig
 {
   int max_issue_cards = 5;
@@ -56,6 +29,10 @@ struct CardOffsets
   Vector2 issue_popup_start = Vector2(86, 205); // Position of card 1
   Vector2 issue_popup_offset = Vector2(222, 0); // Offset from 1
   Vector2 issue_popup_size = Vector2(222, 310); // Size of card
+
+  // Issue card popup buttons
+  Vector2 issue_popup_ap_btn_start = Vector2(106, 543); // Position of button 1
+  Vector2 issue_popup_ap_btn_offset = Vector2(145, 0);  // Offset of each button
 
   // Issue card in-game
   Vector2 issue_ingame_start = Vector2(1100, 70); // Position of card 1
@@ -71,7 +48,8 @@ struct CardOffsets
   Vector2 obj_ingame_size = Vector2(124, 175); // Size of card
 
   // Misc
-  Vector2 shadow_offset = Vector2(80, 80); // Single-card shadow
+  Vector2 card_shadow_offset = Vector2(80, 80);   // Single-card shadow
+  Vector2 ap_btn_shadow_offset = Vector2(25, 25); // AP button shadow
 };
 
 // Resolution (set at runtime)

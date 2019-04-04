@@ -19,6 +19,8 @@ struct GameSprites
   ScaledSprite* progress_marker = nullptr;
   ScaledSprite* sync_overlay = nullptr;
   ScaledSprite* disconnect_overlay = nullptr;
+  ScaledSprite* popup_card_shadows[6] = { nullptr, nullptr, nullptr,
+                                          nullptr, nullptr, nullptr };
 };
 
 class GameScene : public Scene
@@ -46,11 +48,15 @@ class GameScene : public Scene
   GameSprites game_sprites;
   LobbyPlayer* players[4] = { nullptr, nullptr, nullptr, nullptr };
 
+  /* POPUPS */
   PopupWindow issue_card_popup;
   PopupWindow objective_card_popup;
+  PopupWindow dice_roll_popup;
 
   bool is_new_turn = false;
   bool got_new_obj_card = false;
+
+  CardOffsets card_offsets;
 
   int max_progress_index = 19; // win condition
   double popup_timer = 0.0f;

@@ -71,9 +71,6 @@ bool RaceToSpace::init()
   Locator::setupClient(&networked_client);
   Locator::setupCursor(&cursor_pointer);
 
-  // Setup renderer config
-  // renderer->setSpriteMode(ASGE::SpriteSortMode::FRONT_TO_BACK);
-
   // Initialise our players & pass to locator
   all_players = new Players();
   Locator::setupPlayers(all_players);
@@ -203,6 +200,8 @@ void RaceToSpace::update(const ASGE::GameTime& game_time)
   double x_pos, y_pos;
   inputs.get()->getCursorPos(x_pos, y_pos);
   cursor_pointer.updatePosition(x_pos, y_pos);
+  cursor_pointer.setCursorActive(false); // this is then overridden by
+                                         // hover-able items
   if (!scene_manager.update(game_time))
   {
     signalExit();

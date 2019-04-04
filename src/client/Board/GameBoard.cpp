@@ -186,7 +186,7 @@ void GameBoard::render(bool _obj_popup, bool _issue_popup)
     {
       active_obj_card->setDimensions(card_offsets.obj_popup_size);
       active_obj_card->setPosition(card_offsets.obj_popup_pos);
-      active_obj_card->render(render_order::PRIORITY_CARD_6);
+      active_obj_card->render();
     }
   }
   else
@@ -211,8 +211,7 @@ void GameBoard::render(bool _obj_popup, bool _issue_popup)
       }
 
       // Render
-      active_issue.render(
-        static_cast<render_order>(render_order::PRIORITY_CARD_1 + card_index));
+      active_issue.render();
       card_index++;
     }
 
@@ -223,7 +222,7 @@ void GameBoard::render(bool _obj_popup, bool _issue_popup)
       {
         active_obj_card->setDimensions(card_offsets.obj_ingame_size);
         active_obj_card->setPosition(card_offsets.obj_ingame_pos);
-        active_obj_card->render(render_order::PRIORITY_CARD_6);
+        active_obj_card->render();
       }
     }
   }

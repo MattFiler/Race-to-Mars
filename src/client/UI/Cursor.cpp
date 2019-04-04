@@ -55,10 +55,8 @@ void Cursor::render()
 {
   if (is_active)
   {
-    renderer->renderSprite(*cursor_sprite_active->getSprite(),
-                           render_order::PRIORITY_CURSOR);
+    renderer->renderSprite(*cursor_sprite_active->getSprite());
     return;
   }
-  renderer->renderSprite(*cursor_sprite_inactive->getSprite(),
-                         render_order::PRIORITY_CURSOR);
+  renderer->renderSprite(*cursor_sprite_inactive->getSprite());
 }

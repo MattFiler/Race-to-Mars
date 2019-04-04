@@ -44,6 +44,28 @@ void GameScene::init()
   game_sprites.sync_overlay = new ScaledSprite("UI/INGAME_UI/syncing.png");
   game_sprites.disconnect_overlay = new ScaledSprite("UI/INGAME_UI/"
                                                      "syncing_notext.png");
+  for (int i = 0; i < 6; i++)
+  {
+    game_sprites.popup_card_shadows[i] =
+      new ScaledSprite("UI/INGAME_UI/cards_" + std::to_string(i) + ".png");
+  }
+
+  // Create popup title sprites
+  issue_card_popup.createSprite("UI/INGAME_UI/new_issues_bg.png");
+  objective_card_popup.createSprite("UI/INGAME_UI/new_obj_bg.png");
+  dice_roll_popup.createSprite("UI/INGAME_UI/dice_roll_bg.png");
+
+  // Create buttons for issue card popup
+  for (int i = 0; i < 5; i++)
+  {
+    ClickableButton& new_btn = issue_card_popup.createButton("UI/INGAME_UI/"
+                                                             "assign_ap_button_"
+                                                             "noshadow.png");
+    new_btn.setPos(
+      card_offsets.issue_popup_ap_btn_start +
+      (card_offsets.issue_popup_ap_btn_offset * static_cast<float>(i)));
+    new_btn.setActive(false);
+  }
 
   // If we joined in progress, request a data sync from the server
   if (Locator::getPlayers()->joined_in_progress)
@@ -285,14 +307,16 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
   keys.registerEvent(static_cast<const ASGE::KeyEvent*>(data.get()));
 
   // Force all inputs to popups when visible
-  if (issue_card_popup.isVisible() || objective_card_popup.isVisible())
+  if (issue_card_popup.isVisible() || objective_card_popup.isVisible() ||
+      dice_roll_popup.isVisible())
   {
     issue_card_popup.keyHandler(keys);
     objective_card_popup.keyHandler(keys);
+    dice_roll_popup.keyHandler(keys);
     return;
   }
 
-  // Game inputs
+  // Game input states
   switch (current_state)
   {
     case game_state::PLAYING:
@@ -352,8 +376,8 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
 {
   auto click = static_cast<const ASGE::ClickEvent*>(data.get());
 
-  // Disable interaction when popup is visible
-  if (issue_card_popup.isVisible() || objective_card_popup.isVisible())
+  // Only handle clicks if we actually clicked!
+  if (click->action != ASGE::E_MOUSE_CLICK)
   {
     return;
   }
@@ -361,11 +385,17 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
   Vector2 mouse_pos = Vector2(Locator::getCursor()->getPosition().x,
                               Locator::getCursor()->getPosition().y);
 
-  if (click->action != ASGE::E_MOUSE_CLICK)
+  // Force all inputs to popups when active
+  if (issue_card_popup.isVisible() || objective_card_popup.isVisible() ||
+      dice_roll_popup.isVisible())
   {
+    issue_card_popup.clickHandler(mouse_pos);
+    objective_card_popup.clickHandler(mouse_pos);
+    dice_roll_popup.clickHandler(mouse_pos);
     return;
   }
 
+  // Game input states
   switch (current_state)
   {
     case game_state::PLAYING:
@@ -407,6 +437,8 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
       {
         objective_card_popup.clearAllReferencedSprites();
         objective_card_popup.referenceSprite(
+          *game_sprites.popup_card_shadows[0]);
+        objective_card_popup.referenceSprite(
           *board.getClickedObjectiveCard(mouse_pos)->getSprite());
         objective_card_popup.show();
       }
@@ -415,7 +447,26 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
       {
         issue_card_popup.clearAllReferencedSprites();
         issue_card_popup.referenceSprite(
-          *board.getClickedIssueCard(mouse_pos)->getSprite());
+          *game_sprites.popup_card_shadows[board.activeIssuesCount()]);
+        for (IssueCard& issue_card : board.getIssueCards())
+        {
+          issue_card_popup.referenceSprite(*issue_card.getSprite());
+        }
+        // If we're the active player, show the opportunity to assign action
+        // points to each card
+        if (players[Locator::getPlayers()->my_player_index]->is_active)
+        {
+          int button_index = 0;
+          for (ClickableButton* button : issue_card_popup.getInternalButtons())
+          {
+            if (button_index == board.activeIssuesCount())
+            {
+              break;
+            }
+            button->setActive(true);
+            button_index++;
+          }
+        }
         issue_card_popup.show();
       }
     }
@@ -434,16 +485,26 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
   // Update popups
   issue_card_popup.update(game_time);
   objective_card_popup.update(game_time);
+  dice_roll_popup.update(game_time);
 
   // Update cards if required and show popup if needed
   if (board.updateActiveIssueCards())
   {
+    // Hide all old popups
+    issue_card_popup.hide();
+    objective_card_popup.hide();
+    dice_roll_popup.hide();
+
+    // Show issue card popup
     issue_card_popup.clearAllReferencedSprites();
+    issue_card_popup.referenceSprite(
+      *game_sprites.popup_card_shadows[board.activeIssuesCount()]);
     for (IssueCard& issue_card : board.getIssueCards())
     {
       issue_card_popup.referenceSprite(*issue_card.getSprite());
     }
     issue_card_popup.showForTime(5);
+    is_new_turn = true;
   }
   if (board.updateActiveObjectiveCard())
   {
@@ -454,34 +515,50 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
   if (got_new_obj_card && !issue_card_popup.isVisible())
   {
     objective_card_popup.clearAllReferencedSprites();
+    objective_card_popup.referenceSprite(*game_sprites.popup_card_shadows[0]);
     objective_card_popup.referenceSprite(
       *board.getObjectiveCard()->getSprite());
     objective_card_popup.showForTime(5);
     got_new_obj_card = false;
   }
 
-  /* CURSOR */
+  // Show dice roll popup if a new active turn
+  if (is_new_turn &&
+      players[Locator::getPlayers()->my_player_index]->is_active &&
+      !issue_card_popup.isVisible() && !objective_card_popup.isVisible())
+  {
+    dice_roll_popup.show();
+    is_new_turn = false;
+  }
+
+  /* STATE-SPECIFIC CURSOR */
+
+  // While our cursor hover state is handled by individual buttons, more generic
+  // game stuff like the card hovering needs to be handled here. By default, the
+  // cursor is set to inactive at the start of every update call, this will then
+  // override that to true if needed.
+
   Vector2 mouse_pos = Vector2(Locator::getCursor()->getPosition().x,
                               Locator::getCursor()->getPosition().y);
 
-  bool cursor_active = false;
-  if (!objective_card_popup.isVisible() && !issue_card_popup.isVisible())
+  if (!objective_card_popup.isVisible() && !issue_card_popup.isVisible() &&
+      !dice_roll_popup.isVisible())
   {
     // Update to hover cursor for cards
-    cursor_active = (board.isHoveringOverIssueCard(mouse_pos) ||
-                     board.isHoveringOverObjectiveCard(mouse_pos));
+    if (board.isHoveringOverIssueCard(mouse_pos) ||
+        board.isHoveringOverObjectiveCard(mouse_pos))
+    {
+      Locator::getCursor()->setCursorActive(true);
+    }
 
     // If we're the active player, aren't syncing, and don't already have an
     // active player, check if we're hovering over a room
     if (players[Locator::getPlayers()->my_player_index]->is_active &&
-        !current_scene_lock_active && !cursor_active)
+        !current_scene_lock_active && board.isHoveringOverRoom(mouse_pos))
     {
-      cursor_active = board.isHoveringOverRoom(mouse_pos);
+      Locator::getCursor()->setCursorActive(true);
     }
   }
-
-  // Finally, actually update it
-  Locator::getCursor()->setCursorActive(cursor_active);
 
   return next_scene;
 }
@@ -494,8 +571,7 @@ void GameScene::render()
     case game_state::PLAYING:
     {
       // Board and background
-      renderer->renderSprite(*game_sprites.background->getSprite(),
-                             render_order::PRIORITY_BACKGROUND);
+      renderer->renderSprite(*game_sprites.background->getSprite());
       board.render(objective_card_popup.isVisible(),
                    issue_card_popup.isVisible());
 
@@ -512,8 +588,7 @@ void GameScene::render()
         renderer->renderSprite(*Locator::getPlayers()
                                   ->getPlayer(players[i]->current_class)
                                   ->getGameTabSprite()
-                                  ->getSprite(),
-                               render_order::PRIORITY_UI);
+                                  ->getSprite());
 
         // draw score if player is connected
         if (players[i]->current_class != player_classes::UNASSIGNED)
@@ -522,8 +597,7 @@ void GameScene::render()
                                225,
                                static_cast<int>(this_pos + 100),
                                1,
-                               ASGE::COLOURS::WHITE,
-                               render_order::PRIORITY_TEXT);
+                               ASGE::COLOURS::WHITE);
         }
 
         // log position for active player marker.
@@ -534,19 +608,15 @@ void GameScene::render()
       }
 
       // Activity markers
-      renderer->renderSprite(*game_sprites.inactive_player_marker->getSprite(),
-                             render_order::PRIORITY_UI);
+      renderer->renderSprite(*game_sprites.inactive_player_marker->getSprite());
       game_sprites.active_player_marker->yPos(active_marker_pos);
-      renderer->renderSprite(*game_sprites.active_player_marker->getSprite(),
-                             render_order::PRIORITY_UI_2);
+      renderer->renderSprite(*game_sprites.active_player_marker->getSprite());
 
       // Progress meters
-      renderer->renderSprite(*game_sprites.progress_meter->getSprite(),
-                             render_order::PRIORITY_UI);
+      renderer->renderSprite(*game_sprites.progress_meter->getSprite());
       game_sprites.progress_marker->yPos(static_cast<float>(
         ((Locator::getPlayers()->current_progress_index + 3.5) * 30)));
-      renderer->renderSprite(*game_sprites.progress_marker->getSprite(),
-                             render_order::PRIORITY_UI);
+      renderer->renderSprite(*game_sprites.progress_marker->getSprite());
 
       break;
     }
@@ -559,18 +629,17 @@ void GameScene::render()
   // Render popups if needed
   issue_card_popup.render();
   objective_card_popup.render();
+  dice_roll_popup.render();
 
   // If active, render the "scene lock" overlay (cuts out interaction while
   // syncing)
   if (current_scene_lock_active)
   {
-    renderer->renderSprite(*game_sprites.sync_overlay->getSprite(),
-                           render_order::PRIORITY_OVERLAYS);
+    renderer->renderSprite(*game_sprites.sync_overlay->getSprite());
   }
   if (has_disconnected)
   {
-    renderer->renderSprite(*game_sprites.disconnect_overlay->getSprite(),
-                           render_order::PRIORITY_OVERLAYS);
+    renderer->renderSprite(*game_sprites.disconnect_overlay->getSprite());
   }
 
   // client debugging
@@ -583,8 +652,7 @@ void GameScene::render()
       10,
       30,
       0.5,
-      ASGE::COLOURS::WHITE,
-      render_order::PRIORITY_DEBUG_ABSOLUTE_TOP);
+      ASGE::COLOURS::WHITE);
     renderer->renderText(
       "CURRENT_CLASS: " +
         std::to_string(
@@ -592,8 +660,7 @@ void GameScene::render()
       10,
       50,
       0.5,
-      ASGE::COLOURS::WHITE,
-      render_order::PRIORITY_DEBUG_ABSOLUTE_TOP);
+      ASGE::COLOURS::WHITE);
     renderer->renderText(
       "HAS_CONNECTED: " +
         std::to_string(
@@ -601,8 +668,7 @@ void GameScene::render()
       10,
       70,
       0.5,
-      ASGE::COLOURS::WHITE,
-      render_order::PRIORITY_DEBUG_ABSOLUTE_TOP);
+      ASGE::COLOURS::WHITE);
     renderer->renderText(
       "IS_READY: " +
         std::to_string(
@@ -610,8 +676,7 @@ void GameScene::render()
       10,
       90,
       0.5,
-      ASGE::COLOURS::WHITE,
-      render_order::PRIORITY_DEBUG_ABSOLUTE_TOP);
+      ASGE::COLOURS::WHITE);
     renderer->renderText(
       "ACTION_POINTS: " +
         std::to_string(
@@ -619,19 +684,10 @@ void GameScene::render()
       10,
       110,
       0.5,
-      ASGE::COLOURS::WHITE,
-      render_order::PRIORITY_DEBUG_ABSOLUTE_TOP);
-    renderer->renderText("PRESS M TO FINISH TURN",
-                         10,
-                         130,
-                         0.5,
-                         ASGE::COLOURS::WHITE,
-                         render_order::PRIORITY_DEBUG_ABSOLUTE_TOP);
-    renderer->renderText("PRESS L TO DEBUG TEST ACTION POINTS",
-                         10,
-                         150,
-                         0.5,
-                         ASGE::COLOURS::WHITE,
-                         render_order::PRIORITY_DEBUG_ABSOLUTE_TOP);
+      ASGE::COLOURS::WHITE);
+    renderer->renderText(
+      "PRESS M TO FINISH TURN", 10, 130, 0.5, ASGE::COLOURS::WHITE);
+    renderer->renderText(
+      "PRESS L TO DEBUG TEST ACTION POINTS", 10, 150, 0.5, ASGE::COLOURS::WHITE);
   }
 }
