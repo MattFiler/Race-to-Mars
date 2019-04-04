@@ -35,6 +35,7 @@ class GameBoard
   bool updateActiveIssueCards();
   bool updateActiveObjectiveCard();
 
+  std::vector<IssueCard> getIssueCards();
   int activeIssuesCount();
 
   ShipRoom getRoom(ship_rooms _room);

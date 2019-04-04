@@ -438,6 +438,11 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
   // Update cards if required and show popup if needed
   if (board.updateActiveIssueCards())
   {
+    issue_card_popup.clearAllReferencedSprites();
+    for (IssueCard& issue_card : board.getIssueCards())
+    {
+      issue_card_popup.referenceSprite(*issue_card.getSprite());
+    }
     issue_card_popup.showForTime(5);
   }
   if (board.updateActiveObjectiveCard())

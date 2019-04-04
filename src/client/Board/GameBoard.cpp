@@ -242,6 +242,13 @@ ShipRoom GameBoard::getRoom(ship_rooms _room)
   throw "Could not find requested room.";
 }
 
+/* Get the active issue cards */
+std::vector<IssueCard> GameBoard::getIssueCards()
+{
+  return active_issues;
+}
+
+/* Get the count of issue cards */
 int GameBoard::activeIssuesCount()
 {
   int count = 0;
