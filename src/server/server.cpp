@@ -9,10 +9,6 @@ RaceToSpaceServer::RaceToSpaceServer()
 {
   debug_text.enabled = true;
   enetpp::global_state::get().initialize();
-  // chrono here
-  //  std::random_device random;
-  //  std::mt19937 mtgen(random(), random(), random());
-  //  gen = mtgen;
 }
 
 RaceToSpaceServer::~RaceToSpaceServer()
@@ -102,7 +98,7 @@ void RaceToSpaceServer::run()
           // The currently active client wants to end their turn, so we need to
           // progress the game - this may be as simple as going to the next
           // player, but if we've done a full rotation in this lobby, new issue
-          // cards will need to be pulled, etc
+          // cards will need to be pulled, etc.
         case data_roles::CLIENT_WANTS_TO_END_TURN:
         {
           bool full_rotation = false;
@@ -111,7 +107,6 @@ void RaceToSpaceServer::run()
           {
             break;
           }
-
           // Work out what client should go next
           if (this_clients_lobby->currently_active_player + 1 <=
               max_lobby_size - 1)
@@ -236,7 +231,7 @@ void RaceToSpaceServer::run()
 
           // Client spent or gained action points, update the lobby before
           // sending to all - we can use this data for reconnecting players to
-          // keep them updated on game progress
+          // keep them updated on game progress.
         case data_roles::CLIENT_ACTION_POINTS_CHANGED:
         {
           Lobby* this_clients_lobby = getLobbyByID(client.lobby_id);
@@ -300,6 +295,22 @@ void RaceToSpaceServer::run()
           break;
         }
 
+        // Client has requested to buy an item.
+        case data_roles::CLIENT_REQUESTED_ITEM_CARD:
+        {
+          Lobby* this_lobby = getLobbyByID(client.lobby_id);
+          if (this_lobby == nullptr)
+          {
+            break;
+          }
+          data_to_send.content[1] = this_lobby->item_deck.back();
+          sendData(client,
+                   static_cast<unsigned int>(-2),
+                   data_roles::CLIENT_REQUESTED_ITEM_CARD,
+                   data_to_send.content[0],
+                   data_to_send.content[1]);
+          break;
+        }
           // We need to store lobby ready state before sending it out, so new
           // players are up to date
         case data_roles::CLIENT_CHANGED_LOBBY_READY_STATE:
@@ -344,7 +355,6 @@ void RaceToSpaceServer::run()
             }
             // Else, start a new game
             else
-
             {
               debug_text.print("Starting gameplay in lobby " +
                                  std::to_string(this_lobby->lobby_id) + ".",

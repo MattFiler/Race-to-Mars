@@ -28,15 +28,17 @@ class GameBoard
   ShipRoom getClickedRoom(Vector2 clicked_pos);
   IssueCard* getClickedIssueCard(Vector2 clicked_pos);
   ObjectiveCard* getClickedObjectiveCard(Vector2 clicked_pos);
-  std::vector<IssueCard> getIssueCards() { return active_issues; }
+  std::vector<IssueCard> getIssueCards();
 
   void setActiveIssueCards(int active_cards[5], bool is_new_rotation);
   void setActiveObjectiveCard(int card_index);
+  void setActiveItemCard(int card_index);
 
   bool updateActiveIssueCards();
   bool updateActiveObjectiveCard();
+  bool updateActiveItemCard();
 
-  std::vector<IssueCard> getIssueCards();
+  // std::vector<IssueCard> getIssueCards();
   int activeIssuesCount();
   ObjectiveCard* getObjectiveCard();
 
@@ -64,6 +66,9 @@ class GameBoard
   std::vector<ObjectiveCard> completed_obj_cards;
 
   int active_issue_cards[5] = { -1, -1, -1, -1, -1 };
+  int active_item_card[5] = { -1, -1, -1, -1, -1 };
+  bool item_slot_active[5] = { false, false, false, false, false };
+
   int objective_cards_inplay[4] = { -1, -1, -1, -1 };
   // Slot active is to keep track of available slots to place new cards since
   // if active_issue_card[x] != -1 can be overridden by another card.

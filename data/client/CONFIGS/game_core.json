@@ -13,7 +13,8 @@
 		  "Ready Up": 88,
 		  "Debug Skip Readyup": 32,
 		  "End Turn": 77,
-		  "Debug Spend AP": 76
+		  "Debug Spend AP": 76,
+		  "Debug Buy Item": 105
 		},
 		"language": "English",
 		"server_hostname": "localhost",

@@ -428,3 +428,36 @@ void GameBoard::handleIssueCardEvents(issue_cards _card_type)
     }
   }
 }
+
+void GameBoard::setActiveItemCard(int card_index)
+{
+  for (int i = 0; i < Locator::getPlayers()
+                        ->getPlayer(static_cast<player_classes>(
+                          Locator::getPlayers()->my_player_index))
+                        ->getMaxItems();
+       ++i)
+  {
+    if (active_item_card[i] == -1)
+    {
+      active_item_card[i] = card_index;
+    }
+  }
+}
+
+bool GameBoard::updateActiveItemCard()
+{
+  //  for(int i = 0; i <
+  //  Locator::getPlayers()->getPlayer(static_cast<player_classes>(Locator::getPlayers()->my_player_index))->getMaxItems();
+  //  ++i)
+  //  {
+  //    if (active_item_card[i] != -1 && !slot_active[i])
+  //    {
+  //      item_inventory.emplace_back(static_cast<item_cards>(active_item_card[i]));
+  //      item_slot_active[i] = true;
+  //      debug_text.print("Creating item card: " +
+  //                       std::to_string(active_issue_cards[i]));
+  //      return true;
+  //    }
+  //  }
+  return false;
+}

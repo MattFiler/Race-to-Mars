@@ -46,6 +46,8 @@ class Player
   void setDiceRolls(int _dice_roll) { amount_of_rolls += _dice_roll; }
   void setMaxItems(int _max_items) { max_items = _max_items; }
 
+  int getMaxItems() { return max_items; }
+
   void makeUninitialised()
   {
     retargetConfig("DEFAULT");
