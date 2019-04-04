@@ -2,6 +2,7 @@
 #define PROJECT_POPUPWINDOW_H
 
 #include "client/KeyHandler/KeyHandler.h"
+#include "client/UI/ClickableButton.h"
 #include "client/UI/ScaledSprite.h"
 #include <Engine/GameTime.h>
 #include <Engine/Renderer.h>
@@ -22,22 +23,23 @@ class PopupWindow
   ScaledSprite& referenceSprite(ScaledSprite& ref_sprite);
   void clearAllReferencedSprites() { popup_sprites_referenced.resize(0); };
 
+  ClickableButton& createButton(const std::string& sprite_path);
+  void clearAllInternalButtons() { popup_buttons.clear(); };
+
+  ClickableButton& referenceButton(ClickableButton& ref_button);
+  void clearAllReferencedButtons() { popup_buttons_referenced.resize(0); };
+
+  void positionCloseButton(Vector2 _pos);
+  Vector2 getCloseButtonPos();
+
   bool isVisible() { return is_active; };
 
   // Automatic show/hide over time
   void showForTime(float _timeout);
 
   // Manual show/hide
-  void show()
-  {
-    is_active = true;
-    timeout = -1;
-  };
-  void hide()
-  {
-    is_active = false;
-    timeout = -1;
-  };
+  void show();
+  void hide();
 
   void update(const ASGE::GameTime& game_time);
   void render();
@@ -52,7 +54,10 @@ class PopupWindow
 
   /* Popup Content */
   std::vector<ScaledSprite*> popup_sprites;
+  std::vector<ClickableButton*> popup_buttons;
   std::vector<ScaledSprite*> popup_sprites_referenced;
+  std::vector<ClickableButton*> popup_buttons_referenced;
+  ClickableButton* close_button;
 };
 
 #endif // PROJECT_POPUPWINDOW_H
