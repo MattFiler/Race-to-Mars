@@ -13,6 +13,7 @@
 /* Initialise the scene */
 void GameScene::init()
 {
+  // Create pause menu
   pause_menu.addMenuSprite("INGAME_UI/pause_bg.jpg");
   pause_menu.addMenuItem("MENU_CONTINUE");
   pause_menu.addMenuItem("MENU_QUIT");
@@ -27,6 +28,7 @@ void GameScene::init()
     }
   }
 
+  // Create all required sprites
   game_sprites.background = new ScaledSprite("UI/BOARD/background.jpg");
   game_sprites.active_player_marker = new ScaledSprite("UI/INGAME_UI/"
                                                        "active_player_tab.png");
@@ -42,10 +44,6 @@ void GameScene::init()
   game_sprites.sync_overlay = new ScaledSprite("UI/INGAME_UI/syncing.png");
   game_sprites.disconnect_overlay = new ScaledSprite("UI/INGAME_UI/"
                                                      "syncing_notext.png");
-  game_sprites.issue_popup = new ScaledSprite("UI/INGAME_UI/new_issues_bg.png");
-  game_sprites.objective_popup = new ScaledSprite("UI/INGAME_UI/"
-                                                  "new_obj_bg.png");
-  game_sprites.roll_dice = new ScaledSprite("UI/INGAME_UI/roll_btn.png");
 
   // If we joined in progress, request a data sync from the server
   if (Locator::getPlayers()->joined_in_progress)
@@ -286,30 +284,17 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
 {
   keys.registerEvent(static_cast<const ASGE::KeyEvent*>(data.get()));
 
+  // Force all inputs to popups when visible
+  if (issue_card_popup.isVisible() || objective_card_popup.isVisible())
+  {
+    issue_card_popup.keyHandler(keys);
+    objective_card_popup.keyHandler(keys);
+    return;
+  }
+
+  // Game inputs
   switch (current_state)
   {
-    case game_state::ISSUE_CARDS_POPUP:
-    {
-      if (keys.keyReleased("Back") && !is_new_turn)
-      {
-        current_state = game_state::PLAYING;
-        debug_text.print("Closing issue card popup.");
-      }
-      break;
-    }
-    case game_state::OBJECTIVE_CARD_POPUP:
-    {
-      if (keys.keyReleased("Back") && !got_new_obj_card)
-      {
-        current_state = game_state::PLAYING;
-        debug_text.print("Closing objective popup.");
-      }
-      break;
-    }
-    case game_state::IS_ROLLING_DICE:
-    {
-      break;
-    }
     case game_state::PLAYING:
     {
       if (keys.keyReleased("Back") && !current_scene_lock_active)
@@ -367,6 +352,12 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
 {
   auto click = static_cast<const ASGE::ClickEvent*>(data.get());
 
+  // Disable interaction when popup is visible
+  if (issue_card_popup.isVisible() || objective_card_popup.isVisible())
+  {
+    return;
+  }
+
   Vector2 mouse_pos = Vector2(Locator::getCursor()->getPosition().x,
                               Locator::getCursor()->getPosition().y);
 
@@ -377,18 +368,6 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
 
   switch (current_state)
   {
-    case game_state::ISSUE_CARDS_POPUP:
-    {
-      break;
-    }
-    case game_state::OBJECTIVE_CARD_POPUP:
-    {
-      break;
-    }
-    case game_state::IS_ROLLING_DICE:
-    {
-      break;
-    }
     case game_state::PLAYING:
     {
       // Disallow interaction when scene lock is active
@@ -426,14 +405,18 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
       // Clicked on an objective card
       if (board.isHoveringOverObjectiveCard(mouse_pos))
       {
-        clicked_obj_card = board.getClickedObjectiveCard(mouse_pos);
-        current_state = game_state::OBJECTIVE_CARD_POPUP;
+        objective_card_popup.clearAllReferencedSprites();
+        objective_card_popup.referenceSprite(
+          *board.getClickedObjectiveCard(mouse_pos)->getSprite());
+        objective_card_popup.show();
       }
       // Clicked on an issue card
       if (board.isHoveringOverIssueCard(mouse_pos))
       {
-        clicked_issue_card = board.getClickedIssueCard(mouse_pos);
-        current_state = game_state::ISSUE_CARDS_POPUP;
+        issue_card_popup.clearAllReferencedSprites();
+        issue_card_popup.referenceSprite(
+          *board.getClickedIssueCard(mouse_pos)->getSprite());
+        issue_card_popup.show();
       }
     }
     case game_state::LOCAL_PAUSE:
@@ -446,68 +429,47 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
 /* Update function */
 game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
 {
-  // Update cards if required & log result
+  /* POPUPS */
+
+  // Update popups
+  issue_card_popup.update(game_time);
+  objective_card_popup.update(game_time);
+
+  // Update cards if required and show popup if needed
   if (board.updateActiveIssueCards())
   {
-    current_state = game_state::ISSUE_CARDS_POPUP;
-    is_new_turn = true;
+    issue_card_popup.showForTime(5);
   }
   if (board.updateActiveObjectiveCard())
   {
     got_new_obj_card = true;
   }
 
-  // Timeout new round popup after a given time
-  if (is_new_turn && current_state == game_state::ISSUE_CARDS_POPUP)
+  // Show objective popup if needed
+  if (got_new_obj_card && !issue_card_popup.isVisible())
   {
-    popup_timer += game_time.delta.count() / 1000;
-
-    // If popup has been on screen for 5 secs, hide it
-    if (popup_timer > 5.0f)
-    {
-      if (got_new_obj_card)
-      {
-        current_state = game_state::OBJECTIVE_CARD_POPUP;
-      }
-      else
-      {
-        current_state = game_state::PLAYING; // Maybe go to rolling dice state
-                                             // here?!
-      }
-      popup_timer = 0.0f;
-      is_new_turn = false;
-    }
+    objective_card_popup.showForTime(5);
+    got_new_obj_card = false;
   }
 
-  // Do the same for the new objective card popup
-  if (got_new_obj_card && current_state == game_state::OBJECTIVE_CARD_POPUP)
-  {
-    popup_timer += game_time.delta.count() / 1000;
-
-    // If popup has been on screen for 5 secs, hide it
-    if (popup_timer > 5.0f)
-    {
-      current_state = game_state::PLAYING; // Maybe go to rolling dice state
-                                           // here?!
-      popup_timer = 0.0f;
-      got_new_obj_card = false;
-    }
-  }
-
-  /* CURSOR UPDATE */
+  /* CURSOR */
   Vector2 mouse_pos = Vector2(Locator::getCursor()->getPosition().x,
                               Locator::getCursor()->getPosition().y);
 
-  // Always update to hover cursor for cards
-  bool cursor_active = (board.isHoveringOverIssueCard(mouse_pos) ||
-                        board.isHoveringOverObjectiveCard(mouse_pos));
-
-  // If we're the active player, aren't syncing, and don't already have an
-  // active player, check if we're hovering over a room
-  if (players[Locator::getPlayers()->my_player_index]->is_active &&
-      !current_scene_lock_active && !cursor_active)
+  bool cursor_active = false;
+  if (!objective_card_popup.isVisible() && !issue_card_popup.isVisible())
   {
-    cursor_active = board.isHoveringOverRoom(mouse_pos);
+    // Update to hover cursor for cards
+    cursor_active = (board.isHoveringOverIssueCard(mouse_pos) ||
+                     board.isHoveringOverObjectiveCard(mouse_pos));
+
+    // If we're the active player, aren't syncing, and don't already have an
+    // active player, check if we're hovering over a room
+    if (players[Locator::getPlayers()->my_player_index]->is_active &&
+        !current_scene_lock_active && !cursor_active)
+    {
+      cursor_active = board.isHoveringOverRoom(mouse_pos);
+    }
   }
 
   // Finally, actually update it
@@ -521,25 +483,13 @@ void GameScene::render()
 {
   switch (current_state)
   {
-    case game_state::ISSUE_CARDS_POPUP:
-    {
-      // Yes clang, I do want to use a switch case for its intended purpose!
-      [[clang::fallthrough]];
-    }
-    case game_state::OBJECTIVE_CARD_POPUP:
-    {
-      [[clang::fallthrough]];
-    }
-    case game_state::IS_ROLLING_DICE:
-    {
-      [[clang::fallthrough]];
-    }
     case game_state::PLAYING:
     {
       // Board and background
       renderer->renderSprite(*game_sprites.background->getSprite(),
                              render_order::PRIORITY_BACKGROUND);
-      board.render(current_state);
+      board.render(objective_card_popup.isVisible(),
+                   issue_card_popup.isVisible());
 
       float active_marker_pos = -180.0f;
       for (int i = 0; i < 4; i++)
@@ -590,30 +540,6 @@ void GameScene::render()
       renderer->renderSprite(*game_sprites.progress_marker->getSprite(),
                              render_order::PRIORITY_UI);
 
-      // Roll Dice Btn
-      if (current_state == game_state::PLAYING)
-      {
-        game_sprites.roll_dice->getSprite()->colour(ASGE::COLOURS::GREY);
-      }
-      else if (current_state == game_state::IS_ROLLING_DICE)
-      {
-        game_sprites.roll_dice->getSprite()->colour();
-      }
-      renderer->renderSprite(*game_sprites.roll_dice->getSprite(),
-                             render_order::PRIORITY_UI_2);
-
-      // If card popup is active, render it too
-      if (current_state == game_state::ISSUE_CARDS_POPUP)
-      {
-        renderer->renderSprite(*game_sprites.issue_popup->getSprite(),
-                               render_order::PRIORITY_UI_3);
-      }
-      else if (current_state == game_state::OBJECTIVE_CARD_POPUP)
-      {
-        renderer->renderSprite(*game_sprites.objective_popup->getSprite(),
-                               render_order::PRIORITY_UI_3);
-      }
-
       break;
     }
     case game_state::LOCAL_PAUSE:
@@ -621,6 +547,11 @@ void GameScene::render()
       pause_menu.render();
     }
   }
+
+  // Render popups if needed
+  issue_card_popup.render();
+  objective_card_popup.render();
+
   // If active, render the "scene lock" overlay (cuts out interaction while
   // syncing)
   if (current_scene_lock_active)
@@ -645,7 +576,7 @@ void GameScene::render()
       30,
       0.5,
       ASGE::COLOURS::WHITE,
-      render_order::PRIORITY_TEXT);
+      render_order::PRIORITY_DEBUG_ABSOLUTE_TOP);
     renderer->renderText(
       "CURRENT_CLASS: " +
         std::to_string(
@@ -654,7 +585,7 @@ void GameScene::render()
       50,
       0.5,
       ASGE::COLOURS::WHITE,
-      render_order::PRIORITY_TEXT);
+      render_order::PRIORITY_DEBUG_ABSOLUTE_TOP);
     renderer->renderText(
       "HAS_CONNECTED: " +
         std::to_string(
@@ -663,7 +594,7 @@ void GameScene::render()
       70,
       0.5,
       ASGE::COLOURS::WHITE,
-      render_order::PRIORITY_TEXT);
+      render_order::PRIORITY_DEBUG_ABSOLUTE_TOP);
     renderer->renderText(
       "IS_READY: " +
         std::to_string(
@@ -672,7 +603,7 @@ void GameScene::render()
       90,
       0.5,
       ASGE::COLOURS::WHITE,
-      render_order::PRIORITY_TEXT);
+      render_order::PRIORITY_DEBUG_ABSOLUTE_TOP);
     renderer->renderText(
       "ACTION_POINTS: " +
         std::to_string(
@@ -681,18 +612,18 @@ void GameScene::render()
       110,
       0.5,
       ASGE::COLOURS::WHITE,
-      render_order::PRIORITY_TEXT);
+      render_order::PRIORITY_DEBUG_ABSOLUTE_TOP);
     renderer->renderText("PRESS M TO FINISH TURN",
                          10,
                          130,
                          0.5,
                          ASGE::COLOURS::WHITE,
-                         render_order::PRIORITY_TEXT);
+                         render_order::PRIORITY_DEBUG_ABSOLUTE_TOP);
     renderer->renderText("PRESS L TO DEBUG TEST ACTION POINTS",
                          10,
                          150,
                          0.5,
                          ASGE::COLOURS::WHITE,
-                         render_order::PRIORITY_TEXT);
+                         render_order::PRIORITY_DEBUG_ABSOLUTE_TOP);
   }
 }

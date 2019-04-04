@@ -21,22 +21,19 @@ class Scene
   };
   virtual ~Scene() = default;
 
-  virtual void init() { return; };
+  virtual void init(){};
 
-  virtual void networkConnected() { return; };
-  virtual void networkDisconnected() { return; };
-  virtual void networkDataReceived(const enet_uint8* data, size_t data_size)
-  {
-    return;
-  };
+  virtual void networkConnected(){};
+  virtual void networkDisconnected(){};
+  virtual void networkDataReceived(const enet_uint8* data, size_t data_size){};
 
-  virtual void keyHandler(const ASGE::SharedEventData data) { return; };
-  virtual void clickHandler(const ASGE::SharedEventData data) { return; };
+  virtual void keyHandler(const ASGE::SharedEventData data){};
+  virtual void clickHandler(const ASGE::SharedEventData data){};
   virtual game_global_scenes update(const ASGE::GameTime& game_time)
   {
     return next_scene;
   };
-  virtual void render() { return; };
+  virtual void render(){};
 
  protected:
   ASGE::Input* input = nullptr;

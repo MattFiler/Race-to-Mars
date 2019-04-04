@@ -19,7 +19,7 @@ class LobbyScene : public Scene
 {
  public:
   LobbyScene() = default;
-  ~LobbyScene() = default;
+  ~LobbyScene() override = default;
 
   void init() override;
   void networkConnected() override;
