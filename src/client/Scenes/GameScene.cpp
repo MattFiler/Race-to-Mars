@@ -253,9 +253,19 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     // requested, add item card to current items.
     case data_roles::CLIENT_REQUESTED_ITEM_CARD:
     {
-      debug_text.print("adding item card of type" +
-                       std::to_string(received_data.content[1]));
-      board.setActiveItemCard(received_data.content[1]);
+      debug_text.print("Client that requested item: " +
+                       std::to_string(received_data.content[0]) +
+                       ". This client: " +
+                       std::to_string(Locator::getPlayers()->my_player_index));
+      if (Locator::getPlayers()->my_player_index == received_data.content[0])
+      {
+        debug_text.print(
+          "adding item card of type" +
+          std::to_string(received_data.content[1]) +
+          "for player: " + std::to_string(received_data.content[0]));
+        new_item_card = received_data.content[1];
+        update_item_card = true;
+      }
       break;
     }
     case data_roles::SERVER_SYNCS_POSITION_INFO:
@@ -355,8 +365,16 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
       }
       if (keys.keyReleased("Debug Buy Item"))
       {
-        Locator::getClient()->sendData(data_roles::CLIENT_REQUESTED_ITEM_CARD,
-                                       Locator::getPlayers()->my_player_index);
+        debug_text.print("Trying to buy item card.");
+        if (Locator::getPlayers()
+              ->getPlayer(static_cast<player_classes>(
+                Locator::getPlayers()->my_player_index))
+              ->getHeldItemAmount() < 2)
+        {
+          Locator::getClient()->sendData(
+            data_roles::CLIENT_REQUESTED_ITEM_CARD,
+            Locator::getPlayers()->my_player_index);
+        }
       }
       break;
     }
@@ -526,6 +544,15 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
     got_new_obj_card = true;
   }
 
+  if (update_item_card)
+  {
+    debug_text.print("Updating active item cards.");
+    if (board.updateActiveItemCard(new_item_card))
+    {
+      // show popup here.
+    }
+    update_item_card = false;
+  }
   // Show objective popup if needed
   if (got_new_obj_card && !issue_card_popup.isVisible())
   {

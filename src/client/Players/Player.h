@@ -47,6 +47,7 @@ class Player
   void setMaxItems(int _max_items) { max_items = _max_items; }
 
   int getMaxItems() { return max_items; }
+  int getHeldItemAmount() { return held_items; }
 
   void makeUninitialised()
   {
@@ -73,6 +74,7 @@ class Player
   json config;
 
   int current_action_points = 0;
+  int held_items = 0;
   int max_items = 2;
   int amount_of_rolls = 1;
 

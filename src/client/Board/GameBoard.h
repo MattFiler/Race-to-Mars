@@ -36,7 +36,7 @@ class GameBoard
 
   bool updateActiveIssueCards();
   bool updateActiveObjectiveCard();
-  bool updateActiveItemCard();
+  bool updateActiveItemCard(int _item_card_index);
 
   // std::vector<IssueCard> getIssueCards();
   int activeIssuesCount();

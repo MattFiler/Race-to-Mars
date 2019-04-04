@@ -23,13 +23,13 @@
 				{"name": "Band Aid", "action_points": 5,"sprite_path": "UI/CARD_IMAGES/item_bandaid.png", "card_id": 11},
 				{"name": "First Aid Kit", "action_points": 5,"sprite_path": "UI/CARD_IMAGES/item_firstaidkit.png", "card_id": 12},
 				{"name": "Pain Killers", "action_points": 5,"sprite_path": "UI/CARD_IMAGES/item_painkillers.png", "card_id": 13},
-				{"name": "Pain Killers", "action_points": 5,"sprite_path": "UI/CARD_IMAGES/item_painkillers.png", "card_id": 13},
+				{"name": "Pain Killers", "action_points": 5,"sprite_path": "UI/CARD_IMAGES/item_painkillers.png", "card_id": 14},
 		
-				{"name":  "Map","action_points": 5,"sprite_path": "UI/CARD_IMAGES/item_map.png", "card_id": 14},
-				{"name":  "New Controls", "action_points":5,"sprite_path": "UI/CARD_IMAGES/item_newcontrols.png", "card_id": 15},
-				{"name":  "Radar", "action_points":5,"sprite_path": "UI/CARD_IMAGES/item_radar.png", "card_id": 16},
-				{"name":  "Thruster Upgrade", "action_points":5,"sprite_path": "UI/CARD_IMAGES/item_thrusterupgraded.png", "card_id": 17},
-				{"name":  "Window Wash", "action_points":5,"sprite_path": "UI/CARD_IMAGES/item_windowwash.png", "card_id": 18}
+				{"name":  "Map","action_points": 5,"sprite_path": "UI/CARD_IMAGES/item_map.png", "card_id": 15},
+				{"name":  "New Controls", "action_points":5,"sprite_path": "UI/CARD_IMAGES/item_newcontrols.png", "card_id": 16},
+				{"name":  "Radar", "action_points":5,"sprite_path": "UI/CARD_IMAGES/item_radar.png", "card_id": 17},
+				{"name":  "Thruster Upgrade", "action_points":5,"sprite_path": "UI/CARD_IMAGES/item_thrusterupgrade.png", "card_id": 18},
+				{"name":  "Window Wash", "action_points":5,"sprite_path": "UI/CARD_IMAGES/item_windowwash.png", "card_id": 19}
 	],
 	"ISSUECARDS": 
 	[

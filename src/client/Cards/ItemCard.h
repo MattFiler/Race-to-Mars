@@ -14,6 +14,7 @@
 class ItemCard : public Card
 {
  public:
+  explicit ItemCard(item_cards item_index);
   void setCardID(item_cards _item_card_id);
   item_cards getCardID() { return cardID; };
   void setActive(bool _active);

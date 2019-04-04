@@ -117,7 +117,6 @@ void GameBoard::setActiveIssueCards(int card_index[5], bool is_new_rotation)
     if (is_new_rotation && active_issue_cards[i] != card_index[i])
     {
       active_issue_cards[i] = card_index[i];
-
       // sets the slot to active so no other card can take this position.
       // Creating a new issue card and adding it to the back of the
       // current issues vector for rendering and points.
@@ -212,7 +211,7 @@ void GameBoard::render(bool _obj_popup, bool _issue_popup)
 
       // Render
       active_issue.render();
-      card_index++;
+      ++card_index;
     }
 
     // Render objective card in-game
@@ -225,6 +224,20 @@ void GameBoard::render(bool _obj_popup, bool _issue_popup)
         active_obj_card->render();
       }
     }
+  }
+
+  // Render Item Card in-game
+  // if !item card popup.
+  int card_index = 0;
+  for (auto& active_item : item_inventory)
+  {
+    active_item.setDimensions(card_offsets.item_ingame_size);
+    active_item.setPosition(
+      card_offsets.item_ingame_start +
+      (card_offsets.issue_ingame_offset * static_cast<float>(card_index)));
+    active_item.render();
+
+    ++card_index;
   }
 }
 
@@ -444,20 +457,14 @@ void GameBoard::setActiveItemCard(int card_index)
   }
 }
 
-bool GameBoard::updateActiveItemCard()
+bool GameBoard::updateActiveItemCard(int _item_card_index)
 {
-  //  for(int i = 0; i <
-  //  Locator::getPlayers()->getPlayer(static_cast<player_classes>(Locator::getPlayers()->my_player_index))->getMaxItems();
-  //  ++i)
-  //  {
-  //    if (active_item_card[i] != -1 && !slot_active[i])
-  //    {
-  //      item_inventory.emplace_back(static_cast<item_cards>(active_item_card[i]));
-  //      item_slot_active[i] = true;
-  //      debug_text.print("Creating item card: " +
-  //                       std::to_string(active_issue_cards[i]));
-  //      return true;
-  //    }
-  //  }
+  if (_item_card_index >= 0 && _item_card_index <= 19)
+  {
+    item_inventory.emplace_back(static_cast<item_cards>(_item_card_index));
+    debug_text.print("Creating item card: " +
+                     std::to_string(active_item_card[_item_card_index]));
+    return true;
+  }
   return false;
 }

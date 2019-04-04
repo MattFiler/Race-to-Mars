@@ -304,6 +304,10 @@ void RaceToSpaceServer::run()
             break;
           }
           data_to_send.content[1] = this_lobby->item_deck.back();
+          debug_text.print(
+            "Drawing item of type: " + std::to_string(data_to_send.content[1]) +
+            "for client:" + std::to_string(data_to_send.content[0]));
+          this_lobby->item_deck.pop_back();
           sendData(client,
                    static_cast<unsigned int>(-2),
                    data_roles::CLIENT_REQUESTED_ITEM_CARD,
