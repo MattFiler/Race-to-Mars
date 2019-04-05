@@ -20,11 +20,11 @@ class SceneUI
   SceneUI();
   ~SceneUI();
 
-  ScaledSprite* createSprite(const std::string& id, const std::string& path);
-  ScaledSprite* getSprite(const std::string& id);
+  ScaledSprite* createSprite(int id, const std::string& path);
+  ScaledSprite* getSprite(int id);
 
-  ClickableButton* createButton(const std::string& id, const std::string& path);
-  ClickableButton* getButton(const std::string& id);
+  ClickableButton* createButton(int id, const std::string& path);
+  ClickableButton* getButton(int id);
 
   Menu* createMenu();
   Menu* getMenu();
@@ -37,10 +37,10 @@ class SceneUI
  private:
   ASGE::Renderer* renderer = nullptr;
 
-  std::vector<std::string> sprite_ids;
+  std::vector<int> sprite_ids;
   std::vector<ScaledSprite*> sprites;
 
-  std::vector<std::string> button_ids;
+  std::vector<int> button_ids;
   std::vector<ClickableButton*> buttons;
 
   Menu* menu = nullptr;

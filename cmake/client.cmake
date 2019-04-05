@@ -7,7 +7,6 @@ set(SOURCE_FILES
         "client/main.cpp"
         "client/game.cpp"
         "client/game.h"
-
         ../src/client/Cards/Card.cpp
         ../src/client/Cards/ObjectiveCard.cpp
         ../src/client/Cards/ItemCard.cpp
@@ -28,9 +27,7 @@ set(SOURCE_FILES
         ../src/client/Board/Ship.cpp
         ../src/client/UI/Menu.cpp
         ../src/client/Board/GameBoard.cpp
-        ../src/client/Board/ShipRoom.cpp
-
-        )
+        ../src/client/Board/ShipRoom.cpp)
 
 set(HEADER_FILES
         ../src/client/Cards/Card.h
@@ -88,7 +85,9 @@ set(HEADER_FILES
         ../src/client/UI/Managers/GameSceneUI.cpp
         ../src/client/UI/Managers/GameSceneUI.h
         ../src/client/UI/Managers/PopupManager.cpp
-        ../src/client/UI/Managers/PopupManager.h ../src/client/Locator/Interface_Soloud.cpp ../src/client/Locator/Interface_Soloud.h)
+        ../src/client/UI/Managers/PopupManager.h
+        ../src/client/Locator/Interface_Soloud.cpp
+        ../src/client/Locator/Interface_Soloud.h)
 
 ## the executable
 add_executable(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES})

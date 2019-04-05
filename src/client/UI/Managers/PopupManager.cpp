@@ -8,26 +8,26 @@ PopupManager::~PopupManager()
 }
 
 /* Create a new popup with ID */
-void PopupManager::createPopup(const std::string& _identifier)
+void PopupManager::createPopup(int identifier)
 {
   PopupWindow* new_popup = new PopupWindow();
   popups.push_back(new_popup);
-  popup_ids.emplace_back(_identifier);
+  popup_ids.emplace_back(identifier);
 }
 
 /* Get reference to popup by ID */
-PopupWindow* PopupManager::getPopupRef(const std::string& _identifier)
+PopupWindow* PopupManager::getPopupRef(int identifier)
 {
   int index = 0;
-  for (std::string& id : popup_ids)
+  for (int id : popup_ids)
   {
-    if (id == _identifier)
+    if (id == identifier)
     {
       return popups.at(index);
     }
     index++;
   }
-  throw "Couldn't find popup with ID of " + _identifier;
+  throw "Couldn't find popup with ID of " + std::to_string(identifier);
 }
 
 /* Are any popups active? */

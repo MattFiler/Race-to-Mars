@@ -20,8 +20,8 @@ class PopupManager
   PopupManager() = default;
   ~PopupManager();
 
-  void createPopup(const std::string& _identifier);
-  PopupWindow* getPopupRef(const std::string& _identifier);
+  void createPopup(int identifier);
+  PopupWindow* getPopupRef(int identifier);
 
   bool anyAreActive();
 
@@ -35,7 +35,7 @@ class PopupManager
   void render();
 
  private:
-  std::vector<std::string> popup_ids;
+  std::vector<int> popup_ids;
   std::vector<PopupWindow*> popups;
 };
 

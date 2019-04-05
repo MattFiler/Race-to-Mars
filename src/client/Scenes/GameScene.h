@@ -11,6 +11,36 @@
 #include <client/Cards/ItemCard.h>
 #include <client/Cards/ObjectiveCard.h>
 
+/* UI Elements */
+enum ui_sprites
+{
+  BACKGROUND,
+  ACTIVE_PLAYER_MARKER,
+  YOUR_PLAYER_MARKER,
+  INACTIVE_PLAYER_MARKER,
+  PROGRESS_METER,
+  PROGRESS_MARKER,
+  SYNC_OVERLAY,
+  DISCONNECT_OVERLAY,
+  POPUP_CARD_SHADOWS_0,
+  POPUP_CARD_SHADOWS_1,
+  POPUP_CARD_SHADOWS_2,
+  POPUP_CARD_SHADOWS_3,
+  POPUP_CARD_SHADOWS_4,
+  POPUP_CARD_SHADOWS_5,
+};
+enum ui_popups
+{
+  ISSUE_POPUP,
+  OBJECTIVE_POPUP,
+  DICE_ROLL_POPUP
+};
+enum ui_buttons
+{
+  END_TURN_BTN,
+  BUY_ITEM_BTN
+};
+
 class GameScene : public Scene
 {
  public:
@@ -27,8 +57,6 @@ class GameScene : public Scene
   void clickHandler(const ASGE::SharedEventData data) override;
   game_global_scenes update(const ASGE::GameTime& game_time) override;
   void render() override;
-
-  void handleIssueCardEvents(issue_cards _card_type);
 
  private:
   GameBoard board;
@@ -47,7 +75,6 @@ class GameScene : public Scene
   CardOffsets card_offsets;
 
   int max_progress_index = 19; // win condition
-  double popup_timer = 0.0f;
 
   bool has_disconnected = false; // did local client disconnect?
   game_state current_state = game_state::PLAYING;
