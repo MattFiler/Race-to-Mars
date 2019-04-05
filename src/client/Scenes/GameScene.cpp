@@ -45,6 +45,8 @@ void GameScene::init()
   game_sprites.active_player_marker = new ScaledSprite("UI/INGAME_UI/"
                                                        "active_player_tab.png");
   game_sprites.active_player_marker->yPos(-180.0f);
+  game_sprites.your_player_marker = new ScaledSprite("UI/INGAME_UI/"
+                                                     "your_tab.png");
   game_sprites.inactive_player_marker = new ScaledSprite("UI/INGAME_UI/"
                                                          "inactive_player_tab_"
                                                          "singlesprite.png");
@@ -746,6 +748,7 @@ void GameScene::render()
                    issue_card_popup.isVisible());
 
       float active_marker_pos = -180.0f;
+      float my_marker_pos = -180.f;
       for (int i = 0; i < 4; i++)
       {
         float this_pos = static_cast<float>(180 * i);
@@ -771,10 +774,14 @@ void GameScene::render()
                                ASGE::COLOURS::WHITE);
         }
 
-        // log position for active player marker.
+        // log position for active player marker and "you" marker
         if (players[i]->is_active)
         {
           active_marker_pos = this_pos;
+        }
+        if (i == Locator::getPlayers()->my_player_index)
+        {
+          my_marker_pos = this_pos;
         }
       }
 
@@ -782,6 +789,10 @@ void GameScene::render()
       renderer->renderSprite(*game_sprites.inactive_player_marker->getSprite());
       game_sprites.active_player_marker->yPos(active_marker_pos);
       renderer->renderSprite(*game_sprites.active_player_marker->getSprite());
+
+      // You marker
+      game_sprites.your_player_marker->yPos(my_marker_pos);
+      renderer->renderSprite(*game_sprites.your_player_marker->getSprite());
 
       // Progress meters
       renderer->renderSprite(*game_sprites.progress_meter->getSprite());

@@ -15,6 +15,7 @@ struct GameSprites
   ScaledSprite* background = nullptr;
   ScaledSprite* inactive_player_marker = nullptr;
   ScaledSprite* active_player_marker = nullptr;
+  ScaledSprite* your_player_marker = nullptr;
   ScaledSprite* progress_meter = nullptr;
   ScaledSprite* progress_marker = nullptr;
   ScaledSprite* sync_overlay = nullptr;
