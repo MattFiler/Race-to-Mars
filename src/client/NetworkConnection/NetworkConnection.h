@@ -1,7 +1,7 @@
 #ifndef PROJECT_NETWORKCONNECTION_H
 #define PROJECT_NETWORKCONNECTION_H
 
-#include "gamelib/NetworkedData/NetworkedData.h"
+#include "gamelib/NetworkedData/DataShare.h"
 #include <enetpp/client.h>
 #include <gamelib/Packet.h>
 
@@ -16,22 +16,7 @@ class NetworkConnection
   void connectToServer(const std::string& hostname, enet_uint16 port);
   void startListening(RaceToSpace* game_instance);
 
-  void sendData(data_roles _role,
-                int _content_1,
-                int _content_2 = 0,
-                int _content_3 = 0,
-                int _content_4 = 0,
-                int _content_5 = 0,
-                int _content_6 = 0,
-                int _content_7 = 0,
-                int _content_8 = 0,
-                int _content_9 = 0,
-                int _content_10 = 0,
-                int _content_11 = 0,
-                int _content_12 = 0,
-                int _content_13 = 0,
-                int _content_14 = 0,
-                int _content_15 = 0);
+  void sendData(DataShare data);
 
   enetpp::client* getClient() { return &client; };
 

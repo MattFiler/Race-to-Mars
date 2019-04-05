@@ -421,9 +421,10 @@ void GameBoard::handleIssueCardEvents(issue_cards _card_type)
            * when player rolls dice and issue has been activated. see below.
            *
            * */
-          Locator::getNetworkInterface()->sendData(
-            data_roles::CLIENT_CHANGE_PROGRESS_INDEX,
-            Locator::getPlayers()->current_progress_index - 2);
+          DataShare new_share =
+            DataShare(data_roles::CLIENT_CHANGE_PROGRESS_INDEX);
+          new_share.add(Locator::getPlayers()->current_progress_index - 2);
+          Locator::getNetworkInterface()->sendData(new_share);
         }
         break;
       }

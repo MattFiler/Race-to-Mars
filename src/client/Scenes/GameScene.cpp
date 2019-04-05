@@ -106,8 +106,9 @@ void GameScene::init()
   // If we joined in progress, request a data sync from the server
   if (Locator::getPlayers()->joined_in_progress)
   {
-    Locator::getNetworkInterface()->sendData(data_roles::CLIENT_REQUESTS_SYNC,
-                                             0);
+    DataShare new_share = DataShare(data_roles::CLIENT_REQUESTS_SYNC);
+    new_share.add(0);
+    Locator::getNetworkInterface()->sendData(new_share);
   }
   // Else, manually position our player based on their starting room
   else
@@ -123,10 +124,10 @@ void GameScene::init()
       players[Locator::getPlayers()->my_player_index]->current_class);
 
     // Move, and let everyone know we're moving
-    Locator::getNetworkInterface()->sendData(
-      data_roles::CLIENT_MOVING_PLAYER_TOKEN,
-      Locator::getPlayers()->my_player_index,
-      static_cast<int>(this_room.getEnum()));
+    DataShare new_share = DataShare(data_roles::CLIENT_MOVING_PLAYER_TOKEN);
+    new_share.add(Locator::getPlayers()->my_player_index);
+    new_share.add(static_cast<int>(this_room.getEnum()));
+    Locator::getNetworkInterface()->sendData(new_share);
     Locator::getPlayers()
       ->getPlayer(
         players[Locator::getPlayers()->my_player_index]->current_class)
@@ -330,10 +331,11 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
         // Broadcast out the position of us to keep all clients informed
         if (i == Locator::getPlayers()->my_player_index)
         {
-          Locator::getNetworkInterface()->sendData(
-            data_roles::CLIENT_MOVING_PLAYER_TOKEN,
-            Locator::getPlayers()->my_player_index,
-            static_cast<int>(this_room.getEnum()));
+          DataShare new_share =
+            DataShare(data_roles::CLIENT_MOVING_PLAYER_TOKEN);
+          new_share.add(Locator::getPlayers()->my_player_index);
+          new_share.add(static_cast<int>(this_room.getEnum()));
+          Locator::getNetworkInterface()->sendData(new_share);
         }
 
         debug_text.print("Sync: moved player " + std::to_string(i) +
@@ -396,9 +398,9 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
       if (keys.keyReleased("End Turn") &&
           players[Locator::getPlayers()->my_player_index]->is_active)
       {
-        Locator::getNetworkInterface()->sendData(
-          data_roles::CLIENT_WANTS_TO_END_TURN,
-          Locator::getPlayers()->my_player_index);
+        DataShare new_share = DataShare(data_roles::CLIENT_WANTS_TO_END_TURN);
+        new_share.add(Locator::getPlayers()->my_player_index);
+        Locator::getNetworkInterface()->sendData(new_share);
         current_scene_lock_active = true;
         debug_text.print("Requesting to end my go!!");
       }
@@ -407,20 +409,22 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
       {
         // Debug: change my action points to 10.
         int new_ap = 10;
-        Locator::getNetworkInterface()->sendData(
-          data_roles::CLIENT_ACTION_POINTS_CHANGED,
-          Locator::getPlayers()->my_player_index,
-          players[Locator::getPlayers()->my_player_index]->action_points,
-          new_ap,
-          -1);
+        DataShare new_share =
+          DataShare(data_roles::CLIENT_ACTION_POINTS_CHANGED);
+        new_share.add(Locator::getPlayers()->my_player_index);
+        new_share.add(
+          players[Locator::getPlayers()->my_player_index]->action_points);
+        new_share.add(new_ap);
+        new_share.add(-1);
+        Locator::getNetworkInterface()->sendData(new_share);
         players[Locator::getPlayers()->my_player_index]->action_points = new_ap;
         debug_text.print("Debug: changed my action points to 10!");
       }
       if (keys.keyReleased("Debug Buy Item"))
       {
-        Locator::getNetworkInterface()->sendData(
-          data_roles::CLIENT_REQUESTED_ITEM_CARD,
-          Locator::getPlayers()->my_player_index);
+        DataShare new_share = DataShare(data_roles::CLIENT_REQUESTED_ITEM_CARD);
+        new_share.add(Locator::getPlayers()->my_player_index);
+        Locator::getNetworkInterface()->sendData(new_share);
       }
       break;
     }
@@ -438,9 +442,10 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
       else if (pause_menu.selectedItemWas("MENU_QUIT"))
       {
         // Alert everyone we're leaving and then return to menu
-        Locator::getNetworkInterface()->sendData(
-          data_roles::CLIENT_DISCONNECTING_FROM_LOBBY,
-          Locator::getPlayers()->my_player_index);
+        DataShare new_share =
+          DataShare(data_roles::CLIENT_DISCONNECTING_FROM_LOBBY);
+        new_share.add(Locator::getPlayers()->my_player_index);
+        Locator::getNetworkInterface()->sendData(new_share);
         next_scene = game_global_scenes::MAIN_MENU;
         debug_text.print("Returning to main menu and disconnecting from "
                          "lobby.");
@@ -490,12 +495,13 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
               // Assign action point to the selected issue - this currently
               // assigns ONE action point, maybe in future have buttons for
               // varying amounts?
-              Locator::getNetworkInterface()->sendData(
-                data_roles::CLIENT_ACTION_POINTS_CHANGED,
-                Locator::getPlayers()->my_player_index,
-                my_action_points,
-                my_action_points - points_to_assign,
-                ap_button_index);
+              DataShare new_share =
+                DataShare(data_roles::CLIENT_ACTION_POINTS_CHANGED);
+              new_share.add(Locator::getPlayers()->my_player_index);
+              new_share.add(my_action_points);
+              new_share.add(my_action_points - points_to_assign);
+              new_share.add(ap_button_index);
+              Locator::getNetworkInterface()->sendData(new_share);
               board.assignActionPointToIssue(
                 players[Locator::getPlayers()->my_player_index]->current_class,
                 ap_button_index,
@@ -543,10 +549,11 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
             players[Locator::getPlayers()->my_player_index]->current_class);
 
           // Move, and let everyone know we're moving
-          Locator::getNetworkInterface()->sendData(
-            data_roles::CLIENT_MOVING_PLAYER_TOKEN,
-            Locator::getPlayers()->my_player_index,
-            static_cast<int>(this_room.getEnum()));
+          DataShare new_share =
+            DataShare(data_roles::CLIENT_MOVING_PLAYER_TOKEN);
+          new_share.add(Locator::getPlayers()->my_player_index);
+          new_share.add(static_cast<int>(this_room.getEnum()));
+          Locator::getNetworkInterface()->sendData(new_share);
           Locator::getPlayers()
             ->getPlayer(
               players[Locator::getPlayers()->my_player_index]->current_class)
@@ -558,9 +565,9 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
         // Clicked end turn button
         if (end_turn_btn.clicked())
         {
-          Locator::getNetworkInterface()->sendData(
-            data_roles::CLIENT_WANTS_TO_END_TURN,
-            Locator::getPlayers()->my_player_index);
+          DataShare new_share = DataShare(data_roles::CLIENT_WANTS_TO_END_TURN);
+          new_share.add(Locator::getPlayers()->my_player_index);
+          Locator::getNetworkInterface()->sendData(new_share);
           current_scene_lock_active = true;
           debug_text.print("Requesting to end my go!!");
         }
