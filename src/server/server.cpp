@@ -75,24 +75,7 @@ void RaceToSpaceServer::run()
       {
         case data_roles::CLIENT_REQUESTS_TO_JOIN_LOBBY:
         {
-          // Connect to a lobby
-          connectToLobby(client);
-
-          // Create data array to send
-          DataShare new_share = DataShare(data_roles::SERVER_GIVES_LOBBY_INFO);
-          new_share.add(lobbies.at(client.lobby_index).lobby_id);
-          new_share.add(lobbies.at(client.lobby_index).players[0].class_type);
-          new_share.add(lobbies.at(client.lobby_index).players[1].class_type);
-          new_share.add(lobbies.at(client.lobby_index).players[2].class_type);
-          new_share.add(lobbies.at(client.lobby_index).players[3].class_type);
-          new_share.add(lobbies.at(client.lobby_index).players[0].is_ready);
-          new_share.add(lobbies.at(client.lobby_index).players[1].is_ready);
-          new_share.add(lobbies.at(client.lobby_index).players[2].is_ready);
-          new_share.add(lobbies.at(client.lobby_index).players[3].is_ready);
-          new_share.add(client.client_index);
-
-          // Forward lobby data back to the client
-          sendData(client, client.get_id(), new_share);
+          clientJoinLobby(client);
           break;
         }
 
@@ -118,20 +101,7 @@ void RaceToSpaceServer::run()
           // keep them updated on game progress.
         case data_roles::CLIENT_ACTION_POINTS_CHANGED:
         {
-          Lobby* this_clients_lobby = getLobbyByID(client.lobby_id);
-          if (this_clients_lobby == nullptr)
-          {
-            break;
-          }
-
-          // Update client's action point count for us
-          this_clients_lobby->players[data_to_send.retrieve(0)].action_points =
-            data_to_send.retrieve(1);
-          debug_text.print(
-            "Client " + std::to_string(data_to_send.retrieve(0)) + " now has " +
-            std::to_string(data_to_send.retrieve(1)) + " action points.");
-
-          sendToAll(client, data_to_send);
+          clientPointsChange(data_to_send, client);
           break;
         }
 
@@ -148,58 +118,21 @@ void RaceToSpaceServer::run()
         // reconnecting players
         case data_roles::CLIENT_MOVING_PLAYER_TOKEN:
         {
-          Lobby* this_lobby = getLobbyByID(client.lobby_id);
-          if (this_lobby == nullptr)
-          {
-            break;
-          }
-          debug_text.print(
-            "Client " + std::to_string(data_to_send.retrieve(0)) +
-            " is now in room " + std::to_string(data_to_send.retrieve(1)));
-          this_lobby->players[data_to_send.retrieve(0)].room_position =
-            static_cast<ship_rooms>(data_to_send.retrieve(1));
-
-          sendToAll(client, data_to_send);
+          clientMoved(data_to_send, client);
           break;
         }
           // Updates the new progress index for all clients after dice roll
           // issue event on client.
         case data_roles::CLIENT_CHANGE_PROGRESS_INDEX:
         {
-          Lobby* this_lobby = getLobbyByID(client.lobby_id);
-          if (this_lobby == nullptr)
-          {
-            break;
-          }
-          debug_text.print("Changing progress from: " +
-                           std::to_string(this_lobby->current_progress_index) +
-                           " to:" + std::to_string(data_to_send.retrieve(0)));
-          this_lobby->current_progress_index = data_to_send.retrieve(0);
-
-          // Compile and send it on
-          DataShare new_share =
-            DataShare(data_roles::CLIENT_CHANGE_PROGRESS_INDEX);
-          new_share.add(data_to_send.retrieve(0));
-          sendData(client, static_cast<unsigned int>(-2), new_share);
+          clientProgressChange(data_to_send, client);
           break;
         }
 
         // Client has requested to buy an item.
         case data_roles::CLIENT_REQUESTED_ITEM_CARD:
         {
-          Lobby* this_lobby = getLobbyByID(client.lobby_id);
-          if (this_lobby == nullptr)
-          {
-            break;
-          }
-
-          // Compile data and send it back off
-          DataShare new_share =
-            DataShare(data_roles::CLIENT_REQUESTED_ITEM_CARD);
-          new_share.add(data_to_send.retrieve(0));
-          new_share.add(this_lobby->item_deck.back());
-
-          sendData(client, static_cast<unsigned int>(-2), new_share);
+          clientRequestsItem(data_to_send, client);
           break;
         }
           // We need to store lobby ready state before sending it out, so new

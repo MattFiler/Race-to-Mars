@@ -292,28 +292,29 @@ void RaceToSpaceServer::disconnectFromLobby(int client_id)
   {
     for (int i = 0; i < max_lobby_size; i++)
     {
-      if (this_lobby.players[i].id == client_id)
+      if (this_lobby.players[i].id != client_id)
       {
-        // Disconnect from lobby
-        this_lobby.user_count--;
-        this_lobby.players[i].id = -1;
-        this_lobby.players[i].is_ready = false;
-        this_lobby.players[i].class_type = player_classes::UNASSIGNED;
+        continue;
+      }
 
-        debug_text.print("Client " + std::to_string(client_id) +
-                         " has left lobby " +
-                         std::to_string(this_lobby.lobby_id) + ".");
+      // Disconnect from lobby
+      this_lobby.user_count--;
+      this_lobby.players[i].id = -1;
+      this_lobby.players[i].is_ready = false;
+      this_lobby.players[i].class_type = player_classes::UNASSIGNED;
 
-        // If lobby is now empty, remove it so we can put new players in
-        // populated lobbies
-        if (this_lobby.user_count == 0)
-        {
-          lobbies.erase(lobbies.begin() + real_lobby_id);
-          debug_text.print("Destroying unpopulated lobby. There are " +
-                             std::to_string(lobbies.size()) +
-                             " active lobbies.",
-                           -1);
-        }
+      debug_text.print("Client " + std::to_string(client_id) +
+                       " has left lobby " +
+                       std::to_string(this_lobby.lobby_id) + ".");
+
+      // If lobby is now empty, remove it so we can put new players in
+      // populated lobbies
+      if (this_lobby.user_count == 0)
+      {
+        lobbies.erase(lobbies.begin() + real_lobby_id);
+        debug_text.print("Destroying unpopulated lobby. There are " +
+                           std::to_string(lobbies.size()) + " active lobbies.",
+                         -1);
       }
     }
     real_lobby_id++;
@@ -381,4 +382,103 @@ void RaceToSpaceServer::initLobbyDecks()
   std::shuffle(lobbies.back().objective_deck.begin(),
                lobbies.back().objective_deck.end(),
                gen);
+}
+
+/* Client needs to join a lobby */
+void RaceToSpaceServer::clientJoinLobby(server_client& client)
+{
+  // Connect to a lobby
+  connectToLobby(client);
+
+  // Create data array to send
+  DataShare new_share = DataShare(data_roles::SERVER_GIVES_LOBBY_INFO);
+  new_share.add(lobbies.at(client.lobby_index).lobby_id);
+  new_share.add(lobbies.at(client.lobby_index).players[0].class_type);
+  new_share.add(lobbies.at(client.lobby_index).players[1].class_type);
+  new_share.add(lobbies.at(client.lobby_index).players[2].class_type);
+  new_share.add(lobbies.at(client.lobby_index).players[3].class_type);
+  new_share.add(lobbies.at(client.lobby_index).players[0].is_ready);
+  new_share.add(lobbies.at(client.lobby_index).players[1].is_ready);
+  new_share.add(lobbies.at(client.lobby_index).players[2].is_ready);
+  new_share.add(lobbies.at(client.lobby_index).players[3].is_ready);
+  new_share.add(client.client_index);
+
+  // Forward lobby data back to the client
+  sendData(client, client.get_id(), new_share);
+}
+
+/* Client's action points changed */
+void RaceToSpaceServer::clientPointsChange(DataShare& data_to_send,
+                                           server_client& client)
+{
+  Lobby* this_clients_lobby = getLobbyByID(client.lobby_id);
+  if (this_clients_lobby == nullptr)
+  {
+    return;
+  }
+
+  // Update client's action point count for us
+  this_clients_lobby->players[data_to_send.retrieve(0)].action_points =
+    data_to_send.retrieve(1);
+  debug_text.print("Client " + std::to_string(data_to_send.retrieve(0)) +
+                   " now has " + std::to_string(data_to_send.retrieve(1)) +
+                   " action points.");
+
+  sendToAll(client, data_to_send);
+}
+
+/* Client moved to new position */
+void RaceToSpaceServer::clientMoved(DataShare& data_to_send,
+                                    server_client& client)
+{
+  Lobby* this_lobby = getLobbyByID(client.lobby_id);
+  if (this_lobby == nullptr)
+  {
+    return;
+  }
+  debug_text.print("Client " + std::to_string(data_to_send.retrieve(0)) +
+                   " is now in room " +
+                   std::to_string(data_to_send.retrieve(1)));
+  this_lobby->players[data_to_send.retrieve(0)].room_position =
+    static_cast<ship_rooms>(data_to_send.retrieve(1));
+
+  sendToAll(client, data_to_send);
+}
+
+/* Client updated game progress */
+void RaceToSpaceServer::clientProgressChange(DataShare& data_to_send,
+                                             server_client& client)
+{
+  Lobby* this_lobby = getLobbyByID(client.lobby_id);
+  if (this_lobby == nullptr)
+  {
+    break;
+  }
+  debug_text.print("Changing progress from: " +
+                   std::to_string(this_lobby->current_progress_index) +
+                   " to:" + std::to_string(data_to_send.retrieve(0)));
+  this_lobby->current_progress_index = data_to_send.retrieve(0);
+
+  // Compile and send it on
+  DataShare new_share = DataShare(data_roles::CLIENT_CHANGE_PROGRESS_INDEX);
+  new_share.add(data_to_send.retrieve(0));
+  sendData(client, static_cast<unsigned int>(-2), new_share);
+}
+
+/* Client requests an item card */
+void RaceToSpaceServer::clientRequestsItem(DataShare& data_to_send,
+                                           server_client& client)
+{
+  Lobby* this_lobby = getLobbyByID(client.lobby_id);
+  if (this_lobby == nullptr)
+  {
+    return;
+  }
+
+  // Compile data and send it back off
+  DataShare new_share = DataShare(data_roles::CLIENT_REQUESTED_ITEM_CARD);
+  new_share.add(data_to_send.retrieve(0));
+  new_share.add(this_lobby->item_deck.back());
+
+  sendData(client, static_cast<unsigned int>(-2), new_share);
 }
