@@ -105,7 +105,9 @@ enum data_roles
   CLIENT_ACTION_POINTS_CHANGED,
   /* ^ The active client spent or gained action points.
    *   [0] = the client index
-   *   [1] = the new action point count
+   *   [1] = the old action point count
+   *   [2] = the new action point count
+   *   [3] = the card ID they were assigned to (-1 = no card)
    */
 
   CLIENT_REQUESTS_SYNC,

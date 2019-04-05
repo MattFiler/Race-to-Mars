@@ -14,8 +14,8 @@ enum game_global_scenes
 
 enum game_state
 {
-  PLAYING,     // The regular in-game state
-  LOCAL_PAUSE, // The quit menu
+  PLAYING,    // The regular in-game state
+  LOCAL_PAUSE // The quit menu
 };
 
 struct GameConfig
@@ -32,7 +32,7 @@ struct CardOffsets
 
   // Issue card popup buttons
   Vector2 issue_popup_ap_btn_start = Vector2(106, 543); // Position of button 1
-  Vector2 issue_popup_ap_btn_offset = Vector2(145, 0);  // Offset of each button
+  Vector2 issue_popup_ap_btn_offset = Vector2(221, 0);  // Offset of each button
 
   // Issue card in-game
   Vector2 issue_ingame_start = Vector2(1100, 20); // Position of card 1
@@ -57,7 +57,7 @@ struct CardOffsets
   Vector2 item_popup_ap_btn_offset = Vector2(145, 0);  // Offset of each button
 
   // Item card in-game
-  Vector2 item_ingame_start = Vector2(1100, 270); // Position of card 1 / 1 - 5
+  Vector2 item_ingame_start = Vector2(1100, 330); // Position of card 1 / 1 - 5
   Vector2 item_ingame_offset = Vector2(0, 30);    // Offset from 1
   Vector2 item_ingame_size = Vector2(124, 175);   // Size of card
 

@@ -22,7 +22,8 @@ void LobbyScene::init()
   }
 
   // Request lobby info
-  Locator::getClient()->sendData(data_roles::CLIENT_REQUESTS_TO_JOIN_LOBBY, 0);
+  Locator::getNetworkInterface()->sendData(
+    data_roles::CLIENT_REQUESTS_TO_JOIN_LOBBY, 0);
 }
 
 /* Handles connecting to the server */
@@ -45,31 +46,33 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     // Server gives the lobby information we require, utilise it!
     case data_roles::SERVER_GIVES_LOBBY_INFO:
     {
-      if (!has_connected)
+      if (has_connected)
       {
-        // Fill out our known local player data from the server
-        lobby_id = received_data.content[0];
-        my_player_index = received_data.content[9];
-        for (int i = 0; i < 4; i++)
-        {
-          players[i]->current_class =
-            static_cast<player_classes>(received_data.content[i + 1]);
-          players[i]->is_ready =
-            static_cast<player_classes>(received_data.content[i + 5]);
-          if (players[i]->current_class != player_classes::UNASSIGNED)
-          {
-            players[i]->has_connected = true;
-          }
-          players[i]->is_this_client = (i == my_player_index);
-        }
-        // Notify all clients in the lobby that we've connected
-        Locator::getClient()->sendData(data_roles::CLIENT_CONNECTED_TO_LOBBY,
-                                       my_player_index,
-                                       players[my_player_index]->is_ready,
-                                       players[my_player_index]->current_class);
-        debug_text.print("We synced to the lobby!", -1);
-        has_connected = true;
+        break;
       }
+      // Fill out our known local player data from the server
+      lobby_id = received_data.content[0];
+      my_player_index = received_data.content[9];
+      for (int i = 0; i < 4; i++)
+      {
+        players[i]->current_class =
+          static_cast<player_classes>(received_data.content[i + 1]);
+        players[i]->is_ready =
+          static_cast<player_classes>(received_data.content[i + 5]);
+        if (players[i]->current_class != player_classes::UNASSIGNED)
+        {
+          players[i]->has_connected = true;
+        }
+        players[i]->is_this_client = (i == my_player_index);
+      }
+      // Notify all clients in the lobby that we've connected
+      Locator::getNetworkInterface()->sendData(
+        data_roles::CLIENT_CONNECTED_TO_LOBBY,
+        my_player_index,
+        players[my_player_index]->is_ready,
+        players[my_player_index]->current_class);
+      debug_text.print("We synced to the lobby!", -1);
+      has_connected = true;
       break;
     }
 
@@ -147,7 +150,7 @@ void LobbyScene::keyHandler(const ASGE::SharedEventData data)
   {
     // Alert everyone we're ready or unready (can't unready after all are ready)
     players[my_player_index]->is_ready = !players[my_player_index]->is_ready;
-    Locator::getClient()->sendData(
+    Locator::getNetworkInterface()->sendData(
       data_roles::CLIENT_CHANGED_LOBBY_READY_STATE,
       static_cast<int>(players[my_player_index]->is_ready),
       my_player_index,
@@ -156,8 +159,8 @@ void LobbyScene::keyHandler(const ASGE::SharedEventData data)
   if (keys.keyReleased("Back") && !should_start_game)
   {
     // Alert everyone we're leaving
-    Locator::getClient()->sendData(data_roles::CLIENT_DISCONNECTING_FROM_LOBBY,
-                                   my_player_index);
+    Locator::getNetworkInterface()->sendData(
+      data_roles::CLIENT_DISCONNECTING_FROM_LOBBY, my_player_index);
 
     // Leave
     debug_text.print("Swapping to menu scene.");

@@ -26,8 +26,8 @@ struct GameSprites
 class GameScene : public Scene
 {
  public:
-  GameScene() { debug_text.print("entered game scene."); };
-  ~GameScene() override = default;
+  GameScene();
+  ~GameScene() override;
 
   void init() override;
 
@@ -39,6 +39,7 @@ class GameScene : public Scene
   void clickHandler(const ASGE::SharedEventData data) override;
   game_global_scenes update(const ASGE::GameTime& game_time) override;
   void render() override;
+
   void handleIssueCardEvents(issue_cards _card_type);
 
  private:
@@ -53,8 +54,13 @@ class GameScene : public Scene
   PopupWindow objective_card_popup;
   PopupWindow dice_roll_popup;
 
+  /* BUTTONS */
+  ClickableButton end_turn_btn = ClickableButton("UI/INGAME_UI/"
+                                                 "end_turn_btn.png");
+
   bool is_new_turn = false;
   bool got_new_obj_card = false;
+  bool got_new_obj_this_turn = false;
 
   bool update_item_card = false;
   int new_item_card = -1;

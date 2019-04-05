@@ -25,10 +25,7 @@ bool ClickableButton::update()
     }
     return false;
   }
-  else
-  {
-    return false;
-  }
+  return false;
 }
 
 /* Set position of button */
@@ -46,21 +43,8 @@ Vector2 ClickableButton::getPos()
 /* Render button */
 void ClickableButton::render()
 {
-  if (is_active)
-  {
-    // Only render if active - we may want to change this in future to perhaps
-    // render a greyed-out sprite if in-active instead of not rendering at all?
-    renderer->renderSprite(*sprite->getSprite());
-  }
+  // if (is_active)
+  //{
+  renderer->renderSprite(*sprite->getSprite());
+  //}
 }
-
-/*
-if (current_state == game_state::PLAYING)
-{
-    game_sprites.roll_dice->getSprite()->colour(ASGE::COLOURS::GREY);
-}
-else if (current_state == game_state::IS_ROLLING_DICE)
-{
-    game_sprites.roll_dice->getSprite()->colour();
-}
- */

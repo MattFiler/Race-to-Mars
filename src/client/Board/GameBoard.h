@@ -21,6 +21,9 @@ class GameBoard
   GameBoard() { m_players = Locator::getPlayers(); };
   ~GameBoard() = default;
 
+  void issueTracking();
+  void resetCardVariables();
+
   bool isHoveringOverRoom(Vector2 hover_pos);
   bool isHoveringOverIssueCard(Vector2 hover_pos);
   bool isHoveringOverObjectiveCard(Vector2 hover_pos);
@@ -41,6 +44,12 @@ class GameBoard
   // std::vector<IssueCard> getIssueCards();
   int activeIssuesCount();
   ObjectiveCard* getObjectiveCard();
+
+  // issue tracking
+  int engine_countdown = 2;
+
+  void
+  assignActionPointToIssue(player_classes _class, int _issue, int _points = 1);
 
   ShipRoom getRoom(ship_rooms _room);
 

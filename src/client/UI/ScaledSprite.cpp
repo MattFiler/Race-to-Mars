@@ -25,6 +25,7 @@ ScaledSprite::~ScaledSprite()
 void ScaledSprite::width(float width)
 {
   sprite->scale(1);
+  scalar = width / static_cast<float>(sprite->getTexture()->getWidth());
   sprite->width(width * GameResolution::scale);
   bounding_box.width = sprite->width();
 }
@@ -33,8 +34,16 @@ void ScaledSprite::width(float width)
 void ScaledSprite::height(float height)
 {
   sprite->scale(1);
+  scalar = height / static_cast<float>(sprite->getTexture()->getHeight());
   sprite->height(height * GameResolution::scale);
   bounding_box.height = sprite->height();
+}
+
+/* Set both width and height */
+void ScaledSprite::setDims(Vector2 dimensions)
+{
+  width(dimensions.x);
+  height(dimensions.y);
 }
 
 /* Set X */

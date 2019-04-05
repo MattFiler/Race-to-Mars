@@ -51,7 +51,7 @@ class Locator
     }
     return ref_input;
   };
-  static NetworkConnection* getClient()
+  static NetworkConnection* getNetworkInterface()
   {
     if (ref_client == nullptr)
     {
@@ -87,7 +87,7 @@ class Locator
     ref_audio = inst_audio;
   };
   static void setupInput(ASGE::Input* inst_input) { ref_input = inst_input; };
-  static void setupClient(NetworkConnection* inst_client)
+  static void setupNetworkInterface(NetworkConnection* inst_client)
   {
     ref_client = inst_client;
   };

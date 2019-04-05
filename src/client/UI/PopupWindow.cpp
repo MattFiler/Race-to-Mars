@@ -10,6 +10,7 @@ PopupWindow::PopupWindow()
 
   close_button = new ClickableButton("data/UI/INGAME_UI/close_button.png");
   close_button->setPos(Vector2(1193, 83));
+  close_button->setActive(false);
 }
 
 /* Destroy the popup and all contents */
@@ -34,7 +35,7 @@ void PopupWindow::keyHandler(KeyHandler keys)
 }
 
 /* Handle mouse inputs */
-void PopupWindow::clickHandler(Vector2 mouse_pos)
+void PopupWindow::clickHandler()
 {
   // Was manually opened, check for close request
   if (timeout == -1)
@@ -66,6 +67,8 @@ ScaledSprite& PopupWindow::referenceSprite(ScaledSprite& ref_sprite)
 ClickableButton& PopupWindow::createButton(const std::string& sprite_path)
 {
   ClickableButton* new_button = new ClickableButton(sprite_path);
+  new_button->setActive(false); // start as inactive, as we most likely are
+                                // hidden
   popup_buttons.push_back(new_button);
   return *new_button;
 }
@@ -73,8 +76,18 @@ ClickableButton& PopupWindow::createButton(const std::string& sprite_path)
 /* Add a reference of an existing button for the popup */
 ClickableButton& PopupWindow::referenceButton(ClickableButton& ref_button)
 {
+  ref_button.setActive(false); // start as inactive, as we most likely are
+                               // hidden
   popup_buttons_referenced.push_back(&ref_button);
   return ref_button;
+}
+
+/* Add text to render at a specified position */
+void PopupWindow::renderTextAtPosition(const std::string& text,
+                                       Vector2 position)
+{
+  popup_text.push_back(text);
+  popup_text_pos.push_back(position);
 }
 
 /* Position the close button */
@@ -171,22 +184,41 @@ void PopupWindow::render()
   close_button->render();
 
   // Render other added buttons
-  for (ClickableButton* button : popup_buttons)
+  for (ClickableButton* button : popup_buttons_referenced)
   {
     button->render();
   }
-  for (ClickableButton* button : popup_buttons_referenced)
+  for (ClickableButton* button : popup_buttons)
   {
     button->render();
   }
 
   // Render popup contents
-  for (ScaledSprite* content : popup_sprites)
-  {
-    renderer->renderSprite(*content->getSprite());
-  }
   for (ScaledSprite* content : popup_sprites_referenced)
   {
     renderer->renderSprite(*content->getSprite());
   }
+  for (ScaledSprite* content : popup_sprites)
+  {
+    renderer->renderSprite(*content->getSprite());
+  }
+
+  // Render currently added text
+  int text_index = 0;
+  for (std::string& text : popup_text)
+  {
+    Vector2 position = popup_text_pos.at(text_index);
+    renderer->renderText(text,
+                         static_cast<int>(position.x),
+                         static_cast<int>(position.y),
+                         ASGE::COLOURS::WHITE);
+    text_index++;
+  }
+}
+
+/* Clear all render text */
+void PopupWindow::clearAllRenderText()
+{
+  popup_text.clear();
+  popup_text_pos.clear();
 }

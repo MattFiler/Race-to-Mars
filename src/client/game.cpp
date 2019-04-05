@@ -68,7 +68,7 @@ bool RaceToSpace::init()
   Locator::setupRenderer(renderer.get());
   Locator::setupInput(inputs.get());
   Locator::setupAudio(&audio);
-  Locator::setupClient(&networked_client);
+  Locator::setupNetworkInterface(&networked_client);
   Locator::setupCursor(&cursor_pointer);
 
   // Initialise our players & pass to locator

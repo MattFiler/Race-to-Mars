@@ -247,8 +247,8 @@ void RaceToSpaceServer::run()
             "Client " + std::to_string(data_to_send.content[0]) + " now has " +
             std::to_string(data_to_send.content[1]) + " action points.");
 
-          goto SEND_TO_ALL; // Would rather not use goto, but there isn't much
-                            // choice here.
+          sendToAll(client, data_to_send);
+          break;
         }
 
           // If a client is leaving a lobby, action that before letting the
@@ -256,7 +256,8 @@ void RaceToSpaceServer::run()
         case data_roles::CLIENT_DISCONNECTING_FROM_LOBBY:
         {
           disconnectFromLobby(static_cast<int>(client.get_id()));
-          goto SEND_TO_ALL;
+          sendToAll(client, data_to_send);
+          break;
         }
 
         // If client moves in the ship, save that first for syncing to
@@ -273,7 +274,9 @@ void RaceToSpaceServer::run()
                            std::to_string(data_to_send.content[1]));
           this_lobby->players[data_to_send.content[0]].room_position =
             static_cast<ship_rooms>(data_to_send.content[1]);
-          goto SEND_TO_ALL;
+
+          sendToAll(client, data_to_send);
+          break;
         }
           // Updates the new progress index for all clients after dice roll
           // issue event on client.
@@ -376,38 +379,17 @@ void RaceToSpaceServer::run()
                        0);
             }
           }
-          if (did_send)
+          if (!did_send)
           {
-            break;
+            sendToAll(client, data_to_send);
           }
-          else
-          {
-            [[clang::fallthrough]];
-          }
+          break;
         }
           // Otherwise, it's a message that needs to be forwarded to everyone in
           // the lobby.
         default:
         {
-        SEND_TO_ALL:
-          sendData(client,
-                   static_cast<unsigned int>(-1),
-                   data_to_send.role,
-                   data_to_send.content[0],
-                   data_to_send.content[1],
-                   data_to_send.content[2],
-                   data_to_send.content[3],
-                   data_to_send.content[4],
-                   data_to_send.content[5],
-                   data_to_send.content[6],
-                   data_to_send.content[7],
-                   data_to_send.content[8],
-                   data_to_send.content[9],
-                   data_to_send.content[10],
-                   data_to_send.content[11],
-                   data_to_send.content[12],
-                   data_to_send.content[13],
-                   data_to_send.content[14]);
+          sendToAll(client, data_to_send);
         }
       }
     });
@@ -420,6 +402,30 @@ void RaceToSpaceServer::run()
     network_server.consume_events(on_connect, on_disconnect, on_data);
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
   }
+}
+
+/* Forward data to all */
+void RaceToSpaceServer::sendToAll(server_client& client,
+                                  NetworkedData data_to_send)
+{
+  sendData(client,
+           static_cast<unsigned int>(-1),
+           data_to_send.role,
+           data_to_send.content[0],
+           data_to_send.content[1],
+           data_to_send.content[2],
+           data_to_send.content[3],
+           data_to_send.content[4],
+           data_to_send.content[5],
+           data_to_send.content[6],
+           data_to_send.content[7],
+           data_to_send.content[8],
+           data_to_send.content[9],
+           data_to_send.content[10],
+           data_to_send.content[11],
+           data_to_send.content[12],
+           data_to_send.content[13],
+           data_to_send.content[14]);
 }
 
 /* Send data from server to a client, or lobby (user_id = -1), or all (user_id =

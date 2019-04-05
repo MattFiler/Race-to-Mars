@@ -14,8 +14,11 @@ class PopupWindow
   PopupWindow();
   ~PopupWindow();
 
+  PopupWindow(const PopupWindow&) = delete;
+  PopupWindow& operator=(const PopupWindow&) = delete;
+
   void keyHandler(KeyHandler keys);
-  void clickHandler(Vector2 mouse_pos);
+  void clickHandler();
 
   ScaledSprite& createSprite(const std::string& sprite_path);
   void clearAllInternalSprites() { popup_sprites.clear(); };
@@ -46,6 +49,9 @@ class PopupWindow
     return popup_sprites_referenced;
   };
 
+  void renderTextAtPosition(const std::string& text, Vector2 position);
+  void clearAllRenderText();
+
   bool isVisible() { return is_active; };
 
   // Automatic show/hide over time
@@ -72,6 +78,8 @@ class PopupWindow
   std::vector<ScaledSprite*> popup_sprites_referenced;
   std::vector<ClickableButton*> popup_buttons_referenced;
   ClickableButton* close_button;
+  std::vector<std::string> popup_text;
+  std::vector<Vector2> popup_text_pos;
 };
 
 #endif // PROJECT_POPUPWINDOW_H
