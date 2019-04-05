@@ -1,5 +1,5 @@
 #include "Cursor.h"
-#include "client/Core/ServiceLocator.h"
+#include "client/Locator/ServiceLocator.h"
 
 Cursor::~Cursor()
 {

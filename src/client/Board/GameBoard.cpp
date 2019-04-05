@@ -1,5 +1,5 @@
 #include "GameBoard.h"
-#include "client/Core/ServiceLocator.h"
+#include "client/Locator/ServiceLocator.h"
 #include "client/NetworkConnection/NetworkConnection.h"
 #include "gamelib/Constants.h"
 #include "gamelib/NetworkedData/NetworkedData.h"

@@ -1,6 +1,6 @@
 #include <string>
 
-#include "Core/ServiceLocator.h"
+#include "Locator/ServiceLocator.h"
 #include "gamelib/Constants.h"
 #include <Engine/DebugPrinter.h>
 #include <Engine/Input.h>

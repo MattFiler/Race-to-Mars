@@ -1,5 +1,5 @@
 #include "LobbyScene.h"
-#include "../Core/ServiceLocator.h"
+#include "../Locator/ServiceLocator.h"
 #include "../NetworkConnection/NetworkConnection.h"
 #include "../Players/AllPlayers.h"
 #include "../Players/ClientPlayer.h"

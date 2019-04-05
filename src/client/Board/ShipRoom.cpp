@@ -1,5 +1,5 @@
 #include "ShipRoom.h"
-#include "../Core/ServiceLocator.h"
+#include "../Locator/ServiceLocator.h"
 #include "../Players/AllPlayers.h"
 
 ShipRoom::ShipRoom(const std::string& room_name,

@@ -1,5 +1,5 @@
 #include "ClickableButton.h"
-#include "client/Core/ServiceLocator.h"
+#include "client/Locator/ServiceLocator.h"
 #include "client/UI/Cursor.h"
 
 /* Create button */

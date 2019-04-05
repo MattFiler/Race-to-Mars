@@ -1,6 +1,6 @@
 #include "client/Scenes/GameScene.h"
 #include "GameScene.h"
-#include "client/Core/ServiceLocator.h"
+#include "client/Locator/ServiceLocator.h"
 #include "client/NetworkConnection/NetworkConnection.h"
 #include "gamelib/NetworkedData/NetworkedData.h"
 
@@ -25,9 +25,10 @@ GameScene::~GameScene()
 void GameScene::init()
 {
   // Create pause menu
-  pause_menu.addMenuSprite("INGAME_UI/pause_bg.jpg");
-  pause_menu.addMenuItem("MENU_CONTINUE");
-  pause_menu.addMenuItem("MENU_QUIT");
+  Menu* pause_menu = ui_manager.createMenu();
+  pause_menu->addMenuSprite("INGAME_UI/pause_bg.jpg");
+  pause_menu->addMenuItem("MENU_CONTINUE");
+  pause_menu->addMenuItem("MENU_QUIT");
 
   // Get a reference to the client lobby data array
   for (int i = 0; i < 4; i++)
@@ -468,16 +469,16 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
     }
     case game_state::LOCAL_PAUSE:
     {
-      if (!pause_menu.itemWasSelected(keys))
+      if (!ui_manager.getMenu()->itemWasSelected(keys))
       {
         break;
       }
-      if (pause_menu.selectedItemWas("MENU_CONTINUE"))
+      if (ui_manager.getMenu()->selectedItemWas("MENU_CONTINUE"))
       {
         current_state = game_state::PLAYING;
         debug_text.print("Closing pause menu.");
       }
-      else if (pause_menu.selectedItemWas("MENU_QUIT"))
+      else if (ui_manager.getMenu()->selectedItemWas("MENU_QUIT"))
       {
         // Alert everyone we're leaving and then return to menu
         DataShare new_share =
@@ -909,7 +910,7 @@ void GameScene::render()
     }
     case game_state::LOCAL_PAUSE:
     {
-      pause_menu.render();
+      ui_manager.getMenu()->render();
       break;
     }
   }

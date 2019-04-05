@@ -1,7 +1,7 @@
 #ifndef PROJECT_COUNTER_H
 #define PROJECT_COUNTER_H
 
-#include "client/Core/ServiceLocator.h"
+#include "client/Locator/ServiceLocator.h"
 #include "client/UI/ScaledSprite.h"
 #include "gamelib/Constants.h"
 #include "gamelib/Math/Vector2.h"

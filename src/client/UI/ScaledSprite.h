@@ -1,7 +1,7 @@
 #ifndef PROJECT_SCALEDSPRITE_H
 #define PROJECT_SCALEDSPRITE_H
 
-#include "client/Core/ServiceLocator.h"
+#include "client/Locator/ServiceLocator.h"
 #include "gamelib/Constants.h"
 #include "gamelib/Math/BoundingBox.h"
 #include "gamelib/Math/Vector2.h"

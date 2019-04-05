@@ -1,5 +1,5 @@
 #include "GameSceneUI.h"
-#include "client/Core/ServiceLocator.h"
+#include "client/Locator/ServiceLocator.h"
 
 /* Create */
 SceneUI::SceneUI()
@@ -62,6 +62,24 @@ ClickableButton* SceneUI::getButton(const std::string& id)
     index++;
   }
   throw "Button ID did not exist.";
+}
+
+/* Create a menu */
+Menu* SceneUI::createMenu()
+{
+  menu = new Menu();
+  has_menu = true;
+  return menu;
+}
+
+/* Get the menu if it exists */
+Menu* SceneUI::getMenu()
+{
+  if (has_menu)
+  {
+    return menu;
+  }
+  return nullptr;
 }
 
 /* Update UI */

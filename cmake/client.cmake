@@ -19,7 +19,7 @@ set(SOURCE_FILES
         ../src/client/Players/PilotPlayer.cpp
         ../src/client/UI/OnBoardObject.cpp
         ../src/client/Board/PlayerCounter.cpp
-        ../src/client/Core/ServiceLocator.cpp
+        ../src/client/Locator/ServiceLocator.cpp
         ../src/client/Scenes/SceneManager.cpp
         ../src/client/Scenes/GameScene.cpp
         ../src/client/Scenes/MenuScene.cpp
@@ -37,7 +37,7 @@ set(HEADER_FILES
         ../src/client/Cards/ObjectiveCard.h
         ../src/client/Cards/ItemCard.h
         ../src/client/Cards/IssueCard.h
-        ../src/client/Core/ServiceLocator.h
+        ../src/client/Locator/ServiceLocator.h
         ../src/client/Players/Player.h
         ../src/client/Players/MedicPlayer.h
         ../src/client/Players/EngineerPlayer.h
@@ -88,7 +88,7 @@ set(HEADER_FILES
         ../src/client/UI/Managers/GameSceneUI.cpp
         ../src/client/UI/Managers/GameSceneUI.h
         ../src/client/UI/Managers/PopupManager.cpp
-        ../src/client/UI/Managers/PopupManager.h )
+        ../src/client/UI/Managers/PopupManager.h ../src/client/Locator/Interface_Soloud.cpp ../src/client/Locator/Interface_Soloud.h)
 
 ## the executable
 add_executable(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES})

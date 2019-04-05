@@ -32,7 +32,6 @@ class GameScene : public Scene
 
  private:
   GameBoard board;
-  Menu pause_menu;
 
   LobbyPlayer* players[4] = { nullptr, nullptr, nullptr, nullptr };
 
