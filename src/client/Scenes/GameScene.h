@@ -4,6 +4,7 @@
 #include "Scene.h"
 #include "client/Board/GameBoard.h"
 #include "client/UI/Cursor.h"
+#include "client/UI/Managers/PopupManager.h"
 #include "client/UI/PopupWindow.h"
 #include <client/Cards/IssueCard.h>
 #include <client/Cards/ItemCard.h>
@@ -51,9 +52,10 @@ class GameScene : public Scene
   LobbyPlayer* players[4] = { nullptr, nullptr, nullptr, nullptr };
 
   /* POPUPS */
-  PopupWindow issue_card_popup;
-  PopupWindow objective_card_popup;
-  PopupWindow dice_roll_popup;
+  PopupManager popups;
+  // PopupWindow issue_card_popup;
+  // PopupWindow objective_card_popup;
+  // PopupWindow dice_roll_popup;
 
   /* BUTTONS */
   ClickableButton end_turn_btn = ClickableButton("UI/INGAME_UI/"

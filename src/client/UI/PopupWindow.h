@@ -17,7 +17,7 @@ class PopupWindow
   PopupWindow(const PopupWindow&) = delete;
   PopupWindow& operator=(const PopupWindow&) = delete;
 
-  void keyHandler(KeyHandler keys);
+  void keyHandler(KeyHandler& keys);
   void clickHandler();
 
   ScaledSprite& createSprite(const std::string& sprite_path);

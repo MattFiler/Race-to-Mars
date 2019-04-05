@@ -5,18 +5,21 @@
 #include <iostream>
 #include <random>
 
+/* Initialise the server */
 RaceToSpaceServer::RaceToSpaceServer()
 {
   debug_text.enabled = true;
   enetpp::global_state::get().initialize();
 }
 
+/* Destroy the server */
 RaceToSpaceServer::~RaceToSpaceServer()
 {
   network_server.stop_listening();
   enetpp::global_state::get().deinitialize();
 }
 
+/* Start the server logic */
 void RaceToSpaceServer::initialise()
 {
   // Setup
@@ -42,6 +45,7 @@ void RaceToSpaceServer::initialise()
       .set_initialize_client_function(init_client_func));
 }
 
+/* The server core functionality */
 void RaceToSpaceServer::run()
 {
   /* A client connected */
@@ -110,7 +114,7 @@ void RaceToSpaceServer::run()
         case data_roles::CLIENT_DISCONNECTING_FROM_LOBBY:
         {
           disconnectFromLobby(static_cast<int>(client.get_id()));
-          sendToAll(client, data_to_send);
+          sendData(client, static_cast<unsigned int>(-1), data_to_send);
           break;
         }
 
@@ -146,7 +150,7 @@ void RaceToSpaceServer::run()
           // the lobby.
         default:
         {
-          sendToAll(client, data_to_send);
+          sendData(client, static_cast<unsigned int>(-1), data_to_send);
         }
       }
     });

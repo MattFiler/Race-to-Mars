@@ -11,13 +11,33 @@
  *
  */
 
+#include "../PopupWindow.h"
+#include <vector>
+
 class PopupManager
 {
  public:
-  PopupManager();
-  ~PopupManager();
+  PopupManager() = default;
+  ~PopupManager() = default;
+
+  void createPopup(const std::string& _identifier);
+  PopupWindow* getPopupRef(const std::string& _identifier);
+
+  bool anyAreActive();
+  bool anyAreVisible() { return anyAreActive(); }; // Alt syntax
+
+  void hideAll();
+  void showAll();
+
+  void keyHandler(KeyHandler& keys);
+  void clickHandler();
+
+  void update(const ASGE::GameTime& game_time);
+  void render();
 
  private:
+  std::vector<std::string> popup_identifier;
+  std::vector<PopupWindow*> popup;
 };
 
 #endif // PROJECT_POPUPMANAGER_H
