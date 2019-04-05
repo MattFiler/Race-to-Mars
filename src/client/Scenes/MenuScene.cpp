@@ -6,6 +6,8 @@ void MenuScene::init()
   main_menu.addMenuSprite("MAIN_MENU/background.jpg");
   main_menu.addMenuItem("MENU_NEWGAME");
   main_menu.addMenuItem("MENU_QUIT");
+
+  //* testSprite = test_sprite.getSprite();
 }
 
 /* Handles connecting to the server */
@@ -45,7 +47,10 @@ void MenuScene::clickHandler(const ASGE::SharedEventData data)
 /* Update function */
 game_global_scenes MenuScene::update(const ASGE::GameTime& game_time)
 {
-  return next_scene;
+  // animSprite->getLoc();
+  animSprite->setNewLoc()
+
+    return next_scene;
 }
 
 /* Render function */

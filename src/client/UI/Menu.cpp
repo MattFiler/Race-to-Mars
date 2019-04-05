@@ -107,6 +107,8 @@ void Menu::render()
     renderer->renderSprite(*item_sprite.getSprite(),
                            render_order::PRIORITY_BACKGROUND);
   }
+  test_sprite = new ScaledSprite("PLAYER_COUNTERS/old_files/medic.png");
+  renderer->renderSprite(*test_sprite->getSprite());
 
   // Render text
   int index = 0;

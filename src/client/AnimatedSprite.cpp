@@ -32,3 +32,8 @@ void AnimatedSprite::setNewLoc(Vector2 new_loc)
   sprite->yPos(new_loc.y * GameResolution::scale);
   bounding_box.pos = Vector2(sprite->xPos(), sprite->yPos());
 }
+
+void AnimatedSprite::setMoveSpeed(float speed)
+{
+  moveSpeed = speed;
+}

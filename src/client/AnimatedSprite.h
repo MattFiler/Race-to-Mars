@@ -20,16 +20,28 @@ class AnimatedSprite
   AnimatedSprite();
   ~AnimatedSprite();
 
-  void setNewWidth(float new_width);
+  void createSprite(const std::string& name)
+  {
+    sprite = new ScaledSprite(name);
+  }
+
   float getWidth() { return sprite->width(); };
+  void setNewWidth(float new_width);
 
-  void setNewHeight(float new_height);
   float getHeight() { return sprite->height(); };
+  void setNewHeight(float new_height);
 
-  void setNewLoc(Vector2 new_loc);
+  float getMoveSpeed() { return moveSpeed; };
+  void setMoveSpeed(float speed);
+
   Vector2 getLoc() { return Vector2(sprite->xPos(), sprite->yPos()); };
+  void setNewLoc(Vector2 new_loc);
+
+  // void setOpacity
 
  private:
+  float moveSpeed = 300;
+
   ASGE::Renderer* renderer = nullptr;
   ScaledSprite* sprite = nullptr;
   BoundingBox bounding_box;

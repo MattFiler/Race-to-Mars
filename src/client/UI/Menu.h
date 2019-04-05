@@ -40,6 +40,7 @@ class Menu
   std::vector<std::string> menu_text_items;
   std::vector<float> menu_text_offsets;
   std::vector<ScaledSprite> menu_sprites;
+  ScaledSprite* test_sprite = nullptr;
 
   FileHandler file_handler;
   ASGE::Renderer* renderer = nullptr;

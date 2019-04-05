@@ -2,12 +2,13 @@
 #define PROJECT_MENUSCENE_H
 
 #include "Scene.h"
+#include "client/AnimatedSprite.h"
 #include <enet/enet.h>
 
 class MenuScene : public Scene
 {
  public:
-  MenuScene() = default;
+  MenuScene() { animSprite->createSprite("data/icon.jpg"); };
   ~MenuScene() = default;
 
   void init() override;
@@ -22,6 +23,7 @@ class MenuScene : public Scene
 
  private:
   Menu main_menu;
+  AnimatedSprite* animSprite = nullptr;
 };
 
 #endif // PROJECT_MENUSCENE_H
