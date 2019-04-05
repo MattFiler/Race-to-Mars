@@ -16,7 +16,7 @@ class NetworkConnection
   void connectToServer(const std::string& hostname, enet_uint16 port);
   void startListening(RaceToSpace* game_instance);
 
-  void sendData(DataShare data);
+  void sendData(DataShare& data);
 
   enetpp::client* getClient() { return &client; };
 

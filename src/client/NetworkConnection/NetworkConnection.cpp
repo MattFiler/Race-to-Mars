@@ -80,7 +80,7 @@ void NetworkConnection::networkMessageDebug()
 }
 
 /* Send our data to the server */
-void NetworkConnection::sendData(DataShare data)
+void NetworkConnection::sendData(DataShare& data)
 {
   Packet packet;
   packet << data;

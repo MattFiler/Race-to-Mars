@@ -34,7 +34,7 @@ struct DataShare
   DataShare() { data_type = data_roles::NO_ROLE; }
 
   /* Initialise the data type for adding data to send */
-  DataShare(data_roles _type) { data_type = _type; }
+  explicit DataShare(data_roles _type) { data_type = _type; }
 
   /* Add data to the struct */
   void add(int new_data)
