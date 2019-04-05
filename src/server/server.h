@@ -28,6 +28,8 @@ class RaceToSpaceServer
  private:
   void sendToAll(server_client& client, DataShare& data);
 
+  void handleReceivedData(DataShare& data_to_send, server_client& client);
+
   void clientJoinLobby(server_client& client);
   void endTurn(server_client& client);
   void syncClient(server_client& client);

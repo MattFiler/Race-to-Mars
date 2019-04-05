@@ -1,32 +1,39 @@
 #include "PopupManager.h"
 
+/* Destroy */
+PopupManager::~PopupManager()
+{
+  popups.clear();
+  popup_ids.clear();
+}
+
 /* Create a new popup with ID */
-void PopupManager::createPopup(const std::string& _identifier)
+void PopupManager::createPopup(int identifier)
 {
   PopupWindow* new_popup = new PopupWindow();
-  popup.push_back(new_popup);
-  popup_identifier.emplace_back(_identifier);
+  popups.push_back(new_popup);
+  popup_ids.emplace_back(identifier);
 }
 
 /* Get reference to popup by ID */
-PopupWindow* PopupManager::getPopupRef(const std::string& _identifier)
+PopupWindow* PopupManager::getPopup(int identifier)
 {
   int index = 0;
-  for (std::string& id : popup_identifier)
+  for (int id : popup_ids)
   {
-    if (id == _identifier)
+    if (id == identifier)
     {
-      return popup.at(index);
+      return popups.at(index);
     }
     index++;
   }
-  throw "Couldn't find popup with ID of " + _identifier;
+  throw "Couldn't find popup with ID of " + std::to_string(identifier);
 }
 
 /* Are any popups active? */
 bool PopupManager::anyAreActive()
 {
-  for (PopupWindow* this_popup : popup)
+  for (PopupWindow* this_popup : popups)
   {
     if (this_popup->isVisible())
     {
@@ -39,7 +46,7 @@ bool PopupManager::anyAreActive()
 /* Hide all popups */
 void PopupManager::hideAll()
 {
-  for (PopupWindow* this_popup : popup)
+  for (PopupWindow* this_popup : popups)
   {
     this_popup->hide();
   }
@@ -48,7 +55,7 @@ void PopupManager::hideAll()
 /* Show all popups - don't think we'll ever need this */
 void PopupManager::showAll()
 {
-  for (PopupWindow* this_popup : popup)
+  for (PopupWindow* this_popup : popups)
   {
     this_popup->show();
   }
@@ -57,7 +64,7 @@ void PopupManager::showAll()
 /* Pass out key press info to active popups */
 void PopupManager::keyHandler(KeyHandler& keys)
 {
-  for (PopupWindow* this_popup : popup)
+  for (PopupWindow* this_popup : popups)
   {
     if (this_popup->isVisible())
     {
@@ -69,7 +76,7 @@ void PopupManager::keyHandler(KeyHandler& keys)
 /* Trigger click events on active popups */
 void PopupManager::clickHandler()
 {
-  for (PopupWindow* this_popup : popup)
+  for (PopupWindow* this_popup : popups)
   {
     if (this_popup->isVisible())
     {
@@ -81,7 +88,7 @@ void PopupManager::clickHandler()
 /* Update active popups */
 void PopupManager::update(const ASGE::GameTime& game_time)
 {
-  for (PopupWindow* this_popup : popup)
+  for (PopupWindow* this_popup : popups)
   {
     this_popup->update(game_time);
   }
@@ -90,7 +97,7 @@ void PopupManager::update(const ASGE::GameTime& game_time)
 /* Render active popups */
 void PopupManager::render()
 {
-  for (PopupWindow* this_popup : popup)
+  for (PopupWindow* this_popup : popups)
   {
     this_popup->render();
   }

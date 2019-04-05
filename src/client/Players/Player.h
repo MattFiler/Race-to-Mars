@@ -2,7 +2,7 @@
 #define PROJECT_PLAYER_H
 
 #include "client/Board/PlayerCounter.h"
-#include "client/Core/ServiceLocator.h"
+#include "client/Locator/ServiceLocator.h"
 #include "gamelib/FileHandler/FileHandler.h"
 #include "gamelib/Localisation/Localisation.h"
 #include <Engine/Renderer.h>

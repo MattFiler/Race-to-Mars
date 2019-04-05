@@ -1,7 +1,7 @@
 #ifndef PROJECT_CARD_H
 #define PROJECT_CARD_H
 
-#include "../Core/ServiceLocator.h"
+#include "../Locator/ServiceLocator.h"
 #include "client/UI/OnBoardObject.h"
 #include "gamelib/Debug/DebugText.h"
 #include "gamelib/NetworkedData/Cards.h"

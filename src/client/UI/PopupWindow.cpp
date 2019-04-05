@@ -1,5 +1,5 @@
 #include "PopupWindow.h"
-#include "client/Core/ServiceLocator.h"
+#include "client/Locator/ServiceLocator.h"
 #include "gamelib/Constants.h"
 
 /* Create the popup */

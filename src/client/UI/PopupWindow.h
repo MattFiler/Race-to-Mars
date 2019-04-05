@@ -65,7 +65,7 @@ class PopupWindow
   void render();
 
  private:
-  /* Core */
+  /* Locator */
   ASGE::Renderer* renderer = nullptr;
   ScaledSprite* sprite = nullptr;
   bool is_active = false;

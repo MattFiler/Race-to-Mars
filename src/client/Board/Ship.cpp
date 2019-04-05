@@ -1,5 +1,5 @@
 #include "Ship.h"
-#include "client/Core/ServiceLocator.h"
+#include "client/Locator/ServiceLocator.h"
 #include <fstream>
 
 Ship::Ship()

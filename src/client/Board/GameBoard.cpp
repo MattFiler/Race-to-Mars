@@ -1,5 +1,5 @@
 #include "GameBoard.h"
-#include "client/Core/ServiceLocator.h"
+#include "client/Locator/ServiceLocator.h"
 #include "client/NetworkConnection/NetworkConnection.h"
 #include "gamelib/Constants.h"
 #include "gamelib/NetworkedData/NetworkedData.h"
@@ -94,17 +94,6 @@ void GameBoard::setActiveObjectiveCard(int card_index)
 /* Set active issue cards to update */
 void GameBoard::setActiveIssueCards(int card_index[5], bool is_new_rotation)
 {
-  // Remove solved issues
-  for (size_t i = 0; i < active_issues.size(); ++i)
-  {
-    if (active_issues[i].isSolved())
-    {
-      active_issues.erase(active_issues.begin() + static_cast<int>(i));
-      active_issue_cards[i] = -1;
-      slot_active[i] = false;
-    }
-  }
-
   if (active_issues.size() >= static_cast<size_t>(game_config.max_issue_cards))
   {
     // Swap To Lose Game State.
@@ -468,8 +457,9 @@ bool GameBoard::updateActiveItemCard(int _item_card_index)
   if (_item_card_index >= 0 && _item_card_index <= 19)
   {
     item_inventory.emplace_back(static_cast<item_cards>(_item_card_index));
-    debug_text.print("Creating item card: " +
-                     std::to_string(active_item_card[_item_card_index]));
+    debug_text.print(
+      "Creating item card: " +
+      std::to_string(active_item_card[item_inventory.size() - 1]));
     return true;
   }
   return false;
@@ -507,5 +497,22 @@ void GameBoard::resetCardVariables()
   for (auto& issue : active_issues)
   {
     issue.setIssueCardvariable(0);
+  }
+}
+
+void GameBoard::checkissueSolved()
+{
+  // Remove solved issues
+  for (size_t i = 0; i < active_issues.size(); ++i)
+  {
+    if (active_issues[i].isSolved())
+    {
+      active_issues.erase(active_issues.begin() + static_cast<int>(i));
+      active_issue_cards[i] = -1;
+      slot_active[i] = false;
+      // create packet here that goes to the server to update the active issue
+      // cards on the sever.
+      auto data_share = DataShare(data_roles:)
+    }
   }
 }

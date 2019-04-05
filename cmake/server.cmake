@@ -28,6 +28,9 @@ set_target_properties(GameServer
         LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/build/${SERVER}/lib"
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/build/${SERVER}/bin")
 
+## Copy server resources to output directory
+file(COPY "${CMAKE_SOURCE_DIR}/data/server" DESTINATION "${CMAKE_BINARY_DIR}/build/${SERVER}/bin")
+
 ## important build scripts
 include(build/compilation)
 include(tools/itch.io)

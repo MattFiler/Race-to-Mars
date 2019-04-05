@@ -10,6 +10,95 @@
  *
  */
 
+/* Handle data received by the server */
+void RaceToSpaceServer::handleReceivedData(DataShare& data_to_send,
+                                           server_client& client)
+{
+  switch (data_to_send.getType())
+  {
+    // If client requests lobby info, we need to send that directly to the
+    // client that wants it.
+    case data_roles::CLIENT_REQUESTS_TO_JOIN_LOBBY:
+    {
+      clientJoinLobby(client);
+      break;
+    }
+
+    // The currently active client wants to end their turn, so we need to
+    // progress the game - this may be as simple as going to the next
+    // player, but if we've done a full rotation in this lobby, new issue
+    // cards will need to be pulled, etc.
+    case data_roles::CLIENT_WANTS_TO_END_TURN:
+    {
+      endTurn(client);
+      break;
+    }
+
+    // Sync lobby info to a player that joined the game in progress
+    case data_roles::CLIENT_REQUESTS_SYNC:
+    {
+      syncClient(client);
+      break;
+    }
+
+    // Client spent or gained action points, update the lobby before
+    // sending to all - we can use this data for reconnecting players to
+    // keep them updated on game progress.
+    case data_roles::CLIENT_ACTION_POINTS_CHANGED:
+    {
+      clientPointsChange(data_to_send, client);
+      break;
+    }
+
+    // If a client is leaving a lobby, action that before letting the
+    // lobby know
+    case data_roles::CLIENT_DISCONNECTING_FROM_LOBBY:
+    {
+      disconnectFromLobby(static_cast<int>(client.get_id()));
+      sendData(client, static_cast<unsigned int>(-1), data_to_send);
+      break;
+    }
+
+    // If client moves in the ship, save that first for syncing to
+    // reconnecting players
+    case data_roles::CLIENT_MOVING_PLAYER_TOKEN:
+    {
+      clientMoved(data_to_send, client);
+      break;
+    }
+
+    // Updates the new progress index for all clients after dice roll
+    // issue event on client.
+    case data_roles::CLIENT_CHANGE_PROGRESS_INDEX:
+    {
+      clientProgressChange(data_to_send, client);
+      break;
+    }
+
+    // Client has requested to buy an item.
+    case data_roles::CLIENT_REQUESTED_ITEM_CARD:
+    {
+      clientRequestsItem(data_to_send, client);
+      break;
+    }
+
+    // We need to store lobby ready state before sending it out, so new
+    // players are up to date
+    case data_roles::CLIENT_CHANGED_LOBBY_READY_STATE:
+    {
+      clientReadyUp(data_to_send, client);
+      break;
+    }
+
+    // Otherwise, it's a message that needs to be forwarded to everyone in
+    // the lobby.
+    default:
+    {
+      sendData(client, static_cast<unsigned int>(-1), data_to_send);
+    }
+  }
+}
+
 /* End the turn for the active player in lobby */
 void RaceToSpaceServer::endTurn(server_client& client)
 {

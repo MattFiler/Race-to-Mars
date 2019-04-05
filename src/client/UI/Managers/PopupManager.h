@@ -18,13 +18,12 @@ class PopupManager
 {
  public:
   PopupManager() = default;
-  ~PopupManager() = default;
+  ~PopupManager();
 
-  void createPopup(const std::string& _identifier);
-  PopupWindow* getPopupRef(const std::string& _identifier);
+  void createPopup(int identifier);
+  PopupWindow* getPopup(int identifier);
 
   bool anyAreActive();
-  bool anyAreVisible() { return anyAreActive(); }; // Alt syntax
 
   void hideAll();
   void showAll();
@@ -36,8 +35,8 @@ class PopupManager
   void render();
 
  private:
-  std::vector<std::string> popup_identifier;
-  std::vector<PopupWindow*> popup;
+  std::vector<int> popup_ids;
+  std::vector<PopupWindow*> popups;
 };
 
 #endif // PROJECT_POPUPMANAGER_H

@@ -1,6 +1,6 @@
 #include "client/Scenes/GameScene.h"
 #include "GameScene.h"
-#include "client/Core/ServiceLocator.h"
+#include "client/Locator/ServiceLocator.h"
 #include "client/NetworkConnection/NetworkConnection.h"
 #include "gamelib/NetworkedData/NetworkedData.h"
 
@@ -25,9 +25,10 @@ GameScene::~GameScene()
 void GameScene::init()
 {
   // Create pause menu
-  pause_menu.addMenuSprite("INGAME_UI/pause_bg.jpg");
-  pause_menu.addMenuItem("MENU_CONTINUE");
-  pause_menu.addMenuItem("MENU_QUIT");
+  Menu* pause_menu = ui_manager.createMenu();
+  pause_menu->addMenuSprite("INGAME_UI/pause_bg.jpg");
+  pause_menu->addMenuItem("MENU_CONTINUE");
+  pause_menu->addMenuItem("MENU_QUIT");
 
   // Get a reference to the client lobby data array
   for (int i = 0; i < 4; i++)
@@ -39,49 +40,69 @@ void GameScene::init()
     }
   }
 
-  // Create all required sprites
-  game_sprites.background = new ScaledSprite("UI/BOARD/background.jpg");
-  game_sprites.active_player_marker = new ScaledSprite("UI/INGAME_UI/"
-                                                       "active_player_tab.png");
-  game_sprites.active_player_marker->yPos(-180.0f);
-  game_sprites.your_player_marker = new ScaledSprite("UI/INGAME_UI/"
-                                                     "your_tab.png");
-  game_sprites.inactive_player_marker = new ScaledSprite("UI/INGAME_UI/"
-                                                         "inactive_player_tab_"
-                                                         "singlesprite.png");
-  game_sprites.progress_meter = new ScaledSprite("UI/INGAME_UI/"
-                                                 "progress_bar.png");
-  game_sprites.progress_marker = new ScaledSprite("UI/INGAME_UI/"
-                                                  "progress_marker_padded.png");
-  game_sprites.progress_marker->yPos(89.0f); // increment this as we progress
-  game_sprites.sync_overlay = new ScaledSprite("UI/INGAME_UI/syncing.png");
-  game_sprites.disconnect_overlay = new ScaledSprite("UI/INGAME_UI/"
-                                                     "syncing_notext.png");
+  // Create all required sprites - add in the order to render
   for (int i = 0; i < 6; i++)
   {
-    game_sprites.popup_card_shadows[i] =
-      new ScaledSprite("UI/INGAME_UI/cards_" + std::to_string(i) + ".png");
+    ScaledSprite* new_dice_sprite = ui_manager.createSprite(
+      ui_sprites::DICE_ROLL_1 + i,
+      "UI/INGAME_UI/dice_" + std::to_string(i + 1) + ".png");
+    new_dice_sprite->setPos(Vector2(529, 248));
+    new_dice_sprite->hide();
+  }
+  ui_manager.createSprite(ui_sprites::BACKGROUND, "UI/BOARD/background.jpg");
+  ui_manager
+    .createSprite(ui_sprites::ACTIVE_PLAYER_MARKER,
+                  "UI/INGAME_UI/active_player_tab.png")
+    ->yPos(-180.0f);
+  ui_manager.createSprite(ui_sprites::YOUR_PLAYER_MARKER,
+                          "UI/INGAME_UI/your_tab.png");
+  ui_manager.createSprite(ui_sprites::INACTIVE_PLAYER_MARKER,
+                          "UI/INGAME_UI/inactive_player_tab_singlesprite.png");
+  ui_manager.createSprite(ui_sprites::PROGRESS_METER,
+                          "UI/INGAME_UI/progress_bar.png");
+  ui_manager
+    .createSprite(ui_sprites::PROGRESS_MARKER,
+                  "UI/INGAME_UI/progress_marker_padded.png")
+    ->yPos(89.0f);
+  ui_manager.createSprite(ui_sprites::SYNC_OVERLAY, "UI/INGAME_UI/syncing.png");
+  ui_manager.createSprite(ui_sprites::DISCONNECT_OVERLAY,
+                          "UI/INGAME_UI/syncing_notext.png");
+  for (int i = 0; i < 6; i++)
+  {
+    ui_manager.createSprite(ui_sprites::POPUP_CARD_SHADOWS_0 + i,
+                            "UI/INGAME_UI/cards_" + std::to_string(i) + ".png");
   }
 
   // Create popups
-  popups.createPopup("Issue");
-  popups.createPopup("Objective");
-  popups.createPopup("Dice Roll");
+  ui_manager.popups().createPopup(ui_popups::ISSUE_POPUP);
+  ui_manager.popups().createPopup(ui_popups::OBJECTIVE_POPUP);
+  ui_manager.popups().createPopup(ui_popups::DICE_ROLL_POPUP);
 
   // Create popup title sprites
-  popups.getPopupRef("Issue")->createSprite("UI/INGAME_UI/new_issues_bg.png");
-  popups.getPopupRef("Objective")->createSprite("UI/INGAME_UI/new_obj_bg.png");
-  popups.getPopupRef("Dice Roll")->createSprite("UI/INGAME_UI/dice_roll_bg.png");
+  ui_manager.popups()
+    .getPopup(ui_popups::ISSUE_POPUP)
+    ->createSprite("UI/INGAME_UI/"
+                   "new_issues_bg.png");
+  ui_manager.popups()
+    .getPopup(ui_popups::OBJECTIVE_POPUP)
+    ->createSprite("UI/INGAME_UI/new_obj_bg.png");
+  ui_manager.popups()
+    .getPopup(ui_popups::DICE_ROLL_POPUP)
+    ->createSprite("UI/INGAME_UI/dice_roll_bg.png");
 
   // Position button for new turn
-  end_turn_btn.setPos(Vector2(1042, 626));
+  ui_manager
+    .createButton(ui_buttons::END_TURN_BTN, "UI/INGAME_UI/end_turn_btn.png")
+    ->setPos(Vector2(1042, 612));
+  ui_manager
+    .createButton(ui_buttons::BUY_ITEM_BTN, "UI/INGAME_UI/buy_item_btn.png")
+    ->setPos(Vector2(1042, 551));
 
   // Issue popup card placeholder
-  ScaledSprite& card_placeholder =
-    popups.getPopupRef("Issue")->createSprite("UI/"
-                                              "CARD_IMAGES/"
-                                              "PLACEHOLDER_"
-                                              "5.png");
+  ScaledSprite& card_placeholder = ui_manager.popups()
+                                     .getPopup(ui_popups::ISSUE_POPUP)
+                                     ->createSprite("UI/CARD_IMAGES/"
+                                                    "PLACEHOLDER_5.png");
   card_placeholder.setPos(card_offsets.issue_popup_start);
   card_placeholder.setDims(Vector2(card_offsets.issue_popup_size.x * 5,
                                    card_offsets.issue_popup_size.y));
@@ -89,31 +110,33 @@ void GameScene::init()
   for (int i = 0; i < 5; i++)
   {
     // Create buttons for issue card popup
-    ClickableButton& new_btn = popups.getPopupRef("Issue")->createButton("UI/"
-                                                                         "INGAM"
-                                                                         "E_UI/"
-                                                                         "assig"
-                                                                         "n_ap_"
-                                                                         "butto"
-                                                                         "n_"
-                                                                         "nosha"
-                                                                         "dow."
-                                                                         "png");
+    ClickableButton& new_btn = ui_manager.popups()
+                                 .getPopup(ui_popups::ISSUE_POPUP)
+                                 ->createButton("UI/"
+                                                "INGAM"
+                                                "E_UI/"
+                                                "assig"
+                                                "n_ap_"
+                                                "butto"
+                                                "n_"
+                                                "nosha"
+                                                "dow."
+                                                "png");
     new_btn.setPos(
       card_offsets.issue_popup_ap_btn_start +
       (card_offsets.issue_popup_ap_btn_offset * static_cast<float>(i)));
     new_btn.setActive(false);
 
     // Create point overlays for issue card popup
-    ScaledSprite& new_sprite = popups.getPopupRef("Issue")->createSprite("UI/"
-                                                                         "INGAM"
-                                                                         "E_UI/"
-                                                                         "score"
-                                                                         "_over"
-                                                                         "lay_"
-                                                                         "cutou"
-                                                                         "t."
-                                                                         "png");
+    ScaledSprite& new_sprite = ui_manager.popups()
+                                 .getPopup(ui_popups::ISSUE_POPUP)
+                                 ->createSprite("UI/"
+                                                "INGAM"
+                                                "E_UI/"
+                                                "score"
+                                                "_over"
+                                                "lay."
+                                                "png");
     new_sprite.setPos(
       card_offsets.issue_popup_start +
       (card_offsets.issue_popup_offset * static_cast<float>(i)));
@@ -150,6 +173,7 @@ void GameScene::init()
       ->getPlayer(
         players[Locator::getPlayers()->my_player_index]->current_class)
       ->setPos(new_pos);
+    players[Locator::getPlayers()->my_player_index]->room = this_room.getEnum();
     debug_text.print("Starting my player token in room '" +
                      this_room.getName() + "'.");
   }
@@ -219,6 +243,7 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
                                       received_data.retrieve(5),
                                       received_data.retrieve(6),
                                       received_data.retrieve(7) };
+        board.checkissueSolved();
         board.setActiveIssueCards(
           active_issue_cards, static_cast<bool>(received_data.retrieve(12)));
       }
@@ -259,6 +284,7 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       Locator::getPlayers()
         ->getPlayer(players[received_data.retrieve(0)]->current_class)
         ->setPos(new_pos);
+      players[received_data.retrieve(0)]->room = this_room.getEnum();
       debug_text.print("Moving player " +
                        std::to_string(received_data.retrieve(0)) +
                        " to room '" + this_room.getName() + "'.");
@@ -355,6 +381,7 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
         Locator::getPlayers()
           ->getPlayer(players[i]->current_class)
           ->setPos(new_pos);
+        players[i]->room = this_room.getEnum();
 
         // Broadcast out the position of us to keep all clients informed
         if (i == Locator::getPlayers()->my_player_index)
@@ -404,9 +431,9 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
   keys.registerEvent(static_cast<const ASGE::KeyEvent*>(data.get()));
 
   // Force all inputs to popups when visible
-  if (popups.anyAreVisible())
+  if (ui_manager.popups().anyAreActive())
   {
-    popups.keyHandler(keys);
+    ui_manager.popups().keyHandler(keys);
     return;
   }
 
@@ -467,16 +494,16 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
     }
     case game_state::LOCAL_PAUSE:
     {
-      if (!pause_menu.itemWasSelected(keys))
+      if (!ui_manager.getMenu()->itemWasSelected(keys))
       {
         break;
       }
-      if (pause_menu.selectedItemWas("MENU_CONTINUE"))
+      if (ui_manager.getMenu()->selectedItemWas("MENU_CONTINUE"))
       {
         current_state = game_state::PLAYING;
         debug_text.print("Closing pause menu.");
       }
-      else if (pause_menu.selectedItemWas("MENU_QUIT"))
+      else if (ui_manager.getMenu()->selectedItemWas("MENU_QUIT"))
       {
         // Alert everyone we're leaving and then return to menu
         DataShare new_share =
@@ -507,16 +534,17 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
                               Locator::getCursor()->getPosition().y);
 
   // Force all inputs to popups when active
-  if (popups.anyAreVisible())
+  if (ui_manager.popups().anyAreActive())
   {
-    popups.clickHandler();
+    ui_manager.popups().clickHandler();
 
     // Handle interactions for all active buttons in issue popup when visible
-    if (popups.getPopupRef("Issue")->isVisible())
+    if (ui_manager.popups().getPopup(ui_popups::ISSUE_POPUP)->isVisible())
     {
       int ap_button_index = 0;
-      for (ClickableButton* button :
-           popups.getPopupRef("Issue")->getInternalButtons())
+      for (ClickableButton* button : ui_manager.popups()
+                                       .getPopup(ui_popups::ISSUE_POPUP)
+                                       ->getInternalButtons())
       {
         if (button->isActive())
         {
@@ -593,12 +621,14 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
             ->getPlayer(
               players[Locator::getPlayers()->my_player_index]->current_class)
             ->setPos(new_pos);
+          players[Locator::getPlayers()->my_player_index]->room =
+            this_room.getEnum();
           debug_text.print("Moving my player token to room '" +
                            this_room.getName() + "'.");
         }
 
         // Clicked end turn button
-        if (end_turn_btn.clicked())
+        if (ui_manager.getButton(ui_buttons::END_TURN_BTN)->clicked())
         {
           DataShare new_share = DataShare(data_roles::CLIENT_WANTS_TO_END_TURN);
           new_share.add(Locator::getPlayers()->my_player_index);
@@ -609,37 +639,60 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
           // Call reset variables on item and issues here
           board.resetCardVariables();
         }
+
+        // Clicked buy item button
+        if (ui_manager.getButton(ui_buttons::BUY_ITEM_BTN)->clicked())
+        {
+          // Should validate score and existing items, etc here!
+          DataShare new_share =
+            DataShare(data_roles::CLIENT_REQUESTED_ITEM_CARD);
+          new_share.add(Locator::getPlayers()->my_player_index);
+          Locator::getNetworkInterface()->sendData(new_share);
+          debug_text.print("I want an item card!!");
+        }
       }
 
       /* WHEN CLIENT IS ACTIVE/INACTIVE */
       // Clicked on an objective card
       if (board.isHoveringOverObjectiveCard(mouse_pos))
       {
-        popups.getPopupRef("Objective")->clearAllReferencedSprites();
-        popups.getPopupRef("Objective")
-          ->referenceSprite(*game_sprites.popup_card_shadows[0]);
-        popups.getPopupRef("Objective")
+        ui_manager.popups()
+          .getPopup(ui_popups::OBJECTIVE_POPUP)
+          ->clearAllReferencedSprites();
+        ui_manager.popups()
+          .getPopup(ui_popups::OBJECTIVE_POPUP)
+          ->referenceSprite(
+            *ui_manager.getSprite(ui_sprites::POPUP_CARD_SHADOWS_0));
+        ui_manager.popups()
+          .getPopup(ui_popups::OBJECTIVE_POPUP)
           ->referenceSprite(
             *board.getClickedObjectiveCard(mouse_pos)->getSprite());
-        popups.getPopupRef("Objective")->show();
+        ui_manager.popups().getPopup(ui_popups::OBJECTIVE_POPUP)->show();
       }
       // Clicked on an issue card
       if (board.isHoveringOverIssueCard(mouse_pos))
       {
-        popups.getPopupRef("Issue")->clearAllReferencedSprites();
-        popups.getPopupRef("Issue")->referenceSprite(
-          *game_sprites.popup_card_shadows[board.activeIssuesCount()]);
+        ui_manager.popups()
+          .getPopup(ui_popups::ISSUE_POPUP)
+          ->clearAllReferencedSprites();
+        ui_manager.popups()
+          .getPopup(ui_popups::ISSUE_POPUP)
+          ->referenceSprite(*ui_manager.getSprite(
+            ui_sprites::POPUP_CARD_SHADOWS_0 + board.activeIssuesCount()));
         for (IssueCard& issue_card : board.getIssueCards())
         {
-          popups.getPopupRef("Issue")->referenceSprite(*issue_card.getSprite());
+          ui_manager.popups()
+            .getPopup(ui_popups::ISSUE_POPUP)
+            ->referenceSprite(*issue_card.getSprite());
         }
         // If we're the active player, show the opportunity to assign action
         // points to each card
         if (players[Locator::getPlayers()->my_player_index]->is_active)
         {
           int button_index = 0;
-          for (ClickableButton* button :
-               popups.getPopupRef("Issue")->getInternalButtons())
+          for (ClickableButton* button : ui_manager.popups()
+                                           .getPopup(ui_popups::ISSUE_POPUP)
+                                           ->getInternalButtons())
           {
             if (button_index == board.activeIssuesCount())
             {
@@ -649,7 +702,7 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
             button_index++;
           }
         }
-        popups.getPopupRef("Issue")->show();
+        ui_manager.popups().getPopup(ui_popups::ISSUE_POPUP)->show();
       }
     }
     case game_state::LOCAL_PAUSE:
@@ -664,29 +717,33 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
 {
   /* POPUPS */
 
-  // Update popups
-  popups.update(game_time);
-
   // Update cards if required and show popup if needed
   if (board.updateActiveIssueCards())
   {
     // Hide all old popups
-    popups.hideAll();
+    ui_manager.popups().hideAll();
 
-    // Show issue card popup
-    popups.getPopupRef("Issue")->clearAllReferencedSprites();
-    popups.getPopupRef("Issue")->referenceSprite(
-      *game_sprites.popup_card_shadows[board.activeIssuesCount()]);
+    // Setup issue card popup
+    ui_manager.popups()
+      .getPopup(ui_popups::ISSUE_POPUP)
+      ->clearAllReferencedSprites();
+    ui_manager.popups()
+      .getPopup(ui_popups::ISSUE_POPUP)
+      ->referenceSprite(*ui_manager.getSprite(ui_sprites::POPUP_CARD_SHADOWS_0 +
+                                              board.activeIssuesCount()));
     for (IssueCard& issue_card : board.getIssueCards())
     {
-      popups.getPopupRef("Issue")->referenceSprite(*issue_card.getSprite());
+      ui_manager.popups()
+        .getPopup(ui_popups::ISSUE_POPUP)
+        ->referenceSprite(*issue_card.getSprite());
     }
 
     // Show/hide all card overlays as required (card overlays match the card
     // size, so we can filter them this way)
     int card_overlay_index = 0;
-    for (ScaledSprite* sprite :
-         popups.getPopupRef("Issue")->getInternalSprites())
+    for (ScaledSprite* sprite : ui_manager.popups()
+                                  .getPopup(ui_popups::ISSUE_POPUP)
+                                  ->getInternalSprites())
     {
       if (sprite->getBoundingBox().width == card_offsets.issue_popup_size.x &&
           sprite->getBoundingBox().height == card_offsets.issue_popup_size.y)
@@ -704,12 +761,13 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
     }
 
     // Show popup
-    popups.getPopupRef("Issue")->showForTime(5);
+    ui_manager.popups().getPopup(ui_popups::ISSUE_POPUP)->showForTime(5);
     is_new_turn = true;
     got_new_obj_this_turn = false;
   }
   if (board.updateActiveObjectiveCard())
   {
+    // Objective card updated
     got_new_obj_card = true;
     got_new_obj_this_turn = true;
     debug_text.print("got_new_obj_card");
@@ -726,24 +784,57 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
   }
   // Show objective popup if needed
   if (is_new_turn && got_new_obj_card &&
-      !popups.getPopupRef("Issue")->isVisible())
+      !ui_manager.popups().getPopup(ui_popups::ISSUE_POPUP)->isVisible())
   {
-    popups.getPopupRef("Objective")->clearAllReferencedSprites();
-    popups.getPopupRef("Objective")
-      ->referenceSprite(*game_sprites.popup_card_shadows[0]);
-    popups.getPopupRef("Objective")
+    ui_manager.popups()
+      .getPopup(ui_popups::OBJECTIVE_POPUP)
+      ->clearAllReferencedSprites();
+    ui_manager.popups()
+      .getPopup(ui_popups::OBJECTIVE_POPUP)
+      ->referenceSprite(
+        *ui_manager.getSprite(ui_sprites::POPUP_CARD_SHADOWS_0));
+    ui_manager.popups()
+      .getPopup(ui_popups::OBJECTIVE_POPUP)
       ->referenceSprite(*board.getObjectiveCard()->getSprite());
-    popups.getPopupRef("Objective")->showForTime(5);
+    ui_manager.popups().getPopup(ui_popups::OBJECTIVE_POPUP)->showForTime(5);
     got_new_obj_card = false;
   }
 
   // Show dice roll popup if a new active turn
   if (is_new_turn &&
       players[Locator::getPlayers()->my_player_index]->is_active &&
-      !popups.getPopupRef("Issue")->isVisible() &&
-      !popups.getPopupRef("Objective")->isVisible())
+      !ui_manager.popups().getPopup(ui_popups::ISSUE_POPUP)->isVisible() &&
+      !ui_manager.popups().getPopup(ui_popups::OBJECTIVE_POPUP)->isVisible())
   {
-    popups.getPopupRef("Dice Roll")->show();
+    ui_manager.popups().getPopup(ui_popups::DICE_ROLL_POPUP)->show();
+
+    // Roll the dice & use result
+    int dice_roll =
+      Locator::getPlayers()
+        ->getPlayer(
+          players[Locator::getPlayers()->my_player_index]->current_class)
+        ->getDiceRoll();
+    ;
+    DataShare new_share = DataShare(data_roles::CLIENT_ACTION_POINTS_CHANGED);
+    new_share.add(Locator::getPlayers()->my_player_index);
+    new_share.add(
+      players[Locator::getPlayers()->my_player_index]->action_points);
+    new_share.add(
+      dice_roll +
+      players[Locator::getPlayers()->my_player_index]->action_points);
+    new_share.add(-1);
+    Locator::getNetworkInterface()->sendData(new_share);
+    players[Locator::getPlayers()->my_player_index]->action_points += dice_roll;
+    debug_text.print("Rolled dice! I got " + std::to_string(dice_roll) + ".");
+
+    // Show result
+    ScaledSprite* dice_sprite =
+      ui_manager.getSprite(ui_sprites::DICE_ROLL_1 + dice_roll - 1);
+    dice_sprite->show();
+    ui_manager.popups()
+      .getPopup(ui_popups::DICE_ROLL_POPUP)
+      ->referenceSprite(*dice_sprite);
+
     is_new_turn = false;
   }
 
@@ -757,9 +848,9 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
   Vector2 mouse_pos = Vector2(Locator::getCursor()->getPosition().x,
                               Locator::getCursor()->getPosition().y);
 
-  if (!popups.getPopupRef("Objective")->isVisible() &&
-      !popups.getPopupRef("Issue")->isVisible() &&
-      !popups.getPopupRef("Dice Roll")->isVisible())
+  if (!ui_manager.popups().getPopup(ui_popups::OBJECTIVE_POPUP)->isVisible() &&
+      !ui_manager.popups().getPopup(ui_popups::ISSUE_POPUP)->isVisible() &&
+      !ui_manager.popups().getPopup(ui_popups::DICE_ROLL_POPUP)->isVisible())
   {
     // Update to hover cursor for cards
     if (board.isHoveringOverIssueCard(mouse_pos) ||
@@ -779,20 +870,38 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
 
   /* MISC */
 
+  // Update UI
+  ui_manager.update(game_time);
+
   // End turn button is only active when we are
-  end_turn_btn.setActive(
-    players[Locator::getPlayers()->my_player_index]->is_active);
-  if (popups.getPopupRef("Objective")->isVisible() ||
-      popups.getPopupRef("Issue")->isVisible() ||
-      popups.getPopupRef("Dice Roll")->isVisible())
+  ui_manager.getButton(ui_buttons::END_TURN_BTN)
+    ->setActive(players[Locator::getPlayers()->my_player_index]->is_active);
+  if (ui_manager.popups().anyAreActive())
   {
-    end_turn_btn.setActive(false); // inactive when popups are over us
+    ui_manager.getButton(ui_buttons::END_TURN_BTN)->setActive(false); // inactive
+                                                                      // when
+                                                                      // popups
+                                                                      // are
+                                                                      // over us
   }
-  end_turn_btn.update();
+
+  // Buy item is only active when we are, and in the supply bay
+  if (players[Locator::getPlayers()->my_player_index]->is_active &&
+      players[Locator::getPlayers()->my_player_index]->room ==
+        ship_rooms::SUPPLY_BAY)
+  {
+    ui_manager.getButton(ui_buttons::BUY_ITEM_BTN)->setActive(true);
+  }
+  else
+  {
+    ui_manager.getButton(ui_buttons::BUY_ITEM_BTN)->setActive(false);
+  }
+
   return next_scene;
 }
 
 /* Render function */
+// This is super messy atm and is due a refactor
 void GameScene::render()
 {
   switch (current_state)
@@ -800,9 +909,11 @@ void GameScene::render()
     case game_state::PLAYING:
     {
       // Board and background
-      renderer->renderSprite(*game_sprites.background->getSprite());
-      board.render(popups.getPopupRef("Objective")->isVisible(),
-                   popups.getPopupRef("Issue")->isVisible());
+      renderer->renderSprite(
+        *ui_manager.getSprite(ui_sprites::BACKGROUND)->getSprite());
+      board.render(
+        ui_manager.popups().getPopup(ui_popups::OBJECTIVE_POPUP)->isVisible(),
+        ui_manager.popups().getPopup(ui_popups::ISSUE_POPUP)->isVisible());
 
       float active_marker_pos = -180.0f;
       float my_marker_pos = -180.f;
@@ -843,57 +954,74 @@ void GameScene::render()
       }
 
       // Activity markers
-      renderer->renderSprite(*game_sprites.inactive_player_marker->getSprite());
-      game_sprites.active_player_marker->yPos(active_marker_pos);
-      renderer->renderSprite(*game_sprites.active_player_marker->getSprite());
+      renderer->renderSprite(
+        *ui_manager.getSprite(ui_sprites::INACTIVE_PLAYER_MARKER)->getSprite());
+      ui_manager.getSprite(ui_sprites::ACTIVE_PLAYER_MARKER)
+        ->yPos(active_marker_pos);
+      renderer->renderSprite(
+        *ui_manager.getSprite(ui_sprites::ACTIVE_PLAYER_MARKER)->getSprite());
 
       // You marker
-      game_sprites.your_player_marker->yPos(my_marker_pos);
-      renderer->renderSprite(*game_sprites.your_player_marker->getSprite());
+      ui_manager.getSprite(ui_sprites::YOUR_PLAYER_MARKER)->yPos(my_marker_pos);
+      renderer->renderSprite(
+        *ui_manager.getSprite(ui_sprites::YOUR_PLAYER_MARKER)->getSprite());
 
       // Progress meters
-      renderer->renderSprite(*game_sprites.progress_meter->getSprite());
-      game_sprites.progress_marker->yPos(static_cast<float>(
-        ((Locator::getPlayers()->current_progress_index + 3.5) * 30)));
-      renderer->renderSprite(*game_sprites.progress_marker->getSprite());
+      renderer->renderSprite(
+        *ui_manager.getSprite(ui_sprites::PROGRESS_METER)->getSprite());
+      ui_manager.getSprite(ui_sprites::PROGRESS_MARKER)
+        ->yPos(static_cast<float>(
+          ((Locator::getPlayers()->current_progress_index + 3.5) * 30)));
+      renderer->renderSprite(
+        *ui_manager.getSprite(ui_sprites::PROGRESS_MARKER)->getSprite());
 
-      // End-turn button
-      end_turn_btn.render();
+      // buttons
+      ui_manager.getButton(ui_buttons::END_TURN_BTN)->render();
+      ui_manager.getButton(ui_buttons::BUY_ITEM_BTN)->render();
 
       break;
     }
     case game_state::LOCAL_PAUSE:
     {
-      pause_menu.render();
+      ui_manager.getMenu()->render();
       break;
     }
   }
 
   // Render popups if needed
-  popups.render();
+  ui_manager.popups().render();
 
   // Show the assigned action points per card if visible
-  if (popups.getPopupRef("Issue")->isVisible())
+  if (ui_manager.popups().getPopup(ui_popups::ISSUE_POPUP)->isVisible())
   {
-    popups.getPopupRef("Issue")->clearAllRenderText();
+    ui_manager.popups().getPopup(ui_popups::ISSUE_POPUP)->clearAllRenderText();
     for (IssueCard& card : board.getIssueCards())
     {
-      popups.getPopupRef("Issue")->renderTextAtPosition(
-        std::to_string(card.getAssignedPoints(player_classes::MEDIC)),
-        card.getPosition() + Vector2(80 * card.getSprite()->getScalar(),
-                                     290 * card.getSprite()->getScalar()));
-      popups.getPopupRef("Issue")->renderTextAtPosition(
-        std::to_string(card.getAssignedPoints(player_classes::COMMUNICATIONS)),
-        card.getPosition() + Vector2(183 * card.getSprite()->getScalar(),
-                                     290 * card.getSprite()->getScalar()));
-      popups.getPopupRef("Issue")->renderTextAtPosition(
-        std::to_string(card.getAssignedPoints(player_classes::PILOT)),
-        card.getPosition() + Vector2(183 * card.getSprite()->getScalar(),
-                                     329 * card.getSprite()->getScalar()));
-      popups.getPopupRef("Issue")->renderTextAtPosition(
-        std::to_string(card.getAssignedPoints(player_classes::ENGINEER)),
-        card.getPosition() + Vector2(80 * card.getSprite()->getScalar(),
-                                     329 * card.getSprite()->getScalar()));
+      ui_manager.popups()
+        .getPopup(ui_popups::ISSUE_POPUP)
+        ->renderTextAtPosition(
+          std::to_string(card.getAssignedPoints(player_classes::MEDIC)),
+          card.getPosition() + Vector2(80 * card.getSprite()->getScalar(),
+                                       290 * card.getSprite()->getScalar()));
+      ui_manager.popups()
+        .getPopup(ui_popups::ISSUE_POPUP)
+        ->renderTextAtPosition(
+          std::to_string(
+            card.getAssignedPoints(player_classes::COMMUNICATIONS)),
+          card.getPosition() + Vector2(183 * card.getSprite()->getScalar(),
+                                       290 * card.getSprite()->getScalar()));
+      ui_manager.popups()
+        .getPopup(ui_popups::ISSUE_POPUP)
+        ->renderTextAtPosition(
+          std::to_string(card.getAssignedPoints(player_classes::PILOT)),
+          card.getPosition() + Vector2(183 * card.getSprite()->getScalar(),
+                                       329 * card.getSprite()->getScalar()));
+      ui_manager.popups()
+        .getPopup(ui_popups::ISSUE_POPUP)
+        ->renderTextAtPosition(
+          std::to_string(card.getAssignedPoints(player_classes::ENGINEER)),
+          card.getPosition() + Vector2(80 * card.getSprite()->getScalar(),
+                                       329 * card.getSprite()->getScalar()));
     }
   }
 
@@ -901,11 +1029,13 @@ void GameScene::render()
   // syncing)
   if (current_scene_lock_active)
   {
-    renderer->renderSprite(*game_sprites.sync_overlay->getSprite());
+    renderer->renderSprite(
+      *ui_manager.getSprite(ui_sprites::SYNC_OVERLAY)->getSprite());
   }
   if (has_disconnected)
   {
-    renderer->renderSprite(*game_sprites.disconnect_overlay->getSprite());
+    renderer->renderSprite(
+      *ui_manager.getSprite(ui_sprites::DISCONNECT_OVERLAY)->getSprite());
   }
 
   // client debugging
