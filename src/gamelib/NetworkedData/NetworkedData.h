@@ -67,7 +67,9 @@ enum data_roles
 
   SERVER_ENDED_CLIENT_TURN,
   /* ^ Active client turn ended, re-sync game data (may be new if "full
-   * rotation"). [0] = the client that finished [1] = the next client to play
+   * rotation").
+   *   [0] = the client that finished
+   *   [1] = the next client to play
    *   [2] = the position of the ship on the board (may not change)
    *   [3] = issue card in slot 1 (may not change)
    *   [4] = issue card in slot 2 (may not change)

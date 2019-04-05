@@ -4,26 +4,12 @@
 #include "Scene.h"
 #include "client/Board/GameBoard.h"
 #include "client/UI/Cursor.h"
+#include "client/UI/Managers/GameSceneUI.h"
 #include "client/UI/Managers/PopupManager.h"
 #include "client/UI/PopupWindow.h"
 #include <client/Cards/IssueCard.h>
 #include <client/Cards/ItemCard.h>
 #include <client/Cards/ObjectiveCard.h>
-
-// All sprites for the game ui
-struct GameSprites
-{
-  ScaledSprite* background = nullptr;
-  ScaledSprite* inactive_player_marker = nullptr;
-  ScaledSprite* active_player_marker = nullptr;
-  ScaledSprite* your_player_marker = nullptr;
-  ScaledSprite* progress_meter = nullptr;
-  ScaledSprite* progress_marker = nullptr;
-  ScaledSprite* sync_overlay = nullptr;
-  ScaledSprite* disconnect_overlay = nullptr;
-  ScaledSprite* popup_card_shadows[6] = { nullptr, nullptr, nullptr,
-                                          nullptr, nullptr, nullptr };
-};
 
 class GameScene : public Scene
 {
@@ -48,14 +34,9 @@ class GameScene : public Scene
   GameBoard board;
   Menu pause_menu;
 
-  GameSprites game_sprites;
   LobbyPlayer* players[4] = { nullptr, nullptr, nullptr, nullptr };
 
-  /* POPUPS */
-  PopupManager popups;
-  // PopupWindow issue_card_popup;
-  // PopupWindow objective_card_popup;
-  // PopupWindow dice_roll_popup;
+  SceneUI ui_manager;
 
   /* BUTTONS */
   ClickableButton end_turn_btn = ClickableButton("UI/INGAME_UI/"

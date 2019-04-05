@@ -3,19 +3,37 @@
 
 /*
  *
- * This class will be used to hold all of the UI in GameScene as it's beginning
- * to bulk out the GameScene itself and could be easily abstracted into its own
- * manageable class.
+ * This class will be used to hold all of the UI in for a scene.
  *
  */
 
-class GameSceneUI
+#include "client/UI/Managers/PopupManager.h"
+#include "client/UI/ScaledSprite.h"
+#include <Engine/GameTime.h>
+#include <Engine/Renderer.h>
+#include <vector>
+
+class SceneUI
 {
  public:
-  GameSceneUI() = default;
-  ~GameSceneUI() = default;
+  SceneUI();
+  ~SceneUI();
+
+  ScaledSprite* createSprite(const std::string& id, const std::string& path);
+  ScaledSprite* getSprite(const std::string& id);
+
+  PopupManager& popups() { return popup_manager; };
+
+  void update(const ASGE::GameTime& game_time);
+  void render();
 
  private:
+  ASGE::Renderer* renderer = nullptr;
+
+  std::vector<std::string> sprite_ids;
+  std::vector<ScaledSprite*> sprites;
+
+  PopupManager popup_manager;
 };
 
 #endif // PROJECT_GAMESCENEUI_H
