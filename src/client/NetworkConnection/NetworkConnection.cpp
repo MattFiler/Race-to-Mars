@@ -1,5 +1,6 @@
 #include "NetworkConnection.h"
 #include "../game.h"
+#include "gamelib/NetworkedData/DataShare.h"
 #include <Engine/Renderer.h>
 #include <iostream>
 
@@ -97,25 +98,25 @@ void NetworkConnection::sendData(data_roles _role,
                                  int _content_14,
                                  int _content_15)
 {
-  NetworkedData data;
-  data.role = _role;
-  data.content[0] = _content_1;
-  data.content[1] = _content_2;
-  data.content[2] = _content_3;
-  data.content[3] = _content_4;
-  data.content[4] = _content_5;
-  data.content[5] = _content_6;
-  data.content[6] = _content_7;
-  data.content[7] = _content_8;
-  data.content[8] = _content_9;
-  data.content[9] = _content_10;
-  data.content[10] = _content_11;
-  data.content[11] = _content_12;
-  data.content[12] = _content_13;
-  data.content[13] = _content_14;
-  data.content[14] = _content_15;
+  // TEST ONLY
+  DataShare test_share = DataShare(_role);
+  test_share.add(_content_1);
+  test_share.add(_content_2);
+  test_share.add(_content_3);
+  test_share.add(_content_4);
+  test_share.add(_content_5);
+  test_share.add(_content_6);
+  test_share.add(_content_7);
+  test_share.add(_content_8);
+  test_share.add(_content_9);
+  test_share.add(_content_10);
+  test_share.add(_content_11);
+  test_share.add(_content_12);
+  test_share.add(_content_13);
+  test_share.add(_content_14);
+  test_share.add(_content_15);
 
   Packet packet;
-  packet << data;
+  packet << test_share;
   getPacketQueue()->push(packet);
 }

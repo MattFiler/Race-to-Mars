@@ -65,33 +65,34 @@ void RaceToSpaceServer::run()
   /* Data received from a client */
   auto on_data =
     ([&](server_client& client, const enet_uint8* data, size_t data_size) {
-      NetworkedData data_to_send;
+      DataShare data_to_send;
       Packet packet_data(data, data_size);
       packet_data >> data_to_send;
 
       // If client requests lobby info, we need to send that directly to the
       // client that wants it.
-      switch (data_to_send.role)
+      switch (data_to_send.getType())
       {
         case data_roles::CLIENT_REQUESTS_TO_JOIN_LOBBY:
         {
           // Connect to a lobby
           connectToLobby(client);
 
+          // Create data array to send
+          DataShare new_share = DataShare(data_roles::SERVER_GIVES_LOBBY_INFO);
+          new_share.add(lobbies.at(client.lobby_index).lobby_id);
+          new_share.add(lobbies.at(client.lobby_index).players[0].class_type);
+          new_share.add(lobbies.at(client.lobby_index).players[1].class_type);
+          new_share.add(lobbies.at(client.lobby_index).players[2].class_type);
+          new_share.add(lobbies.at(client.lobby_index).players[3].class_type);
+          new_share.add(lobbies.at(client.lobby_index).players[0].is_ready);
+          new_share.add(lobbies.at(client.lobby_index).players[1].is_ready);
+          new_share.add(lobbies.at(client.lobby_index).players[2].is_ready);
+          new_share.add(lobbies.at(client.lobby_index).players[3].is_ready);
+          new_share.add(client.client_index);
+
           // Forward lobby data back to the client
-          sendData(client,
-                   client.get_id(),
-                   data_roles::SERVER_GIVES_LOBBY_INFO,
-                   lobbies.at(client.lobby_index).lobby_id,
-                   lobbies.at(client.lobby_index).players[0].class_type,
-                   lobbies.at(client.lobby_index).players[1].class_type,
-                   lobbies.at(client.lobby_index).players[2].class_type,
-                   lobbies.at(client.lobby_index).players[3].class_type,
-                   lobbies.at(client.lobby_index).players[0].is_ready,
-                   lobbies.at(client.lobby_index).players[1].is_ready,
-                   lobbies.at(client.lobby_index).players[2].is_ready,
-                   lobbies.at(client.lobby_index).players[3].is_ready,
-                   client.client_index);
+          sendData(client, client.get_id(), new_share);
           break;
         }
 
@@ -172,23 +173,24 @@ void RaceToSpaceServer::run()
             }
           }
 
+          // Compile data to share out
+          DataShare new_share = DataShare(data_roles::SERVER_ENDED_CLIENT_TURN);
+          new_share.add(static_cast<int>(client.get_id()));
+          new_share.add(this_clients_lobby->currently_active_player);
+          new_share.add(this_clients_lobby->current_progress_index);
+          new_share.add(this_clients_lobby->active_issue_cards[0]);
+          new_share.add(this_clients_lobby->active_issue_cards[1]);
+          new_share.add(this_clients_lobby->active_issue_cards[2]);
+          new_share.add(this_clients_lobby->active_issue_cards[3]);
+          new_share.add(this_clients_lobby->active_issue_cards[4]);
+          new_share.add(this_clients_lobby->active_objective_cards[0]);
+          new_share.add(this_clients_lobby->active_objective_cards[1]);
+          new_share.add(this_clients_lobby->active_objective_cards[2]);
+          new_share.add(this_clients_lobby->active_objective_cards[3]);
+          new_share.add(static_cast<int>(full_rotation));
+
           // Forward current game data to all clients in this lobby
-          sendData(client,
-                   static_cast<unsigned int>(-1),
-                   data_roles::SERVER_ENDED_CLIENT_TURN,
-                   static_cast<int>(client.get_id()),
-                   this_clients_lobby->currently_active_player,
-                   this_clients_lobby->current_progress_index,
-                   this_clients_lobby->active_issue_cards[0],
-                   this_clients_lobby->active_issue_cards[1],
-                   this_clients_lobby->active_issue_cards[2],
-                   this_clients_lobby->active_issue_cards[3],
-                   this_clients_lobby->active_issue_cards[4],
-                   this_clients_lobby->active_objective_cards[0],
-                   this_clients_lobby->active_objective_cards[1],
-                   this_clients_lobby->active_objective_cards[2],
-                   this_clients_lobby->active_objective_cards[3],
-                   static_cast<int>(full_rotation));
+          sendData(client, static_cast<unsigned int>(-1), new_share);
           break;
         }
 
@@ -201,31 +203,35 @@ void RaceToSpaceServer::run()
             break;
           }
 
+          // Compile data PT 1 (this can probs be condensed to just one packet
+          // now we have our new class
+          DataShare new_share = DataShare(data_roles::SERVER_SYNCS_CARD_INFO);
+          new_share.add(this_lobby->active_issue_cards[0]);
+          new_share.add(this_lobby->active_issue_cards[1]);
+          new_share.add(this_lobby->active_issue_cards[2]);
+          new_share.add(this_lobby->active_issue_cards[3]);
+          new_share.add(this_lobby->active_issue_cards[4]);
+          new_share.add(this_lobby->active_objective_cards[0]);
+          new_share.add(this_lobby->active_objective_cards[1]);
+          new_share.add(this_lobby->active_objective_cards[2]);
+          new_share.add(this_lobby->active_objective_cards[3]);
+          new_share.add(this_lobby->players[0].action_points);
+          new_share.add(this_lobby->players[1].action_points);
+          new_share.add(this_lobby->players[2].action_points);
+          new_share.add(this_lobby->players[3].action_points);
+
+          // Compile data PT 2 (yeah really could be easily refactored!)
+          DataShare new_share_2 =
+            DataShare(data_roles::SERVER_SYNCS_POSITION_INFO);
+          new_share_2.add(this_lobby->players[0].room_position);
+          new_share_2.add(this_lobby->players[1].room_position);
+          new_share_2.add(this_lobby->players[2].room_position);
+          new_share_2.add(this_lobby->players[3].room_position);
+          new_share_2.add(this_lobby->current_progress_index);
+
           // Sync information to that game
-          sendData(client,
-                   client.get_id(),
-                   data_roles::SERVER_SYNCS_CARD_INFO,
-                   this_lobby->active_issue_cards[0],
-                   this_lobby->active_issue_cards[1],
-                   this_lobby->active_issue_cards[2],
-                   this_lobby->active_issue_cards[3],
-                   this_lobby->active_issue_cards[4],
-                   this_lobby->active_objective_cards[0],
-                   this_lobby->active_objective_cards[1],
-                   this_lobby->active_objective_cards[2],
-                   this_lobby->active_objective_cards[3],
-                   this_lobby->players[0].action_points,
-                   this_lobby->players[1].action_points,
-                   this_lobby->players[2].action_points,
-                   this_lobby->players[3].action_points);
-          sendData(client,
-                   client.get_id(),
-                   data_roles::SERVER_SYNCS_POSITION_INFO,
-                   this_lobby->players[0].room_position,
-                   this_lobby->players[1].room_position,
-                   this_lobby->players[2].room_position,
-                   this_lobby->players[3].room_position,
-                   this_lobby->current_progress_index);
+          sendData(client, client.get_id(), new_share);
+          sendData(client, client.get_id(), new_share_2);
           break;
         }
 
@@ -241,11 +247,11 @@ void RaceToSpaceServer::run()
           }
 
           // Update client's action point count for us
-          this_clients_lobby->players[data_to_send.content[0]].action_points =
-            data_to_send.content[1];
+          this_clients_lobby->players[data_to_send.retrieve(0)].action_points =
+            data_to_send.retrieve(1);
           debug_text.print(
-            "Client " + std::to_string(data_to_send.content[0]) + " now has " +
-            std::to_string(data_to_send.content[1]) + " action points.");
+            "Client " + std::to_string(data_to_send.retrieve(0)) + " now has " +
+            std::to_string(data_to_send.retrieve(1)) + " action points.");
 
           sendToAll(client, data_to_send);
           break;
@@ -269,11 +275,11 @@ void RaceToSpaceServer::run()
           {
             break;
           }
-          debug_text.print("Client " + std::to_string(data_to_send.content[0]) +
-                           " is now in room " +
-                           std::to_string(data_to_send.content[1]));
-          this_lobby->players[data_to_send.content[0]].room_position =
-            static_cast<ship_rooms>(data_to_send.content[1]);
+          debug_text.print(
+            "Client " + std::to_string(data_to_send.retrieve(0)) +
+            " is now in room " + std::to_string(data_to_send.retrieve(1)));
+          this_lobby->players[data_to_send.retrieve(0)].room_position =
+            static_cast<ship_rooms>(data_to_send.retrieve(1));
 
           sendToAll(client, data_to_send);
           break;
@@ -289,12 +295,16 @@ void RaceToSpaceServer::run()
           }
           debug_text.print("Changing progress from: " +
                            std::to_string(this_lobby->current_progress_index) +
-                           " to:" + std::to_string(data_to_send.content[0]));
-          this_lobby->current_progress_index = data_to_send.content[0];
-          sendData(client,
-                   static_cast<unsigned int>(-2),
-                   data_roles::CLIENT_CHANGE_PROGRESS_INDEX,
-                   data_to_send.content[0]);
+                           " to:" + std::to_string(data_to_send.retrieve(0)));
+          this_lobby->current_progress_index = data_to_send.retrieve(0);
+
+          // Compile and send it on
+          /* COULD THIS NOT JUST USE SENDTOALL AND SEND ON THE EXISTING PACKET?
+           */
+          DataShare new_share =
+            DataShare(data_roles::CLIENT_CHANGE_PROGRESS_INDEX);
+          new_share.add(data_to_send.retrieve(0));
+          sendData(client, static_cast<unsigned int>(-2), new_share);
           break;
         }
 
@@ -306,12 +316,14 @@ void RaceToSpaceServer::run()
           {
             break;
           }
-          data_to_send.content[1] = this_lobby->item_deck.back();
-          sendData(client,
-                   static_cast<unsigned int>(-2),
-                   data_roles::CLIENT_REQUESTED_ITEM_CARD,
-                   data_to_send.content[0],
-                   data_to_send.content[1]);
+
+          // Compile data and send it back off
+          DataShare new_share =
+            DataShare(data_roles::CLIENT_REQUESTED_ITEM_CARD);
+          new_share.add(data_to_send.retrieve(0));
+          new_share.add(this_lobby->item_deck.back());
+
+          sendData(client, static_cast<unsigned int>(-2), new_share);
           break;
         }
           // We need to store lobby ready state before sending it out, so new
@@ -319,13 +331,13 @@ void RaceToSpaceServer::run()
         case data_roles::CLIENT_CHANGED_LOBBY_READY_STATE:
         {
           bool did_send = false;
-          Lobby* this_lobby = getLobbyByID(data_to_send.content[2]);
+          Lobby* this_lobby = getLobbyByID(data_to_send.retrieve(2));
           if (this_lobby == nullptr)
           {
             break;
           }
-          this_lobby->players[data_to_send.content[1]].is_ready =
-            static_cast<bool>(data_to_send.content[0]);
+          this_lobby->players[data_to_send.retrieve(1)].is_ready =
+            static_cast<bool>(data_to_send.retrieve(0));
 
           // See how many in the lobby are ready.
           int ready_count = 0;
@@ -350,11 +362,10 @@ void RaceToSpaceServer::run()
                                  std::to_string(this_lobby->lobby_id) + ".",
                                -1);
               // Tell client to start the local game
-              sendData(client,
-                       static_cast<unsigned int>(-2),
-                       data_roles::SERVER_STARTS_GAME,
-                       this_lobby->currently_active_player,
-                       1);
+              DataShare new_share = DataShare(data_roles::SERVER_STARTS_GAME);
+              new_share.add(this_lobby->currently_active_player);
+              new_share.add(1);
+              sendData(client, static_cast<unsigned int>(-2), new_share);
             }
             // Else, start a new game
             else
@@ -368,11 +379,10 @@ void RaceToSpaceServer::run()
               this_lobby->player_that_started_id = starting_player;
               this_lobby->currently_active_player = starting_player;
               did_send = true;
-              sendData(client,
-                       static_cast<unsigned int>(-1),
-                       data_roles::SERVER_STARTS_GAME,
-                       starting_player,
-                       0);
+              DataShare new_share = DataShare(data_roles::SERVER_STARTS_GAME);
+              new_share.add(starting_player);
+              new_share.add(0);
+              sendData(client, static_cast<unsigned int>(-1), new_share);
             }
           }
           if (!did_send)
@@ -401,75 +411,25 @@ void RaceToSpaceServer::run()
 }
 
 /* Forward data to all */
-void RaceToSpaceServer::sendToAll(server_client& client,
-                                  NetworkedData data_to_send)
+void RaceToSpaceServer::sendToAll(server_client& client, DataShare data)
 {
-  sendData(client,
-           static_cast<unsigned int>(-1),
-           data_to_send.role,
-           data_to_send.content[0],
-           data_to_send.content[1],
-           data_to_send.content[2],
-           data_to_send.content[3],
-           data_to_send.content[4],
-           data_to_send.content[5],
-           data_to_send.content[6],
-           data_to_send.content[7],
-           data_to_send.content[8],
-           data_to_send.content[9],
-           data_to_send.content[10],
-           data_to_send.content[11],
-           data_to_send.content[12],
-           data_to_send.content[13],
-           data_to_send.content[14]);
+  sendData(client, static_cast<unsigned int>(-1), data);
 }
 
 /* Send data from server to a client, or lobby (user_id = -1), or all (user_id =
  * -2) */
 void RaceToSpaceServer::sendData(server_client& client,
                                  unsigned int user_id,
-                                 data_roles _role,
-                                 int _content_1,
-                                 int _content_2,
-                                 int _content_3,
-                                 int _content_4,
-                                 int _content_5,
-                                 int _content_6,
-                                 int _content_7,
-                                 int _content_8,
-                                 int _content_9,
-                                 int _content_10,
-                                 int _content_11,
-                                 int _content_12,
-                                 int _content_13,
-                                 int _content_14,
-                                 int _content_15)
+                                 DataShare data)
 {
   Packet packet_to_send;
-  NetworkedData data_to_send;
-  data_to_send.role = _role;
-  data_to_send.content[0] = _content_1;
-  data_to_send.content[1] = _content_2;
-  data_to_send.content[2] = _content_3;
-  data_to_send.content[3] = _content_4;
-  data_to_send.content[4] = _content_5;
-  data_to_send.content[5] = _content_6;
-  data_to_send.content[6] = _content_7;
-  data_to_send.content[7] = _content_8;
-  data_to_send.content[8] = _content_9;
-  data_to_send.content[9] = _content_10;
-  data_to_send.content[10] = _content_11;
-  data_to_send.content[11] = _content_12;
-  data_to_send.content[12] = _content_13;
-  data_to_send.content[13] = _content_14,
-  data_to_send.content[14] = _content_15;
-  packet_to_send << data_to_send;
+  packet_to_send << data;
 
   if (user_id == static_cast<unsigned int>(-1))
   {
     debug_text.print("Sending data to all clients in lobby " +
                      std::to_string(client.lobby_id) + ", of type " +
-                     std::to_string(data_to_send.role) + ".");
+                     std::to_string(data.getType()) + ".");
 
     bool has_sent = false;
     int player_count = -1;
@@ -503,7 +463,7 @@ void RaceToSpaceServer::sendData(server_client& client,
   else if (user_id == static_cast<unsigned int>(-2))
   {
     debug_text.print("Sending data to all clients, of type " +
-                     std::to_string(data_to_send.role) + ".");
+                     std::to_string(data.getType()) + ".");
 
     network_server.send_packet_to_all_if(
       0,
@@ -515,7 +475,7 @@ void RaceToSpaceServer::sendData(server_client& client,
   else
   {
     debug_text.print("Sending data to client " + std::to_string(user_id) +
-                     ", of type " + std::to_string(data_to_send.role) + ".");
+                     ", of type " + std::to_string(data.getType()) + ".");
 
     network_server.send_packet_to(
       user_id,

@@ -142,7 +142,8 @@ enum data_roles
 
   CLIENT_CHANGE_PROGRESS_INDEX,
   /* ^ The client or server is sending the new progress index to the server and
-   * to the rest of the clients. [0] = the new current progress index.
+   * to the rest of the clients.
+   *   [0] = the new current progress index.
    */
 
   CLIENT_REQUESTED_ITEM_CARD

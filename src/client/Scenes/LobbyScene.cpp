@@ -37,11 +37,11 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
 {
   // Recreate packet
   Packet data_packet(data, data_size);
-  NetworkedData received_data;
+  DataShare received_data;
   data_packet >> received_data;
 
   // Handle all relevant data packets for this scene
-  switch (received_data.role)
+  switch (received_data.getType())
   {
     // Server gives the lobby information we require, utilise it!
     case data_roles::SERVER_GIVES_LOBBY_INFO:
@@ -51,14 +51,14 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
         break;
       }
       // Fill out our known local player data from the server
-      lobby_id = received_data.content[0];
-      my_player_index = received_data.content[9];
+      lobby_id = received_data.retrieve(0);
+      my_player_index = received_data.retrieve(9);
       for (int i = 0; i < 4; i++)
       {
         players[i]->current_class =
-          static_cast<player_classes>(received_data.content[i + 1]);
+          static_cast<player_classes>(received_data.retrieve(i + 1));
         players[i]->is_ready =
-          static_cast<player_classes>(received_data.content[i + 5]);
+          static_cast<player_classes>(received_data.retrieve(i + 5));
         if (players[i]->current_class != player_classes::UNASSIGNED)
         {
           players[i]->has_connected = true;
@@ -81,12 +81,12 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     case data_roles::CLIENT_CONNECTED_TO_LOBBY:
     {
       // A player that's not us connected to the lobby, update our info
-      if (received_data.content[0] != my_player_index)
+      if (received_data.retrieve(0) != my_player_index)
       {
-        players[received_data.content[0]]->is_ready =
-          static_cast<bool>(received_data.content[1]);
-        players[received_data.content[0]]->current_class =
-          static_cast<player_classes>(received_data.content[2]);
+        players[received_data.retrieve(0)]->is_ready =
+          static_cast<bool>(received_data.retrieve(1));
+        players[received_data.retrieve(0)]->current_class =
+          static_cast<player_classes>(received_data.retrieve(2));
       }
       debug_text.print("A player connected to the lobby!");
       break;
@@ -96,7 +96,7 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     case data_roles::CLIENT_DISCONNECTING_FROM_LOBBY:
     {
       // Forget them!
-      players[received_data.content[0]]->performDisconnect();
+      players[received_data.retrieve(0)]->performDisconnect();
 
       debug_text.print("A player disconnected from the lobby!");
       break;
@@ -106,10 +106,10 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     case data_roles::CLIENT_CHANGED_LOBBY_READY_STATE:
     {
       // Player is now ready/unready when they weren't before
-      if (received_data.content[1] != my_player_index)
+      if (received_data.retrieve(1) != my_player_index)
       {
-        players[received_data.content[1]]->is_ready =
-          static_cast<bool>(received_data.content[0]);
+        players[received_data.retrieve(1)]->is_ready =
+          static_cast<bool>(received_data.retrieve(0));
         debug_text.print("A player changed their ready state!");
       }
       break;
@@ -125,8 +125,8 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
         players[i]->is_active = false; // make sure we have no active conflicts
       }
       Locator::getPlayers()->joined_in_progress =
-        static_cast<bool>(received_data.content[1]);
-      players[received_data.content[0]]->is_active = true; // client to start
+        static_cast<bool>(received_data.retrieve(1));
+      players[received_data.retrieve(0)]->is_active = true; // client to start
       should_start_game = true;
       can_change_ready_state = false;
       debug_text.print("Server told us to start the game!");
