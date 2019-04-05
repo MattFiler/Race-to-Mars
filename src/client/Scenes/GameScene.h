@@ -38,10 +38,6 @@ class GameScene : public Scene
 
   SceneUI ui_manager;
 
-  /* BUTTONS */
-  ClickableButton end_turn_btn = ClickableButton("UI/INGAME_UI/"
-                                                 "end_turn_btn.png");
-
   bool is_new_turn = false;
   bool got_new_obj_card = false;
   bool got_new_obj_this_turn = false;

@@ -22,6 +22,9 @@ class SceneUI
   ScaledSprite* createSprite(const std::string& id, const std::string& path);
   ScaledSprite* getSprite(const std::string& id);
 
+  ClickableButton* createButton(const std::string& id, const std::string& path);
+  ClickableButton* getButton(const std::string& id);
+
   PopupManager& popups() { return popup_manager; };
 
   void update(const ASGE::GameTime& game_time);
@@ -32,6 +35,9 @@ class SceneUI
 
   std::vector<std::string> sprite_ids;
   std::vector<ScaledSprite*> sprites;
+
+  std::vector<std::string> button_ids;
+  std::vector<ClickableButton*> buttons;
 
   PopupManager popup_manager;
 };

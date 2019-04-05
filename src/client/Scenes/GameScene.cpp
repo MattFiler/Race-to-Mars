@@ -76,7 +76,8 @@ void GameScene::init()
     ->createSprite("UI/INGAME_UI/dice_roll_bg.png");
 
   // Position button for new turn
-  end_turn_btn.setPos(Vector2(1042, 626));
+  ui_manager.createButton("end_turn_btn", "UI/INGAME_UI/end_turn_btn.png")
+    ->setPos(Vector2(1042, 626));
 
   // Issue popup card placeholder
   ScaledSprite& card_placeholder =
@@ -576,7 +577,7 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
         }
 
         // Clicked end turn button
-        if (end_turn_btn.clicked())
+        if (ui_manager.getButton("end_turn_btn")->clicked())
         {
           DataShare new_share = DataShare(data_roles::CLIENT_WANTS_TO_END_TURN);
           new_share.add(Locator::getPlayers()->my_player_index);
@@ -644,9 +645,6 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
 game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
 {
   /* POPUPS */
-
-  // Update popups
-  ui_manager.popups().update(game_time);
 
   // Update cards if required and show popup if needed
   if (board.updateActiveIssueCards())
@@ -757,14 +755,18 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
 
   /* MISC */
 
+  // Update UI
+  ui_manager.update(game_time);
+
   // End turn button is only active when we are
-  end_turn_btn.setActive(
-    players[Locator::getPlayers()->my_player_index]->is_active);
+  ui_manager.getButton("end_turn_btn")
+    ->setActive(players[Locator::getPlayers()->my_player_index]->is_active);
   if (ui_manager.popups().anyAreActive())
   {
-    end_turn_btn.setActive(false); // inactive when popups are over us
+    ui_manager.getButton("end_turn_btn")->setActive(false); // inactive when
+                                                            // popups are over
+                                                            // us
   }
-  end_turn_btn.update();
 
   return next_scene;
 }
@@ -841,7 +843,7 @@ void GameScene::render()
         *ui_manager.getSprite("progress_marker")->getSprite());
 
       // End-turn button
-      end_turn_btn.render();
+      ui_manager.getButton("end_turn_btn")->render();
 
       break;
     }
