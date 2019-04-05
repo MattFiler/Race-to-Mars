@@ -28,6 +28,12 @@ enum ui_sprites
   POPUP_CARD_SHADOWS_3,
   POPUP_CARD_SHADOWS_4,
   POPUP_CARD_SHADOWS_5,
+  DICE_ROLL_1,
+  DICE_ROLL_2,
+  DICE_ROLL_3,
+  DICE_ROLL_4,
+  DICE_ROLL_5,
+  DICE_ROLL_6
 };
 enum ui_popups
 {

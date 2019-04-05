@@ -16,7 +16,7 @@ void PopupManager::createPopup(int identifier)
 }
 
 /* Get reference to popup by ID */
-PopupWindow* PopupManager::getPopupRef(int identifier)
+PopupWindow* PopupManager::getPopup(int identifier)
 {
   int index = 0;
   for (int id : popup_ids)

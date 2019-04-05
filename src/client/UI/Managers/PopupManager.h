@@ -21,7 +21,7 @@ class PopupManager
   ~PopupManager();
 
   void createPopup(int identifier);
-  PopupWindow* getPopupRef(int identifier);
+  PopupWindow* getPopup(int identifier);
 
   bool anyAreActive();
 
