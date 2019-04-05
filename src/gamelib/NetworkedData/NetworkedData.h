@@ -3,27 +3,12 @@
 
 /*
  *
- * This class forms the foundation of networking within the game.
+ * This class contains all the network struct types to use within the game.
  *
- * A NetworkedData struct is sent around the clients via the server containing a
- * ROLE and CONTENT (up to 10x). The content is an integer array, stored in
- * "content" (1-10), and the role is an enum.
+ * Below each enum is a description of its intended useage and the data to be
+ * sent/received at each index of the packet.
  *
- * The role describes the purpose of the integers - E.G. number of action points
- * assigned, etc. Not every struct role requires all 10 integers, so they are
- * initialised as zero (think of this as null).
- *
- * The role must be checked when receiving a packet of NetworkedData to work out
- * its purpose and how many integers to check the value of.
- *
- * In the enum "roles" each role is described with its integer
- * usage - refer to this when sending/receiving! This is a simple solution to
- * the complex datatype networking issue.
- *
- * The only potential issue with this is that all game logic is handled client
- * side and passed out to each client through the server, giving the opportunity
- * for cheating. Potentially some kind of data validator could be implemented
- * in the server to get around this?
+ * To send data with these roles, use DataShare.
  *
  */
 
@@ -151,12 +136,6 @@ enum data_roles
    *   [0] = client ID that pulled the item.
    *   [1] = item card ID.
    */
-};
-
-struct NetworkedData
-{
-  data_roles role = data_roles::NO_ROLE;
-  int content[15] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 };
 
 #endif // PROJECT_NETWORKEDDATA_H

@@ -5,13 +5,26 @@
 
 /*
  *
- * This is a new struct which I'm going to move our current networking
- * implementation across to - instead of having a function with a giant number
- * of parameters, we'll just pass this struct around and add to it as required.
- * Much neater!
+ * This is the foundation of networking within the game.
  *
- * This will also stop the potential memory errors of going out of non-confined
- * array bounds in the current implementation.
+ * A DataShare struct is created and then sent within the Packet class, which
+ * when received, can be read out again.
+ *
+ * Data should be added to the DataShare using the add() method, and initialised
+ * with a data_type from NetworkedData.h. Data can be retrieved from the
+ * DataShare using the retrieve() method.
+ *
+ * A constructor without initialisation exists, but this should be used for
+ * streaming into the DataShare when retrieving data from the network.
+ *
+ * If data is added outside of the bounds of the struct, or retrieved outside
+ * the bounds of the contained data, an error will be thrown.
+ *
+ * Similarly if the DataShare is not constructed properly, it will not allow the
+ * ability to add/retrieve data.
+ *
+ * Further functionality may be useful in future, such as locking the struct to
+ * disable data being added.
  *
  */
 
