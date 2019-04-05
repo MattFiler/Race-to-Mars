@@ -5,18 +5,21 @@
 #include <iostream>
 #include <random>
 
+/* Initialise the server */
 RaceToSpaceServer::RaceToSpaceServer()
 {
   debug_text.enabled = true;
   enetpp::global_state::get().initialize();
 }
 
+/* Destroy the server */
 RaceToSpaceServer::~RaceToSpaceServer()
 {
   network_server.stop_listening();
   enetpp::global_state::get().deinitialize();
 }
 
+/* Start the server logic */
 void RaceToSpaceServer::initialise()
 {
   // Setup
@@ -42,6 +45,7 @@ void RaceToSpaceServer::initialise()
       .set_initialize_client_function(init_client_func));
 }
 
+/* The server core functionality */
 void RaceToSpaceServer::run()
 {
   /* A client connected */
@@ -65,33 +69,17 @@ void RaceToSpaceServer::run()
   /* Data received from a client */
   auto on_data =
     ([&](server_client& client, const enet_uint8* data, size_t data_size) {
-      NetworkedData data_to_send;
+      DataShare data_to_send;
       Packet packet_data(data, data_size);
       packet_data >> data_to_send;
 
       // If client requests lobby info, we need to send that directly to the
       // client that wants it.
-      switch (data_to_send.role)
+      switch (data_to_send.getType())
       {
         case data_roles::CLIENT_REQUESTS_TO_JOIN_LOBBY:
         {
-          // Connect to a lobby
-          connectToLobby(client);
-
-          // Forward lobby data back to the client
-          sendData(client,
-                   client.get_id(),
-                   data_roles::SERVER_GIVES_LOBBY_INFO,
-                   lobbies.at(client.lobby_index).lobby_id,
-                   lobbies.at(client.lobby_index).players[0].class_type,
-                   lobbies.at(client.lobby_index).players[1].class_type,
-                   lobbies.at(client.lobby_index).players[2].class_type,
-                   lobbies.at(client.lobby_index).players[3].class_type,
-                   lobbies.at(client.lobby_index).players[0].is_ready,
-                   lobbies.at(client.lobby_index).players[1].is_ready,
-                   lobbies.at(client.lobby_index).players[2].is_ready,
-                   lobbies.at(client.lobby_index).players[3].is_ready,
-                   client.client_index);
+          clientJoinLobby(client);
           break;
         }
 
@@ -101,131 +89,14 @@ void RaceToSpaceServer::run()
           // cards will need to be pulled, etc.
         case data_roles::CLIENT_WANTS_TO_END_TURN:
         {
-          bool full_rotation = false;
-          Lobby* this_clients_lobby = getLobbyByID(client.lobby_id);
-          if (this_clients_lobby == nullptr)
-          {
-            break;
-          }
-          // Work out what client should go next
-          if (this_clients_lobby->currently_active_player + 1 <=
-              max_lobby_size - 1)
-          {
-            this_clients_lobby->currently_active_player++;
-          }
-          else
-          {
-            this_clients_lobby->currently_active_player = 0;
-          }
-
-          // If the next client was who started, we've done a "full rotation",
-          // work out some game logic
-          if (this_clients_lobby->currently_active_player ==
-              this_clients_lobby->player_that_started_id)
-          {
-            full_rotation = true;
-
-            // increment current ship position (win condition handling is done
-            // client side)
-            this_clients_lobby->current_progress_index++;
-
-            // pull some new issue cards
-            // FOR JACK TO DO!
-            // GO THROUGH THE DECK HERE AND PICK OUT SOME ISSUE CARDS, ADD THEIR
-            // IDs TO this_clients_lobby->active_issue_cards - WIN/LOSS
-            // CONDITIONS SHOULD THEN BE HANDLED CLIENT SIDE
-            int issues_tobe_drawn =
-              amount_to_draw[this_clients_lobby->current_progress_index - 1];
-            int issues_drawn = 0;
-
-            for (int j = 0; j < 5; ++j)
-            {
-              // Check to see if slot is empty.
-              if (issues_drawn < issues_tobe_drawn &&
-                  this_clients_lobby->active_issue_cards[j] == -1)
-              {
-                this_clients_lobby->active_issue_cards[j] =
-                  this_clients_lobby->issue_deck.back();
-                debug_text.print(
-                  "adding issue " +
-                  std::to_string(this_clients_lobby->issue_deck.back()) +
-                  " to active issues.");
-                this_clients_lobby->issue_deck.pop_back();
-                ++issues_drawn;
-              }
-            }
-            // If this is an objective card spot, give a new objective card
-            if (this_clients_lobby->current_progress_index % 3 == 0 &&
-                this_clients_lobby->current_progress_index != 0)
-            {
-              // OBJECTIVE CARDS ARE A WIP!!
-              for (int i = 0; i < 4; ++i)
-              {
-                this_clients_lobby->active_objective_cards[i] =
-                  this_clients_lobby->objective_deck.back();
-                debug_text.print(
-                  "adding objective card " +
-                  std::to_string(this_clients_lobby->objective_deck.back()) +
-                  " to player: " + std::to_string(i));
-                this_clients_lobby->objective_deck.pop_back();
-              }
-            }
-          }
-
-          // Forward current game data to all clients in this lobby
-          sendData(client,
-                   static_cast<unsigned int>(-1),
-                   data_roles::SERVER_ENDED_CLIENT_TURN,
-                   static_cast<int>(client.get_id()),
-                   this_clients_lobby->currently_active_player,
-                   this_clients_lobby->current_progress_index,
-                   this_clients_lobby->active_issue_cards[0],
-                   this_clients_lobby->active_issue_cards[1],
-                   this_clients_lobby->active_issue_cards[2],
-                   this_clients_lobby->active_issue_cards[3],
-                   this_clients_lobby->active_issue_cards[4],
-                   this_clients_lobby->active_objective_cards[0],
-                   this_clients_lobby->active_objective_cards[1],
-                   this_clients_lobby->active_objective_cards[2],
-                   this_clients_lobby->active_objective_cards[3],
-                   static_cast<int>(full_rotation));
+          endTurn(client);
           break;
         }
 
           // Sync lobby info to a player that joined the game in progress
         case data_roles::CLIENT_REQUESTS_SYNC:
         {
-          Lobby* this_lobby = getLobbyByID(client.lobby_id);
-          if (this_lobby == nullptr)
-          {
-            break;
-          }
-
-          // Sync information to that game
-          sendData(client,
-                   client.get_id(),
-                   data_roles::SERVER_SYNCS_CARD_INFO,
-                   this_lobby->active_issue_cards[0],
-                   this_lobby->active_issue_cards[1],
-                   this_lobby->active_issue_cards[2],
-                   this_lobby->active_issue_cards[3],
-                   this_lobby->active_issue_cards[4],
-                   this_lobby->active_objective_cards[0],
-                   this_lobby->active_objective_cards[1],
-                   this_lobby->active_objective_cards[2],
-                   this_lobby->active_objective_cards[3],
-                   this_lobby->players[0].action_points,
-                   this_lobby->players[1].action_points,
-                   this_lobby->players[2].action_points,
-                   this_lobby->players[3].action_points);
-          sendData(client,
-                   client.get_id(),
-                   data_roles::SERVER_SYNCS_POSITION_INFO,
-                   this_lobby->players[0].room_position,
-                   this_lobby->players[1].room_position,
-                   this_lobby->players[2].room_position,
-                   this_lobby->players[3].room_position,
-                   this_lobby->current_progress_index);
+          syncClient(client);
           break;
         }
 
@@ -234,20 +105,7 @@ void RaceToSpaceServer::run()
           // keep them updated on game progress.
         case data_roles::CLIENT_ACTION_POINTS_CHANGED:
         {
-          Lobby* this_clients_lobby = getLobbyByID(client.lobby_id);
-          if (this_clients_lobby == nullptr)
-          {
-            break;
-          }
-
-          // Update client's action point count for us
-          this_clients_lobby->players[data_to_send.content[0]].action_points =
-            data_to_send.content[1];
-          debug_text.print(
-            "Client " + std::to_string(data_to_send.content[0]) + " now has " +
-            std::to_string(data_to_send.content[1]) + " action points.");
-
-          sendToAll(client, data_to_send);
+          clientPointsChange(data_to_send, client);
           break;
         }
 
@@ -256,7 +114,7 @@ void RaceToSpaceServer::run()
         case data_roles::CLIENT_DISCONNECTING_FROM_LOBBY:
         {
           disconnectFromLobby(static_cast<int>(client.get_id()));
-          sendToAll(client, data_to_send);
+          sendData(client, static_cast<unsigned int>(-1), data_to_send);
           break;
         }
 
@@ -264,132 +122,35 @@ void RaceToSpaceServer::run()
         // reconnecting players
         case data_roles::CLIENT_MOVING_PLAYER_TOKEN:
         {
-          Lobby* this_lobby = getLobbyByID(client.lobby_id);
-          if (this_lobby == nullptr)
-          {
-            break;
-          }
-          debug_text.print("Client " + std::to_string(data_to_send.content[0]) +
-                           " is now in room " +
-                           std::to_string(data_to_send.content[1]));
-          this_lobby->players[data_to_send.content[0]].room_position =
-            static_cast<ship_rooms>(data_to_send.content[1]);
-
-          sendToAll(client, data_to_send);
+          clientMoved(data_to_send, client);
           break;
         }
           // Updates the new progress index for all clients after dice roll
           // issue event on client.
         case data_roles::CLIENT_CHANGE_PROGRESS_INDEX:
         {
-          Lobby* this_lobby = getLobbyByID(client.lobby_id);
-          if (this_lobby == nullptr)
-          {
-            break;
-          }
-          debug_text.print("Changing progress from: " +
-                           std::to_string(this_lobby->current_progress_index) +
-                           " to:" + std::to_string(data_to_send.content[0]));
-          this_lobby->current_progress_index = data_to_send.content[0];
-          sendData(client,
-                   static_cast<unsigned int>(-2),
-                   data_roles::CLIENT_CHANGE_PROGRESS_INDEX,
-                   data_to_send.content[0]);
+          clientProgressChange(data_to_send, client);
           break;
         }
 
         // Client has requested to buy an item.
         case data_roles::CLIENT_REQUESTED_ITEM_CARD:
         {
-          Lobby* this_lobby = getLobbyByID(client.lobby_id);
-          if (this_lobby == nullptr)
-          {
-            break;
-          }
-          data_to_send.content[1] = this_lobby->item_deck.back();
-          debug_text.print(
-            "Drawing item of type: " + std::to_string(data_to_send.content[1]) +
-            "for client:" + std::to_string(data_to_send.content[0]));
-          this_lobby->item_deck.pop_back();
-          sendData(client,
-                   static_cast<unsigned int>(-2),
-                   data_roles::CLIENT_REQUESTED_ITEM_CARD,
-                   data_to_send.content[0],
-                   data_to_send.content[1]);
+          clientRequestsItem(data_to_send, client);
           break;
         }
           // We need to store lobby ready state before sending it out, so new
           // players are up to date
         case data_roles::CLIENT_CHANGED_LOBBY_READY_STATE:
         {
-          bool did_send = false;
-          Lobby* this_lobby = getLobbyByID(data_to_send.content[2]);
-          if (this_lobby == nullptr)
-          {
-            break;
-          }
-          this_lobby->players[data_to_send.content[1]].is_ready =
-            static_cast<bool>(data_to_send.content[0]);
-
-          // See how many in the lobby are ready.
-          int ready_count = 0;
-          for (int i = 0; i < max_lobby_size; i++)
-          {
-            if (this_lobby->players[i].is_ready)
-            {
-              ready_count++;
-            }
-          }
-          debug_text.print(std::to_string(ready_count) + " clients in lobby " +
-                           std::to_string(this_lobby->lobby_id) +
-                           " are ready to start.");
-          // All clients are ready to start
-          if (ready_count == max_lobby_size)
-          {
-            // If a game is already in progress, join it
-            if (this_lobby->game_in_progress)
-            {
-              debug_text.print("Player is joining a game in progress in "
-                               "lobby " +
-                                 std::to_string(this_lobby->lobby_id) + ".",
-                               -1);
-              // Tell client to start the local game
-              sendData(client,
-                       static_cast<unsigned int>(-2),
-                       data_roles::SERVER_STARTS_GAME,
-                       this_lobby->currently_active_player,
-                       1);
-            }
-            // Else, start a new game
-            else
-            {
-              debug_text.print("Starting gameplay in lobby " +
-                                 std::to_string(this_lobby->lobby_id) + ".",
-                               -1);
-              int starting_player = 0; // The id of the starting client, maybe
-                                       // randomise this?
-              this_lobby->game_in_progress = true;
-              this_lobby->player_that_started_id = starting_player;
-              this_lobby->currently_active_player = starting_player;
-              did_send = true;
-              sendData(client,
-                       static_cast<unsigned int>(-1),
-                       data_roles::SERVER_STARTS_GAME,
-                       starting_player,
-                       0);
-            }
-          }
-          if (!did_send)
-          {
-            sendToAll(client, data_to_send);
-          }
+          clientReadyUp(data_to_send, client);
           break;
         }
           // Otherwise, it's a message that needs to be forwarded to everyone in
           // the lobby.
         default:
         {
-          sendToAll(client, data_to_send);
+          sendData(client, static_cast<unsigned int>(-1), data_to_send);
         }
       }
     });
@@ -405,75 +166,25 @@ void RaceToSpaceServer::run()
 }
 
 /* Forward data to all */
-void RaceToSpaceServer::sendToAll(server_client& client,
-                                  NetworkedData data_to_send)
+void RaceToSpaceServer::sendToAll(server_client& client, DataShare& data)
 {
-  sendData(client,
-           static_cast<unsigned int>(-1),
-           data_to_send.role,
-           data_to_send.content[0],
-           data_to_send.content[1],
-           data_to_send.content[2],
-           data_to_send.content[3],
-           data_to_send.content[4],
-           data_to_send.content[5],
-           data_to_send.content[6],
-           data_to_send.content[7],
-           data_to_send.content[8],
-           data_to_send.content[9],
-           data_to_send.content[10],
-           data_to_send.content[11],
-           data_to_send.content[12],
-           data_to_send.content[13],
-           data_to_send.content[14]);
+  sendData(client, static_cast<unsigned int>(-1), data);
 }
 
 /* Send data from server to a client, or lobby (user_id = -1), or all (user_id =
  * -2) */
 void RaceToSpaceServer::sendData(server_client& client,
                                  unsigned int user_id,
-                                 data_roles _role,
-                                 int _content_1,
-                                 int _content_2,
-                                 int _content_3,
-                                 int _content_4,
-                                 int _content_5,
-                                 int _content_6,
-                                 int _content_7,
-                                 int _content_8,
-                                 int _content_9,
-                                 int _content_10,
-                                 int _content_11,
-                                 int _content_12,
-                                 int _content_13,
-                                 int _content_14,
-                                 int _content_15)
+                                 DataShare& data)
 {
   Packet packet_to_send;
-  NetworkedData data_to_send;
-  data_to_send.role = _role;
-  data_to_send.content[0] = _content_1;
-  data_to_send.content[1] = _content_2;
-  data_to_send.content[2] = _content_3;
-  data_to_send.content[3] = _content_4;
-  data_to_send.content[4] = _content_5;
-  data_to_send.content[5] = _content_6;
-  data_to_send.content[6] = _content_7;
-  data_to_send.content[7] = _content_8;
-  data_to_send.content[8] = _content_9;
-  data_to_send.content[9] = _content_10;
-  data_to_send.content[10] = _content_11;
-  data_to_send.content[11] = _content_12;
-  data_to_send.content[12] = _content_13;
-  data_to_send.content[13] = _content_14,
-  data_to_send.content[14] = _content_15;
-  packet_to_send << data_to_send;
+  packet_to_send << data;
 
   if (user_id == static_cast<unsigned int>(-1))
   {
     debug_text.print("Sending data to all clients in lobby " +
                      std::to_string(client.lobby_id) + ", of type " +
-                     std::to_string(data_to_send.role) + ".");
+                     std::to_string(data.getType()) + ".");
 
     bool has_sent = false;
     int player_count = -1;
@@ -507,7 +218,7 @@ void RaceToSpaceServer::sendData(server_client& client,
   else if (user_id == static_cast<unsigned int>(-2))
   {
     debug_text.print("Sending data to all clients, of type " +
-                     std::to_string(data_to_send.role) + ".");
+                     std::to_string(data.getType()) + ".");
 
     network_server.send_packet_to_all_if(
       0,
@@ -519,7 +230,7 @@ void RaceToSpaceServer::sendData(server_client& client,
   else
   {
     debug_text.print("Sending data to client " + std::to_string(user_id) +
-                     ", of type " + std::to_string(data_to_send.role) + ".");
+                     ", of type " + std::to_string(data.getType()) + ".");
 
     network_server.send_packet_to(
       user_id,
@@ -528,180 +239,4 @@ void RaceToSpaceServer::sendData(server_client& client,
       static_cast<unsigned int>(packet_to_send.length()),
       ENET_PACKET_FLAG_RELIABLE);
   }
-}
-
-// Connect to a lobby in the server
-void RaceToSpaceServer::connectToLobby(server_client& client)
-{
-  // Try and join an existing lobby
-  int lobby_client_index = -1;
-  int lobby_index = 0;
-  bool could_join_lobby = false;
-  for (Lobby& this_lobby : lobbies)
-  {
-    if (this_lobby.user_count < max_lobby_size)
-    {
-      for (int i = 0; i < max_lobby_size; i++)
-      {
-        if (this_lobby.players[i].id == -1)
-        {
-          lobby_client_index = i; // find us an empty slot (someone may have
-                                  // left, so we're not in sequence)
-        }
-      }
-      this_lobby.players[lobby_client_index].id = client.get_id();
-      this_lobby.user_count++;
-      client.lobby_id = this_lobby.lobby_id;
-      client.lobby_index = lobby_index;
-      could_join_lobby = true;
-      break;
-    }
-    lobby_index++;
-  }
-
-  // All lobbies are full, create a new one and join it
-  if (!could_join_lobby)
-  {
-    Lobby& new_lobby = lobbies.emplace_back(latest_lobby_id);
-    latest_lobby_id++;
-
-    debug_text.print("Created new lobby instance. There are " +
-                       std::to_string(lobbies.size()) + " active lobbies.",
-                     -1);
-
-    lobby_client_index = 0;
-
-    new_lobby.players[lobby_client_index].id = client.get_id();
-    new_lobby.user_count++;
-    client.lobby_id = new_lobby.lobby_id;
-    client.lobby_index = static_cast<int>(lobbies.size() - 1);
-    // create and shuffle decks here. create a function which calls here.
-    initLobbyDecks();
-  }
-
-  // Now client is in a lobby, assign them a free class
-  bool classes_taken[4] = { false, false, false, false };
-  for (int i = 0; i < max_lobby_size; i++)
-  {
-    int taken_class = lobbies.at(client.lobby_index).players[i].class_type;
-    if (taken_class != -1)
-    {
-      classes_taken[taken_class] = true;
-    }
-  }
-  for (int i = 0; i < 4; i++)
-  {
-    if (!classes_taken[i])
-    {
-      lobbies.at(client.lobby_index).players[lobby_client_index].class_type =
-        static_cast<player_classes>(i);
-      break;
-    }
-  }
-  client.client_index = lobby_client_index;
-
-  debug_text.print(
-    "Client " + std::to_string(client.get_id()) + " has joined lobby " +
-    std::to_string(client.lobby_id) + " as role " +
-    std::to_string(
-      lobbies.at(client.lobby_index).players[lobby_client_index].class_type) +
-    ".");
-}
-
-// Take client out of the lobby they were registered to
-void RaceToSpaceServer::disconnectFromLobby(int client_id)
-{
-  int real_lobby_id = 0;
-  for (Lobby& this_lobby : lobbies)
-  {
-    for (int i = 0; i < max_lobby_size; i++)
-    {
-      if (this_lobby.players[i].id == client_id)
-      {
-        // Disconnect from lobby
-        this_lobby.user_count--;
-        this_lobby.players[i].id = -1;
-        this_lobby.players[i].is_ready = false;
-        this_lobby.players[i].class_type = player_classes::UNASSIGNED;
-
-        debug_text.print("Client " + std::to_string(client_id) +
-                         " has left lobby " +
-                         std::to_string(this_lobby.lobby_id) + ".");
-
-        // If lobby is now empty, remove it so we can put new players in
-        // populated lobbies
-        if (this_lobby.user_count == 0)
-        {
-          lobbies.erase(lobbies.begin() + real_lobby_id);
-          debug_text.print("Destroying unpopulated lobby. There are " +
-                             std::to_string(lobbies.size()) +
-                             " active lobbies.",
-                           -1);
-        }
-      }
-    }
-    real_lobby_id++;
-  }
-}
-
-// Find the client's actual lobby instance
-Lobby* RaceToSpaceServer::getLobbyByID(int lobby_id)
-{
-  for (Lobby& this_lobby : lobbies)
-  {
-    if (this_lobby.lobby_id == lobby_id)
-    {
-      return &this_lobby;
-    }
-  }
-
-  debug_text.print("ERROR - Couldn't retrieve lobby info for lobby " +
-                     std::to_string(lobby_id) + "!",
-                   2);
-  return nullptr;
-}
-
-void RaceToSpaceServer::initLobbyDecks()
-{
-  // Create deck of Issue IDS. 60 cards total.
-  for (int i = 0; i < 2; ++i)
-  {
-    for (int j = 0; j < 30; ++j)
-    {
-      // Create for most recent lobby.
-      lobbies.back().issue_deck.push_back(j);
-    }
-  }
-
-  // Create deck of Item IDS. 38 cards total.
-  for (int i = 0; i < 2; ++i)
-  {
-    for (int j = 0; j < 19; ++j)
-    {
-      // Create for most recent lobby.
-      lobbies.back().item_deck.push_back(j);
-    }
-  }
-
-  // Create deck of Objective IDS. 36 cards total.
-  for (int i = 0; i < 3; ++i)
-  {
-    for (int j = 0; j < 12; ++j)
-    {
-      // Create for most recent lobby.
-      lobbies.back().objective_deck.push_back(j);
-    }
-  }
-
-  auto seed =
-    std::chrono::high_resolution_clock::now().time_since_epoch().count();
-  std::mt19937 gen(seed);
-  // Shuffle decks.
-  std::shuffle(
-    lobbies.back().issue_deck.begin(), lobbies.back().issue_deck.end(), gen);
-  std::shuffle(
-    lobbies.back().item_deck.begin(), lobbies.back().item_deck.end(), gen);
-  std::shuffle(lobbies.back().objective_deck.begin(),
-               lobbies.back().objective_deck.end(),
-               gen);
 }

@@ -26,7 +26,7 @@ PopupWindow::~PopupWindow()
 }
 
 /* Handle key inputs */
-void PopupWindow::keyHandler(KeyHandler keys)
+void PopupWindow::keyHandler(KeyHandler& keys)
 {
   if (keys.keyReleased("Back") && timeout == -1 && is_active)
   {
