@@ -2,6 +2,7 @@
 #define PROJECT_SERVER_H
 
 #include "gamelib/Debug/DebugText.h"
+#include "gamelib/NetworkedData/DataShare.h"
 #include "gamelib/NetworkedData/NetworkedData.h"
 #include "gamelib/NetworkedData/Players.h"
 #include "server/Structs/Lobby.h"
@@ -25,26 +26,20 @@ class RaceToSpaceServer
   void initLobbyDecks();
 
  private:
-  void sendToAll(server_client& client, NetworkedData data_to_send);
+  void sendToAll(server_client& client, DataShare& data);
 
-  void sendData(server_client& client,
-                unsigned int user_id,
-                data_roles _role,
-                int _content_1,
-                int _content_2 = 0,
-                int _content_3 = 0,
-                int _content_4 = 0,
-                int _content_5 = 0,
-                int _content_6 = 0,
-                int _content_7 = 0,
-                int _content_8 = 0,
-                int _content_9 = 0,
-                int _content_10 = 0,
-                int _content_11 = 0,
-                int _content_12 = 0,
-                int _content_13 = 0,
-                int _content_14 = 0,
-                int _content_15 = 0);
+  void handleReceivedData(DataShare& data_to_send, server_client& client);
+
+  void clientJoinLobby(server_client& client);
+  void endTurn(server_client& client);
+  void syncClient(server_client& client);
+  void clientReadyUp(DataShare& data_to_send, server_client& client);
+  void clientPointsChange(DataShare& data_to_send, server_client& client);
+  void clientMoved(DataShare& data_to_send, server_client& client);
+  void clientProgressChange(DataShare& data_to_send, server_client& client);
+  void clientRequestsItem(DataShare& data_to_send, server_client& client);
+
+  void sendData(server_client& client, unsigned int user_id, DataShare& data);
 
   Lobby* getLobbyByID(int lobby_id);
   //  int amount_to_draw[15]{ 2, 3, 1, 1, 2, 2, 1, 1, 3, 2, 1, 3, 2, 1, 2 };

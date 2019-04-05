@@ -22,8 +22,9 @@ void LobbyScene::init()
   }
 
   // Request lobby info
-  Locator::getNetworkInterface()->sendData(
-    data_roles::CLIENT_REQUESTS_TO_JOIN_LOBBY, 0);
+  DataShare new_share = DataShare(data_roles::CLIENT_REQUESTS_TO_JOIN_LOBBY);
+  new_share.add(0);
+  Locator::getNetworkInterface()->sendData(new_share);
 }
 
 /* Handles connecting to the server */
@@ -37,11 +38,11 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
 {
   // Recreate packet
   Packet data_packet(data, data_size);
-  NetworkedData received_data;
+  DataShare received_data;
   data_packet >> received_data;
 
   // Handle all relevant data packets for this scene
-  switch (received_data.role)
+  switch (received_data.getType())
   {
     // Server gives the lobby information we require, utilise it!
     case data_roles::SERVER_GIVES_LOBBY_INFO:
@@ -50,27 +51,30 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       {
         break;
       }
+
       // Fill out our known local player data from the server
-      lobby_id = received_data.content[0];
-      my_player_index = received_data.content[9];
+      lobby_id = received_data.retrieve(0);
+      my_player_index = received_data.retrieve(9);
       for (int i = 0; i < 4; i++)
       {
         players[i]->current_class =
-          static_cast<player_classes>(received_data.content[i + 1]);
+          static_cast<player_classes>(received_data.retrieve(i + 1));
         players[i]->is_ready =
-          static_cast<player_classes>(received_data.content[i + 5]);
+          static_cast<player_classes>(received_data.retrieve(i + 5));
         if (players[i]->current_class != player_classes::UNASSIGNED)
         {
           players[i]->has_connected = true;
         }
         players[i]->is_this_client = (i == my_player_index);
       }
+
       // Notify all clients in the lobby that we've connected
-      Locator::getNetworkInterface()->sendData(
-        data_roles::CLIENT_CONNECTED_TO_LOBBY,
-        my_player_index,
-        players[my_player_index]->is_ready,
-        players[my_player_index]->current_class);
+      DataShare new_share = DataShare(data_roles::CLIENT_CONNECTED_TO_LOBBY);
+      new_share.add(my_player_index);
+      new_share.add(players[my_player_index]->is_ready);
+      new_share.add(players[my_player_index]->current_class);
+      Locator::getNetworkInterface()->sendData(new_share);
+
       debug_text.print("We synced to the lobby!", -1);
       has_connected = true;
       break;
@@ -81,12 +85,12 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     case data_roles::CLIENT_CONNECTED_TO_LOBBY:
     {
       // A player that's not us connected to the lobby, update our info
-      if (received_data.content[0] != my_player_index)
+      if (received_data.retrieve(0) != my_player_index)
       {
-        players[received_data.content[0]]->is_ready =
-          static_cast<bool>(received_data.content[1]);
-        players[received_data.content[0]]->current_class =
-          static_cast<player_classes>(received_data.content[2]);
+        players[received_data.retrieve(0)]->is_ready =
+          static_cast<bool>(received_data.retrieve(1));
+        players[received_data.retrieve(0)]->current_class =
+          static_cast<player_classes>(received_data.retrieve(2));
       }
       debug_text.print("A player connected to the lobby!");
       break;
@@ -96,7 +100,7 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     case data_roles::CLIENT_DISCONNECTING_FROM_LOBBY:
     {
       // Forget them!
-      players[received_data.content[0]]->performDisconnect();
+      players[received_data.retrieve(0)]->performDisconnect();
 
       debug_text.print("A player disconnected from the lobby!");
       break;
@@ -106,10 +110,10 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     case data_roles::CLIENT_CHANGED_LOBBY_READY_STATE:
     {
       // Player is now ready/unready when they weren't before
-      if (received_data.content[1] != my_player_index)
+      if (received_data.retrieve(1) != my_player_index)
       {
-        players[received_data.content[1]]->is_ready =
-          static_cast<bool>(received_data.content[0]);
+        players[received_data.retrieve(1)]->is_ready =
+          static_cast<bool>(received_data.retrieve(0));
         debug_text.print("A player changed their ready state!");
       }
       break;
@@ -125,8 +129,8 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
         players[i]->is_active = false; // make sure we have no active conflicts
       }
       Locator::getPlayers()->joined_in_progress =
-        static_cast<bool>(received_data.content[1]);
-      players[received_data.content[0]]->is_active = true; // client to start
+        static_cast<bool>(received_data.retrieve(1));
+      players[received_data.retrieve(0)]->is_active = true; // client to start
       should_start_game = true;
       can_change_ready_state = false;
       debug_text.print("Server told us to start the game!");
@@ -150,17 +154,20 @@ void LobbyScene::keyHandler(const ASGE::SharedEventData data)
   {
     // Alert everyone we're ready or unready (can't unready after all are ready)
     players[my_player_index]->is_ready = !players[my_player_index]->is_ready;
-    Locator::getNetworkInterface()->sendData(
-      data_roles::CLIENT_CHANGED_LOBBY_READY_STATE,
-      static_cast<int>(players[my_player_index]->is_ready),
-      my_player_index,
-      lobby_id);
+    DataShare new_share =
+      DataShare(data_roles::CLIENT_CHANGED_LOBBY_READY_STATE);
+    new_share.add(static_cast<int>(players[my_player_index]->is_ready));
+    new_share.add(my_player_index);
+    new_share.add(lobby_id);
+    Locator::getNetworkInterface()->sendData(new_share);
   }
   if (keys.keyReleased("Back") && !should_start_game)
   {
     // Alert everyone we're leaving
-    Locator::getNetworkInterface()->sendData(
-      data_roles::CLIENT_DISCONNECTING_FROM_LOBBY, my_player_index);
+    DataShare new_share =
+      DataShare(data_roles::CLIENT_DISCONNECTING_FROM_LOBBY);
+    new_share.add(my_player_index);
+    Locator::getNetworkInterface()->sendData(new_share);
 
     // Leave
     debug_text.print("Swapping to menu scene.");

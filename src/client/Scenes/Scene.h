@@ -6,6 +6,7 @@
 #include "client/UI/Menu.h"
 #include "gamelib/Constants.h"
 #include "gamelib/Debug/DebugText.h"
+#include "gamelib/NetworkedData/DataShare.h"
 #include <Engine/GameTime.h>
 #include <Engine/Renderer.h>
 #include <enet/enet.h>

@@ -63,7 +63,6 @@ set(HEADER_FILES
         ../src/client/UI/Cursor.cpp
         ../src/client/UI/ScaledSprite.cpp
         ../src/client/UI/ScaledSprite.h
-        ../src/gamelib/NetworkedData/MessageTypes.h
         ../src/gamelib/NetworkedData/NetworkedData.h
         ../src/client/Players/ClientPlayer.cpp
         ../src/client/Players/ClientPlayer.h
@@ -74,12 +73,22 @@ set(HEADER_FILES
         ../src/client/UI/Cursor.cpp
         ../src/client/UI/ScaledSprite.cpp
         ../src/client/UI/ScaledSprite.h
-        ../src/gamelib/NetworkedData/MessageTypes.h
         ../src/client/Actions/Action.h
         ../src/client/Actions/RollDiceAction.cpp
         ../src/client/Actions/RollDiceAction.h
         ../src/client/Board/ItemDeck.cpp
-        ../src/client/Board/ItemDeck.h ../src/gamelib/Math/SimpleMath.cpp ../src/gamelib/Math/SimpleMath.h ../src/gamelib/NetworkedData/DataShare.h ../src/client/UI/ClickableButton.cpp ../src/client/UI/ClickableButton.h ../src/client/UI/PopupWindow.cpp ../src/client/UI/PopupWindow.h)
+        ../src/client/Board/ItemDeck.h
+        ../src/gamelib/Math/SimpleMath.cpp
+        ../src/gamelib/Math/SimpleMath.h
+        ../src/gamelib/NetworkedData/DataShare.h
+        ../src/client/UI/ClickableButton.cpp
+        ../src/client/UI/ClickableButton.h
+        ../src/client/UI/PopupWindow.cpp
+        ../src/client/UI/PopupWindow.h
+        ../src/client/UI/Managers/GameSceneUI.cpp
+        ../src/client/UI/Managers/GameSceneUI.h
+        ../src/client/UI/Managers/PopupManager.cpp
+        ../src/client/UI/Managers/PopupManager.h )
 
 ## the executable
 add_executable(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES})
