@@ -2,7 +2,6 @@
 #include "GameScene.h"
 #include "client/Core/ServiceLocator.h"
 #include "client/NetworkConnection/NetworkConnection.h"
-#include "gamelib/NetworkedData/MessageTypes.h"
 #include "gamelib/NetworkedData/NetworkedData.h"
 
 #include <client/Cards/IssueCard.h>

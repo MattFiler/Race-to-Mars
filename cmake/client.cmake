@@ -63,7 +63,6 @@ set(HEADER_FILES
         ../src/client/UI/Cursor.cpp
         ../src/client/UI/ScaledSprite.cpp
         ../src/client/UI/ScaledSprite.h
-        ../src/gamelib/NetworkedData/MessageTypes.h
         ../src/gamelib/NetworkedData/NetworkedData.h
         ../src/client/Players/ClientPlayer.cpp
         ../src/client/Players/ClientPlayer.h
@@ -74,7 +73,6 @@ set(HEADER_FILES
         ../src/client/UI/Cursor.cpp
         ../src/client/UI/ScaledSprite.cpp
         ../src/client/UI/ScaledSprite.h
-        ../src/gamelib/NetworkedData/MessageTypes.h
         ../src/client/Actions/Action.h
         ../src/client/Actions/RollDiceAction.cpp
         ../src/client/Actions/RollDiceAction.h

@@ -2,7 +2,6 @@
 #include "client/Core/ServiceLocator.h"
 #include "client/NetworkConnection/NetworkConnection.h"
 #include "gamelib/Constants.h"
-#include "gamelib/NetworkedData/MessageTypes.h"
 #include "gamelib/NetworkedData/NetworkedData.h"
 
 /* Check to see if we're hovering over an interactable room  */
