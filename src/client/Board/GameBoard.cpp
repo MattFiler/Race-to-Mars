@@ -503,16 +503,28 @@ void GameBoard::resetCardVariables()
 void GameBoard::checkissueSolved()
 {
   // Remove solved issues
+  bool issue_solved = false;
   for (size_t i = 0; i < active_issues.size(); ++i)
   {
     if (active_issues[i].isSolved())
     {
+      issue_solved = true;
       active_issues.erase(active_issues.begin() + static_cast<int>(i));
       active_issue_cards[i] = -1;
       slot_active[i] = false;
-      // create packet here that goes to the server to update the active issue
-      // cards on the sever.
-      auto data_share = DataShare(data_roles:)
     }
+  }
+  // if any cards have been completed and deleted when client ends turn we want
+  // to
+  // update the server active_issue_cards too.
+  if (issue_solved)
+  {
+    auto new_share = DataShare(data_roles::CLIENT_SOLVED_ISSUE_CARD);
+    new_share.add(active_issue_cards[0]);
+    new_share.add(active_issue_cards[1]);
+    new_share.add(active_issue_cards[2]);
+    new_share.add(active_issue_cards[3]);
+    new_share.add(active_issue_cards[4]);
+    Locator::getNetworkInterface()->sendData(new_share);
   }
 }

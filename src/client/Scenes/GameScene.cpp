@@ -450,6 +450,8 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
       if (keys.keyReleased("End Turn") &&
           players[Locator::getPlayers()->my_player_index]->is_active)
       {
+        board.checkissueSolved();
+
         DataShare new_share = DataShare(data_roles::CLIENT_WANTS_TO_END_TURN);
         new_share.add(Locator::getPlayers()->my_player_index);
         Locator::getNetworkInterface()->sendData(new_share);

@@ -139,6 +139,14 @@ enum data_roles
    *   [1] = item card ID.
    */
 
+  CLIENT_SOLVED_ISSUE_CARD
+  /* ^ The client has requested an item card
+   *   [0] = active issue [0]
+   *   [1] = active issue [1]
+   *   [2] = active issue [2]
+   *   [3] = active issue [3]
+   *   [4] = active issue [4]
+   */
 };
 
 #endif // PROJECT_NETWORKEDDATA_H

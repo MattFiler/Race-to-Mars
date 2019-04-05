@@ -90,6 +90,12 @@ void RaceToSpaceServer::handleReceivedData(DataShare& data_to_send,
       break;
     }
 
+    case data_roles::CLIENT_SOLVED_ISSUE_CARD:
+    {
+      clientSolvedIssueCard(data_to_send, client);
+      break;
+    }
+
     // Otherwise, it's a message that needs to be forwarded to everyone in
     // the lobby.
     default:
@@ -571,4 +577,19 @@ void RaceToSpaceServer::clientRequestsItem(DataShare& data_to_send,
   this_lobby->item_deck.pop_back();
 
   sendData(client, static_cast<unsigned int>(-2), new_share);
+}
+
+void RaceToSpaceServer::clientSolvedIssueCard(DataShare& data_to_send,
+                                              server_client& client)
+{
+  Lobby* this_lobby = getLobbyByID(client.lobby_id);
+  if (this_lobby == nullptr)
+  {
+    return;
+  }
+  // re sync cards in server after client has completed 1.
+  for (int i = 0; i < 4; ++i)
+  {
+    this_lobby->active_issue_cards[i] = data_to_send.retrieve(i);
+  }
 }
