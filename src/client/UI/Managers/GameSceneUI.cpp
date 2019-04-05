@@ -67,6 +67,10 @@ ClickableButton* SceneUI::getButton(const std::string& id)
 /* Create a menu */
 Menu* SceneUI::createMenu()
 {
+  if (has_menu)
+  {
+    return menu;
+  }
   menu = new Menu();
   has_menu = true;
   return menu;
