@@ -95,6 +95,7 @@ void RaceToSpaceServer::handleReceivedData(DataShare& data_to_send,
     default:
     {
       sendData(client, static_cast<unsigned int>(-1), data_to_send);
+      break;
     }
   }
 }

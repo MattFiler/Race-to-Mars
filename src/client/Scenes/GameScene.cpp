@@ -1052,7 +1052,12 @@ void GameScene::render()
       *ui_manager.getSprite(ui_sprites::DISCONNECT_OVERLAY)->getSprite());
   }
 
-  // client debugging
+  debugOutput();
+}
+
+// client debugging
+void GameScene::debugOutput()
+{
   if (debug_text.enabled)
   {
     renderer->renderText(

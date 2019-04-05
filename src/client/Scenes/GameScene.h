@@ -66,6 +66,8 @@ class GameScene : public Scene
   void render() override;
 
  private:
+  void debugOutput();
+
   GameBoard board;
 
   LobbyPlayer* players[4] = { nullptr, nullptr, nullptr, nullptr };
