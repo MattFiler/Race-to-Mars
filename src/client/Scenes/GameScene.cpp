@@ -445,7 +445,8 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
         players[Locator::getPlayers()->my_player_index]->action_points = new_ap;
         debug_text.print("Debug: changed my action points to 10!");
       }
-      if (keys.keyReleased("Debug Buy Item"))
+      if (keys.keyReleased("Debug Buy Item") &&
+          players[Locator::getPlayers()->my_player_index]->is_active)
       {
         debug_text.print("Trying to buy item card.");
         if (Locator::getPlayers()
@@ -456,6 +457,10 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
           auto new_share = DataShare(data_roles::CLIENT_REQUESTED_ITEM_CARD);
           new_share.add(Locator::getPlayers()->my_player_index);
           Locator::getNetworkInterface()->sendData(new_share);
+          Locator::getPlayers()
+            ->getPlayer(static_cast<player_classes>(
+              Locator::getPlayers()->my_player_index))
+            ->setHeldItems(1);
         }
       }
       break;
@@ -784,7 +789,6 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
     end_turn_btn.setActive(false); // inactive when popups are over us
   }
   end_turn_btn.update();
-
   return next_scene;
 }
 
