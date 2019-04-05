@@ -452,7 +452,7 @@ void RaceToSpaceServer::clientProgressChange(DataShare& data_to_send,
   Lobby* this_lobby = getLobbyByID(client.lobby_id);
   if (this_lobby == nullptr)
   {
-    break;
+    return;
   }
   debug_text.print("Changing progress from: " +
                    std::to_string(this_lobby->current_progress_index) +
