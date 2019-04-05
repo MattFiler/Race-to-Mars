@@ -26,13 +26,13 @@ class RaceToSpaceServer
   void initLobbyDecks();
 
  private:
-  void sendToAll(server_client& client, DataShare data);
+  void sendToAll(server_client& client, DataShare& data);
 
   void endTurn(server_client& client);
   void syncClient(server_client& client);
   void clientReadyUp(DataShare& data_to_send, server_client& client);
 
-  void sendData(server_client& client, unsigned int user_id, DataShare data);
+  void sendData(server_client& client, unsigned int user_id, DataShare& data);
 
   Lobby* getLobbyByID(int lobby_id);
   //  int amount_to_draw[15]{ 2, 3, 1, 1, 2, 2, 1, 1, 3, 2, 1, 3, 2, 1, 2 };

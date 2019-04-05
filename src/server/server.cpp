@@ -229,7 +229,7 @@ void RaceToSpaceServer::run()
 }
 
 /* Forward data to all */
-void RaceToSpaceServer::sendToAll(server_client& client, DataShare data)
+void RaceToSpaceServer::sendToAll(server_client& client, DataShare& data)
 {
   sendData(client, static_cast<unsigned int>(-1), data);
 }
@@ -238,7 +238,7 @@ void RaceToSpaceServer::sendToAll(server_client& client, DataShare data)
  * -2) */
 void RaceToSpaceServer::sendData(server_client& client,
                                  unsigned int user_id,
-                                 DataShare data)
+                                 DataShare& data)
 {
   Packet packet_to_send;
   packet_to_send << data;
