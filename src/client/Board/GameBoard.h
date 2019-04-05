@@ -37,6 +37,8 @@ class GameBoard
   void setActiveObjectiveCard(int card_index);
   void setActiveItemCard(int card_index);
 
+  void checkissueSolved();
+
   bool updateActiveIssueCards();
   bool updateActiveObjectiveCard();
   bool updateActiveItemCard(int _item_card_index);
