@@ -79,7 +79,18 @@ set(HEADER_FILES
         ../src/client/Actions/RollDiceAction.cpp
         ../src/client/Actions/RollDiceAction.h
         ../src/client/Board/ItemDeck.cpp
-        ../src/client/Board/ItemDeck.h ../src/gamelib/Math/SimpleMath.cpp ../src/gamelib/Math/SimpleMath.h ../src/gamelib/NetworkedData/DataShare.h ../src/client/UI/ClickableButton.cpp ../src/client/UI/ClickableButton.h ../src/client/UI/PopupWindow.cpp ../src/client/UI/PopupWindow.h ../src/client/UI/Managers/GameSceneUI.cpp ../src/client/UI/Managers/GameSceneUI.h ../src/client/UI/Managers/PopupManager.cpp ../src/client/UI/Managers/PopupManager.h ../src/server/server_functionality.cpp)
+        ../src/client/Board/ItemDeck.h
+        ../src/gamelib/Math/SimpleMath.cpp
+        ../src/gamelib/Math/SimpleMath.h
+        ../src/gamelib/NetworkedData/DataShare.h
+        ../src/client/UI/ClickableButton.cpp
+        ../src/client/UI/ClickableButton.h
+        ../src/client/UI/PopupWindow.cpp
+        ../src/client/UI/PopupWindow.h
+        ../src/client/UI/Managers/GameSceneUI.cpp
+        ../src/client/UI/Managers/GameSceneUI.h
+        ../src/client/UI/Managers/PopupManager.cpp
+        ../src/client/UI/Managers/PopupManager.h )
 
 ## the executable
 add_executable(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES})

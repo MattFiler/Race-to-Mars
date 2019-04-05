@@ -10,7 +10,8 @@ set(SOURCE_FILES
 set(HEADER_FILES
         "server/server.h"
         ../src/server/Structs/Lobby.h
-        ../src/server/Structs/ServerClient.h)
+        ../src/server/Structs/ServerClient.h
+        ../src/server/server_functionality.cpp)
 
 ## the executable
 add_executable(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES})
