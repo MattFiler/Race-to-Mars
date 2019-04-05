@@ -77,7 +77,9 @@ void GameScene::init()
 
   // Position button for new turn
   ui_manager.createButton("end_turn_btn", "UI/INGAME_UI/end_turn_btn.png")
-    ->setPos(Vector2(1042, 626));
+    ->setPos(Vector2(1042, 612));
+  ui_manager.createButton("buy_item_btn", "UI/INGAME_UI/buy_item_btn.png")
+    ->setPos(Vector2(1042, 551));
 
   // Issue popup card placeholder
   ScaledSprite& card_placeholder =
@@ -151,6 +153,7 @@ void GameScene::init()
       ->getPlayer(
         players[Locator::getPlayers()->my_player_index]->current_class)
       ->setPos(new_pos);
+    players[Locator::getPlayers()->my_player_index]->room = this_room.getEnum();
     debug_text.print("Starting my player token in room '" +
                      this_room.getName() + "'.");
   }
@@ -260,6 +263,7 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       Locator::getPlayers()
         ->getPlayer(players[received_data.retrieve(0)]->current_class)
         ->setPos(new_pos);
+      players[received_data.retrieve(0)]->room = this_room.getEnum();
       debug_text.print("Moving player " +
                        std::to_string(received_data.retrieve(0)) +
                        " to room '" + this_room.getName() + "'.");
@@ -356,6 +360,7 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
         Locator::getPlayers()
           ->getPlayer(players[i]->current_class)
           ->setPos(new_pos);
+        players[i]->room = this_room.getEnum();
 
         // Broadcast out the position of us to keep all clients informed
         if (i == Locator::getPlayers()->my_player_index)
@@ -589,6 +594,8 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
             ->getPlayer(
               players[Locator::getPlayers()->my_player_index]->current_class)
             ->setPos(new_pos);
+          players[Locator::getPlayers()->my_player_index]->room =
+            this_room.getEnum();
           debug_text.print("Moving my player token to room '" +
                            this_room.getName() + "'.");
         }
@@ -604,6 +611,17 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
 
           // Call reset variables on item and issues here
           board.resetCardVariables();
+        }
+
+        // Clicked buy item button
+        if (ui_manager.getButton("buy_item_btn")->clicked())
+        {
+          // Should validate score and existing items, etc here!
+          DataShare new_share =
+            DataShare(data_roles::CLIENT_REQUESTED_ITEM_CARD);
+          new_share.add(Locator::getPlayers()->my_player_index);
+          Locator::getNetworkInterface()->sendData(new_share);
+          debug_text.print("I want an item card!!");
         }
       }
 
@@ -797,6 +815,18 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
                                                             // us
   }
 
+  // Buy item is only active when we are, and in the supply bay
+  if (players[Locator::getPlayers()->my_player_index]->is_active &&
+      players[Locator::getPlayers()->my_player_index]->room ==
+        ship_rooms::SUPPLY_BAY)
+  {
+    ui_manager.getButton("buy_item_btn")->setActive(true);
+  }
+  else
+  {
+    ui_manager.getButton("buy_item_btn")->setActive(false);
+  }
+
   return next_scene;
 }
 
@@ -871,8 +901,9 @@ void GameScene::render()
       renderer->renderSprite(
         *ui_manager.getSprite("progress_marker")->getSprite());
 
-      // End-turn button
+      // buttons
       ui_manager.getButton("end_turn_btn")->render();
+      ui_manager.getButton("buy_item_btn")->render();
 
       break;
     }
