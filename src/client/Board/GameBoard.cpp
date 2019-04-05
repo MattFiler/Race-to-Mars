@@ -468,8 +468,9 @@ bool GameBoard::updateActiveItemCard(int _item_card_index)
   if (_item_card_index >= 0 && _item_card_index <= 19)
   {
     item_inventory.emplace_back(static_cast<item_cards>(_item_card_index));
-    debug_text.print("Creating item card: " +
-                     std::to_string(active_item_card[_item_card_index]));
+    debug_text.print(
+      "Creating item card: " +
+      std::to_string(active_item_card[item_inventory.size() - 1]));
     return true;
   }
   return false;
