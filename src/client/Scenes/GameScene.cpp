@@ -39,7 +39,7 @@ void GameScene::init()
     }
   }
 
-  // Create all required sprites
+  // Create all required sprites - add in the order to render
   ui_manager.createSprite("background", "UI/BOARD/background.jpg");
   ui_manager
     .createSprite("active_player_marker", "UI/INGAME_UI/active_player_tab.png")

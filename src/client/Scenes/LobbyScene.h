@@ -32,6 +32,12 @@ class LobbyScene : public Scene
   void render() override;
 
  private:
+  // Network data handlers
+  void receivedLobbyInfo(DataShare& received_data);
+  void newClientConnected(DataShare& received_data);
+  void clientChangedReady(DataShare& received_data);
+  void serverStartsGame(DataShare& received_data);
+
   int lobby_id = -1;
   int my_player_index = -1;
   double game_countdown = 5.0;

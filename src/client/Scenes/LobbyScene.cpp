@@ -47,36 +47,7 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     // Server gives the lobby information we require, utilise it!
     case data_roles::SERVER_GIVES_LOBBY_INFO:
     {
-      if (has_connected)
-      {
-        break;
-      }
-
-      // Fill out our known local player data from the server
-      lobby_id = received_data.retrieve(0);
-      my_player_index = received_data.retrieve(9);
-      for (int i = 0; i < 4; i++)
-      {
-        players[i]->current_class =
-          static_cast<player_classes>(received_data.retrieve(i + 1));
-        players[i]->is_ready =
-          static_cast<player_classes>(received_data.retrieve(i + 5));
-        if (players[i]->current_class != player_classes::UNASSIGNED)
-        {
-          players[i]->has_connected = true;
-        }
-        players[i]->is_this_client = (i == my_player_index);
-      }
-
-      // Notify all clients in the lobby that we've connected
-      DataShare new_share = DataShare(data_roles::CLIENT_CONNECTED_TO_LOBBY);
-      new_share.add(my_player_index);
-      new_share.add(players[my_player_index]->is_ready);
-      new_share.add(players[my_player_index]->current_class);
-      Locator::getNetworkInterface()->sendData(new_share);
-
-      debug_text.print("We synced to the lobby!", -1);
-      has_connected = true;
+      receivedLobbyInfo(received_data);
       break;
     }
 
@@ -84,15 +55,7 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     // data
     case data_roles::CLIENT_CONNECTED_TO_LOBBY:
     {
-      // A player that's not us connected to the lobby, update our info
-      if (received_data.retrieve(0) != my_player_index)
-      {
-        players[received_data.retrieve(0)]->is_ready =
-          static_cast<bool>(received_data.retrieve(1));
-        players[received_data.retrieve(0)]->current_class =
-          static_cast<player_classes>(received_data.retrieve(2));
-      }
-      debug_text.print("A player connected to the lobby!");
+      newClientConnected(received_data);
       break;
     }
 
@@ -109,41 +72,105 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     // A client has readied/unreadied in the lobby
     case data_roles::CLIENT_CHANGED_LOBBY_READY_STATE:
     {
-      // Player is now ready/unready when they weren't before
-      if (received_data.retrieve(1) != my_player_index)
-      {
-        players[received_data.retrieve(1)]->is_ready =
-          static_cast<bool>(received_data.retrieve(0));
-        debug_text.print("A player changed their ready state!");
-      }
+      clientChangedReady(received_data);
       break;
     }
 
     // The server has told us to start the game
     case data_roles::SERVER_STARTS_GAME:
     {
-      // The server has told us this lobby should start
-      for (int i = 0; i < 4; i++)
-      {
-        players[i]->is_ready = true;
-        players[i]->is_active = false; // make sure we have no active conflicts
-      }
-      Locator::getPlayers()->joined_in_progress =
-        static_cast<bool>(received_data.retrieve(1));
-      players[received_data.retrieve(0)]->is_active = true; // client to start
-      should_start_game = true;
-      can_change_ready_state = false;
-      debug_text.print("Server told us to start the game!");
+      serverStartsGame(received_data);
       break;
     }
 
-      // Anything else is unhandled
+    // Anything else is unhandled
     default:
     {
       debug_text.print("An unhandled data packet was received", 1);
       break;
     }
   }
+}
+
+/* Received lobby info */
+void LobbyScene::receivedLobbyInfo(DataShare& received_data)
+{
+  // Don't need info if we've already connected!
+  if (has_connected)
+  {
+    return;
+  }
+
+  // Fill out our known local player data from the server
+  lobby_id = received_data.retrieve(0);
+  my_player_index = received_data.retrieve(9);
+  for (int i = 0; i < 4; i++)
+  {
+    players[i]->current_class =
+      static_cast<player_classes>(received_data.retrieve(i + 1));
+    players[i]->is_ready =
+      static_cast<player_classes>(received_data.retrieve(i + 5));
+    if (players[i]->current_class != player_classes::UNASSIGNED)
+    {
+      players[i]->has_connected = true;
+    }
+    players[i]->is_this_client = (i == my_player_index);
+  }
+
+  // Notify all clients in the lobby that we've connected
+  DataShare new_share = DataShare(data_roles::CLIENT_CONNECTED_TO_LOBBY);
+  new_share.add(my_player_index);
+  new_share.add(players[my_player_index]->is_ready);
+  new_share.add(players[my_player_index]->current_class);
+  Locator::getNetworkInterface()->sendData(new_share);
+
+  debug_text.print("We synced to the lobby!", -1);
+  has_connected = true;
+}
+
+/* New client connected */
+void LobbyScene::newClientConnected(DataShare& received_data)
+{
+  if (received_data.retrieve(0) == my_player_index)
+  {
+    return;
+  }
+
+  // A player that's not us connected to the lobby, update our info
+  players[received_data.retrieve(0)]->is_ready =
+    static_cast<bool>(received_data.retrieve(1));
+  players[received_data.retrieve(0)]->current_class =
+    static_cast<player_classes>(received_data.retrieve(2));
+  debug_text.print("A player connected to the lobby!");
+}
+
+/* Client is ready/unready when they weren't before */
+void LobbyScene::clientChangedReady(DataShare& received_data)
+{
+  // Player is now ready/unready when they weren't before
+  if (received_data.retrieve(1) != my_player_index)
+  {
+    players[received_data.retrieve(1)]->is_ready =
+      static_cast<bool>(received_data.retrieve(0));
+    debug_text.print("A player changed their ready state!");
+  }
+}
+
+/* Server told us to start the game */
+void LobbyScene::serverStartsGame(DataShare& received_data)
+{
+  // The server has told us this lobby should start
+  for (int i = 0; i < 4; i++)
+  {
+    players[i]->is_ready = true;
+    players[i]->is_active = false; // make sure we have no active conflicts
+  }
+  Locator::getPlayers()->joined_in_progress =
+    static_cast<bool>(received_data.retrieve(1));
+  players[received_data.retrieve(0)]->is_active = true; // client to start
+  should_start_game = true;
+  can_change_ready_state = false;
+  debug_text.print("Server told us to start the game!");
 }
 
 /* Handles key inputs */
