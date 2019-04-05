@@ -568,6 +568,7 @@ void RaceToSpaceServer::clientRequestsItem(DataShare& data_to_send,
   DataShare new_share = DataShare(data_roles::CLIENT_REQUESTED_ITEM_CARD);
   new_share.add(data_to_send.retrieve(0));
   new_share.add(this_lobby->item_deck.back());
+  this_lobby->item_deck.pop_back();
 
   sendData(client, static_cast<unsigned int>(-2), new_share);
 }

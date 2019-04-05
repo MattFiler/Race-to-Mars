@@ -35,8 +35,8 @@ struct CardOffsets
   Vector2 issue_popup_ap_btn_offset = Vector2(221, 0);  // Offset of each button
 
   // Issue card in-game
-  Vector2 issue_ingame_start = Vector2(1100, 70); // Position of card 1
-  Vector2 issue_ingame_offset = Vector2(0, 75);   // Offset from 1
+  Vector2 issue_ingame_start = Vector2(1100, 20); // Position of card 1
+  Vector2 issue_ingame_offset = Vector2(0, 30);   // Offset from 1
   Vector2 issue_ingame_size = Vector2(124, 175);  // Size of card
 
   // Objective card popup
@@ -46,6 +46,20 @@ struct CardOffsets
   // Objective card in-game
   Vector2 obj_ingame_pos = Vector2(486, 70);   // Position of card (only 1)
   Vector2 obj_ingame_size = Vector2(124, 175); // Size of card
+
+  // Item card popup
+  Vector2 item_popup_start = Vector2(86, 205); // Position of card 1 / 2 - 5
+  Vector2 item_popup_offset = Vector2(222, 0); // Offset from 1
+  Vector2 item_popup_size = Vector2(222, 310); // Size of card
+
+  // Item card popup buttons
+  Vector2 item_popup_ap_btn_start = Vector2(106, 543); // Position of button 1
+  Vector2 item_popup_ap_btn_offset = Vector2(145, 0);  // Offset of each button
+
+  // Item card in-game
+  Vector2 item_ingame_start = Vector2(1100, 330); // Position of card 1 / 1 - 5
+  Vector2 item_ingame_offset = Vector2(0, 30);    // Offset from 1
+  Vector2 item_ingame_size = Vector2(124, 175);   // Size of card
 
   // Misc
   Vector2 card_shadow_offset = Vector2(80, 80);   // Single-card shadow

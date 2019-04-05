@@ -42,6 +42,9 @@ class GameScene : public Scene
   bool got_new_obj_card = false;
   bool got_new_obj_this_turn = false;
 
+  bool update_item_card = false;
+  int new_item_card = -1;
+
   CardOffsets card_offsets;
 
   int max_progress_index = 19; // win condition

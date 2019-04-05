@@ -21,3 +21,15 @@ int ItemCard::assignActionPoints()
 {
   return action_points + action_point_varibale;
 }
+
+ItemCard::ItemCard(item_cards card_index)
+{
+  card_config = file_handler.openAsJSON("CONFIGS/cards.json");
+  auto card_type = static_cast<size_t>(card_index);
+
+  card_name = card_config["ITEMCARDS"][card_type]["name"];
+  action_points = card_config["ITEMCARDS"][card_type]["action_points"];
+  std::string sprite_path = card_config["ITEMCARDS"][card_type]["sprite_path"];
+  setSprite(sprite_path);
+  cardID = card_config["ITEMCARDS"][card_type]["card_id"];
+}

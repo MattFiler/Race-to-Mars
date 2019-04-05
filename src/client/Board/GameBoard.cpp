@@ -117,7 +117,6 @@ void GameBoard::setActiveIssueCards(int card_index[5], bool is_new_rotation)
     if (is_new_rotation && active_issue_cards[i] != card_index[i])
     {
       active_issue_cards[i] = card_index[i];
-
       // sets the slot to active so no other card can take this position.
       // Creating a new issue card and adding it to the back of the
       // current issues vector for rendering and points.
@@ -165,6 +164,7 @@ bool GameBoard::updateActiveIssueCards()
     }
   }
   update_issues = false;
+
   return true;
 }
 
@@ -218,7 +218,7 @@ void GameBoard::render(bool _obj_popup, bool _issue_popup)
 
       // Render
       active_issue.render();
-      card_index++;
+      ++card_index;
     }
 
     // Render objective card in-game
@@ -228,6 +228,20 @@ void GameBoard::render(bool _obj_popup, bool _issue_popup)
       active_obj_card->setPosition(card_offsets.obj_ingame_pos);
       active_obj_card->render();
     }
+  }
+
+  // Render Item Card in-game
+  // if !item card popup.
+  int card_index = 0;
+  for (auto& active_item : item_inventory)
+  {
+    active_item.setDimensions(card_offsets.item_ingame_size);
+    active_item.setPosition(
+      card_offsets.item_ingame_start +
+      (card_offsets.issue_ingame_offset * static_cast<float>(card_index)));
+    active_item.render();
+
+    ++card_index;
   }
 }
 
@@ -290,40 +304,34 @@ void GameBoard::handleIssueCardEvents(issue_cards _card_type)
   else if (_card_num >= 6 && _card_num <= 11)
   {
     // Engin issue.
-    switch (_card_num)
+    if (_card_num == 8)
     {
-      case 6:
+      // set countdown on issue card here.
+      engine_countdown = 2;
+      if (engine_countdown >= 1)
       {
-        break;
+        engine_countdown -= 1;
       }
-      case 7:
+    }
+    else if (_card_num == 10)
+    {
+      // set item card multiplier to 2.
+      for (auto& i : item_inventory)
       {
-        break;
+        i.setActionPointVariable(5);
       }
-      case 8:
-      {
-        break;
-      }
-      case 10:
-      {
-        // set item card multiplier to 2.
-        for (auto& i : item_inventory)
-        {
-          i.setActionPointVariable(5);
-        }
-        break;
-      }
-      default:
-        break;
     }
   }
   else if (_card_num >= 12 && _card_num <= 17)
   {
     // Medic issue.
     // subtract 3 this turn on all issue cards here.
-    for (auto& active_issue : active_issues)
+    if (_card_num == 14)
     {
-      active_issue.setIssueCardvariable(-3);
+      for (auto& active_issue : active_issues)
+      {
+        active_issue.setIssueCardvariable(-3);
+      }
     }
   }
   else if (_card_num >= 18 && _card_num <= 23)
@@ -334,6 +342,10 @@ void GameBoard::handleIssueCardEvents(issue_cards _card_type)
       case 18:
       {
         // Set max items to 5 for local player.
+        Locator::getPlayers()
+          ->getPlayer(
+            static_cast<player_classes>(Locator::getPlayers()->my_player_index))
+          ->setMaxItems(5);
         break;
       }
       case 19:
@@ -351,8 +363,10 @@ void GameBoard::handleIssueCardEvents(issue_cards _card_type)
         // Currently only disables the player index 1.
         if (Locator::getPlayers()->my_player_index == 1)
         {
-          Locator::getPlayers()->getPlayer(static_cast<player_classes>(
-            Locator::getPlayers()->my_player_index));
+          Locator::getPlayers()
+            ->getPlayer(static_cast<player_classes>(
+              Locator::getPlayers()->my_player_index))
+            ->setChasingChicken(true);
         }
         break;
       }
@@ -431,6 +445,7 @@ void GameBoard::handleIssueCardEvents(issue_cards _card_type)
         break;
     }
   }
+  issueTracking();
 }
 
 void GameBoard::setActiveItemCard(int card_index)
@@ -448,20 +463,49 @@ void GameBoard::setActiveItemCard(int card_index)
   }
 }
 
-bool GameBoard::updateActiveItemCard()
+bool GameBoard::updateActiveItemCard(int _item_card_index)
 {
-  //  for(int i = 0; i <
-  //  Locator::getPlayers()->getPlayer(static_cast<player_classes>(Locator::getPlayers()->my_player_index))->getMaxItems();
-  //  ++i)
-  //  {
-  //    if (active_item_card[i] != -1 && !slot_active[i])
-  //    {
-  //      item_inventory.emplace_back(static_cast<item_cards>(active_item_card[i]));
-  //      item_slot_active[i] = true;
-  //      debug_text.print("Creating item card: " +
-  //                       std::to_string(active_issue_cards[i]));
-  //      return true;
-  //    }
-  //  }
+  if (_item_card_index >= 0 && _item_card_index <= 19)
+  {
+    item_inventory.emplace_back(static_cast<item_cards>(_item_card_index));
+    debug_text.print("Creating item card: " +
+                     std::to_string(active_item_card[_item_card_index]));
+    return true;
+  }
   return false;
+}
+
+void GameBoard::issueTracking()
+{
+  for (auto& issue : active_issues)
+  {
+    if (issue.getCardID() == 8)
+    {
+      engine_countdown -= 1;
+      if (engine_countdown == 0)
+      {
+        // If card has been around for 2 turns, move ship progress back 2
+        // spaces.
+        auto new_share = DataShare(data_roles::CLIENT_CHANGE_PROGRESS_INDEX);
+        new_share.add(Locator::getPlayers()->current_progress_index - 2);
+        Locator::getNetworkInterface()->sendData(new_share);
+      }
+    }
+  }
+}
+
+void GameBoard::resetCardVariables()
+{
+  // Reset Item card values for any issue cards drawn affecting stats.
+  for (auto& item : item_inventory)
+  {
+    item.setActive(true);
+    item.setActionPointVariable(0);
+  }
+
+  // Reset Issue Cards ".
+  for (auto& issue : active_issues)
+  {
+    issue.setIssueCardvariable(0);
+  }
 }

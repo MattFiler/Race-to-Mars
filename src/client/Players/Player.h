@@ -45,8 +45,13 @@ class Player
   float getHeight() { return counter.getSprite()->width(); }
   void setDiceRolls(int _dice_roll) { amount_of_rolls += _dice_roll; }
   void setMaxItems(int _max_items) { max_items = _max_items; }
+  void setChasingChicken(bool _chasing_chicken)
+  {
+    chasing_chicken = _chasing_chicken;
+  }
 
   int getMaxItems() { return max_items; }
+  int getHeldItemAmount() { return held_items; }
 
   void makeUninitialised()
   {
@@ -73,8 +78,10 @@ class Player
   json config;
 
   int current_action_points = 0;
+  int held_items = 0;
   int max_items = 2;
   int amount_of_rolls = 1;
+  bool chasing_chicken = false;
 
  private:
   SimpleMath math;
