@@ -582,14 +582,19 @@ void RaceToSpaceServer::clientRequestsItem(DataShare& data_to_send,
 void RaceToSpaceServer::clientSolvedIssueCard(DataShare& data_to_send,
                                               server_client& client)
 {
+  DataShare new_share = DataShare(data_roles::CLIENT_SOLVED_ISSUE_CARD);
   Lobby* this_lobby = getLobbyByID(client.lobby_id);
   if (this_lobby == nullptr)
   {
     return;
   }
-  // re sync cards in server after client has completed 1.
-  for (int i = 0; i < 4; ++i)
+  // re sync cards in server after client has completed 1 and
+  // redistribute to clients.
+  for (int i = 0; i < 5; ++i)
   {
     this_lobby->active_issue_cards[i] = data_to_send.retrieve(i);
+    new_share.add(data_to_send.retrieve(i));
   }
+
+  sendData(client, static_cast<unsigned int>(-2), new_share);
 }

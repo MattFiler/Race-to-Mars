@@ -236,6 +236,7 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       // Re-sync progress index every turn.
       Locator::getPlayers()->current_progress_index = received_data.retrieve(2);
       // Re-sync issue cards every turn.
+      board.checkissueSolved();
       if (received_data.retrieve(12))
       {
         int active_issue_cards[5] = { received_data.retrieve(3),
@@ -243,7 +244,6 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
                                       received_data.retrieve(5),
                                       received_data.retrieve(6),
                                       received_data.retrieve(7) };
-        board.checkissueSolved();
         board.setActiveIssueCards(
           active_issue_cards, static_cast<bool>(received_data.retrieve(12)));
       }
@@ -414,6 +414,18 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
         std::to_string(Locator::getPlayers()->current_progress_index));
       break;
     }
+    case data_roles::CLIENT_SOLVED_ISSUE_CARD:
+    {
+      debug_text.print("Resyncing issue cards client side... ");
+      int sync_issues[5] = { received_data.retrieve(0),
+                             received_data.retrieve(1),
+                             received_data.retrieve(2),
+                             received_data.retrieve(3),
+                             received_data.retrieve(4) };
+      board.syncIssueCards(sync_issues);
+      board.checkissueSolved();
+      break;
+    }
     // Anything else is unhandled.
     default:
     {
@@ -450,13 +462,14 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
       if (keys.keyReleased("End Turn") &&
           players[Locator::getPlayers()->my_player_index]->is_active)
       {
-        board.checkissueSolved();
+        // board.checkissueSolved();
 
         DataShare new_share = DataShare(data_roles::CLIENT_WANTS_TO_END_TURN);
         new_share.add(Locator::getPlayers()->my_player_index);
         Locator::getNetworkInterface()->sendData(new_share);
         current_scene_lock_active = true;
         debug_text.print("Requesting to end my go!!");
+        board.resetCardVariables();
       }
       if (keys.keyReleased("Debug Spend AP") &&
           players[Locator::getPlayers()->my_player_index]->is_active)
@@ -632,6 +645,7 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
         // Clicked end turn button
         if (ui_manager.getButton(ui_buttons::END_TURN_BTN)->clicked())
         {
+          board.checkissueSolved();
           DataShare new_share = DataShare(data_roles::CLIENT_WANTS_TO_END_TURN);
           new_share.add(Locator::getPlayers()->my_player_index);
           Locator::getNetworkInterface()->sendData(new_share);

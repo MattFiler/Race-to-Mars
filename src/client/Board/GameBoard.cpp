@@ -94,6 +94,7 @@ void GameBoard::setActiveObjectiveCard(int card_index)
 /* Set active issue cards to update */
 void GameBoard::setActiveIssueCards(int card_index[5], bool is_new_rotation)
 {
+  // checkissueSolved();
   if (active_issues.size() >= static_cast<size_t>(game_config.max_issue_cards))
   {
     // Swap To Lose Game State.
@@ -526,5 +527,13 @@ void GameBoard::checkissueSolved()
     new_share.add(active_issue_cards[3]);
     new_share.add(active_issue_cards[4]);
     Locator::getNetworkInterface()->sendData(new_share);
+  }
+}
+
+void GameBoard::syncIssueCards(int active_cards[5])
+{
+  for (int i = 0; i < 5; ++i)
+  {
+    active_issue_cards[i] = active_cards[i];
   }
 }
