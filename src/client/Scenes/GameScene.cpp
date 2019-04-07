@@ -228,6 +228,7 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     // The server has ended the current turn, update our game accordingly
     case data_roles::SERVER_ENDED_CLIENT_TURN:
     {
+      board.checkObjectiveCardComplete();
       // Update active player flag.
       for (int i = 0; i < 4; i++)
       {
@@ -423,7 +424,13 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
                              received_data.retrieve(3),
                              received_data.retrieve(4) };
       board.syncIssueCards(sync_issues);
-      board.checkissueSolved();
+      break;
+    }
+    case data_roles::CLIENT_REQUESTS_OBJ_CARD:
+    {
+      debug_text.print("Received new obj after completing one of type:" +
+                       std::to_string(received_data.retrieve(1)));
+      board.setActiveObjectiveCard(received_data.retrieve(1));
       break;
     }
     // Anything else is unhandled.
@@ -647,6 +654,14 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
         // Clicked end turn button
         if (ui_manager.getButton(ui_buttons::END_TURN_BTN)->clicked())
         {
+          if (board.checkObjectiveCardComplete())
+          {
+            // request new obj card for client.
+            DataShare new_share =
+              DataShare(data_roles::CLIENT_REQUESTS_OBJ_CARD);
+            new_share.add(Locator::getPlayers()->my_player_index);
+            Locator::getNetworkInterface()->sendData(new_share);
+          }
           DataShare new_share = DataShare(data_roles::CLIENT_WANTS_TO_END_TURN);
           new_share.add(Locator::getPlayers()->my_player_index);
           Locator::getNetworkInterface()->sendData(new_share);

@@ -51,18 +51,13 @@ class Player
     chasing_chicken = _chasing_chicken;
   }
   void setHeldItems(int _item_increase) { held_items += _item_increase; }
-  void setUsedAPThisTurn(bool _used_ap) { assigned_ap_thisturn = _used_ap; }
+  void setUsedAPThisTurn(bool _used_ap) { ap_not_assigned = _used_ap; }
 
   int getMaxItems() { return max_items; }
   int getHeldItemAmount() { return held_items; }
-  bool getUsedApThisTurn() { return assigned_ap_thisturn; }
+  bool getUsedApThisTurn() { return ap_not_assigned; }
   player_classes getRightPlayer();
   player_classes getLeftPlayer();
-
-  // void setDidntAssignAP(bool _assigned_points){ didnt_assign_ap_this_turn =
-  // _assigned_points; } bool getDidntAssignAP{ return
-  // didnt_assign_ap_this_turn;
-  // }
 
   void makeUninitialised()
   {
@@ -93,7 +88,7 @@ class Player
   int max_items = 2;
   int amount_of_rolls = 1;
   bool chasing_chicken = false;
-  bool assigned_ap_thisturn = false;
+  bool ap_not_assigned = true;
 
  private:
   SimpleMath math;

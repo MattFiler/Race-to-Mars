@@ -39,6 +39,7 @@ class RaceToSpaceServer
   void clientProgressChange(DataShare& data_to_send, server_client& client);
   void clientRequestsItem(DataShare& data_to_send, server_client& client);
   void clientSolvedIssueCard(DataShare& data_to_send, server_client& client);
+  void clientRequestsObjective(DataShare& data_to_send, server_client& client);
 
   void sendData(server_client& client, unsigned int user_id, DataShare& data);
 

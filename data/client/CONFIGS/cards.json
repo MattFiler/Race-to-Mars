@@ -80,7 +80,7 @@
 			{"name": "Issue Solver Small", "description": "Solve a 5 point issue solo before drawing a new card.", "ability": "Three extra action points.", "sprite_path": "UI/CARD_IMAGES/objective_issuesolversmall.png", "card_id": 7},
 			{"name": "Majority Helper", "description": "Put the most points towards an issue card to solve it.", "ability": "Take an extra item card.", "sprite_path": "UI/CARD_IMAGES/objective_majorityhelper.png", "card_id": 8},
 			{"name": "Personal Issue", "description": "Solve an issue assigned to your class before drawing a new card.", "ability": "Three extra action points.", "sprite_path": "UI/CARD_IMAGES/objective_personalissue.png", "card_id": 9},
-			{"name": "point Stash", "description": "Use none of your action points for one turn.", "ability": "Double your action points.", "sprite_path": "UI/CARD_IMAGES/objective_pointstash.png", "card_id": 10},
+			{"name": "Point Stash", "description": "Use none of your action points for one turn.", "ability": "Double your action points.", "sprite_path": "UI/CARD_IMAGES/objective_pointstash.png", "card_id": 10},
 			{"name": "Unhelpful", "description": "Don't help the player to your right solve an issue.", "ability": "Take an extra item", "sprite_path": "UI/CARD_IMAGES/objective_unhelpful.png", "card_id": 11},
 			{"name": "Unhelpful", "description": "Don't help the player to your left solve an issue.", "ability": "Re-roll the dice at any point during your turn.", "sprite_path": "UI/CARD_IMAGES/objective_unhelpfulleft.png", "card_id": 12}
 		]

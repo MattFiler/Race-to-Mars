@@ -537,98 +537,14 @@ void GameBoard::syncIssueCards(int active_cards[5])
   }
 }
 
-void GameBoard::checkObjectiveCardComplete()
+bool GameBoard::checkObjectiveCardComplete()
 {
   for (auto& issue : active_issues)
   {
     if (active_obj_card->objectiveComplete(&issue))
     {
-      objective_card_inventory.emplace_back(active_obj_card->getCardID());
-      // delete current obj card and draw another.
+      return true;
     }
   }
-  //    if (issue.getActionPointsNeeded() == 15 &&
-  //    issue.getAssignedPoints(static_cast<player_classes>(
-  //                                                                               Locator::getPlayers()->my_player_index)) > 0 )
-  //    {
-  //      // Helped solve a 15 point issue?
-  //      objective_card_tasks_completed[0] = true;
-  //      objective_card_tasks_completed[4] = true;
-  //    }
-  //    else if (Locator::getPlayers()
-  //               ->getPlayer(static_cast<player_classes>(
-  //                 Locator::getPlayers()->my_player_index))
-  //               ->getHeldItemAmount() >= 2)
-  //    {
-  //      // Acquire two class items?
-  //      objective_card_tasks_completed[1] = true;
-  //    }
-  //    else if (issue.getAssignedPoints(static_cast<player_classes>(
-  //               Locator::getPlayers()->my_player_index)) > 0 &&
-  //             issue.isSolved() &&
-  //             issue.getClassType() != static_cast<player_classes>(
-  //                                       Locator::getPlayers()->my_player_index)){
-  //      // Solve an issue not assigned to this class.
-  //      objective_card_tasks_completed[2] = true;
-  //    }
-  //    else
-  //    if(issue.getAssignedPoints(static_cast<player_classes>(Locator::getPlayers()->my_player_index))
-  //    > 0){
-  //     //Assisted with 1 issue card?
-  //      objective_card_tasks_completed[3] = true;
-  //    }
-  //    else
-  //    if(issue.isSolvedSolo(static_cast<player_classes>(Locator::getPlayers()->my_player_index)))
-  //    {
-  //      if(issue.getActionPointsNeeded() == 10)
-  //      {
-  //        objective_card_tasks_completed[5] = true;
-  //      }
-  //      else if(issue.getActionPointsNeeded() == 15)
-  //      {
-  //        objective_card_tasks_completed[6] = true;
-  //      }
-  //      else if(issue.getActionPointsNeeded() == 5)
-  //      {
-  //        objective_card_tasks_completed[7] = true;
-  //      }
-  //    }
-  //    else if(issue.isSolved() &&
-  //    issue.contributedMost(static_cast<player_classes>(Locator::getPlayers()->my_player_index)))
-  //    {
-  //      objective_card_tasks_completed[8] = true;
-  //    }
-  //    else if(issue.isSolved() && issue.getClassType() ==
-  //    static_cast<player_classes>(Locator::getPlayers()->my_player_index))
-  //    {
-  //      objective_card_tasks_completed[9] = true;
-  //    }
-  //    else
-  //    if(!Locator::getPlayers()->getPlayer(static_cast<player_classes>(Locator::getPlayers()->my_player_index))->getUsedApThisTurn())
-  //    {
-  //      objective_card_tasks_completed[10] = true;
-  //    }
-  //    else if(issue.isSolved() &&
-  //    issue.getAssignedPoints(static_cast<player_classes>(Locator::getPlayers()->my_player_index))
-  //    <= 0)
-  //    {
-  //      // didnt help player on right with issue
-  //      int right_player = 0;
-  //      int left_player = 0;
-  //      int this_player = Locator::getPlayers()->my_player_index;
-  //      if(this_player + 1 == 4)
-  //      {
-  //        right_player = 0;
-  //      }
-  //      else
-  //      {
-  //        right_player = this_player + 1;
-  //      }
-  //      if(issue.getAssignedPoints(static_cast<player_classes>(right_player))
-  //      > 0)
-  //      {
-  //        objective_card_tasks_completed[11] = true;
-  //      }
-  //    }
-  //}
+  return false;
 }

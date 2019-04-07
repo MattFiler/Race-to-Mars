@@ -27,7 +27,7 @@ void ObjectiveCard::setCardID(objective_cards _obj_card_id)
 
 void ObjectiveCard::useObjectiveCard() {}
 
-bool ObjectiveCard::objectiveComplete(IssueCard* _issue)
+bool ObjectiveCard::objectiveComplete(IssueCard* const _issue)
 {
   IssueCard* issue = _issue;
   switch (cardID)
@@ -40,51 +40,100 @@ bool ObjectiveCard::objectiveComplete(IssueCard* _issue)
     }
     case objective_cards::CLASS_ITEMS:
     {
-      break;
+      return Locator::getPlayers()
+               ->getPlayer(static_cast<player_classes>(
+                 Locator::getPlayers()->my_player_index))
+               ->getHeldItemAmount() >= 2;
     }
     case objective_cards::CLASS_SOLVER:
     {
-      break;
+      return issue->getAssignedPoints(static_cast<player_classes>(
+               Locator::getPlayers()->my_player_index)) > 0 &&
+             issue->isSolved() &&
+             issue->getClassType() != static_cast<player_classes>(
+                                        Locator::getPlayers()->my_player_index);
     }
     case objective_cards::ISSUE_HELPER:
     {
-      break;
+      return issue->getAssignedPoints(static_cast<player_classes>(
+               Locator::getPlayers()->my_player_index)) > 0;
     }
     case objective_cards::ISSUE_HELPER_15:
     {
-      break;
+      return issue->getActionPointsNeeded() == 15 &&
+             issue->getAssignedPoints(static_cast<player_classes>(
+               Locator::getPlayers()->my_player_index)) > 0;
     }
     case objective_cards::ISSUE_SOLVER_5:
     {
-      break;
+      return issue->isSolvedSolo(static_cast<player_classes>(
+               Locator::getPlayers()->my_player_index)) &&
+             issue->getActionPointsNeeded() == 5;
     }
     case objective_cards::ISSUE_SOLVER_10:
     {
-      break;
+      return issue->isSolvedSolo(static_cast<player_classes>(
+               Locator::getPlayers()->my_player_index)) &&
+             issue->getActionPointsNeeded() == 10;
     }
     case objective_cards::ISSUE_SOLVER_15:
     {
-      break;
+      return issue->isSolvedSolo(static_cast<player_classes>(
+               Locator::getPlayers()->my_player_index)) &&
+             issue->getActionPointsNeeded() == 15;
     }
     case objective_cards::MAJORITY_HELPER:
     {
-      break;
+      return issue->isSolved() &&
+             issue->contributedMost(static_cast<player_classes>(
+               Locator::getPlayers()->my_player_index));
     }
     case objective_cards::UNHELPFUL_RIGHT:
     {
-      break;
+      int right_player = 0;
+      int this_player = Locator::getPlayers()->my_player_index;
+      if (this_player + 1 > 3)
+      {
+        right_player = 0;
+      }
+      else
+      {
+        right_player = this_player + 1;
+      }
+      return issue->getAssignedPoints(
+               static_cast<player_classes>(right_player)) > 0 &&
+             issue->getAssignedPoints(static_cast<player_classes>(
+               Locator::getPlayers()->my_player_index)) == 0;
     }
     case objective_cards::UNHELPFUL_LEFT:
     {
-      break;
+      int left_player = 0;
+      int this_player = Locator::getPlayers()->my_player_index;
+      if (this_player - 1 < 0)
+      {
+        left_player = 0;
+      }
+      else
+      {
+        left_player = this_player - 1;
+      }
+      return issue->getAssignedPoints(
+               static_cast<player_classes>(left_player)) > 0 &&
+             issue->getAssignedPoints(static_cast<player_classes>(
+               Locator::getPlayers()->my_player_index)) == 0;
     }
     case objective_cards::PERSONAL_ISSUE:
     {
-      break;
+      return issue->isSolved() &&
+             issue->getClassType() == static_cast<player_classes>(
+                                        Locator::getPlayers()->my_player_index);
     }
     case objective_cards::POINT_STASH:
     {
-      break;
+      return Locator::getPlayers()
+        ->getPlayer(
+          static_cast<player_classes>(Locator::getPlayers()->my_player_index))
+        ->getUsedApThisTurn();
     }
     default:
     {
