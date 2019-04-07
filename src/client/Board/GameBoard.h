@@ -52,11 +52,6 @@ class GameBoard
   // issue tracking
   int engine_countdown = 2;
 
-  // objective card tracking
-  bool objective_card_tasks_completed[13] = { false, false, false, false, false,
-                                              false, false, false, false, false,
-                                              true,  true,  true };
-
   void
   assignActionPointToIssue(player_classes _class, int _issue, int _points = 1);
 
