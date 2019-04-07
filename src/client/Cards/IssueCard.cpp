@@ -33,6 +33,55 @@ IssueCard::IssueCard(issue_cards _card_type)
   }
 }
 
+bool IssueCard::isSolvedSolo(player_classes _player_class)
+{
+  switch (_player_class)
+  {
+    case player_classes::COMMUNICATIONS:
+    {
+      if (engineer_ap_assigned == 0 && medic_ap_assigned == 0 &&
+          pilot_ap_assigned == 0)
+      {
+        return true;
+      }
+      break;
+    }
+    case player_classes::ENGINEER:
+    {
+      if (comms_ap_assigned == 0 && medic_ap_assigned == 0 &&
+          pilot_ap_assigned == 0)
+      {
+        return true;
+      }
+      break;
+    }
+    case player_classes::MEDIC:
+    {
+      if (comms_ap_assigned == 0 && engineer_ap_assigned == 0 &&
+          pilot_ap_assigned == 0)
+      {
+        return true;
+      }
+      break;
+    }
+    case player_classes::PILOT:
+    {
+      if (comms_ap_assigned == 0 && medic_ap_assigned == 0 &&
+          engineer_ap_assigned == 0)
+      {
+        return true;
+      }
+      break;
+    }
+    default:
+    {
+      return false;
+      break;
+    }
+  }
+  return false;
+}
+
 /* Set the card ID */
 void IssueCard::setCardID(issue_cards _item_card_id)
 {
@@ -114,4 +163,56 @@ bool IssueCard::isSolved()
 void IssueCard::setIssueCardvariable(int _action_points)
 {
   issue_card_ap_variable += _action_points;
+}
+
+bool IssueCard::contributedMost(player_classes _player_class)
+{
+  switch (_player_class)
+  {
+    case player_classes::COMMUNICATIONS:
+    {
+      if (comms_ap_assigned > engineer_ap_assigned &&
+          comms_ap_assigned > medic_ap_assigned &&
+          comms_ap_assigned > pilot_ap_assigned)
+      {
+        return true;
+      }
+      break;
+    }
+    case player_classes::ENGINEER:
+    {
+      if (engineer_ap_assigned > comms_ap_assigned &&
+          engineer_ap_assigned > medic_ap_assigned &&
+          engineer_ap_assigned > pilot_ap_assigned)
+      {
+        return true;
+      }
+      break;
+    }
+    case player_classes::MEDIC:
+    {
+      if (medic_ap_assigned > engineer_ap_assigned &&
+          medic_ap_assigned > comms_ap_assigned &&
+          medic_ap_assigned > pilot_ap_assigned)
+      {
+        return true;
+      }
+      break;
+    }
+    case player_classes::PILOT:
+    {
+      if (pilot_ap_assigned > engineer_ap_assigned &&
+          pilot_ap_assigned > comms_ap_assigned &&
+          pilot_ap_assigned > medic_ap_assigned)
+      {
+        return true;
+      }
+      break;
+    }
+    default:
+    {
+      return false;
+    }
+  }
+  return false;
 }

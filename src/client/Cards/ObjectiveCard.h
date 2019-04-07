@@ -10,6 +10,8 @@
  *
  */
 
+class IssueCard;
+
 class ObjectiveCard : public Card
 {
  public:
@@ -18,6 +20,9 @@ class ObjectiveCard : public Card
 
   void setCardID(objective_cards _obj_card_id);
   objective_cards getCardID() { return cardID; };
+
+  void useObjectiveCard();
+  bool objectiveComplete(IssueCard* _issue);
 
  private:
   objective_cards cardID = objective_cards::OBJECTIVE_PLACEHOLDER;

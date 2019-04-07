@@ -568,6 +568,10 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
             int points_to_assign = 1;
             if (my_action_points >= points_to_assign)
             {
+              Locator::getPlayers()
+                ->getPlayer(static_cast<player_classes>(
+                  Locator::getPlayers()->my_player_index))
+                ->setUsedAPThisTurn(true);
               // Assign action point to the selected issue - this currently
               // assigns ONE action point, maybe in future have buttons for
               // varying amounts?

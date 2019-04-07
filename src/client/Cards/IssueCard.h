@@ -27,10 +27,12 @@ class IssueCard : public Card
   int getActionPointsNeeded() { return action_points; }
   issue_cards getCardID() { return cardID; };
   player_classes getClassType() { return playerclass_type; }
-  int getAssignedPointsGlobal() { return total_ap_assigned; };
+  int getAssignedPointsTotal() { return total_ap_assigned; };
   int getAssignedPoints(player_classes _class);
 
   bool isSolved();
+  bool isSolvedSolo(player_classes _player_class);
+  bool contributedMost(player_classes _player_class);
 
  private:
   issue_cards cardID = issue_cards::ISSUE_PLACEHOLDER;
