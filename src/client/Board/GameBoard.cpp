@@ -103,8 +103,7 @@ void GameBoard::setActiveIssueCards(int card_index[5], bool is_new_rotation)
 
   for (int i = 0; i < game_config.max_issue_cards; ++i)
   {
-    // check to see if any cards changed during turn.
-    if (is_new_rotation && active_issue_cards[i] != card_index[i])
+    if (is_new_rotation && active_issue_cards[i] == -1)
     {
       active_issue_cards[i] = card_index[i];
       // sets the slot to active so no other card can take this position.
@@ -535,5 +534,39 @@ void GameBoard::syncIssueCards(int active_cards[5])
   for (int i = 0; i < 5; ++i)
   {
     active_issue_cards[i] = active_cards[i];
+  }
+}
+
+void GameBoard::checkObjectiveCardComplete()
+{
+  for (auto& issue : active_issues)
+  {
+    if (issue.getActionPointsNeeded() == 15)
+    {
+      // Helped solve a 15 point issue?
+      objective_card_tasks_completed[0] = true;
+    }
+    else if (Locator::getPlayers()
+               ->getPlayer(static_cast<player_classes>(
+                 Locator::getPlayers()->my_player_index))
+               ->getHeldItemAmount() >= 2)
+    {
+      // Acquire two class items?
+      objective_card_tasks_completed[1] = true;
+    }
+    else if (issue.getAssignedPoints(static_cast<player_classes>(
+               Locator::getPlayers()->my_player_index)) > 0 &&
+             issue.isSolved() &&
+             issue.getClassType() != static_cast<player_classes>(
+                                       Locator::getPlayers()->my_player_index))
+    {
+      // Solve an issue not assigned to this class.
+    }
+  }
+
+  if (objective_card_tasks_completed[static_cast<int>(
+        active_obj_card->getCardID())])
+  {
+    objective_card_inventory.emplace_back(active_obj_card->getCardID());
   }
 }

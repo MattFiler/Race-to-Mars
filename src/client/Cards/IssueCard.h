@@ -19,11 +19,14 @@ class IssueCard : public Card
  public:
   explicit IssueCard(issue_cards _card_type);
   ~IssueCard() = default;
+
   void setCardID(issue_cards _item_card_id);
-  issue_cards getCardID() { return cardID; };
   void addActionPoints(player_classes _player_class, int _ap_amount);
   void setIssueCardvariable(int _action_points);
 
+  int getActionPointsNeeded() { return action_points; }
+  issue_cards getCardID() { return cardID; };
+  player_classes getClassType() { return playerclass_type; }
   int getAssignedPointsGlobal() { return total_ap_assigned; };
   int getAssignedPoints(player_classes _class);
 
@@ -37,6 +40,7 @@ class IssueCard : public Card
   int pilot_ap_assigned = 0;
   int total_ap_assigned = 0;
   bool issue_solved = false;
+  player_classes playerclass_type = player_classes::UNASSIGNED;
 
   int issue_card_ap_variable = 0;
 };

@@ -40,6 +40,7 @@ class GameBoard
   void syncIssueCards(int active_cards[5]);
 
   void checkissueSolved();
+  void checkObjectiveCardComplete();
 
   bool updateActiveIssueCards();
   bool updateActiveObjectiveCard();
@@ -50,6 +51,11 @@ class GameBoard
 
   // issue tracking
   int engine_countdown = 2;
+
+  // objective card tracking
+  bool objective_card_tasks_completed[13] = { false, false, false, false, false,
+                                              false, false, false, false, false,
+                                              true,  true,  true };
 
   void
   assignActionPointToIssue(player_classes _class, int _issue, int _points = 1);
@@ -70,6 +76,7 @@ class GameBoard
 
   std::vector<IssueCard> active_issues;
   std::vector<ItemCard> item_inventory;
+  std::vector<ObjectiveCard> objective_card_inventory;
 
   bool pilot_blackhole = false;
   bool bonus_movement = false;
