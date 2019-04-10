@@ -133,10 +133,24 @@ enum data_roles
    *   [0] = the new current progress index.
    */
 
-  CLIENT_REQUESTED_ITEM_CARD
+  CLIENT_REQUESTED_ITEM_CARD,
   /* ^ The client has requested an item card
    *   [0] = client ID that pulled the item.
    *   [1] = item card ID.
+   */
+
+  CLIENT_SOLVED_ISSUE_CARD,
+  /* ^ The client has requested an item card
+   *   [0] = active issue [0]
+   *   [1] = active issue [1]
+   *   [2] = active issue [2]
+   *   [3] = active issue [3]
+   *   [4] = active issue [4]
+   */
+  CLIENT_REQUESTS_OBJ_CARD
+  /* ^ The client has requested an objective card
+   *   [0] = client ID that pulled the item.
+   *   [1] = objective card ID.
    */
 };
 

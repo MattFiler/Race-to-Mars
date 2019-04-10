@@ -231,6 +231,7 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     // The server has ended the current turn, update our game accordingly
     case data_roles::SERVER_ENDED_CLIENT_TURN:
     {
+      board.checkObjectiveCardComplete();
       // Update active player flag.
       for (int i = 0; i < 4; i++)
       {
@@ -248,6 +249,7 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
                                       received_data.retrieve(7) };
         board.setActiveIssueCards(
           active_issue_cards, static_cast<bool>(received_data.retrieve(12)));
+        board.checkissueSolved();
       }
       // Pull a new objective card if required.
       if (Locator::getPlayers()->current_progress_index % 3 == 0 &&
@@ -416,6 +418,24 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
         std::to_string(Locator::getPlayers()->current_progress_index));
       break;
     }
+    case data_roles::CLIENT_SOLVED_ISSUE_CARD:
+    {
+      debug_text.print("Resyncing issue cards client side... ");
+      int sync_issues[5] = { received_data.retrieve(0),
+                             received_data.retrieve(1),
+                             received_data.retrieve(2),
+                             received_data.retrieve(3),
+                             received_data.retrieve(4) };
+      board.syncIssueCards(sync_issues);
+      break;
+    }
+    case data_roles::CLIENT_REQUESTS_OBJ_CARD:
+    {
+      debug_text.print("Received new obj after completing one of type:" +
+                       std::to_string(received_data.retrieve(1)));
+      board.setActiveObjectiveCard(received_data.retrieve(1));
+      break;
+    }
     // Anything else is unhandled.
     default:
     {
@@ -457,6 +477,7 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
         Locator::getNetworkInterface()->sendData(new_share);
         current_scene_lock_active = true;
         debug_text.print("Requesting to end my go!!");
+        board.resetCardVariables();
       }
       if (keys.keyReleased("Debug Spend AP") &&
           players[Locator::getPlayers()->my_player_index]->is_active)
@@ -474,7 +495,8 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
         players[Locator::getPlayers()->my_player_index]->action_points = new_ap;
         debug_text.print("Debug: changed my action points to 10!");
       }
-      if (keys.keyReleased("Debug Buy Item"))
+      if (keys.keyReleased("Debug Buy Item") &&
+          players[Locator::getPlayers()->my_player_index]->is_active)
       {
         debug_text.print("Trying to buy item card.");
         if (Locator::getPlayers()
@@ -485,6 +507,10 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
           auto new_share = DataShare(data_roles::CLIENT_REQUESTED_ITEM_CARD);
           new_share.add(Locator::getPlayers()->my_player_index);
           Locator::getNetworkInterface()->sendData(new_share);
+          Locator::getPlayers()
+            ->getPlayer(static_cast<player_classes>(
+              Locator::getPlayers()->my_player_index))
+            ->setHeldItems(1);
         }
       }
       break;
@@ -552,6 +578,10 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
             int points_to_assign = 1;
             if (my_action_points >= points_to_assign)
             {
+              Locator::getPlayers()
+                ->getPlayer(static_cast<player_classes>(
+                  Locator::getPlayers()->my_player_index))
+                ->setUsedAPThisTurn(true);
               // Assign action point to the selected issue - this currently
               // assigns ONE action point, maybe in future have buttons for
               // varying amounts?
@@ -627,6 +657,14 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
         // Clicked end turn button
         if (ui_manager.getButton(ui_buttons::END_TURN_BTN)->clicked())
         {
+          if (board.checkObjectiveCardComplete())
+          {
+            // request new obj card for client.
+            DataShare new_share =
+              DataShare(data_roles::CLIENT_REQUESTS_OBJ_CARD);
+            new_share.add(Locator::getPlayers()->my_player_index);
+            Locator::getNetworkInterface()->sendData(new_share);
+          }
           DataShare new_share = DataShare(data_roles::CLIENT_WANTS_TO_END_TURN);
           new_share.add(Locator::getPlayers()->my_player_index);
           Locator::getNetworkInterface()->sendData(new_share);

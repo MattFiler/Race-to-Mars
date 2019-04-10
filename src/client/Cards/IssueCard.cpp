@@ -11,8 +11,75 @@ IssueCard::IssueCard(issue_cards _card_type)
   card_name = card_config["ISSUECARDS"][card_type]["name"];
   card_decription = card_config["ISSUECARDS"][card_type]["description"];
   action_points = card_config["ISSUECARDS"][card_type]["action_points"];
-  cardID = card_config["ISSUECARDS"][card_type]["card_id"];
+  cardID = static_cast<issue_cards>(card_config["ISSUECARDS"][card_type]["card_"
+                                                                         "id"]);
   setSprite(card_config["ISSUECARDS"][card_type]["sprite_path"]);
+
+  if (static_cast<int>(cardID) >= 0 && static_cast<int>(cardID) <= 5)
+  {
+    playerclass_type = player_classes::COMMUNICATIONS;
+  }
+  else if (static_cast<int>(cardID) >= 6 && static_cast<int>(cardID) <= 11)
+  {
+    playerclass_type = player_classes::ENGINEER;
+  }
+  else if (static_cast<int>(cardID) >= 12 && static_cast<int>(cardID) <= 17)
+  {
+    playerclass_type = player_classes::MEDIC;
+  }
+  else if (static_cast<int>(cardID) >= 24 && static_cast<int>(cardID) <= 29)
+  {
+    playerclass_type = player_classes::PILOT;
+  }
+}
+
+bool IssueCard::isSolvedSolo(player_classes _player_class)
+{
+  switch (_player_class)
+  {
+    case player_classes::COMMUNICATIONS:
+    {
+      if (engineer_ap_assigned == 0 && medic_ap_assigned == 0 &&
+          pilot_ap_assigned == 0)
+      {
+        return true;
+      }
+      break;
+    }
+    case player_classes::ENGINEER:
+    {
+      if (comms_ap_assigned == 0 && medic_ap_assigned == 0 &&
+          pilot_ap_assigned == 0)
+      {
+        return true;
+      }
+      break;
+    }
+    case player_classes::MEDIC:
+    {
+      if (comms_ap_assigned == 0 && engineer_ap_assigned == 0 &&
+          pilot_ap_assigned == 0)
+      {
+        return true;
+      }
+      break;
+    }
+    case player_classes::PILOT:
+    {
+      if (comms_ap_assigned == 0 && medic_ap_assigned == 0 &&
+          engineer_ap_assigned == 0)
+      {
+        return true;
+      }
+      break;
+    }
+    default:
+    {
+      return false;
+      break;
+    }
+  }
+  return false;
 }
 
 /* Set the card ID */
@@ -96,4 +163,56 @@ bool IssueCard::isSolved()
 void IssueCard::setIssueCardvariable(int _action_points)
 {
   issue_card_ap_variable += _action_points;
+}
+
+bool IssueCard::contributedMost(player_classes _player_class)
+{
+  switch (_player_class)
+  {
+    case player_classes::COMMUNICATIONS:
+    {
+      if (comms_ap_assigned > engineer_ap_assigned &&
+          comms_ap_assigned > medic_ap_assigned &&
+          comms_ap_assigned > pilot_ap_assigned)
+      {
+        return true;
+      }
+      break;
+    }
+    case player_classes::ENGINEER:
+    {
+      if (engineer_ap_assigned > comms_ap_assigned &&
+          engineer_ap_assigned > medic_ap_assigned &&
+          engineer_ap_assigned > pilot_ap_assigned)
+      {
+        return true;
+      }
+      break;
+    }
+    case player_classes::MEDIC:
+    {
+      if (medic_ap_assigned > engineer_ap_assigned &&
+          medic_ap_assigned > comms_ap_assigned &&
+          medic_ap_assigned > pilot_ap_assigned)
+      {
+        return true;
+      }
+      break;
+    }
+    case player_classes::PILOT:
+    {
+      if (pilot_ap_assigned > engineer_ap_assigned &&
+          pilot_ap_assigned > comms_ap_assigned &&
+          pilot_ap_assigned > medic_ap_assigned)
+      {
+        return true;
+      }
+      break;
+    }
+    default:
+    {
+      return false;
+    }
+  }
+  return false;
 }

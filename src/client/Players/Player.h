@@ -7,6 +7,7 @@
 #include "gamelib/Localisation/Localisation.h"
 #include <Engine/Renderer.h>
 #include <gamelib/Math/SimpleMath.h>
+#include <gamelib/NetworkedData/Players.h>
 #include <json.hpp>
 
 using json = nlohmann::json;
@@ -49,9 +50,14 @@ class Player
   {
     chasing_chicken = _chasing_chicken;
   }
+  void setHeldItems(int _item_increase) { held_items += _item_increase; }
+  void setUsedAPThisTurn(bool _used_ap) { ap_not_assigned = _used_ap; }
 
   int getMaxItems() { return max_items; }
   int getHeldItemAmount() { return held_items; }
+  bool getUsedApThisTurn() { return ap_not_assigned; }
+  player_classes getRightPlayer();
+  player_classes getLeftPlayer();
 
   void makeUninitialised()
   {
@@ -82,6 +88,7 @@ class Player
   int max_items = 2;
   int amount_of_rolls = 1;
   bool chasing_chicken = false;
+  bool ap_not_assigned = true;
 
  private:
   SimpleMath math;

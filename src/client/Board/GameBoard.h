@@ -37,11 +37,15 @@ class GameBoard
   void setActiveObjectiveCard(int card_index);
   void setActiveItemCard(int card_index);
 
+  void syncIssueCards(int active_cards[5]);
+
+  void checkissueSolved();
+  bool checkObjectiveCardComplete();
+
   bool updateActiveIssueCards();
   bool updateActiveObjectiveCard();
   bool updateActiveItemCard(int _item_card_index);
 
-  // std::vector<IssueCard> getIssueCards();
   int activeIssuesCount();
   ObjectiveCard* getObjectiveCard();
 
@@ -67,6 +71,7 @@ class GameBoard
 
   std::vector<IssueCard> active_issues;
   std::vector<ItemCard> item_inventory;
+  std::vector<ObjectiveCard> objective_card_inventory;
 
   bool pilot_blackhole = false;
   bool bonus_movement = false;

@@ -94,17 +94,7 @@ void GameBoard::setActiveObjectiveCard(int card_index)
 /* Set active issue cards to update */
 void GameBoard::setActiveIssueCards(int card_index[5], bool is_new_rotation)
 {
-  // Remove solved issues
-  for (size_t i = 0; i < active_issues.size(); ++i)
-  {
-    if (active_issues[i].isSolved())
-    {
-      active_issues.erase(active_issues.begin() + static_cast<int>(i));
-      active_issue_cards[i] = -1;
-      slot_active[i] = false;
-    }
-  }
-
+  // checkissueSolved();
   if (active_issues.size() >= static_cast<size_t>(game_config.max_issue_cards))
   {
     // Swap To Lose Game State.
@@ -113,8 +103,7 @@ void GameBoard::setActiveIssueCards(int card_index[5], bool is_new_rotation)
 
   for (int i = 0; i < game_config.max_issue_cards; ++i)
   {
-    // check to see if any cards changed during turn.
-    if (is_new_rotation && active_issue_cards[i] != card_index[i])
+    if (is_new_rotation && active_issue_cards[i] == -1)
     {
       active_issue_cards[i] = card_index[i];
       // sets the slot to active so no other card can take this position.
@@ -509,4 +498,53 @@ void GameBoard::resetCardVariables()
   {
     issue.setIssueCardvariable(0);
   }
+}
+
+void GameBoard::checkissueSolved()
+{
+  // Remove solved issues
+  bool issue_solved = false;
+  for (size_t i = 0; i < active_issues.size(); ++i)
+  {
+    if (active_issues[i].isSolved())
+    {
+      issue_solved = true;
+      active_issues.erase(active_issues.begin() + static_cast<int>(i));
+      active_issue_cards[i] = -1;
+      slot_active[i] = false;
+    }
+  }
+  // if any cards have been completed and deleted when client ends turn we want
+  // to
+  // update the server active_issue_cards too.
+  if (issue_solved)
+  {
+    auto new_share = DataShare(data_roles::CLIENT_SOLVED_ISSUE_CARD);
+    new_share.add(active_issue_cards[0]);
+    new_share.add(active_issue_cards[1]);
+    new_share.add(active_issue_cards[2]);
+    new_share.add(active_issue_cards[3]);
+    new_share.add(active_issue_cards[4]);
+    Locator::getNetworkInterface()->sendData(new_share);
+  }
+}
+
+void GameBoard::syncIssueCards(int active_cards[5])
+{
+  for (int i = 0; i < 5; ++i)
+  {
+    active_issue_cards[i] = active_cards[i];
+  }
+}
+
+bool GameBoard::checkObjectiveCardComplete()
+{
+  for (auto& issue : active_issues)
+  {
+    if (active_obj_card->objectiveComplete(&issue))
+    {
+      return true;
+    }
+  }
+  return false;
 }
