@@ -228,7 +228,6 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     // The server has ended the current turn, update our game accordingly
     case data_roles::SERVER_ENDED_CLIENT_TURN:
     {
-      board.checkObjectiveCardComplete();
       // Update active player flag.
       for (int i = 0; i < 4; i++)
       {
@@ -469,6 +468,17 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
       if (keys.keyReleased("End Turn") &&
           players[Locator::getPlayers()->my_player_index]->is_active)
       {
+        if (Locator::getPlayers()->current_progress_index >= 3)
+        {
+          // request new obj card for client.
+          if (board.checkObjectiveCardComplete())
+          {
+            DataShare new_share =
+              DataShare(data_roles::CLIENT_REQUESTS_OBJ_CARD);
+            new_share.add(Locator::getPlayers()->my_player_index);
+            Locator::getNetworkInterface()->sendData(new_share);
+          }
+        }
         DataShare new_share = DataShare(data_roles::CLIENT_WANTS_TO_END_TURN);
         new_share.add(Locator::getPlayers()->my_player_index);
         Locator::getNetworkInterface()->sendData(new_share);
@@ -654,13 +664,16 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
         // Clicked end turn button
         if (ui_manager.getButton(ui_buttons::END_TURN_BTN)->clicked())
         {
-          if (board.checkObjectiveCardComplete())
+          if (Locator::getPlayers()->current_progress_index >= 3)
           {
             // request new obj card for client.
-            DataShare new_share =
-              DataShare(data_roles::CLIENT_REQUESTS_OBJ_CARD);
-            new_share.add(Locator::getPlayers()->my_player_index);
-            Locator::getNetworkInterface()->sendData(new_share);
+            if (board.checkObjectiveCardComplete())
+            {
+              DataShare new_share =
+                DataShare(data_roles::CLIENT_REQUESTS_OBJ_CARD);
+              new_share.add(Locator::getPlayers()->my_player_index);
+              Locator::getNetworkInterface()->sendData(new_share);
+            }
           }
           DataShare new_share = DataShare(data_roles::CLIENT_WANTS_TO_END_TURN);
           new_share.add(Locator::getPlayers()->my_player_index);

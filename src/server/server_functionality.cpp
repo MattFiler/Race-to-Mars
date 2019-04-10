@@ -99,6 +99,7 @@ void RaceToSpaceServer::handleReceivedData(DataShare& data_to_send,
     case data_roles::CLIENT_REQUESTS_OBJ_CARD:
     {
       clientRequestsObjective(data_to_send, client);
+      break;
     }
 
     // Otherwise, it's a message that needs to be forwarded to everyone in
