@@ -47,8 +47,8 @@ struct CardOffsets
   Vector2 obj_ingame_pos = Vector2(486, 70);   // Position of card (only 1)
   Vector2 obj_ingame_size = Vector2(124, 175); // Size of card
 
-  // Item card in-game inventory
-  Vector2 obj_ingame_start = Vector2(300, 600); // Position of card 1
+  // obj card in-game inventory
+  Vector2 obj_ingame_start = Vector2(420, 540); // Position of card 1
   Vector2 obj_ingame_offset = Vector2(30, 0);   // Offset from 1
 
   // Item card popup

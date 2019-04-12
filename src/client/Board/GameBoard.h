@@ -5,11 +5,12 @@
 #include "client/Board/Ship.h"
 #include "client/Cards/IssueCard.h"
 #include "client/Cards/ItemCard.h"
-#include "client/Cards/ObjectiveCard.h"
 #include "client/Players/AllPlayers.h"
 #include "gamelib/Constants.h"
 #include "gamelib/Debug/DebugText.h"
 #include <Engine/Renderer.h>
+
+class ObjectiveCard;
 
 /* Ideally this class will know all about stuff on the board - E.G. active
  * cards, active counters, active player tokens, etc - then all rendering can be
@@ -48,6 +49,7 @@ class GameBoard
 
   int activeIssuesCount();
   ObjectiveCard* getObjectiveCard();
+  void addObjCardToInventory();
 
   // issue tracking
   int engine_countdown = 2;

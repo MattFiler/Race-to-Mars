@@ -248,7 +248,7 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
         board.checkissueSolved();
       }
       // Pull a new objective card if required.
-      if (Locator::getPlayers()->current_progress_index % 3 == 0 &&
+      if (Locator::getPlayers()->current_progress_index % 2 == 0 &&
           Locator::getPlayers()->current_progress_index != 0 &&
           !got_new_obj_this_turn)
       {
@@ -465,6 +465,11 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
         current_state = game_state::LOCAL_PAUSE;
         debug_text.print("Opening pause menu.");
       }
+      if (keys.keyReleased("Debug Obj Inventory"))
+      {
+        debug_text.print("Creating obj card");
+        board.addObjCardToInventory();
+      }
       if (keys.keyReleased("End Turn") &&
           players[Locator::getPlayers()->my_player_index]->is_active)
       {
@@ -473,6 +478,7 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
           // request new obj card for client.
           if (board.checkObjectiveCardComplete())
           {
+            board.addObjCardToInventory();
             DataShare new_share =
               DataShare(data_roles::CLIENT_REQUESTS_OBJ_CARD);
             new_share.add(Locator::getPlayers()->my_player_index);
@@ -664,15 +670,20 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
         // Clicked end turn button
         if (ui_manager.getButton(ui_buttons::END_TURN_BTN)->clicked())
         {
-          if (Locator::getPlayers()->current_progress_index >= 3)
+          if (board.getObjectiveCard() != nullptr)
           {
+            debug_text.print("Checking if OBJ card is complete.");
             // request new obj card for client.
             if (board.checkObjectiveCardComplete())
             {
+              debug_text.print("Objective card complete! Creating new one... "
+                               "and adding current obj to inventory.");
+              board.addObjCardToInventory();
               DataShare new_share =
                 DataShare(data_roles::CLIENT_REQUESTS_OBJ_CARD);
               new_share.add(Locator::getPlayers()->my_player_index);
               Locator::getNetworkInterface()->sendData(new_share);
+              // add objective card to inventory.
             }
           }
           DataShare new_share = DataShare(data_roles::CLIENT_WANTS_TO_END_TURN);
@@ -785,7 +796,7 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
     }
 
     // Show/hide all card overlays as required (card overlays match the card
-    // size, so we can filter them this way)
+    // size, so we can filter them this way.)
     int card_overlay_index = 0;
     for (ScaledSprite* sprite : ui_manager.popups()
                                   .getPopup(ui_popups::ISSUE_POPUP)

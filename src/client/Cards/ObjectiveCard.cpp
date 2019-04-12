@@ -78,126 +78,142 @@ void ObjectiveCard::useObjectiveCard()
 
 bool ObjectiveCard::objectiveComplete(IssueCard* const _issue)
 {
-  IssueCard* issue = _issue;
+  // IssueCard* issue = _issue;
   switch (cardID)
   {
     case objective_cards::BIG_ISSUE:
     {
-      bool completed = issue->getActionPointsNeeded() == 15 &&
-                       issue->getAssignedPoints(static_cast<player_classes>(
-                         Locator::getPlayers()->my_player_index)) > 0;
-      return completed;
+      //      bool completed = issue->getActionPointsNeeded() == 15 &&
+      //                       issue->getAssignedPoints(static_cast<player_classes>(
+      //                         Locator::getPlayers()->my_player_index)) > 0;
+      //      return completed;
+      return true;
     }
     case objective_cards::CLASS_ITEMS:
     {
-      bool completed = Locator::getPlayers()
-                         ->getPlayer(static_cast<player_classes>(
-                           Locator::getPlayers()->my_player_index))
-                         ->getHeldItemAmount() >= 2;
-      return completed;
+      //      bool completed = Locator::getPlayers()
+      //                         ->getPlayer(static_cast<player_classes>(
+      //                           Locator::getPlayers()->my_player_index))
+      //                         ->getHeldItemAmount() >= 2;
+      //      return completed;
+      return true;
     }
     case objective_cards::CLASS_SOLVER:
     {
-      bool completed =
-        issue->getAssignedPoints(static_cast<player_classes>(
-          Locator::getPlayers()->my_player_index)) > 0 &&
-        issue->isSolved() &&
-        issue->getClassType() !=
-          static_cast<player_classes>(Locator::getPlayers()->my_player_index);
-      return completed;
+      //      bool completed =
+      //        issue->getAssignedPoints(static_cast<player_classes>(
+      //          Locator::getPlayers()->my_player_index)) > 0 &&
+      //        issue->isSolved() &&
+      //        issue->getClassType() !=
+      //          static_cast<player_classes>(Locator::getPlayers()->my_player_index);
+      //      return completed;
+      return true;
     }
     case objective_cards::ISSUE_HELPER:
     {
-      bool completed = issue->getAssignedPoints(static_cast<player_classes>(
-                         Locator::getPlayers()->my_player_index)) > 0;
-      return completed;
+      //      bool completed =
+      //      issue->getAssignedPoints(static_cast<player_classes>(
+      //                         Locator::getPlayers()->my_player_index)) > 0;
+      //      return completed;
+      return true;
     }
     case objective_cards::ISSUE_HELPER_15:
     {
-      bool completed = issue->getActionPointsNeeded() == 15 &&
-                       issue->getAssignedPoints(static_cast<player_classes>(
-                         Locator::getPlayers()->my_player_index)) > 0;
-      return completed;
+      //      bool completed = issue->getActionPointsNeeded() == 15 &&
+      //                       issue->getAssignedPoints(static_cast<player_classes>(
+      //                         Locator::getPlayers()->my_player_index)) > 0;
+      //      return completed;
+      return true;
     }
     case objective_cards::ISSUE_SOLVER_5:
     {
-      bool completed = issue->isSolvedSolo(static_cast<player_classes>(
-                         Locator::getPlayers()->my_player_index)) &&
-                       issue->getActionPointsNeeded() == 5;
-      return completed;
+      //      bool completed = issue->isSolvedSolo(static_cast<player_classes>(
+      //                         Locator::getPlayers()->my_player_index)) &&
+      //                       issue->getActionPointsNeeded() == 5;
+      //      return completed;
+      return true;
     }
     case objective_cards::ISSUE_SOLVER_10:
     {
-      bool completed = issue->isSolvedSolo(static_cast<player_classes>(
-                         Locator::getPlayers()->my_player_index)) &&
-                       issue->getActionPointsNeeded() == 10;
-      return completed;
+      //      bool completed = issue->isSolvedSolo(static_cast<player_classes>(
+      //                         Locator::getPlayers()->my_player_index)) &&
+      //                       issue->getActionPointsNeeded() == 10;
+      //      return completed;
+      return true;
     }
     case objective_cards::ISSUE_SOLVER_15:
     {
-      bool completed = issue->isSolvedSolo(static_cast<player_classes>(
-                         Locator::getPlayers()->my_player_index)) &&
-                       issue->getActionPointsNeeded() == 15;
-      return completed;
+      //      bool completed = issue->isSolvedSolo(static_cast<player_classes>(
+      //                         Locator::getPlayers()->my_player_index)) &&
+      //                       issue->getActionPointsNeeded() == 15;
+      //      return completed;
+      return true;
     }
     case objective_cards::MAJORITY_HELPER:
     {
-      bool completed = issue->isSolved() &&
-                       issue->contributedMost(static_cast<player_classes>(
-                         Locator::getPlayers()->my_player_index));
-      return completed;
+      //      bool completed = issue->isSolved() &&
+      //                       issue->contributedMost(static_cast<player_classes>(
+      //                         Locator::getPlayers()->my_player_index));
+      //      return completed;
+      return true;
     }
     case objective_cards::UNHELPFUL_RIGHT:
     {
-      int right_player = 0;
-      int this_player = Locator::getPlayers()->my_player_index;
-      if (this_player + 1 > 3)
-      {
-        right_player = 0;
-      }
-      else
-      {
-        right_player = this_player + 1;
-      }
-      bool completed = issue->getAssignedPoints(
-                         static_cast<player_classes>(right_player)) > 0 &&
-                       issue->getAssignedPoints(static_cast<player_classes>(
-                         Locator::getPlayers()->my_player_index)) == 0;
-      return completed;
+      //      int right_player = 0;
+      //      int this_player = Locator::getPlayers()->my_player_index;
+      //      if (this_player + 1 > 3)
+      //      {
+      //        right_player = 0;
+      //      }
+      //      else
+      //      {
+      //        right_player = this_player + 1;
+      //      }
+      //      bool completed = issue->getAssignedPoints(
+      //                         static_cast<player_classes>(right_player)) > 0
+      //                         &&
+      //                       issue->getAssignedPoints(static_cast<player_classes>(
+      //                         Locator::getPlayers()->my_player_index)) == 0;
+      //      return completed;
+      return true;
     }
     case objective_cards::UNHELPFUL_LEFT:
     {
-      int left_player = 0;
-      int this_player = Locator::getPlayers()->my_player_index;
-      if (this_player - 1 < 0)
-      {
-        left_player = 0;
-      }
-      else
-      {
-        left_player = this_player - 1;
-      }
-      bool completed = issue->getAssignedPoints(
-                         static_cast<player_classes>(left_player)) > 0 &&
-                       issue->getAssignedPoints(static_cast<player_classes>(
-                         Locator::getPlayers()->my_player_index)) == 0;
-      return completed;
+      //      int left_player = 0;
+      //      int this_player = Locator::getPlayers()->my_player_index;
+      //      if (this_player - 1 < 0)
+      //      {
+      //        left_player = 0;
+      //      }
+      //      else
+      //      {
+      //        left_player = this_player - 1;
+      //      }
+      //      bool completed = issue->getAssignedPoints(
+      //                         static_cast<player_classes>(left_player)) > 0
+      //                         &&
+      //                       issue->getAssignedPoints(static_cast<player_classes>(
+      //                         Locator::getPlayers()->my_player_index)) == 0;
+      //      return completed;
+      return true;
     }
     case objective_cards::PERSONAL_ISSUE:
     {
-      bool completed =
-        issue->isSolved() &&
-        issue->getClassType() ==
-          static_cast<player_classes>(Locator::getPlayers()->my_player_index);
-      return completed;
+      //      bool completed =
+      //        issue->isSolved() &&
+      //        issue->getClassType() ==
+      //          static_cast<player_classes>(Locator::getPlayers()->my_player_index);
+      //      return completed;
+      return true;
     }
     case objective_cards::POINT_STASH:
     {
-      bool completed = Locator::getPlayers()
-                         ->getPlayer(static_cast<player_classes>(
-                           Locator::getPlayers()->my_player_index))
-                         ->getUsedApThisTurn();
-      return completed;
+      //      bool completed = Locator::getPlayers()
+      //                         ->getPlayer(static_cast<player_classes>(
+      //                           Locator::getPlayers()->my_player_index))
+      //                         ->getUsedApThisTurn();
+      //      return completed;
+      return true;
     }
     default:
     {

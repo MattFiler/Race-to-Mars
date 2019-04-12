@@ -3,6 +3,7 @@
 #include "client/NetworkConnection/NetworkConnection.h"
 #include "gamelib/Constants.h"
 #include "gamelib/NetworkedData/NetworkedData.h"
+#include <client/Cards/ObjectiveCard.h>
 
 /* Check to see if we're hovering over an interactable room  */
 bool GameBoard::isHoveringOverRoom(Vector2 hover_pos)
@@ -558,4 +559,9 @@ bool GameBoard::checkObjectiveCardComplete()
     }
   }
   return false;
+}
+
+void GameBoard::addObjCardToInventory()
+{
+  objective_card_inventory.emplace_back(active_obj_card->getCardID());
 }

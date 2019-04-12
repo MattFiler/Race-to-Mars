@@ -51,29 +51,3 @@ int Player::getDiceRoll()
 {
   return math.generateRandInt(1, 6);
 }
-
-player_classes Player::getRightPlayer()
-{
-  if (Locator::getPlayers()->my_player_index == 3)
-  {
-    return static_cast<player_classes>(0);
-  }
-  else
-  {
-    return static_cast<player_classes>(Locator::getPlayers()->my_player_index +
-                                       1);
-  }
-}
-
-player_classes Player::getLeftPlayer()
-{
-  if (Locator::getPlayers()->my_player_index == 0)
-  {
-    return static_cast<player_classes>(3);
-  }
-  else
-  {
-    return static_cast<player_classes>(Locator::getPlayers()->my_player_index -
-                                       1);
-  }
-}
