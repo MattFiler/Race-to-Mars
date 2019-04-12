@@ -78,6 +78,7 @@ class GameBoard
 
   ObjectiveCard* active_obj_card = nullptr;
   std::vector<ObjectiveCard> completed_obj_cards;
+  ObjectiveCard* getObjCard() { return active_obj_card; }
 
   int active_issue_cards[5] = { -1, -1, -1, -1, -1 };
   int active_item_card[5] = { -1, -1, -1, -1, -1 };

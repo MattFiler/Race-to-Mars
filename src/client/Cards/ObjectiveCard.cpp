@@ -25,7 +25,56 @@ void ObjectiveCard::setCardID(objective_cards _obj_card_id)
   cardID = _obj_card_id;
 }
 
-void ObjectiveCard::useObjectiveCard() {}
+void ObjectiveCard::useObjectiveCard()
+{
+  switch (cardID)
+  {
+    case objective_cards::BIG_ISSUE:
+    {
+    }
+    case objective_cards::CLASS_ITEMS:
+    {
+    }
+    case objective_cards::CLASS_SOLVER:
+    {
+    }
+    case objective_cards::ISSUE_HELPER:
+    {
+    }
+    case objective_cards::ISSUE_HELPER_15:
+    {
+    }
+    case objective_cards::ISSUE_SOLVER_5:
+    {
+    }
+    case objective_cards::ISSUE_SOLVER_10:
+    {
+    }
+    case objective_cards::ISSUE_SOLVER_15:
+    {
+    }
+    case objective_cards::MAJORITY_HELPER:
+    {
+    }
+    case objective_cards::UNHELPFUL_RIGHT:
+    {
+    }
+    case objective_cards::UNHELPFUL_LEFT:
+    {
+    }
+    case objective_cards::PERSONAL_ISSUE:
+    {
+    }
+    case objective_cards::POINT_STASH:
+    {
+    }
+    default:
+    {
+      debug_text.print("No objective card exists of this type...");
+      break;
+    }
+  }
+}
 
 bool ObjectiveCard::objectiveComplete(IssueCard* const _issue)
 {

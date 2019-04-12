@@ -443,7 +443,7 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
   }
 }
 
-/* Handles key inputs */
+/* Handles Key Inputs */
 void GameScene::keyHandler(const ASGE::SharedEventData data)
 {
   keys.registerEvent(static_cast<const ASGE::KeyEvent*>(data.get()));
@@ -468,7 +468,7 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
       if (keys.keyReleased("End Turn") &&
           players[Locator::getPlayers()->my_player_index]->is_active)
       {
-        if (Locator::getPlayers()->current_progress_index >= 3)
+        if (board.getObjectiveCard() != nullptr)
         {
           // request new obj card for client.
           if (board.checkObjectiveCardComplete())
@@ -731,7 +731,8 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
             ->referenceSprite(*issue_card.getSprite());
         }
         // If we're the active player, show the opportunity to assign action
-        // points to each card
+        // points to each card.
+        // points to each card.
         if (players[Locator::getPlayers()->my_player_index]->is_active)
         {
           int button_index = 0;
