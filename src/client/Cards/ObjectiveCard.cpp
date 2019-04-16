@@ -153,27 +153,24 @@ bool ObjectiveCard::objectiveComplete(IssueCard* const _issue,
                        issue->getAssignedPoints(static_cast<player_classes>(
                          Locator::getPlayers()->my_player_index)) == 0;
       return completed;
-      return true;
     }
     case objective_cards::UNHELPFUL_LEFT:
     {
-      //      int left_player = 0;
-      //      int this_player = Locator::getPlayers()->my_player_index;
-      //      if (this_player - 1 < 0)
-      //      {
-      //        left_player = 0;
-      //      }
-      //      else
-      //      {
-      //        left_player = this_player - 1;
-      //      }
-      //      bool completed = issue->getAssignedPoints(
-      //                         static_cast<player_classes>(left_player)) > 0
-      //                         &&
-      //                       issue->getAssignedPoints(static_cast<player_classes>(
-      //                         Locator::getPlayers()->my_player_index)) == 0;
-      //      return completed;
-      return true;
+      int left_player = 0;
+      int this_player = Locator::getPlayers()->my_player_index;
+      if (this_player - 1 < 0)
+      {
+        left_player = 0;
+      }
+      else
+      {
+        left_player = this_player - 1;
+      }
+      bool completed = issue->getAssignedPoints(
+                         static_cast<player_classes>(left_player)) > 0 &&
+                       issue->getAssignedPoints(static_cast<player_classes>(
+                         Locator::getPlayers()->my_player_index)) == 0;
+      return completed;
     }
     case objective_cards::PERSONAL_ISSUE:
     {

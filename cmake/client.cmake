@@ -70,9 +70,6 @@ set(HEADER_FILES
         ../src/client/UI/Cursor.cpp
         ../src/client/UI/ScaledSprite.cpp
         ../src/client/UI/ScaledSprite.h
-        ../src/client/Actions/Action.h
-        ../src/client/Actions/RollDiceAction.cpp
-        ../src/client/Actions/RollDiceAction.h
         ../src/client/Board/ItemDeck.cpp
         ../src/client/Board/ItemDeck.h
         ../src/gamelib/Math/SimpleMath.cpp
