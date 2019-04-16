@@ -22,7 +22,7 @@ class ObjectiveCard : public Card
   objective_cards getCardID() { return cardID; };
 
   void useObjectiveCard();
-  bool objectiveComplete(IssueCard* _issue);
+  bool objectiveComplete(IssueCard* _issue, player_classes _this_clients_class);
 
  private:
   objective_cards cardID = objective_cards::OBJECTIVE_PLACEHOLDER;

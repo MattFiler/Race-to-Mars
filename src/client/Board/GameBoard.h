@@ -41,7 +41,7 @@ class GameBoard
   void syncIssueCards(int active_cards[5]);
 
   void checkissueSolved();
-  bool checkObjectiveCardComplete();
+  bool checkObjectiveCardComplete(player_classes _this_clients_class);
 
   bool updateActiveIssueCards();
   bool updateActiveObjectiveCard();

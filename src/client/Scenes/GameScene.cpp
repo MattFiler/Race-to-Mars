@@ -406,7 +406,7 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     case data_roles::CLIENT_CHANGE_PROGRESS_INDEX:
     {
       debug_text.print(
-        "Changing current_progress index from:" +
+        "Changing current_progress_index from:" +
         std::to_string(Locator::getPlayers()->current_progress_index));
       Locator::getPlayers()->current_progress_index = received_data.retrieve(0);
       debug_text.print(
@@ -476,7 +476,9 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
         if (board.getObjectiveCard() != nullptr)
         {
           // request new obj card for client.
-          if (board.checkObjectiveCardComplete())
+          if (board.checkObjectiveCardComplete(
+                getLobbyPlayer(Locator::getPlayers()->my_player_index)
+                  ->current_class))
           {
             board.addObjCardToInventory();
             DataShare new_share =
@@ -674,7 +676,9 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
           {
             debug_text.print("Checking if OBJ card is complete.");
             // request new obj card for client.
-            if (board.checkObjectiveCardComplete())
+            if (board.checkObjectiveCardComplete(
+                  getLobbyPlayer(Locator::getPlayers()->my_player_index)
+                    ->current_class))
             {
               debug_text.print("Objective card complete! Creating new one... "
                                "and adding current obj to inventory.");

@@ -8,6 +8,7 @@
 #include <Engine/Renderer.h>
 #include <Engine/Sprite.h>
 #include <gamelib/FileHandler/FileHandler.h>
+#include <gamelib/NetworkedData/Players.h>
 
 /*
  *

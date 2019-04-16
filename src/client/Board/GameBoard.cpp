@@ -549,11 +549,11 @@ void GameBoard::syncIssueCards(int active_cards[5])
   }
 }
 
-bool GameBoard::checkObjectiveCardComplete()
+bool GameBoard::checkObjectiveCardComplete(player_classes _this_clients_class)
 {
   for (auto& issue : active_issues)
   {
-    if (active_obj_card->objectiveComplete(&issue))
+    if (active_obj_card->objectiveComplete(&issue, _this_clients_class))
     {
       return true;
     }
