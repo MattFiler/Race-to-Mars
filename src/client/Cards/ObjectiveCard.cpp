@@ -160,7 +160,7 @@ bool ObjectiveCard::objectiveComplete(IssueCard* const _issue,
       int this_player = Locator::getPlayers()->my_player_index;
       if (this_player - 1 < 0)
       {
-        left_player = 0;
+        left_player = 3;
       }
       else
       {

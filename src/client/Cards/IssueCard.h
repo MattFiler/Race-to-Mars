@@ -3,7 +3,6 @@
 
 #include "Card.h"
 #include "gamelib/Constants.h"
-#include <client/Actions/Action.h>
 #include <gamelib/NetworkedData/Players.h>
 
 /*
