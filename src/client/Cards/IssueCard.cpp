@@ -76,7 +76,6 @@ bool IssueCard::isSolvedSolo(player_classes _player_class)
     default:
     {
       return false;
-      break;
     }
   }
   return false;
