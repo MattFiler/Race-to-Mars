@@ -44,7 +44,8 @@ enum ui_popups
 enum ui_buttons
 {
   END_TURN_BTN,
-  BUY_ITEM_BTN
+  BUY_ITEM_BTN,
+  ROLL_DICE_BTN
 };
 
 class GameScene : public Scene
@@ -69,6 +70,8 @@ class GameScene : public Scene
   }
 
  private:
+  void debugOutput();
+
   GameBoard board;
 
   LobbyPlayer* players[4] = { nullptr, nullptr, nullptr, nullptr };
@@ -78,6 +81,7 @@ class GameScene : public Scene
   bool is_new_turn = false;
   bool got_new_obj_card = false;
   bool got_new_obj_this_turn = false;
+  bool rolled_dice_this_turn = false;
   bool free_player_movement = false;
 
   bool update_item_card = false;

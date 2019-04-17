@@ -40,6 +40,11 @@ void GameScene::init()
     }
   }
 
+  // Create popups
+  ui_manager.popups().createPopup(ui_popups::ISSUE_POPUP);
+  ui_manager.popups().createPopup(ui_popups::OBJECTIVE_POPUP);
+  ui_manager.popups().createPopup(ui_popups::DICE_ROLL_POPUP);
+
   // Create all required sprites - add in the order to render
   for (int i = 0; i < 6; i++)
   {
@@ -73,11 +78,6 @@ void GameScene::init()
                             "UI/INGAME_UI/cards_" + std::to_string(i) + ".png");
   }
 
-  // Create popups
-  ui_manager.popups().createPopup(ui_popups::ISSUE_POPUP);
-  ui_manager.popups().createPopup(ui_popups::OBJECTIVE_POPUP);
-  ui_manager.popups().createPopup(ui_popups::DICE_ROLL_POPUP);
-
   // Create popup title sprites
   ui_manager.popups()
     .getPopup(ui_popups::ISSUE_POPUP)
@@ -90,7 +90,10 @@ void GameScene::init()
     .getPopup(ui_popups::DICE_ROLL_POPUP)
     ->createSprite("UI/INGAME_UI/dice_roll_bg.png");
 
-  // Position button for new turn
+  // Position main ui buttons
+  ui_manager
+    .createButton(ui_buttons::ROLL_DICE_BTN, "UI/INGAME_UI/roll_dice_btn.png")
+    ->setPos(Vector2(847, 612));
   ui_manager
     .createButton(ui_buttons::END_TURN_BTN, "UI/INGAME_UI/end_turn_btn.png")
     ->setPos(Vector2(1042, 612));
@@ -722,6 +725,45 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
           Locator::getNetworkInterface()->sendData(new_share);
           debug_text.print("I want an item card!!");
         }
+
+        // Clicked dice roll button
+        if (ui_manager.getButton(ui_buttons::ROLL_DICE_BTN)->clicked())
+        {
+          // Roll dice
+          rolled_dice_this_turn = true;
+          int dice_roll =
+            Locator::getPlayers()
+              ->getPlayer(
+                players[Locator::getPlayers()->my_player_index]->current_class)
+              ->getDiceRoll();
+          ;
+          DataShare new_share =
+            DataShare(data_roles::CLIENT_ACTION_POINTS_CHANGED);
+          new_share.add(Locator::getPlayers()->my_player_index);
+          new_share.add(
+            players[Locator::getPlayers()->my_player_index]->action_points);
+          new_share.add(
+            dice_roll +
+            players[Locator::getPlayers()->my_player_index]->action_points);
+          new_share.add(-1);
+          Locator::getNetworkInterface()->sendData(new_share);
+          players[Locator::getPlayers()->my_player_index]->action_points +=
+            dice_roll;
+          debug_text.print("Rolled dice! I got " + std::to_string(dice_roll) +
+                           ".");
+
+          // Show result
+          ui_manager.popups()
+            .getPopup(ui_popups::DICE_ROLL_POPUP)
+            ->clearAllReferencedSprites();
+          ScaledSprite* dice_sprite =
+            ui_manager.getSprite(ui_sprites::DICE_ROLL_1 + dice_roll - 1);
+          dice_sprite->show();
+          ui_manager.popups()
+            .getPopup(ui_popups::DICE_ROLL_POPUP)
+            ->referenceSprite(*dice_sprite);
+          ui_manager.popups().getPopup(ui_popups::DICE_ROLL_POPUP)->show();
+        }
       }
 
       /* WHEN CLIENT IS ACTIVE/INACTIVE */
@@ -837,6 +879,7 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
     ui_manager.popups().getPopup(ui_popups::ISSUE_POPUP)->showForTime(5);
     is_new_turn = true;
     got_new_obj_this_turn = false;
+    rolled_dice_this_turn = false;
   }
   if (board.updateActiveObjectiveCard())
   {
@@ -879,35 +922,7 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
       !ui_manager.popups().getPopup(ui_popups::ISSUE_POPUP)->isVisible() &&
       !ui_manager.popups().getPopup(ui_popups::OBJECTIVE_POPUP)->isVisible())
   {
-    ui_manager.popups().getPopup(ui_popups::DICE_ROLL_POPUP)->show();
-
-    // Roll the dice & use result
-    int dice_roll =
-      Locator::getPlayers()
-        ->getPlayer(
-          players[Locator::getPlayers()->my_player_index]->current_class)
-        ->getDiceRoll();
-    ;
-    DataShare new_share = DataShare(data_roles::CLIENT_ACTION_POINTS_CHANGED);
-    new_share.add(Locator::getPlayers()->my_player_index);
-    new_share.add(
-      players[Locator::getPlayers()->my_player_index]->action_points);
-    new_share.add(
-      dice_roll +
-      players[Locator::getPlayers()->my_player_index]->action_points);
-    new_share.add(-1);
-    Locator::getNetworkInterface()->sendData(new_share);
-    players[Locator::getPlayers()->my_player_index]->action_points += dice_roll;
-    debug_text.print("Rolled dice! I got " + std::to_string(dice_roll) + ".");
-
-    // Show result
-    ScaledSprite* dice_sprite =
-      ui_manager.getSprite(ui_sprites::DICE_ROLL_1 + dice_roll - 1);
-    dice_sprite->show();
-    ui_manager.popups()
-      .getPopup(ui_popups::DICE_ROLL_POPUP)
-      ->referenceSprite(*dice_sprite);
-
+    // ui_manager.popups().getPopup(ui_popups::DICE_ROLL_POPUP)->show();
     is_new_turn = false;
   }
 
@@ -921,9 +936,7 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
   Vector2 mouse_pos = Vector2(Locator::getCursor()->getPosition().x,
                               Locator::getCursor()->getPosition().y);
 
-  if (!ui_manager.popups().getPopup(ui_popups::OBJECTIVE_POPUP)->isVisible() &&
-      !ui_manager.popups().getPopup(ui_popups::ISSUE_POPUP)->isVisible() &&
-      !ui_manager.popups().getPopup(ui_popups::DICE_ROLL_POPUP)->isVisible())
+  if (!ui_manager.popups().anyAreActive())
   {
     // Update to hover cursor for cards
     if (board.isHoveringOverIssueCard(mouse_pos) ||
@@ -946,18 +959,6 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
   // Update UI
   ui_manager.update(game_time);
 
-  // End turn button is only active when we are
-  ui_manager.getButton(ui_buttons::END_TURN_BTN)
-    ->setActive(players[Locator::getPlayers()->my_player_index]->is_active);
-  if (ui_manager.popups().anyAreActive())
-  {
-    ui_manager.getButton(ui_buttons::END_TURN_BTN)->setActive(false); // inactive
-                                                                      // when
-                                                                      // popups
-                                                                      // are
-                                                                      // over us
-  }
-
   // Buy item is only active when we are, and in the supply bay
   if (players[Locator::getPlayers()->my_player_index]->is_active &&
       players[Locator::getPlayers()->my_player_index]->room ==
@@ -967,6 +968,24 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
   }
   else
   {
+    ui_manager.getButton(ui_buttons::BUY_ITEM_BTN)->setActive(false);
+  }
+
+  // End turn button is only active when we are and have rolled
+  ui_manager.getButton(ui_buttons::END_TURN_BTN)
+    ->setActive(players[Locator::getPlayers()->my_player_index]->is_active &&
+                rolled_dice_this_turn);
+
+  // Roll dice button is active when useable
+  ui_manager.getButton(ui_buttons::ROLL_DICE_BTN)
+    ->setActive(players[Locator::getPlayers()->my_player_index]->is_active &&
+                !rolled_dice_this_turn);
+
+  // All are inactive when popups are over us
+  if (ui_manager.popups().anyAreActive())
+  {
+    ui_manager.getButton(ui_buttons::ROLL_DICE_BTN)->setActive(false);
+    ui_manager.getButton(ui_buttons::END_TURN_BTN)->setActive(false);
     ui_manager.getButton(ui_buttons::BUY_ITEM_BTN)->setActive(false);
   }
 
@@ -1051,6 +1070,7 @@ void GameScene::render()
       // buttons
       ui_manager.getButton(ui_buttons::END_TURN_BTN)->render();
       ui_manager.getButton(ui_buttons::BUY_ITEM_BTN)->render();
+      ui_manager.getButton(ui_buttons::ROLL_DICE_BTN)->render();
 
       break;
     }
@@ -1111,7 +1131,12 @@ void GameScene::render()
       *ui_manager.getSprite(ui_sprites::DISCONNECT_OVERLAY)->getSprite());
   }
 
-  // client debugging
+  debugOutput();
+}
+
+// client debugging
+void GameScene::debugOutput()
+{
   if (debug_text.enabled)
   {
     renderer->renderText(
@@ -1158,5 +1183,7 @@ void GameScene::render()
       "PRESS M TO FINISH TURN", 10, 130, 0.5, ASGE::COLOURS::WHITE);
     renderer->renderText(
       "PRESS L TO DEBUG TEST ACTION POINTS", 10, 150, 0.5, ASGE::COLOURS::WHITE);
+    renderer->renderText(
+      "PRESS I TO DEBUG TEST ITEMS", 10, 170, 0.5, ASGE::COLOURS::WHITE);
   }
 }
