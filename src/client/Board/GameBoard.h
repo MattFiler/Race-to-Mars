@@ -5,11 +5,12 @@
 #include "client/Board/Ship.h"
 #include "client/Cards/IssueCard.h"
 #include "client/Cards/ItemCard.h"
-#include "client/Cards/ObjectiveCard.h"
 #include "client/Players/AllPlayers.h"
 #include "gamelib/Constants.h"
 #include "gamelib/Debug/DebugText.h"
 #include <Engine/Renderer.h>
+
+class ObjectiveCard;
 
 /* Ideally this class will know all about stuff on the board - E.G. active
  * cards, active counters, active player tokens, etc - then all rendering can be
@@ -40,7 +41,7 @@ class GameBoard
   void syncIssueCards(int active_cards[5]);
 
   void checkissueSolved();
-  bool checkObjectiveCardComplete();
+  bool checkObjectiveCardComplete(player_classes _this_clients_class);
 
   bool updateActiveIssueCards();
   bool updateActiveObjectiveCard();
@@ -48,6 +49,7 @@ class GameBoard
 
   int activeIssuesCount();
   ObjectiveCard* getObjectiveCard();
+  void addObjCardToInventory();
 
   // issue tracking
   int engine_countdown = 2;
@@ -78,6 +80,7 @@ class GameBoard
 
   ObjectiveCard* active_obj_card = nullptr;
   std::vector<ObjectiveCard> completed_obj_cards;
+  ObjectiveCard* getObjCard() { return active_obj_card; }
 
   int active_issue_cards[5] = { -1, -1, -1, -1, -1 };
   int active_item_card[5] = { -1, -1, -1, -1, -1 };

@@ -64,6 +64,10 @@ class GameScene : public Scene
   void clickHandler(const ASGE::SharedEventData data) override;
   game_global_scenes update(const ASGE::GameTime& game_time) override;
   void render() override;
+  LobbyPlayer* getLobbyPlayer(int const _player_index)
+  {
+    return players[_player_index];
+  }
 
  private:
   void debugOutput();

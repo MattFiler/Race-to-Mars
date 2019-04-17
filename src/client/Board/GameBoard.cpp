@@ -3,6 +3,7 @@
 #include "client/NetworkConnection/NetworkConnection.h"
 #include "gamelib/Constants.h"
 #include "gamelib/NetworkedData/NetworkedData.h"
+#include <client/Cards/ObjectiveCard.h>
 
 /* Check to see if we're hovering over an interactable room  */
 bool GameBoard::isHoveringOverRoom(Vector2 hover_pos)
@@ -221,16 +222,28 @@ void GameBoard::render(bool _obj_popup, bool _issue_popup)
 
   // Render Item Card in-game
   // if !item card popup.
-  int card_index = 0;
+  int item_card_index = 0;
   for (auto& active_item : item_inventory)
   {
     active_item.setDimensions(card_offsets.item_ingame_size);
     active_item.setPosition(
       card_offsets.item_ingame_start +
-      (card_offsets.issue_ingame_offset * static_cast<float>(card_index)));
+      (card_offsets.issue_ingame_offset * static_cast<float>(item_card_index)));
     active_item.render();
 
-    ++card_index;
+    ++item_card_index;
+  }
+
+  // Render Obj Inventory
+  int obj_card_index = 0;
+  for (auto& obj_card : objective_card_inventory)
+  {
+    obj_card.setDimensions(card_offsets.item_ingame_size);
+    obj_card.setPosition(
+      card_offsets.obj_ingame_start +
+      (card_offsets.obj_ingame_offset * static_cast<float>(obj_card_index)));
+    obj_card.render();
+    ++obj_card_index;
   }
 }
 
@@ -515,8 +528,7 @@ void GameBoard::checkissueSolved()
     }
   }
   // if any cards have been completed and deleted when client ends turn we want
-  // to
-  // update the server active_issue_cards too.
+  // to update the server active_issue_cards too.
   if (issue_solved)
   {
     auto new_share = DataShare(data_roles::CLIENT_SOLVED_ISSUE_CARD);
@@ -537,14 +549,19 @@ void GameBoard::syncIssueCards(int active_cards[5])
   }
 }
 
-bool GameBoard::checkObjectiveCardComplete()
+bool GameBoard::checkObjectiveCardComplete(player_classes _this_clients_class)
 {
   for (auto& issue : active_issues)
   {
-    if (active_obj_card->objectiveComplete(&issue))
+    if (active_obj_card->objectiveComplete(&issue, _this_clients_class))
     {
       return true;
     }
   }
   return false;
+}
+
+void GameBoard::addObjCardToInventory()
+{
+  objective_card_inventory.emplace_back(active_obj_card->getCardID());
 }

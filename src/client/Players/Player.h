@@ -56,8 +56,6 @@ class Player
   int getMaxItems() { return max_items; }
   int getHeldItemAmount() { return held_items; }
   bool getUsedApThisTurn() { return ap_not_assigned; }
-  player_classes getRightPlayer();
-  player_classes getLeftPlayer();
 
   void makeUninitialised()
   {
