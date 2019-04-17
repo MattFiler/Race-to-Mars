@@ -304,6 +304,9 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
 
       players[received_data.retrieve(0)]->action_points =
         received_data.retrieve(2);
+      debug_text.print(
+        "New Ap: " + std::to_string(received_data.retrieve(2)) +
+        "for player: " + std::to_string(received_data.retrieve(0)));
 
       if (received_data.retrieve(3) != -1)
       {
@@ -316,6 +319,11 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
           std::to_string(received_data.retrieve(1) -
                          received_data.retrieve(2)) +
           " points to card " + std::to_string(received_data.retrieve(3)) + ".");
+      }
+      else if (received_data.retrieve(3) == -1)
+      {
+        debug_text.print("Another player is moving rooms or buying item. "
+                         "Change Ap amount too");
       }
       break;
     }
@@ -650,37 +658,47 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
         // Clicked within a room on the ship
         if (board.isHoveringOverRoom(mouse_pos))
         {
-          ShipRoom this_room = board.getClickedRoom(mouse_pos);
+          if (players[Locator::getPlayers()->my_player_index]->action_points >
+                0 ||
+              free_player_movement)
+          {
+            ShipRoom this_room = board.getClickedRoom(mouse_pos);
+            // Get new movement position
+            Vector2 new_pos = this_room.getPosForPlayer(
+              players[Locator::getPlayers()->my_player_index]->current_class);
 
-          // Get new movement position
-          Vector2 new_pos = this_room.getPosForPlayer(
-            players[Locator::getPlayers()->my_player_index]->current_class);
-
-          // Move, and let everyone know we're moving
-          DataShare new_share =
-            DataShare(data_roles::CLIENT_MOVING_PLAYER_TOKEN);
-          new_share.add(Locator::getPlayers()->my_player_index);
-          new_share.add(static_cast<int>(this_room.getEnum()));
-          Locator::getNetworkInterface()->sendData(new_share);
-          Locator::getPlayers()
-            ->getPlayer(
-              players[Locator::getPlayers()->my_player_index]->current_class)
-            ->setPos(new_pos);
-          players[Locator::getPlayers()->my_player_index]->room =
-            this_room.getEnum();
-          debug_text.print("Moving my player token to room '" +
-                           this_room.getName() + "'.");
-          // Player is cahrged 1 ap for moving if its not free && it's not
+            // Move, and let everyone know we're moving
+            DataShare new_share =
+              DataShare(data_roles::CLIENT_MOVING_PLAYER_TOKEN);
+            new_share.add(Locator::getPlayers()->my_player_index);
+            new_share.add(static_cast<int>(this_room.getEnum()));
+            Locator::getNetworkInterface()->sendData(new_share);
+            Locator::getPlayers()
+              ->getPlayer(
+                players[Locator::getPlayers()->my_player_index]->current_class)
+              ->setPos(new_pos);
+            players[Locator::getPlayers()->my_player_index]->room =
+              this_room.getEnum();
+            debug_text.print("Moving my player token to room '" +
+                             this_room.getName() + "'.");
+          }
+          // Player is charged 1 ap for moving if its not free && it's not
           // starting room.
           if (!free_player_movement &&
-              this_room.getEnum() !=
-                static_cast<ship_rooms>(
-                  Locator::getPlayers()
-                    ->getPlayer(players[Locator::getPlayers()->my_player_index]
-                                  ->current_class)
-                    ->getStartingRoom()))
+              players[Locator::getPlayers()->my_player_index]->action_points >
+                0)
           {
             debug_text.print("Moving costs 1 AP.");
+            int& my_action_points =
+              players[Locator::getPlayers()->my_player_index]->action_points;
+            DataShare new_share =
+              DataShare(data_roles::CLIENT_ACTION_POINTS_CHANGED);
+            new_share.add(Locator::getPlayers()->my_player_index);
+            new_share.add(my_action_points);
+            my_action_points -= 1;
+            new_share.add(my_action_points);
+            new_share.add(-1);
+            Locator::getNetworkInterface()->sendData(new_share);
           }
         }
 
