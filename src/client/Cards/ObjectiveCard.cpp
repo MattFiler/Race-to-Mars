@@ -27,42 +27,55 @@ void ObjectiveCard::useObjectiveCard()
   {
     case objective_cards::BIG_ISSUE:
     {
+      // Free ship movement
     }
     case objective_cards::CLASS_ITEMS:
     {
+      // Draw 2 new cards
     }
     case objective_cards::CLASS_SOLVER:
     {
+      // 3 + ap
     }
     case objective_cards::ISSUE_HELPER:
     {
+      //+3 AP
     }
     case objective_cards::ISSUE_HELPER_15:
     {
+      // Delete an issue immediately
     }
     case objective_cards::ISSUE_SOLVER_5:
     {
+      //+3 AP's'
     }
     case objective_cards::ISSUE_SOLVER_10:
     {
+      // Free ship movement
     }
     case objective_cards::ISSUE_SOLVER_15:
     {
+      // Move ship forward
     }
     case objective_cards::MAJORITY_HELPER:
     {
+      // Draw item card
     }
     case objective_cards::UNHELPFUL_RIGHT:
     {
+      // Draw item card.
     }
     case objective_cards::UNHELPFUL_LEFT:
     {
+      // Re-roll the dice.
     }
     case objective_cards::PERSONAL_ISSUE:
     {
+      //+3 ap
     }
     case objective_cards::POINT_STASH:
     {
+      // Double your action points.
     }
     default:
     {
