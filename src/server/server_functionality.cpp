@@ -566,6 +566,14 @@ void RaceToSpaceServer::clientProgressChange(DataShare& data_to_send,
   sendData(client, static_cast<unsigned int>(-2), new_share);
 }
 
+void RaceToSpaceServer::clientFreeMovement(DataShare& data_to_send,
+                                           server_client& client)
+{
+  DataShare new_share = DataShare(data_roles::CLIENT_FREE_MOVEMENT);
+  new_share.add(data_to_send.retrieve(0));
+  sendData(client, static_cast<unsigned int>(-2), new_share);
+}
+
 /* Client requests an item card */
 void RaceToSpaceServer::clientRequestsItem(DataShare& data_to_send,
                                            server_client& client)

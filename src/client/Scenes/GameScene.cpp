@@ -667,6 +667,18 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
             this_room.getEnum();
           debug_text.print("Moving my player token to room '" +
                            this_room.getName() + "'.");
+          // Player is cahrged 1 ap for moving if its not free && it's not
+          // starting room.
+          if (!free_player_movement &&
+              this_room.getEnum() !=
+                static_cast<ship_rooms>(
+                  Locator::getPlayers()
+                    ->getPlayer(players[Locator::getPlayers()->my_player_index]
+                                  ->current_class)
+                    ->getStartingRoom()))
+          {
+            debug_text.print("Moving costs 1 AP.");
+          }
         }
 
         // Clicked end turn button

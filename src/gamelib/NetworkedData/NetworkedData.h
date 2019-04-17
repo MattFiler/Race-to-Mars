@@ -147,10 +147,15 @@ enum data_roles
    *   [3] = active issue [3]
    *   [4] = active issue [4]
    */
-  CLIENT_REQUESTS_OBJ_CARD
+  CLIENT_REQUESTS_OBJ_CARD,
   /* ^ The client has requested an objective card
    *   [0] = client ID that pulled the item.
    *   [1] = objective card ID.
+   */
+
+  CLIENT_FREE_MOVEMENT,
+  /* ^ The client has requested an objective card
+   *   [0] = Set client movement to true.
    */
 };
 
