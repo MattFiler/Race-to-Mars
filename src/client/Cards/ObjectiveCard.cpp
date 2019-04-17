@@ -1,6 +1,7 @@
 #include "ObjectiveCard.h"
 #include "IssueCard.h"
 #include <client/Players/AllPlayers.h>
+#include <gamelib/NetworkedData/DataShare.h>
 
 ObjectiveCard::ObjectiveCard(objective_cards _card_type)
 {
@@ -28,54 +29,69 @@ void ObjectiveCard::useObjectiveCard()
     case objective_cards::BIG_ISSUE:
     {
       // Free ship movement
+      DataShare new_share = DataShare(data_roles::CLIENT_FREE_MOVEMENT);
+      new_share.add(true);
+      break;
     }
     case objective_cards::CLASS_ITEMS:
     {
-      // Draw 2 new cards
+      // Swap current items for new ones.
+      break;
     }
     case objective_cards::CLASS_SOLVER:
     {
       // 3 + ap
+      break;
     }
     case objective_cards::ISSUE_HELPER:
     {
       //+3 AP
+      break;
     }
     case objective_cards::ISSUE_HELPER_15:
     {
       // Delete an issue immediately
+      break;
     }
     case objective_cards::ISSUE_SOLVER_5:
     {
       //+3 AP's'
+      break;
     }
     case objective_cards::ISSUE_SOLVER_10:
     {
       // Free ship movement
+      break;
     }
     case objective_cards::ISSUE_SOLVER_15:
     {
       // Move ship forward
+      break;
     }
     case objective_cards::MAJORITY_HELPER:
     {
       // Draw item card
+      break;
     }
     case objective_cards::UNHELPFUL_RIGHT:
     {
       // Draw item card.
+      break;
     }
     case objective_cards::UNHELPFUL_LEFT:
     {
       // Re-roll the dice.
+      break;
     }
     case objective_cards::PERSONAL_ISSUE:
     {
       //+3 ap
+      break;
     }
     case objective_cards::POINT_STASH:
     {
       // Double your action points.
+      break;
     }
     default:
     {

@@ -249,6 +249,7 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
         board.setActiveIssueCards(
           active_issue_cards, static_cast<bool>(received_data.retrieve(12)));
         board.checkissueSolved();
+        free_player_movement = false;
       }
       // Pull a new objective card if required.
       if (Locator::getPlayers()->current_progress_index % 2 == 0 &&
@@ -304,9 +305,6 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
 
       players[received_data.retrieve(0)]->action_points =
         received_data.retrieve(2);
-      debug_text.print(
-        "New Ap: " + std::to_string(received_data.retrieve(2)) +
-        "for player: " + std::to_string(received_data.retrieve(0)));
 
       if (received_data.retrieve(3) != -1)
       {
@@ -319,11 +317,6 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
           std::to_string(received_data.retrieve(1) -
                          received_data.retrieve(2)) +
           " points to card " + std::to_string(received_data.retrieve(3)) + ".");
-      }
-      else if (received_data.retrieve(3) == -1)
-      {
-        debug_text.print("Another player is moving rooms or buying item. "
-                         "Change Ap amount too");
       }
       break;
     }
@@ -436,12 +429,25 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       board.syncIssueCards(sync_issues);
       break;
     }
+    // A client has completed an objective card or ended turn on obj spot.
     case data_roles::CLIENT_REQUESTS_OBJ_CARD:
     {
       debug_text.print("Received new obj after completing one of type:" +
                        std::to_string(received_data.retrieve(1)));
       board.setActiveObjectiveCard(received_data.retrieve(1));
       break;
+    }
+      // A client has used an obj card to get free ship movement for 1 turn.
+    case data_roles::CLIENT_FREE_MOVEMENT:
+    {
+      debug_text.print("Free ship movement for 1 turn.");
+      free_player_movement = static_cast<bool>(received_data.retrieve(0));
+      break;
+    }
+    case data_roles::CLIENT_NEW_ITEMS:
+    {
+      debug_text.print("Replacing new items...");
+      replenish_items = static_cast<bool>(received_data.retrieve(0));
     }
     // Anything else is unhandled.
     default:
@@ -526,9 +532,14 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
       {
         debug_text.print("Trying to buy item card.");
         if (Locator::getPlayers()
-              ->getPlayer(static_cast<player_classes>(
-                Locator::getPlayers()->my_player_index))
-              ->getHeldItemAmount() < 2)
+                ->getPlayer(static_cast<player_classes>(
+                  Locator::getPlayers()->my_player_index))
+                ->getHeldItemAmount() <
+              Locator::getPlayers()
+                ->getPlayer(static_cast<player_classes>(
+                  Locator::getPlayers()->my_player_index))
+                ->getMaxItems() &&
+            players[Locator::getPlayers()->my_player_index]->action_points >= 2)
         {
           auto new_share = DataShare(data_roles::CLIENT_REQUESTED_ITEM_CARD);
           new_share.add(Locator::getPlayers()->my_player_index);
@@ -537,6 +548,13 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
             ->getPlayer(static_cast<player_classes>(
               Locator::getPlayers()->my_player_index))
             ->setHeldItems(1);
+          // ap changed here
+          int& my_action_points =
+            players[Locator::getPlayers()->my_player_index]->action_points;
+          DataShare new_share_item =
+            DataShare(data_roles::CLIENT_ACTION_POINTS_CHANGED);
+          new_share_item.add(Locator::getPlayers()->my_player_index);
+          new_share_item.add(my_action_points);
         }
       }
       break;
@@ -684,22 +702,22 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
           }
           // Player is charged 1 ap for moving if its not free && it's not
           // starting room.
+          debug_text.print("Moving costs 1 AP.");
+          int& my_action_points =
+            players[Locator::getPlayers()->my_player_index]->action_points;
+          DataShare new_share =
+            DataShare(data_roles::CLIENT_ACTION_POINTS_CHANGED);
+          new_share.add(Locator::getPlayers()->my_player_index);
+          new_share.add(my_action_points);
           if (!free_player_movement &&
               players[Locator::getPlayers()->my_player_index]->action_points >
                 0)
           {
-            debug_text.print("Moving costs 1 AP.");
-            int& my_action_points =
-              players[Locator::getPlayers()->my_player_index]->action_points;
-            DataShare new_share =
-              DataShare(data_roles::CLIENT_ACTION_POINTS_CHANGED);
-            new_share.add(Locator::getPlayers()->my_player_index);
-            new_share.add(my_action_points);
             my_action_points -= 1;
-            new_share.add(my_action_points);
-            new_share.add(-1);
-            Locator::getNetworkInterface()->sendData(new_share);
           }
+          new_share.add(my_action_points);
+          new_share.add(-1);
+          Locator::getNetworkInterface()->sendData(new_share);
         }
 
         // Clicked end turn button
@@ -737,11 +755,40 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
         if (ui_manager.getButton(ui_buttons::BUY_ITEM_BTN)->clicked())
         {
           // Should validate score and existing items, etc here!
-          DataShare new_share =
-            DataShare(data_roles::CLIENT_REQUESTED_ITEM_CARD);
-          new_share.add(Locator::getPlayers()->my_player_index);
-          Locator::getNetworkInterface()->sendData(new_share);
-          debug_text.print("I want an item card!!");
+          if (Locator::getPlayers()
+                  ->getPlayer(static_cast<player_classes>(
+                    Locator::getPlayers()->my_player_index))
+                  ->getHeldItemAmount() <
+                Locator::getPlayers()
+                  ->getPlayer(static_cast<player_classes>(
+                    Locator::getPlayers()->my_player_index))
+                  ->getMaxItems() &&
+              players[Locator::getPlayers()->my_player_index]->action_points >=
+                2)
+          {
+            DataShare new_share_item =
+              DataShare(data_roles::CLIENT_REQUESTED_ITEM_CARD);
+            new_share_item.add(Locator::getPlayers()->my_player_index);
+            Locator::getNetworkInterface()->sendData(new_share_item);
+            debug_text.print("I want an item card!!");
+
+            // Below is buying item card.
+            int& my_action_points =
+              players[Locator::getPlayers()->my_player_index]->action_points;
+            DataShare new_share =
+              DataShare(data_roles::CLIENT_ACTION_POINTS_CHANGED);
+            new_share.add(Locator::getPlayers()->my_player_index);
+            new_share.add(my_action_points);
+            if (!free_player_movement &&
+                players[Locator::getPlayers()->my_player_index]->action_points >
+                  0)
+            {
+              my_action_points -= 1;
+            }
+            new_share.add(my_action_points);
+            new_share.add(-1);
+            Locator::getNetworkInterface()->sendData(new_share);
+          }
         }
 
         // Clicked dice roll button
@@ -905,6 +952,26 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
     got_new_obj_card = true;
     got_new_obj_this_turn = true;
     debug_text.print("got_new_obj_card");
+  }
+
+  // Replenish item cards for new ones if obj card has been played.
+  if (replenish_items)
+  {
+    board.clearItems();
+    for (int i = 0;
+         i < Locator::getPlayers()
+               ->getPlayer(
+                 players[Locator::getPlayers()->my_player_index]->current_class)
+               ->getHeldItemAmount();
+         ++i)
+    {
+      // Draw item card i amount of times.
+      auto new_share = DataShare(data_roles::CLIENT_REQUESTED_ITEM_CARD);
+      new_share.add(Locator::getPlayers()->my_player_index);
+      Locator::getNetworkInterface()->sendData(new_share);
+    }
+
+    replenish_items = false;
   }
 
   if (update_item_card)

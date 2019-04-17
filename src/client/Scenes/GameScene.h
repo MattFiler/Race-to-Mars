@@ -83,6 +83,7 @@ class GameScene : public Scene
   bool got_new_obj_this_turn = false;
   bool rolled_dice_this_turn = false;
   bool free_player_movement = false;
+  bool replenish_items = false;
 
   bool update_item_card = false;
   int new_item_card = -1;
