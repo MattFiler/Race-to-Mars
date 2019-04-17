@@ -444,11 +444,6 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       free_player_movement = static_cast<bool>(received_data.retrieve(0));
       break;
     }
-    case data_roles::CLIENT_NEW_ITEMS:
-    {
-      debug_text.print("Replacing new items...");
-      replenish_items = static_cast<bool>(received_data.retrieve(0));
-    }
     // Anything else is unhandled.
     default:
     {
@@ -955,7 +950,10 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
   }
 
   // Replenish item cards for new ones if obj card has been played.
-  if (replenish_items)
+  if (Locator::getPlayers()
+        ->getPlayer(
+          static_cast<player_classes>(Locator::getPlayers()->my_player_index))
+        ->getReplenishItems())
   {
     board.clearItems();
     for (int i = 0;
@@ -965,13 +963,16 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
                ->getHeldItemAmount();
          ++i)
     {
-      // Draw item card i amount of times.
-      auto new_share = DataShare(data_roles::CLIENT_REQUESTED_ITEM_CARD);
-      new_share.add(Locator::getPlayers()->my_player_index);
-      Locator::getNetworkInterface()->sendData(new_share);
+      DataShare new_share_item =
+        DataShare(data_roles::CLIENT_REQUESTED_ITEM_CARD);
+      new_share_item.add(Locator::getPlayers()->my_player_index);
+      Locator::getNetworkInterface()->sendData(new_share_item);
     }
 
-    replenish_items = false;
+    Locator::getPlayers()
+      ->getPlayer(
+        static_cast<player_classes>(Locator::getPlayers()->my_player_index))
+      ->setReplenishItems(false);
   }
 
   if (update_item_card)

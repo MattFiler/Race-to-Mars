@@ -628,6 +628,5 @@ void RaceToSpaceServer::clientRequestsObjective(DataShare& data_to_send,
   new_share.add(data_to_send.retrieve(0));
   new_share.add(this_lobby->objective_deck.back());
   this_lobby->objective_deck.pop_back();
-
   sendData(client, client.get_id(), new_share);
 }
