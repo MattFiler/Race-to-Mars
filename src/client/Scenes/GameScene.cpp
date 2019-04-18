@@ -482,6 +482,11 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
         debug_text.print("Creating obj card");
         board.addObjCardToInventory();
       }
+      if (keys.keyReleased("Debug Use Objective Action"))
+      {
+        debug_text.print("Using OBJ POWER!");
+        board.useObjCardDebug();
+      }
       if (keys.keyReleased("End Turn") &&
           players[Locator::getPlayers()->my_player_index]->is_active)
       {
@@ -984,6 +989,7 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
     }
     update_item_card = false;
   }
+
   // Show objective popup if needed
   if (is_new_turn && got_new_obj_card &&
       !ui_manager.popups().getPopup(ui_popups::ISSUE_POPUP)->isVisible())

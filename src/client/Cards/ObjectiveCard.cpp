@@ -141,7 +141,8 @@ void ObjectiveCard::useObjectiveCard()
       DataShare new_share = DataShare(data_roles::CLIENT_ACTION_POINTS_CHANGED);
       new_share.add(Locator::getPlayers()->my_player_index);
       new_share.add(my_action_points);
-      new_share.add(my_action_points * 2);
+      my_action_points *= 2;
+      new_share.add(my_action_points);
       new_share.add(-1);
       Locator::getNetworkInterface()->sendData(new_share);
       break;
@@ -270,7 +271,8 @@ void ObjectiveCard::increaseAP()
   DataShare new_share = DataShare(data_roles::CLIENT_ACTION_POINTS_CHANGED);
   new_share.add(Locator::getPlayers()->my_player_index);
   new_share.add(my_action_points);
-  new_share.add(my_action_points + 3);
+  my_action_points += 3;
+  new_share.add(my_action_points);
   new_share.add(-1);
   Locator::getNetworkInterface()->sendData(new_share);
 }

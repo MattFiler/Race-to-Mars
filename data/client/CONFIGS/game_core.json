@@ -16,7 +16,7 @@
 		  "Debug Spend AP": 76,
 		  "Debug Buy Item": 73,
 		  "Debug Obj Inventory": 79,
-		  "Debug Use Objective Action": 49, 
+		  "Debug Use Objective Action": 49 
 		},
 		"language": "English",
 		"server_hostname": "localhost",
