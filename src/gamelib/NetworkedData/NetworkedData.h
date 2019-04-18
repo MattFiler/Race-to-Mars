@@ -153,9 +153,13 @@ enum data_roles
    *   [1] = objective card ID.
    */
 
-  CLIENT_FREE_MOVEMENT
+  CLIENT_FREE_MOVEMENT,
   /* ^ The client has used an obj to get free movement for a turn.
    *   [0] = Set client movement to true.
+   */
+  CHAT_MSG
+  /* ^ The client has used an obj to get free movement for a turn.
+   *   [0] = CHAT_MESSAGE
    */
 };
 

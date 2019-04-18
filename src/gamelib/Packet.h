@@ -2,7 +2,9 @@
 #define PROJECT_PACKET_H
 
 #include <cstddef>
+#include <cstring>
 #include <enet/types.h>
+#include <string>
 #include <vector>
 
 class Packet
@@ -39,24 +41,22 @@ class Packet
   }
 
   //// template clsses for strings.
-  //    template<>
-  //    Packet& operator << (const std::string &str)
-  //    {
-  //      auto data = reinterpret_cast<const char*>(
-  //              str.data());
-  //      auto length = str.length() +1; // +1 for null
-  //      packet_data.insert(
-  //              packet_data.end(), data, data + length);
-  //      return *this;
-  //    }
-  //    template<>
-  //    Packet& operator >> (std::string &str)
-  //    {
-  //      auto length =
-  //              std::strlen(&packet_data[read_pos]);
-  //      str = std::string(&packet_data[read_pos], length);
-  //      read_pos += packet_data.size();
-  //      return *this;
-  //    }
+  template<>
+  Packet& operator<<(const std::string& str)
+  {
+    auto data = reinterpret_cast<const char*>(str.data());
+    auto length = str.length() + 1; // +1 for null
+    packet_data.insert(packet_data.end(), data, data + length);
+    return *this;
+  }
+  template<>
+  Packet& operator>>(std::string& str)
+  {
+    size_t length;
+    length = strlen(&packet_data[read_pos]);
+    str = std::string(&packet_data[read_pos], length);
+    read_pos += packet_data.size();
+    return *this;
+  }
 };
 #endif // PROJECT_PACKET_H
