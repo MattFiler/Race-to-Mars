@@ -444,6 +444,13 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       free_player_movement = static_cast<bool>(received_data.retrieve(0));
       break;
     }
+      // Handle Chat Messages.
+    case data_roles::CHAT_MSG:
+    {
+      debug_text.print("Storing sent chat msg.");
+      new_chat_msg = true;
+      break;
+    }
     // Anything else is unhandled.
     default:
     {
@@ -459,7 +466,7 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
 void GameScene::keyHandler(const ASGE::SharedEventData data)
 {
   keys.registerEvent(static_cast<const ASGE::KeyEvent*>(data.get()));
-
+  auto event = static_cast<const ASGE::KeyEvent*>(data.get());
   // Force all inputs to popups when visible
   if (ui_manager.popups().anyAreActive())
   {
@@ -472,89 +479,113 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
   {
     case game_state::PLAYING:
     {
-      if (keys.keyReleased("Back") && !current_scene_lock_active)
+      if (keys.keyReleased("Back") && !current_scene_lock_active &&
+          !entering_msg)
       {
         current_state = game_state::LOCAL_PAUSE;
         debug_text.print("Opening pause menu.");
-      }
-      if (keys.keyReleased("Debug Obj Inventory"))
-      {
-        debug_text.print("Creating obj card");
-        board.addObjCardToInventory();
-      }
-      if (keys.keyReleased("Debug Use Objective Action"))
-      {
-        debug_text.print("Using OBJ POWER!");
-        board.useObjCardDebug();
-      }
-      if (keys.keyReleased("End Turn") &&
-          players[Locator::getPlayers()->my_player_index]->is_active)
-      {
-        if (board.getObjectiveCard() != nullptr)
+        if (keys.keyReleased("Debug Obj Inventory"))
         {
-          // request new obj card for client.
-          if (board.checkObjectiveCardComplete(
-                getLobbyPlayer(Locator::getPlayers()->my_player_index)
-                  ->current_class))
-          {
-            board.addObjCardToInventory();
-            DataShare new_share =
-              DataShare(data_roles::CLIENT_REQUESTS_OBJ_CARD);
-            new_share.add(Locator::getPlayers()->my_player_index);
-            Locator::getNetworkInterface()->sendData(new_share);
-          }
+          debug_text.print("Creating obj card");
+          board.addObjCardToInventory();
         }
-        DataShare new_share = DataShare(data_roles::CLIENT_WANTS_TO_END_TURN);
-        new_share.add(Locator::getPlayers()->my_player_index);
-        Locator::getNetworkInterface()->sendData(new_share);
-        current_scene_lock_active = true;
-        debug_text.print("Requesting to end my go!!");
-        board.resetCardVariables();
-      }
-      if (keys.keyReleased("Debug Spend AP") &&
-          players[Locator::getPlayers()->my_player_index]->is_active)
-      {
-        // Debug: change my action points to 10.
-        int new_ap = 10;
-        DataShare new_share =
-          DataShare(data_roles::CLIENT_ACTION_POINTS_CHANGED);
-        new_share.add(Locator::getPlayers()->my_player_index);
-        new_share.add(
-          players[Locator::getPlayers()->my_player_index]->action_points);
-        new_share.add(new_ap);
-        new_share.add(-1);
-        Locator::getNetworkInterface()->sendData(new_share);
-        players[Locator::getPlayers()->my_player_index]->action_points = new_ap;
-        debug_text.print("Debug: changed my action points to 10!");
-      }
-      if (keys.keyReleased("Debug Buy Item") &&
-          players[Locator::getPlayers()->my_player_index]->is_active)
-      {
-        debug_text.print("Trying to buy item card.");
-        if (Locator::getPlayers()
-                ->getPlayer(static_cast<player_classes>(
-                  Locator::getPlayers()->my_player_index))
-                ->getHeldItemAmount() <
-              Locator::getPlayers()
-                ->getPlayer(static_cast<player_classes>(
-                  Locator::getPlayers()->my_player_index))
-                ->getMaxItems() &&
-            players[Locator::getPlayers()->my_player_index]->action_points >= 2)
+        if (keys.keyReleased("Debug Use Objective Action"))
         {
-          auto new_share = DataShare(data_roles::CLIENT_REQUESTED_ITEM_CARD);
+          debug_text.print("Using OBJ POWER!");
+          board.useObjCardDebug();
+        }
+        if (keys.keyReleased("End Turn") &&
+            players[Locator::getPlayers()->my_player_index]->is_active)
+        {
+          if (board.getObjectiveCard() != nullptr)
+          {
+            // request new obj card for client.
+            if (board.checkObjectiveCardComplete(
+                  getLobbyPlayer(Locator::getPlayers()->my_player_index)
+                    ->current_class))
+            {
+              board.addObjCardToInventory();
+              DataShare new_share =
+                DataShare(data_roles::CLIENT_REQUESTS_OBJ_CARD);
+              new_share.add(Locator::getPlayers()->my_player_index);
+              Locator::getNetworkInterface()->sendData(new_share);
+            }
+          }
+          DataShare new_share = DataShare(data_roles::CLIENT_WANTS_TO_END_TURN);
           new_share.add(Locator::getPlayers()->my_player_index);
           Locator::getNetworkInterface()->sendData(new_share);
-          Locator::getPlayers()
-            ->getPlayer(static_cast<player_classes>(
-              Locator::getPlayers()->my_player_index))
-            ->setHeldItems(1);
-          // ap changed here
-          int& my_action_points =
-            players[Locator::getPlayers()->my_player_index]->action_points;
-          DataShare new_share_item =
+          current_scene_lock_active = true;
+          debug_text.print("Requesting to end my go!!");
+          board.resetCardVariables();
+        }
+        if (keys.keyReleased("Debug Spend AP") &&
+            players[Locator::getPlayers()->my_player_index]->is_active)
+        {
+          // Debug: change my action points to 10.
+          int new_ap = 10;
+          DataShare new_share =
             DataShare(data_roles::CLIENT_ACTION_POINTS_CHANGED);
-          new_share_item.add(Locator::getPlayers()->my_player_index);
-          new_share_item.add(my_action_points);
+          new_share.add(Locator::getPlayers()->my_player_index);
+          new_share.add(
+            players[Locator::getPlayers()->my_player_index]->action_points);
+          new_share.add(new_ap);
+          new_share.add(-1);
+          Locator::getNetworkInterface()->sendData(new_share);
+          players[Locator::getPlayers()->my_player_index]->action_points =
+            new_ap;
+          debug_text.print("Debug: changed my action points to 10!");
+        }
+        if (keys.keyReleased("Debug Buy Item") &&
+            players[Locator::getPlayers()->my_player_index]->is_active)
+        {
+          debug_text.print("Trying to buy item card.");
+          if (Locator::getPlayers()
+                  ->getPlayer(static_cast<player_classes>(
+                    Locator::getPlayers()->my_player_index))
+                  ->getHeldItemAmount() <
+                Locator::getPlayers()
+                  ->getPlayer(static_cast<player_classes>(
+                    Locator::getPlayers()->my_player_index))
+                  ->getMaxItems() &&
+              players[Locator::getPlayers()->my_player_index]->action_points >=
+                2)
+          {
+            auto new_share = DataShare(data_roles::CLIENT_REQUESTED_ITEM_CARD);
+            new_share.add(Locator::getPlayers()->my_player_index);
+            Locator::getNetworkInterface()->sendData(new_share);
+            Locator::getPlayers()
+              ->getPlayer(static_cast<player_classes>(
+                Locator::getPlayers()->my_player_index))
+              ->setHeldItems(1);
+            // ap changed here
+            int& my_action_points =
+              players[Locator::getPlayers()->my_player_index]->action_points;
+            DataShare new_share_item =
+              DataShare(data_roles::CLIENT_ACTION_POINTS_CHANGED);
+            new_share_item.add(Locator::getPlayers()->my_player_index);
+            new_share_item.add(my_action_points);
+          }
+        }
+      }
+      else if (entering_msg)
+      {
+        if (event->key == ASGE::KEYS::KEY_BACKSPACE &&
+            my_chat_msg.length() != 0)
+        {
+          my_chat_msg.resize(my_chat_msg.size() - 1);
+        }
+
+        if (event->key == ASGE::KEYS::KEY_ENTER && my_chat_msg.length() != 0)
+        {
+          // send packet to server here.
+          auto new_share = DataShare(data_roles::CHAT_MSG);
+          std::string msg_to_send = getClassName() + my_chat_msg;
+          new_share.add(msg_to_send);
+        }
+        else if (event->key != ASGE::KEYS::KEY_BACKSPACE &&
+                 my_chat_msg.length() > 20)
+        {
+          my_chat_msg += static_cast<char>(event->key);
         }
       }
       break;
@@ -954,6 +985,11 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
     debug_text.print("got_new_obj_card");
   }
 
+  if (new_chat_msg)
+  {
+    chat_messages.emplace_back(received_chat_msg);
+  }
+
   // Replenish item cards for new ones if obj card has been played.
   if (Locator::getPlayers()
         ->getPlayer(
@@ -1164,6 +1200,11 @@ void GameScene::render()
       ui_manager.getButton(ui_buttons::BUY_ITEM_BTN)->render();
       ui_manager.getButton(ui_buttons::ROLL_DICE_BTN)->render();
 
+      // Render chat on top of everything else.
+      if (entering_msg)
+      {
+      }
+
       break;
     }
     case game_state::LOCAL_PAUSE:
@@ -1277,5 +1318,32 @@ void GameScene::debugOutput()
       "PRESS L TO DEBUG TEST ACTION POINTS", 10, 150, 0.5, ASGE::COLOURS::WHITE);
     renderer->renderText(
       "PRESS I TO DEBUG TEST ITEMS", 10, 170, 0.5, ASGE::COLOURS::WHITE);
+  }
+}
+
+std::string GameScene::getClassName()
+{
+  switch (players[Locator::getPlayers()->my_player_index]->current_class)
+  {
+    case player_classes ::MEDIC:
+    {
+      return "Medic: ";
+    }
+    case player_classes::ENGINEER:
+    {
+      return "Engineer: ";
+    }
+    case player_classes::COMMUNICATIONS:
+    {
+      return "Communications: ";
+    }
+    case player_classes::PILOT:
+    {
+      return "Pilot: ";
+    }
+    default:
+    {
+      return "No Name: ";
+    }
   }
 }

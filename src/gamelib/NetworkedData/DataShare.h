@@ -2,6 +2,7 @@
 #define PROJECT_DATASHARE_H
 
 #include "NetworkedData.h"
+#include "gamelib/ChatMsg.h"
 
 /*
  *
@@ -73,6 +74,7 @@ struct DataShare
   int data_index = 0;
   int data_array[20] = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
                          -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
+  ChatMsg chat_msg;
 };
 
 #endif // PROJECT_DATASHARE_H

@@ -10,6 +10,7 @@
 #include <client/Cards/IssueCard.h>
 #include <client/Cards/ItemCard.h>
 #include <client/Cards/ObjectiveCard.h>
+#include <vector>
 
 /* UI Elements */
 enum ui_sprites
@@ -78,6 +79,8 @@ class GameScene : public Scene
 
   SceneUI ui_manager;
 
+  std::vector<std::string> chat_messages;
+
   bool is_new_turn = false;
   bool got_new_obj_card = false;
   bool got_new_obj_this_turn = false;
@@ -86,6 +89,12 @@ class GameScene : public Scene
 
   bool update_item_card = false;
   int new_item_card = -1;
+
+  // chat msg
+  bool entering_msg = false; // Is player sending message or reading chat?
+  bool new_chat_msg = false;
+  std::string received_chat_msg;
+  std::string my_chat_msg = "";
 
   CardOffsets card_offsets;
 
@@ -96,6 +105,7 @@ class GameScene : public Scene
   // int current_progress_index = 0;
   bool current_scene_lock_active = false; // optional "scene lock" to freeze
                                           // client interaction - useful for the
-                                          // end of a turn?
+                                          // end of a turn
+  std::string getClassName();
 };
 #endif // PROJECT_GAMESCENE_H

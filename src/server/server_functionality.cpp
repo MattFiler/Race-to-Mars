@@ -630,3 +630,7 @@ void RaceToSpaceServer::clientRequestsObjective(DataShare& data_to_send,
   this_lobby->objective_deck.pop_back();
   sendData(client, client.get_id(), new_share);
 }
+
+void RaceToSpaceServer::chatMsg(DataShare& data_to_send, server_client& client)
+{
+}
