@@ -90,10 +90,3 @@ void NetworkConnection::sendData(DataShare& data)
   packet << data;
   getPacketQueue()->push(packet);
 }
-
-void NetworkConnection::sendChatMsg(std::string& _msg)
-{
-  Packet packet;
-  packet << _msg;
-  getPacketQueue()->push(packet);
-}
