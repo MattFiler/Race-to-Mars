@@ -52,6 +52,8 @@ struct DataShare
     data_index++;
   }
 
+  void addChatMsg(const std::string& _new_data) { chat_msg.setMsg(_new_data); }
+
   /* Retrieve data from the struct */
   int retrieve(int index)
   {

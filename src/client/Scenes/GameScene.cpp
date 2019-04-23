@@ -448,6 +448,7 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     case data_roles::CHAT_MSG:
     {
       debug_text.print("Storing sent chat msg.");
+      ChatMsg msg(reinterpret_cast<const char*>(data));
       new_chat_msg = true;
       break;
     }
@@ -567,7 +568,8 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
           }
         }
       }
-      else if (entering_msg)
+
+      if (entering_msg)
       {
         if (event->key == ASGE::KEYS::KEY_BACKSPACE &&
             my_chat_msg.length() != 0)
@@ -577,10 +579,10 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
 
         if (event->key == ASGE::KEYS::KEY_ENTER && my_chat_msg.length() != 0)
         {
-          // send packet to server here.
+          // send chat message to server here.
           auto new_share = DataShare(data_roles::CHAT_MSG);
-          std::string msg_to_send = getClassName() + my_chat_msg;
-          new_share.add(msg_to_send);
+          new_share.addChatMsg(my_chat_msg);
+          Locator::getNetworkInterface()->sendData(new_share);
         }
         else if (event->key != ASGE::KEYS::KEY_BACKSPACE &&
                  my_chat_msg.length() > 20)

@@ -31,10 +31,6 @@ void NetworkConnection::startListening(RaceToSpace* game_instance)
   // Enable debug input to test comms from client to server (& other clients)
   std::thread th2(&NetworkConnection::networkMessageDebug, this);
   th2.detach();
-
-  // Chat Messages
-  std::thread th3(&NetworkConnection::networkMessageDebug, this);
-  th2.detach();
 }
 
 // Our network connection loop

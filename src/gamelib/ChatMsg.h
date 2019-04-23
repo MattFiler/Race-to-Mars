@@ -12,14 +12,14 @@ class ChatMsg
 {
  public:
   ChatMsg() = default;
-  ChatMsg(std::string user, std::string msg);
+  ChatMsg(std::string msg);
 
-  ChatMsg(const char* data);
+  explicit ChatMsg(const char* data);
 
   ~ChatMsg() = default;
   char* data(unsigned int& size) const;
   const std::string& getMsg() const;
-  const std::string& getUsername() const;
+  void setMsg(const std::string& new_msg) { msg_text = new_msg; }
 
  private:
   std::string msg_text;
