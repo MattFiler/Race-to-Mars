@@ -24,6 +24,7 @@ enum ui_sprites
   SYNC_OVERLAY,
   DISCONNECT_OVERLAY,
   POPUP_CARD_SHADOWS_0,
+  CHAT_BOX,
   POPUP_CARD_SHADOWS_1,
   POPUP_CARD_SHADOWS_2,
   POPUP_CARD_SHADOWS_3,
@@ -46,7 +47,8 @@ enum ui_buttons
 {
   END_TURN_BTN,
   BUY_ITEM_BTN,
-  ROLL_DICE_BTN
+  ROLL_DICE_BTN,
+  CHAT_BTN
 };
 
 class GameScene : public Scene
@@ -94,7 +96,7 @@ class GameScene : public Scene
   bool entering_msg = false; // Is player sending message or reading chat?
   bool new_chat_msg = false;
   std::string received_chat_msg;
-  std::string my_chat_msg = "";
+  std::string my_chat_msg = "IT WAS FKN ONE OF YUS!";
 
   CardOffsets card_offsets;
 

@@ -72,6 +72,7 @@ void GameScene::init()
   ui_manager.createSprite(ui_sprites::SYNC_OVERLAY, "UI/INGAME_UI/syncing.png");
   ui_manager.createSprite(ui_sprites::DISCONNECT_OVERLAY,
                           "UI/INGAME_UI/syncing_notext.png");
+  ui_manager.createSprite(ui_sprites::CHAT_BOX, "UI/INGAME_UI/chatbox.png");
   for (int i = 0; i < 6; i++)
   {
     ui_manager.createSprite(ui_sprites::POPUP_CARD_SHADOWS_0 + i,
@@ -100,6 +101,8 @@ void GameScene::init()
   ui_manager
     .createButton(ui_buttons::BUY_ITEM_BTN, "UI/INGAME_UI/buy_item_btn.png")
     ->setPos(Vector2(1042, 551));
+  ui_manager.createButton(ui_buttons::CHAT_BTN, "UI/INGAME_UI/chat_btn.png")
+    ->setPos(Vector2(330, 679));
 
   // Issue popup card placeholder
   ScaledSprite& card_placeholder = ui_manager.popups()
@@ -466,25 +469,58 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
 /* Handles Key Inputs */
 void GameScene::keyHandler(const ASGE::SharedEventData data)
 {
-  keys.registerEvent(static_cast<const ASGE::KeyEvent*>(data.get()));
   auto event = static_cast<const ASGE::KeyEvent*>(data.get());
+  if (entering_msg && current_state == game_state::PLAYING)
+  {
+    if (event->action == ASGE::KEYS::KEY_PRESSED)
+    {
+      if (event->key == ASGE::KEYS::KEY_BACKSPACE && my_chat_msg.length() > 0)
+      {
+        my_chat_msg.resize(my_chat_msg.size() - 1);
+      }
+
+      if (event->key == ASGE::KEYS::KEY_ENTER && my_chat_msg.length() > 0)
+      {
+        // send chat message to server here.
+        auto new_share = DataShare(data_roles::CHAT_MSG);
+        new_share.addChatMsg(my_chat_msg);
+        Locator::getNetworkInterface()->sendData(new_share);
+        // my_chat_msg.clear();
+      }
+      else if (event->key != ASGE::KEYS::KEY_BACKSPACE &&
+               my_chat_msg.length() < 20)
+      {
+        if (event->key >= 65 && event->key <= 90)
+        {
+          my_chat_msg += static_cast<char>(event->key);
+        }
+        else if (event->key == 32)
+        {
+          my_chat_msg += static_cast<char>(event->key);
+        }
+      }
+    }
+  }
+
+  keys.registerEvent(static_cast<const ASGE::KeyEvent*>(data.get()));
   // Force all inputs to popups when visible
   if (ui_manager.popups().anyAreActive())
   {
     ui_manager.popups().keyHandler(keys);
     return;
   }
-
   // Game input states
   switch (current_state)
   {
     case game_state::PLAYING:
     {
-      if (keys.keyReleased("Back") && !current_scene_lock_active &&
-          !entering_msg)
+      if (!entering_msg)
       {
-        current_state = game_state::LOCAL_PAUSE;
-        debug_text.print("Opening pause menu.");
+        if (keys.keyReleased("Back") && !current_scene_lock_active)
+        {
+          current_state = game_state::LOCAL_PAUSE;
+          debug_text.print("Opening pause menu.");
+        }
         if (keys.keyReleased("Debug Obj Inventory"))
         {
           debug_text.print("Creating obj card");
@@ -568,28 +604,6 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
           }
         }
       }
-
-      if (entering_msg)
-      {
-        if (event->key == ASGE::KEYS::KEY_BACKSPACE &&
-            my_chat_msg.length() != 0)
-        {
-          my_chat_msg.resize(my_chat_msg.size() - 1);
-        }
-
-        if (event->key == ASGE::KEYS::KEY_ENTER && my_chat_msg.length() != 0)
-        {
-          // send chat message to server here.
-          auto new_share = DataShare(data_roles::CHAT_MSG);
-          new_share.addChatMsg(my_chat_msg);
-          Locator::getNetworkInterface()->sendData(new_share);
-        }
-        else if (event->key != ASGE::KEYS::KEY_BACKSPACE &&
-                 my_chat_msg.length() > 20)
-        {
-          my_chat_msg += static_cast<char>(event->key);
-        }
-      }
       break;
     }
     case game_state::LOCAL_PAUSE:
@@ -638,7 +652,8 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
   {
     ui_manager.popups().clickHandler();
 
-    // Handle interactions for all active buttons in issue popup when visible
+    // Handle interactions for all active buttons in issue popup when
+    // visible
     if (ui_manager.popups().getPopup(ui_popups::ISSUE_POPUP)->isVisible())
     {
       int ap_button_index = 0;
@@ -679,8 +694,8 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
             }
             else
             {
-              // BEEP BOOP WE DON'T HAVE ENOUGH ACTION POINTS, some kind of UI
-              // prompt here would be nice!
+              // BEEP BOOP WE DON'T HAVE ENOUGH ACTION POINTS, some kind of
+              // UI prompt here would be nice!
               debug_text.print("COULD NOT ASSIGN ACTION POINTS! WE HAVE " +
                                std::to_string(my_action_points) + ".");
             }
@@ -764,7 +779,8 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
                   getLobbyPlayer(Locator::getPlayers()->my_player_index)
                     ->current_class))
             {
-              debug_text.print("Objective card complete! Creating new one... "
+              debug_text.print("Objective card complete! Creating new "
+                               "one... "
                                "and adding current obj to inventory.");
               board.addObjCardToInventory();
               DataShare new_share =
@@ -881,6 +897,13 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
             *board.getClickedObjectiveCard(mouse_pos)->getSprite());
         ui_manager.popups().getPopup(ui_popups::OBJECTIVE_POPUP)->show();
       }
+
+      // Clicked on CHAT btn
+      if (ui_manager.getButton(ui_buttons::CHAT_BTN)->clicked())
+      {
+        entering_msg = !entering_msg;
+      }
+
       // Clicked on an issue card
       if (board.isHoveringOverIssueCard(mouse_pos))
       {
@@ -1058,10 +1081,10 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
 
   /* STATE-SPECIFIC CURSOR */
 
-  // While our cursor hover state is handled by individual buttons, more generic
-  // game stuff like the card hovering needs to be handled here. By default, the
-  // cursor is set to inactive at the start of every update call, this will then
-  // override that to true if needed.
+  // While our cursor hover state is handled by individual buttons, more
+  // generic game stuff like the card hovering needs to be handled here. By
+  // default, the cursor is set to inactive at the start of every update
+  // call, this will then override that to true if needed.
 
   Vector2 mouse_pos = Vector2(Locator::getCursor()->getPosition().x,
                               Locator::getCursor()->getPosition().y);
@@ -1143,8 +1166,8 @@ void GameScene::render()
       {
         float this_pos = static_cast<float>(180 * i);
 
-        // Player tab - maybe only render this if they're in-game, as players
-        // cued up in the lobby still show this otherwise
+        // Player tab - maybe only render this if they're in-game, as
+        // players cued up in the lobby still show this otherwise
         Locator::getPlayers()
           ->getPlayer(players[i]->current_class)
           ->getGameTabSprite()
@@ -1201,12 +1224,15 @@ void GameScene::render()
       ui_manager.getButton(ui_buttons::END_TURN_BTN)->render();
       ui_manager.getButton(ui_buttons::BUY_ITEM_BTN)->render();
       ui_manager.getButton(ui_buttons::ROLL_DICE_BTN)->render();
+      ui_manager.getButton(ui_buttons::CHAT_BTN)->render();
 
       // Render chat on top of everything else.
       if (entering_msg)
       {
+        renderer->renderSprite(
+          *ui_manager.getSprite(ui_sprites::CHAT_BOX)->getSprite());
+        renderer->renderText(my_chat_msg, 420, 705, 0.5f, ASGE::COLOURS::WHITE);
       }
-
       break;
     }
     case game_state::LOCAL_PAUSE:

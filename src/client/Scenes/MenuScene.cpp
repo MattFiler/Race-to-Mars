@@ -20,6 +20,27 @@ void MenuScene::networkDataReceived(const enet_uint8* data, size_t data_size) {}
 /* Handles key inputs */
 void MenuScene::keyHandler(const ASGE::SharedEventData data)
 {
+  auto event = static_cast<const ASGE::KeyEvent*>(data.get());
+
+  if (event->action == ASGE::KEYS::KEY_PRESSED)
+  {
+    if (event->key == ASGE::KEYS::KEY_BACKSPACE)
+    {
+      if (!username.empty())
+      {
+        username.pop_back();
+      }
+    }
+    else if (event->key >= 65 && event->key <= 90)
+    {
+      username += static_cast<char>(event->key);
+    }
+    else if (event->key == 32)
+    {
+      username += static_cast<char>(event->key);
+    }
+  }
+
   keys.registerEvent(static_cast<const ASGE::KeyEvent*>(data.get()));
   if (main_menu.itemWasSelected(keys))
   {
@@ -52,4 +73,6 @@ game_global_scenes MenuScene::update(const ASGE::GameTime& game_time)
 void MenuScene::render()
 {
   main_menu.render();
+  renderer->renderText(username, 500, 500);
+  renderer->renderText(std::to_string(username.size()), 500, 300);
 }
