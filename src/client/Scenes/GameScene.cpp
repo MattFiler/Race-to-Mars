@@ -73,6 +73,7 @@ void GameScene::init()
   ui_manager.createSprite(ui_sprites::DISCONNECT_OVERLAY,
                           "UI/INGAME_UI/syncing_notext.png");
   ui_manager.createSprite(ui_sprites::CHAT_BOX, "UI/INGAME_UI/chatbox.png");
+  ui_manager.createSprite(ui_sprites::MSG_ALERT, "UI/INGAME_UI/msg_alert.png");
   for (int i = 0; i < 6; i++)
   {
     ui_manager.createSprite(ui_sprites::POPUP_CARD_SHADOWS_0 + i,
@@ -453,6 +454,10 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       debug_text.print("Storing sent chat msg:" + received_data.getMsg());
       received_chat_msg = received_data.getMsg();
       new_chat_msg = true;
+      if (!entering_msg)
+      {
+        unread_msgs = true;
+      }
       break;
     }
     // Anything else is unhandled.
@@ -900,6 +905,10 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
       // Clicked on CHAT btn
       if (ui_manager.getButton(ui_buttons::CHAT_BTN)->clicked())
       {
+        if (!entering_msg)
+        {
+          unread_msgs = false;
+        }
         entering_msg = !entering_msg;
       }
 
@@ -1012,6 +1021,10 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
   if (new_chat_msg)
   {
     debug_text.print("Adding message: " + received_chat_msg + " to ALL_MSGS.");
+    if (chat_messages.size() >= max_messages)
+    {
+      chat_messages.erase(chat_messages.begin());
+    }
     chat_messages.emplace_back(received_chat_msg);
     new_chat_msg = false;
   }
@@ -1244,6 +1257,11 @@ void GameScene::render()
                                  ASGE::COLOURS::WHITE);
           }
         }
+      }
+      if (unread_msgs)
+      {
+        renderer->renderSprite(
+          *ui_manager.getSprite(ui_sprites::MSG_ALERT)->getSprite());
       }
       break;
     }

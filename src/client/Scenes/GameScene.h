@@ -25,6 +25,7 @@ enum ui_sprites
   DISCONNECT_OVERLAY,
   POPUP_CARD_SHADOWS_0,
   CHAT_BOX,
+  MSG_ALERT,
   POPUP_CARD_SHADOWS_1,
   POPUP_CARD_SHADOWS_2,
   POPUP_CARD_SHADOWS_3,
@@ -90,9 +91,11 @@ class GameScene : public Scene
   // chat msg
   bool entering_msg = false; // Is player sending message or reading chat?
   bool new_chat_msg = false;
+  bool unread_msgs = false;
   std::string my_chat_msg = "IT WAS FKN ONE OF YUS!";
   std::string received_chat_msg;
   std::vector<std::string> chat_messages;
+  size_t max_messages = 32;
 
   CardOffsets card_offsets;
 
