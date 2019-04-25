@@ -41,21 +41,21 @@ class Packet
   }
 
   // functions for strings.
-  //  Packet& operator<<(const std::string& str)
-  //  {
-  //    auto data = str.data();
-  //    auto length = str.length() + 1; // +1 for null
-  //    packet_data.insert(packet_data.end(), data, data + length);
-  //    return *this;
-  //  }
-  //
-  //  Packet& operator>>(std::string& str)
-  //  {
-  //    size_t length;
-  //    length = strlen(&packet_data[read_pos]);
-  //    str = std::string(&packet_data[read_pos], length);
-  //    read_pos += packet_data.size();
-  //    return *this;
-  //  }
+  Packet& operator<<(const std::string& str)
+  {
+    auto data = str.data();
+    auto length = str.length() + 1; // +1 for null
+    packet_data.insert(packet_data.end(), data, data + length);
+    return *this;
+  }
+
+  Packet& operator>>(std::string& str)
+  {
+    size_t length;
+    length = strlen(&packet_data[read_pos]);
+    str = std::string(&packet_data[read_pos], length);
+    read_pos += packet_data.size();
+    return *this;
+  }
 };
 #endif // PROJECT_PACKET_H

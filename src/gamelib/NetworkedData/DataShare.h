@@ -2,7 +2,10 @@
 #define PROJECT_DATASHARE_H
 
 #include "NetworkedData.h"
-#include "gamelib/ChatMsg.h"
+#include <cstring>
+#include <enet/types.h>
+#include <string>
+#include <vector>
 
 /*
  *
@@ -52,7 +55,18 @@ struct DataShare
     data_index++;
   }
 
-  void addChatMsg(const std::string& _new_data) { chat_msg.setMsg(_new_data); }
+  void addMsg(std::string& chat_msg)
+  {
+    strcpy(chat_msg_data, chat_msg.c_str());
+  }
+
+  std::string getMsg()
+  {
+    size_t length;
+    length = strlen(&chat_msg_data[0]);
+    std::string msg = std::string(&chat_msg_data[0], length);
+    return msg;
+  }
 
   /* Retrieve data from the struct */
   int retrieve(int index)
@@ -76,7 +90,8 @@ struct DataShare
   int data_index = 0;
   int data_array[20] = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
                          -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
-  ChatMsg chat_msg;
+  // const enet_uint8* msg_data;
+  char chat_msg_data[20];
 };
 
 #endif // PROJECT_DATASHARE_H

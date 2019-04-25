@@ -450,8 +450,8 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       // Handle Chat Messages.
     case data_roles::CHAT_MSG:
     {
-      debug_text.print("Storing sent chat msg.");
-      ChatMsg msg(reinterpret_cast<const char*>(data));
+      debug_text.print("Storing sent chat msg:" + received_data.getMsg());
+      received_chat_msg = received_data.getMsg();
       new_chat_msg = true;
       break;
     }
@@ -483,9 +483,8 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
       {
         // send chat message to server here.
         auto new_share = DataShare(data_roles::CHAT_MSG);
-        new_share.addChatMsg(my_chat_msg);
+        new_share.addMsg(my_chat_msg);
         Locator::getNetworkInterface()->sendData(new_share);
-        // my_chat_msg.clear();
       }
       else if (event->key != ASGE::KEYS::KEY_BACKSPACE &&
                my_chat_msg.length() < 20)
@@ -1013,6 +1012,7 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
   if (new_chat_msg)
   {
     chat_messages.emplace_back(received_chat_msg);
+    new_chat_msg = false;
   }
 
   // Replenish item cards for new ones if obj card has been played.

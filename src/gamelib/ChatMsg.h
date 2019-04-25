@@ -23,7 +23,6 @@ class ChatMsg
 
  private:
   std::string msg_text;
-  std::string username;
 };
 
 #endif // PROJECT_CHATMSG_H

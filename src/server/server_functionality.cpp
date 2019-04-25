@@ -102,6 +102,12 @@ void RaceToSpaceServer::handleReceivedData(DataShare& data_to_send,
       break;
     }
 
+    case data_roles::CHAT_MSG:
+    {
+      sendData(client, static_cast<unsigned int>(-1), data_to_send);
+      break;
+    }
+
     // Otherwise, it's a message that needs to be forwarded to everyone in
     // the lobby.
     default:
@@ -633,4 +639,7 @@ void RaceToSpaceServer::clientRequestsObjective(DataShare& data_to_send,
 
 void RaceToSpaceServer::chatMsg(DataShare& data_to_send, server_client& client)
 {
+  DataShare new_share = DataShare(data_roles::CLIENT_FREE_MOVEMENT);
+  new_share.add(data_to_send.retrieve(0));
+  sendToAll(client, data_to_send);
 }

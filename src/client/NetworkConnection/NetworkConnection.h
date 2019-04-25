@@ -17,6 +17,7 @@ class NetworkConnection
   void startListening(RaceToSpace* game_instance);
 
   void sendData(DataShare& data);
+  void sendMsg(std::string data);
 
   enetpp::client* getClient() { return &client; };
 
@@ -31,9 +32,8 @@ class NetworkConnection
   std::atomic<bool> exiting = false;
   std::queue<Packet> pkt_queue;
   std::mutex pkt_queue_mtx;
-  std::queue<std::string> msg_queue_debug;
+  std::queue<std::string> msg_queue;
   std::mutex msg_queue_mtx;
-  std::mutex msg_queue_debug_mtx;
 };
 
 #endif // PROJECT_NETWORKCONNECTION_H

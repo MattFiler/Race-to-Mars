@@ -27,6 +27,8 @@ class Scene
   virtual void networkConnected(){};
   virtual void networkDisconnected(){};
   virtual void networkDataReceived(const enet_uint8* data, size_t data_size){};
+  virtual void
+  networkChatMsgReceived(const enet_uint8* data, size_t data_size){};
 
   virtual void keyHandler(const ASGE::SharedEventData data){};
   virtual void clickHandler(const ASGE::SharedEventData data){};

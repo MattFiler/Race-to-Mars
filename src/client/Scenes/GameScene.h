@@ -74,14 +74,9 @@ class GameScene : public Scene
 
  private:
   void debugOutput();
-
   GameBoard board;
-
   LobbyPlayer* players[4] = { nullptr, nullptr, nullptr, nullptr };
-
   SceneUI ui_manager;
-
-  std::vector<std::string> chat_messages;
 
   bool is_new_turn = false;
   bool got_new_obj_card = false;
@@ -95,8 +90,9 @@ class GameScene : public Scene
   // chat msg
   bool entering_msg = false; // Is player sending message or reading chat?
   bool new_chat_msg = false;
-  std::string received_chat_msg;
   std::string my_chat_msg = "IT WAS FKN ONE OF YUS!";
+  std::string received_chat_msg;
+  std::vector<std::string> chat_messages;
 
   CardOffsets card_offsets;
 
