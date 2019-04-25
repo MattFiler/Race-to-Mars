@@ -89,10 +89,10 @@ class GameScene : public Scene
   int new_item_card = -1;
 
   // chat msg
-  bool entering_msg = false; // Is player sending message or reading chat?
+  bool entering_msg = false;
   bool new_chat_msg = false;
   bool unread_msgs = false;
-  std::string my_chat_msg = "IT WAS FKN ONE OF YUS!";
+  std::string my_chat_msg;
   std::string received_chat_msg;
   std::vector<std::string> chat_messages;
   size_t max_messages = 32;
