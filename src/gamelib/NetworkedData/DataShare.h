@@ -90,8 +90,7 @@ struct DataShare
   int data_index = 0;
   int data_array[20] = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
                          -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
-  // const enet_uint8* msg_data;
-  char chat_msg_data[20];
+  char chat_msg_data[40];
 };
 
 #endif // PROJECT_DATASHARE_H

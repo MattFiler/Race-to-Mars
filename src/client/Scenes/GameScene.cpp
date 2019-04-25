@@ -487,7 +487,7 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
         Locator::getNetworkInterface()->sendData(new_share);
       }
       else if (event->key != ASGE::KEYS::KEY_BACKSPACE &&
-               my_chat_msg.length() < 20)
+               my_chat_msg.length() < 40)
       {
         if (event->key >= 65 && event->key <= 90)
         {
