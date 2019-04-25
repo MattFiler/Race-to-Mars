@@ -1011,6 +1011,7 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
 
   if (new_chat_msg)
   {
+    debug_text.print("Adding message: " + received_chat_msg + " to ALL_MSGS.");
     chat_messages.emplace_back(received_chat_msg);
     new_chat_msg = false;
   }
@@ -1232,6 +1233,17 @@ void GameScene::render()
         renderer->renderSprite(
           *ui_manager.getSprite(ui_sprites::CHAT_BOX)->getSprite());
         renderer->renderText(my_chat_msg, 420, 705, 0.5f, ASGE::COLOURS::WHITE);
+        if (!chat_messages.empty())
+        {
+          for (size_t i = 0; i < chat_messages.size(); ++i)
+          {
+            renderer->renderText(chat_messages[i],
+                                 420,
+                                 static_cast<int>((50) + (i * 20)),
+                                 0.5f,
+                                 ASGE::COLOURS::WHITE);
+          }
+        }
       }
       break;
     }
