@@ -486,13 +486,15 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
 
       if (event->key == ASGE::KEYS::KEY_ENTER && my_chat_msg.length() > 0)
       {
+        my_chat_msg = getClassName() + my_chat_msg;
         // send chat message to server here.
         auto new_share = DataShare(data_roles::CHAT_MSG);
         new_share.addMsg(my_chat_msg);
         Locator::getNetworkInterface()->sendData(new_share);
+        my_chat_msg.clear();
       }
       else if (event->key != ASGE::KEYS::KEY_BACKSPACE &&
-               my_chat_msg.length() < 40)
+               my_chat_msg.length() < max_message_size)
       {
         if (event->key >= 65 && event->key <= 90)
         {
@@ -1385,19 +1387,19 @@ std::string GameScene::getClassName()
   {
     case player_classes ::MEDIC:
     {
-      return "Medic: ";
+      return "MEDIC: ";
     }
     case player_classes::ENGINEER:
     {
-      return "Engineer: ";
+      return "ENGINEER: ";
     }
     case player_classes::COMMUNICATIONS:
     {
-      return "Communications: ";
+      return "COMMUNICATIONS: ";
     }
     case player_classes::PILOT:
     {
-      return "Pilot: ";
+      return "PILOT: ";
     }
     default:
     {

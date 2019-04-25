@@ -96,6 +96,7 @@ class GameScene : public Scene
   std::string received_chat_msg;
   std::vector<std::string> chat_messages;
   size_t max_messages = 32;
+  size_t max_message_size = 26;
 
   CardOffsets card_offsets;
 
