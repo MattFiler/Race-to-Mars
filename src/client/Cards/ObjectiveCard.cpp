@@ -1,6 +1,8 @@
 #include "ObjectiveCard.h"
 #include "IssueCard.h"
+#include "client/NetworkConnection/NetworkConnection.h"
 #include <client/Players/AllPlayers.h>
+#include <gamelib/NetworkedData/DataShare.h>
 
 ObjectiveCard::ObjectiveCard(objective_cards _card_type)
 {
@@ -27,42 +29,123 @@ void ObjectiveCard::useObjectiveCard()
   {
     case objective_cards::BIG_ISSUE:
     {
+      // Free ship movement
+      freeShipMovement();
+      break;
     }
     case objective_cards::CLASS_ITEMS:
     {
+      // Swap current items for new ones.
+      Locator::getPlayers()
+        ->getPlayer(
+          static_cast<player_classes>(Locator::getPlayers()->my_player_index))
+        ->setReplenishItems(true);
+      break;
     }
     case objective_cards::CLASS_SOLVER:
     {
+      // 3 + ap
+      increaseAP();
+      break;
     }
     case objective_cards::ISSUE_HELPER:
     {
+      //+3 AP
+      increaseAP();
+      break;
     }
     case objective_cards::ISSUE_HELPER_15:
     {
+      // Delete an issue immediately
+      increaseAP();
+      break;
     }
     case objective_cards::ISSUE_SOLVER_5:
     {
+      //+3 AP's'
+      increaseAP();
+      break;
     }
     case objective_cards::ISSUE_SOLVER_10:
     {
+      // Free ship movement
+      freeShipMovement();
+      break;
     }
     case objective_cards::ISSUE_SOLVER_15:
     {
+      // Move ship forward
+      DataShare new_share = DataShare(data_roles::CLIENT_CHANGE_PROGRESS_INDEX);
+      new_share.add(Locator::getPlayers()->current_progress_index + 1);
+      Locator::getNetworkInterface()->sendData(new_share);
+      break;
     }
     case objective_cards::MAJORITY_HELPER:
     {
+      // Draw item card
+      if (Locator::getPlayers()
+            ->getPlayer(static_cast<player_classes>(
+              Locator::getPlayers()->my_player_index))
+            ->getHeldItemAmount() < Locator::getPlayers()
+                                      ->getPlayer(static_cast<player_classes>(
+                                        Locator::getPlayers()->my_player_index))
+                                      ->getMaxItems())
+      {
+        DataShare new_share_item =
+          DataShare(data_roles::CLIENT_REQUESTED_ITEM_CARD);
+        new_share_item.add(Locator::getPlayers()->my_player_index);
+        Locator::getNetworkInterface()->sendData(new_share_item);
+      }
+      break;
     }
     case objective_cards::UNHELPFUL_RIGHT:
     {
+      // Draw item card.
+      if (Locator::getPlayers()
+            ->getPlayer(static_cast<player_classes>(
+              Locator::getPlayers()->my_player_index))
+            ->getHeldItemAmount() < Locator::getPlayers()
+                                      ->getPlayer(static_cast<player_classes>(
+                                        Locator::getPlayers()->my_player_index))
+                                      ->getMaxItems())
+      {
+        DataShare new_share_item =
+          DataShare(data_roles::CLIENT_REQUESTED_ITEM_CARD);
+        new_share_item.add(Locator::getPlayers()->my_player_index);
+        Locator::getNetworkInterface()->sendData(new_share_item);
+      }
+      break;
     }
     case objective_cards::UNHELPFUL_LEFT:
     {
+      // Re-roll the dice.
+      Locator::getPlayers()
+        ->getPlayer(
+          static_cast<player_classes>(Locator::getPlayers()->my_player_index))
+        ->setDiceRolls(1);
+      break;
     }
     case objective_cards::PERSONAL_ISSUE:
     {
+      //+3 ap
+      increaseAP();
+      break;
     }
     case objective_cards::POINT_STASH:
     {
+      // Double your action points.
+      int& my_action_points =
+        Locator::getPlayers()
+          ->players[Locator::getPlayers()->my_player_index]
+          .action_points;
+      DataShare new_share = DataShare(data_roles::CLIENT_ACTION_POINTS_CHANGED);
+      new_share.add(Locator::getPlayers()->my_player_index);
+      new_share.add(my_action_points);
+      my_action_points *= 2;
+      new_share.add(my_action_points);
+      new_share.add(-1);
+      Locator::getNetworkInterface()->sendData(new_share);
+      break;
     }
     default:
     {
@@ -176,4 +259,25 @@ bool ObjectiveCard::objectiveComplete(IssueCard* const _issue,
     }
   }
   return false;
+}
+
+void ObjectiveCard::increaseAP()
+{
+  int& my_action_points = Locator::getPlayers()
+                            ->players[Locator::getPlayers()->my_player_index]
+                            .action_points;
+  DataShare new_share = DataShare(data_roles::CLIENT_ACTION_POINTS_CHANGED);
+  new_share.add(Locator::getPlayers()->my_player_index);
+  new_share.add(my_action_points);
+  my_action_points += 3;
+  new_share.add(my_action_points);
+  new_share.add(-1);
+  Locator::getNetworkInterface()->sendData(new_share);
+}
+
+void ObjectiveCard::freeShipMovement()
+{
+  DataShare new_share = DataShare(data_roles::CLIENT_FREE_MOVEMENT);
+  new_share.add(true);
+  Locator::getNetworkInterface()->sendData(new_share);
 }

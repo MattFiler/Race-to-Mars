@@ -14,8 +14,8 @@ enum game_global_scenes
 
 enum game_state
 {
-  PLAYING,    // The regular in-game state
-  LOCAL_PAUSE // The quit menu
+  PLAYING,     // The regular in-game state
+  LOCAL_PAUSE, // The quit menu
 };
 
 struct GameConfig

@@ -51,6 +51,9 @@ class GameBoard
   ObjectiveCard* getObjectiveCard();
   void addObjCardToInventory();
 
+  void clearItems() { item_inventory.clear(); }
+  void useObjCardDebug();
+
   // issue tracking
   int engine_countdown = 2;
 

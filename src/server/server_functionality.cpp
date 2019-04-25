@@ -102,6 +102,12 @@ void RaceToSpaceServer::handleReceivedData(DataShare& data_to_send,
       break;
     }
 
+    case data_roles::CHAT_MSG:
+    {
+      sendData(client, static_cast<unsigned int>(-1), data_to_send);
+      break;
+    }
+
     // Otherwise, it's a message that needs to be forwarded to everyone in
     // the lobby.
     default:
@@ -469,7 +475,7 @@ void RaceToSpaceServer::initLobbyDecks()
     for (int j = 0; j < 12; ++j)
     {
       // Create for most recent lobby.
-      lobbies.back().objective_deck.push_back(i);
+      lobbies.back().objective_deck.push_back(j);
     }
   }
 
@@ -567,6 +573,14 @@ void RaceToSpaceServer::clientProgressChange(DataShare& data_to_send,
   sendData(client, static_cast<unsigned int>(-2), new_share);
 }
 
+void RaceToSpaceServer::clientFreeMovement(DataShare& data_to_send,
+                                           server_client& client)
+{
+  DataShare new_share = DataShare(data_roles::CLIENT_FREE_MOVEMENT);
+  new_share.add(data_to_send.retrieve(0));
+  sendData(client, static_cast<unsigned int>(-2), new_share);
+}
+
 /* Client requests an item card */
 void RaceToSpaceServer::clientRequestsItem(DataShare& data_to_send,
                                            server_client& client)
@@ -620,6 +634,12 @@ void RaceToSpaceServer::clientRequestsObjective(DataShare& data_to_send,
   new_share.add(data_to_send.retrieve(0));
   new_share.add(this_lobby->objective_deck.back());
   this_lobby->objective_deck.pop_back();
-
   sendData(client, client.get_id(), new_share);
+}
+
+void RaceToSpaceServer::chatMsg(DataShare& data_to_send, server_client& client)
+{
+  DataShare new_share = DataShare(data_roles::CLIENT_FREE_MOVEMENT);
+  new_share.add(data_to_send.retrieve(0));
+  sendToAll(client, data_to_send);
 }

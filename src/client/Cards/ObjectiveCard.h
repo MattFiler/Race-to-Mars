@@ -24,6 +24,9 @@ class ObjectiveCard : public Card
   void useObjectiveCard();
   bool objectiveComplete(IssueCard* _issue, player_classes _this_clients_class);
 
+  void increaseAP();
+  void freeShipMovement();
+
  private:
   objective_cards cardID = objective_cards::OBJECTIVE_PLACEHOLDER;
 };

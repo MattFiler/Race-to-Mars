@@ -10,6 +10,7 @@
 #include <client/Cards/IssueCard.h>
 #include <client/Cards/ItemCard.h>
 #include <client/Cards/ObjectiveCard.h>
+#include <vector>
 
 /* UI Elements */
 enum ui_sprites
@@ -23,6 +24,8 @@ enum ui_sprites
   SYNC_OVERLAY,
   DISCONNECT_OVERLAY,
   POPUP_CARD_SHADOWS_0,
+  CHAT_BOX,
+  MSG_ALERT,
   POPUP_CARD_SHADOWS_1,
   POPUP_CARD_SHADOWS_2,
   POPUP_CARD_SHADOWS_3,
@@ -45,7 +48,8 @@ enum ui_buttons
 {
   END_TURN_BTN,
   BUY_ITEM_BTN,
-  ROLL_DICE_BTN
+  ROLL_DICE_BTN,
+  CHAT_BTN
 };
 
 class GameScene : public Scene
@@ -71,20 +75,28 @@ class GameScene : public Scene
 
  private:
   void debugOutput();
-
   GameBoard board;
-
   LobbyPlayer* players[4] = { nullptr, nullptr, nullptr, nullptr };
-
   SceneUI ui_manager;
 
   bool is_new_turn = false;
   bool got_new_obj_card = false;
   bool got_new_obj_this_turn = false;
   bool rolled_dice_this_turn = false;
+  bool free_player_movement = false;
 
   bool update_item_card = false;
   int new_item_card = -1;
+
+  // chat msg
+  bool entering_msg = false;
+  bool new_chat_msg = false;
+  bool unread_msgs = false;
+  std::string my_chat_msg;
+  std::string received_chat_msg;
+  std::vector<std::string> chat_messages;
+  size_t max_messages = 32;
+  size_t max_message_size = 26;
 
   CardOffsets card_offsets;
 
@@ -95,6 +107,7 @@ class GameScene : public Scene
   // int current_progress_index = 0;
   bool current_scene_lock_active = false; // optional "scene lock" to freeze
                                           // client interaction - useful for the
-                                          // end of a turn?
+                                          // end of a turn
+  std::string getClassName();
 };
 #endif // PROJECT_GAMESCENE_H

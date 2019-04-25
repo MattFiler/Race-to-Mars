@@ -69,18 +69,34 @@ void NetworkConnection::networkLoop()
 // clients
 void NetworkConnection::networkMessageDebug()
 {
-  while (!exiting)
+  while (!msg_queue.empty())
   {
-    std::string txt;
-    std::getline(std::cin, txt);
-
-    std::lock_guard<std::mutex> lock(msg_queue_debug_mtx);
-    msg_queue_debug.push(std::move(txt));
+    //    // lock thread.
+    //    std::lock_guard<std::mutex> lock(msg_queue_mtx);
+    //    // take the packet first in line.
+    //    auto& pkt = pkt_queue.front();
+    //
+    //    auto pkt_length = static_cast<unsigned int>(pkt.length());
+    //    // prepare packet to be send to server.
+    //    auto pkt_data = pkt.data();
+    //    // send packet to server.
+    //    client.send_packet(0,
+    //                       reinterpret_cast<const enet_uint8*>(pkt_data),
+    //                       pkt_length,
+    //                       ENET_PACKET_FLAG_RELIABLE);
+    //    msg_queue.push(std::move(txt));
   }
 }
 
 /* Send our data to the server */
 void NetworkConnection::sendData(DataShare& data)
+{
+  Packet packet;
+  packet << data;
+  getPacketQueue()->push(packet);
+}
+
+void NetworkConnection::sendMsg(std::string data)
 {
   Packet packet;
   packet << data;

@@ -565,3 +565,11 @@ void GameBoard::addObjCardToInventory()
 {
   objective_card_inventory.emplace_back(active_obj_card->getCardID());
 }
+
+void GameBoard::useObjCardDebug()
+{
+  if (!objective_card_inventory.empty())
+  {
+    objective_card_inventory.front().useObjectiveCard();
+  }
+}

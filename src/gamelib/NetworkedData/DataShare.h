@@ -2,6 +2,10 @@
 #define PROJECT_DATASHARE_H
 
 #include "NetworkedData.h"
+#include <cstring>
+#include <enet/types.h>
+#include <string>
+#include <vector>
 
 /*
  *
@@ -51,6 +55,19 @@ struct DataShare
     data_index++;
   }
 
+  void addMsg(std::string& chat_msg)
+  {
+    strcpy(chat_msg_data, chat_msg.c_str());
+  }
+
+  std::string getMsg()
+  {
+    size_t length;
+    length = strlen(&chat_msg_data[0]);
+    std::string msg = std::string(&chat_msg_data[0], length);
+    return msg;
+  }
+
   /* Retrieve data from the struct */
   int retrieve(int index)
   {
@@ -73,6 +90,7 @@ struct DataShare
   int data_index = 0;
   int data_array[20] = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
                          -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
+  char chat_msg_data[40];
 };
 
 #endif // PROJECT_DATASHARE_H
