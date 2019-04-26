@@ -849,40 +849,111 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
         // Clicked dice roll button
         if (ui_manager.getButton(ui_buttons::ROLL_DICE_BTN)->clicked())
         {
-          // Roll dice
-          rolled_dice_this_turn = true;
-          int dice_roll =
-            Locator::getPlayers()
-              ->getPlayer(
-                players[Locator::getPlayers()->my_player_index]->current_class)
-              ->getDiceRoll();
-          ;
-          DataShare new_share =
-            DataShare(data_roles::CLIENT_ACTION_POINTS_CHANGED);
-          new_share.add(Locator::getPlayers()->my_player_index);
-          new_share.add(
-            players[Locator::getPlayers()->my_player_index]->action_points);
-          new_share.add(
-            dice_roll +
-            players[Locator::getPlayers()->my_player_index]->action_points);
-          new_share.add(-1);
-          Locator::getNetworkInterface()->sendData(new_share);
-          players[Locator::getPlayers()->my_player_index]->action_points +=
-            dice_roll;
-          debug_text.print("Rolled dice! I got " + std::to_string(dice_roll) +
-                           ".");
+          if (board.getBonusMovement())
+          {
+            // Roll dice
+            int progress_change = 0;
+            int dice_roll =
+              Locator::getPlayers()
+                ->getPlayer(
+                  players[Locator::getPlayers()->my_player_index]->current_class)
+                ->getDiceRoll();
+            // Move ship here
+            if (dice_roll > 1)
+            {
+              progress_change = dice_roll / 2;
+            }
+            DataShare new_share =
+              DataShare(data_roles::CLIENT_CHANGE_PROGRESS_INDEX);
+            new_share.add(Locator::getPlayers()->current_progress_index +
+                          progress_change);
+            Locator::getNetworkInterface()->sendData(new_share);
 
-          // Show result
-          ui_manager.popups()
-            .getPopup(ui_popups::DICE_ROLL_POPUP)
-            ->clearAllReferencedSprites();
-          ScaledSprite* dice_sprite =
-            ui_manager.getSprite(ui_sprites::DICE_ROLL_1 + dice_roll - 1);
-          dice_sprite->show();
-          ui_manager.popups()
-            .getPopup(ui_popups::DICE_ROLL_POPUP)
-            ->referenceSprite(*dice_sprite);
-          ui_manager.popups().getPopup(ui_popups::DICE_ROLL_POPUP)->show();
+            // Show result
+            ui_manager.popups()
+              .getPopup(ui_popups::DICE_ROLL_POPUP)
+              ->clearAllReferencedSprites();
+            ScaledSprite* dice_sprite =
+              ui_manager.getSprite(ui_sprites::DICE_ROLL_1 + dice_roll - 1);
+            dice_sprite->show();
+            ui_manager.popups()
+              .getPopup(ui_popups::DICE_ROLL_POPUP)
+              ->referenceSprite(*dice_sprite);
+            ui_manager.popups().getPopup(ui_popups::DICE_ROLL_POPUP)->show();
+            board.setBonusMovement(false);
+          }
+          else if (board.getPilotBlackHole())
+          {
+            // Roll dice
+            int progress_change = 0;
+            int dice_roll =
+              Locator::getPlayers()
+                ->getPlayer(
+                  players[Locator::getPlayers()->my_player_index]->current_class)
+                ->getDiceRoll();
+            ;
+            // If below 4 move ship back 2 spaces. else move forward 2.
+            if (dice_roll < 4)
+            {
+              progress_change = -2;
+              DataShare new_share =
+                DataShare(data_roles::CLIENT_CHANGE_PROGRESS_INDEX);
+              new_share.add(Locator::getPlayers()->current_progress_index +
+                            progress_change);
+              Locator::getNetworkInterface()->sendData(new_share);
+            }
+
+            // Show result
+            ui_manager.popups()
+              .getPopup(ui_popups::DICE_ROLL_POPUP)
+              ->clearAllReferencedSprites();
+            ScaledSprite* dice_sprite =
+              ui_manager.getSprite(ui_sprites::DICE_ROLL_1 + dice_roll - 1);
+            dice_sprite->show();
+            ui_manager.popups()
+              .getPopup(ui_popups::DICE_ROLL_POPUP)
+              ->referenceSprite(*dice_sprite);
+            ui_manager.popups().getPopup(ui_popups::DICE_ROLL_POPUP)->show();
+            board.setPilotBlackHole(false);
+          }
+          else if (!rolled_dice_this_turn && !board.getBonusMovement() &&
+                   !board.getPilotBlackHole())
+          {
+            // Roll dice
+            rolled_dice_this_turn = true;
+            int dice_roll =
+              Locator::getPlayers()
+                ->getPlayer(
+                  players[Locator::getPlayers()->my_player_index]->current_class)
+                ->getDiceRoll();
+            ;
+            DataShare new_share =
+              DataShare(data_roles::CLIENT_ACTION_POINTS_CHANGED);
+            new_share.add(Locator::getPlayers()->my_player_index);
+            new_share.add(
+              players[Locator::getPlayers()->my_player_index]->action_points);
+            new_share.add(
+              dice_roll +
+              players[Locator::getPlayers()->my_player_index]->action_points);
+            new_share.add(-1);
+            Locator::getNetworkInterface()->sendData(new_share);
+            players[Locator::getPlayers()->my_player_index]->action_points +=
+              dice_roll;
+            debug_text.print("Rolled dice! I got " + std::to_string(dice_roll) +
+                             ".");
+
+            // Show result
+            ui_manager.popups()
+              .getPopup(ui_popups::DICE_ROLL_POPUP)
+              ->clearAllReferencedSprites();
+            ScaledSprite* dice_sprite =
+              ui_manager.getSprite(ui_sprites::DICE_ROLL_1 + dice_roll - 1);
+            dice_sprite->show();
+            ui_manager.popups()
+              .getPopup(ui_popups::DICE_ROLL_POPUP)
+              ->referenceSprite(*dice_sprite);
+            ui_manager.popups().getPopup(ui_popups::DICE_ROLL_POPUP)->show();
+          }
         }
       }
 
@@ -1140,15 +1211,50 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
     ui_manager.getButton(ui_buttons::BUY_ITEM_BTN)->setActive(false);
   }
 
-  // End turn button is only active when we are and have rolled
-  ui_manager.getButton(ui_buttons::END_TURN_BTN)
-    ->setActive(players[Locator::getPlayers()->my_player_index]->is_active &&
-                rolled_dice_this_turn);
+  // End turn button is only active when we have completed all dice rolls
+  if (Locator::getPlayers()
+        ->players[Locator::getPlayers()->my_player_index]
+        .is_active &&
+      !ui_manager.getButton(ui_buttons::ROLL_DICE_BTN)->isActive())
+  {
+    ui_manager.getButton(ui_buttons::END_TURN_BTN)->setActive(true);
+  }
+  else
+  {
+    ui_manager.getButton(ui_buttons::END_TURN_BTN)->setActive(false);
+  }
+
+  if (!rolled_dice_this_turn)
+  {
+    ui_manager.getButton(ui_buttons::ROLL_DICE_BTN)->setActive(true);
+  }
+  else if (board.getPilotBlackHole())
+  {
+    ui_manager.getButton(ui_buttons::ROLL_DICE_BTN)->setActive(true);
+  }
+  else if (board.getBonusMovement())
+  {
+    ui_manager.getButton(ui_buttons::ROLL_DICE_BTN)->setActive(true);
+  }
+
+  if (rolled_dice_this_turn && !board.getPilotBlackHole() &&
+      !board.getBonusMovement())
+  {
+    ui_manager.getButton(ui_buttons::ROLL_DICE_BTN)->setActive(false);
+  }
 
   // Roll dice button is active when useable
   ui_manager.getButton(ui_buttons::ROLL_DICE_BTN)
     ->setActive(players[Locator::getPlayers()->my_player_index]->is_active &&
                 !rolled_dice_this_turn);
+  if (rolled_dice_this_turn && board.getPilotBlackHole())
+  {
+    ui_manager.getButton(ui_buttons::ROLL_DICE_BTN)->setActive(true);
+  }
+  else if (rolled_dice_this_turn && board.getBonusMovement())
+  {
+    ui_manager.getButton(ui_buttons::ROLL_DICE_BTN)->setActive(true);
+  }
 
   // All are inactive when popups are over us
   if (ui_manager.popups().anyAreActive())

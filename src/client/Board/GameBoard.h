@@ -64,6 +64,18 @@ class GameBoard
 
   void render(bool _obj_popup, bool _issue_popup);
 
+  bool getPilotBlackHole() { return pilot_blackhole; }
+  void setPilotBlackHole(bool _setBlackHole)
+  {
+    pilot_blackhole = _setBlackHole;
+  }
+
+  bool getBonusMovement() { return bonus_movement; }
+  void setBonusMovement(bool _setBonusMovement)
+  {
+    bonus_movement = _setBonusMovement;
+  }
+
  private:
   /* Players */
   Players* m_players = nullptr;

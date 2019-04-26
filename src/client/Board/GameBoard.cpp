@@ -291,22 +291,20 @@ void GameBoard::handleIssueCardEvents(issue_cards _card_type)
 {
   // This function will begin the logic of the issue card depending on what
   // issue card it is
-  int _card_num = static_cast<int>(_card_type);
 
-  if (_card_num <= 5)
+  switch (_card_type)
   {
-    // Comms issue.
-    // Set player state to roll dice and set what kind of event was triggered
-    // to do the appropriate action with the dice roll.
-    Locator::getPlayers()
-      ->getPlayer(
-        static_cast<player_classes>(Locator::getPlayers()->my_player_index))
-      ->setDiceRolls(1);
-  }
-  else if (_card_num >= 6 && _card_num <= 11)
-  {
-    // Engin issue.
-    if (_card_num == 8)
+    case issue_cards::COMMS__GOOD_COMMUNICATION:
+    {
+      // Set player state to roll dice and set what kind of event was triggered
+      // to do the appropriate action with the dice roll.
+      Locator::getPlayers()
+        ->getPlayer(
+          static_cast<player_classes>(Locator::getPlayers()->my_player_index))
+        ->setDiceRolls(1);
+      break;
+    }
+    case issue_cards ::ENGIN__ENGINE_MALFUNCTION:
     {
       // set countdown on issue card here.
       engine_countdown = 2;
@@ -314,137 +312,110 @@ void GameBoard::handleIssueCardEvents(issue_cards _card_type)
       {
         engine_countdown -= 1;
       }
+      break;
     }
-    else if (_card_num == 10)
+    case issue_cards::ENGIN__ITEM_BOOST:
     {
       // set item card multiplier to 2.
       for (auto& i : item_inventory)
       {
         i.setActionPointVariable(5);
       }
+      break;
     }
-  }
-  else if (_card_num >= 12 && _card_num <= 17)
-  {
-    // Medic issue.
-    // subtract 3 this turn on all issue cards here.
-    if (_card_num == 14)
+    case issue_cards ::MEDIC__HEALTHY_CREW:
     {
+      // Medic issue.
+      // subtract 3 this turn on all issue cards here.
       for (auto& active_issue : active_issues)
       {
         active_issue.setIssueCardvariable(-3);
       }
+      break;
     }
-  }
-  else if (_card_num >= 18 && _card_num <= 23)
-  {
-    // Global issue.
-    switch (_card_num)
+    case issue_cards ::GLOBL__LOW_RESOURCES:
     {
-      case 18:
+      // Low resources - Discard all items from this player.
+      item_inventory.clear();
+      break;
+    }
+    case issue_cards ::GLOBL__ITEMS_OVERUSED:
+    {
+      // All items are overused, value depreciates by 3 this turn.
+      for (auto& i : item_inventory)
       {
-        // Set max items to 5 for local player.
+        i.setActionPointVariable(-3);
+      }
+      break;
+    }
+    case issue_cards ::GLOBL__GRAVITY_LEAK:
+    {
+      // All issues +3 to completion.
+      for (auto& active_issue : active_issues)
+      {
+        active_issue.setIssueCardvariable(3);
+      }
+      break;
+    }
+    case issue_cards ::GLOBL__CHICKEN_ON_BOARD:
+    {
+      // Chicken on board, player 4 - 1 cant play this turn.
+      // Currently only disables the player index 1.
+      if (Locator::getPlayers()->my_player_index == 1)
+      {
         Locator::getPlayers()
           ->getPlayer(
             static_cast<player_classes>(Locator::getPlayers()->my_player_index))
-          ->setMaxItems(5);
-        break;
+          ->setChasingChicken(true);
       }
-      case 19:
-      {
-        // This players items are disabled this turn.
-        for (auto& i : item_inventory)
-        {
-          i.setActive(false);
-        }
-        break;
-      }
-      case 20:
-      {
-        // Chicken on board, player 4 - 1 cant play this turn.
-        // Currently only disables the player index 1.
-        if (Locator::getPlayers()->my_player_index == 1)
-        {
-          Locator::getPlayers()
-            ->getPlayer(static_cast<player_classes>(
-              Locator::getPlayers()->my_player_index))
-            ->setChasingChicken(true);
-        }
-        break;
-      }
-      case 21:
-      {
-        // All issues +3 to completion.
-        for (auto& active_issue : active_issues)
-        {
-          active_issue.setIssueCardvariable(3);
-        }
-        break;
-      }
-      case 22:
-      {
-        // All items are overused, value depreciates by 3 this turn.
-        for (auto& i : item_inventory)
-        {
-          i.setActionPointVariable(-3);
-        }
-        break;
-      }
-      case 23:
-      {
-        // Low resources - Discard all items from this player.
-        item_inventory.clear();
-        break;
-      }
-      default:
-        break;
+      break;
     }
-  }
-  else if (_card_num >= 24 && _card_num <= 29)
-  {
-    // Pilot issue.
-    switch (_card_num)
+    case issue_cards ::GLOBL__BROKEN_ITEMS:
     {
-      case 25:
+      // This players items are disabled this turn.
+      for (auto& i : item_inventory)
       {
-        // If this is a pilot player, roll dice, if less than 4, move back, else
-        // move forward.
-        if (Locator::getPlayers()->my_player_index ==
-            static_cast<int>(player_classes::PILOT))
-        {
-          pilot_blackhole = true;
-          Locator::getPlayers()
-            ->getPlayer(static_cast<player_classes>(
-              Locator::getPlayers()->my_player_index))
-            ->setDiceRolls(1);
-        }
-        break;
+        i.setActive(false);
       }
-      case 26:
+      break;
+    }
+    case issue_cards ::GLOBL__BACKPACK_EXTENDED:
+    {
+      // Set max items to 5 for local player.
+      Locator::getPlayers()
+        ->getPlayer(
+          static_cast<player_classes>(Locator::getPlayers()->my_player_index))
+        ->setMaxItems(5);
+      break;
+    }
+    case issue_cards ::PILOT__BLACK_HOLE:
+    {
+      // If this is a pilot player, roll dice, if less than 4, move back, else
+      // move forward.
+      if (Locator::getPlayers()
+            ->players[Locator::getPlayers()->my_player_index]
+            .current_class == player_classes::PILOT)
       {
-        // If this player is the pilot, roll dice, if above 4, move ship
-        // forward.
-        if (Locator::getPlayers()->my_player_index !=
-            static_cast<int>(player_classes::PILOT))
-        {
-          bonus_movement = true;
-          Locator::getPlayers()
-            ->getPlayer(static_cast<player_classes>(
-              Locator::getPlayers()->my_player_index))
-            ->setDiceRolls(1);
-          /* this is just to test if this feature is working, needs to moved to
-           * when player rolls dice and issue has been activated. see below.
-           *
-           * */
-          DataShare new_share =
-            DataShare(data_roles::CLIENT_CHANGE_PROGRESS_INDEX);
-          new_share.add(Locator::getPlayers()->current_progress_index - 2);
-          Locator::getNetworkInterface()->sendData(new_share);
-        }
-        break;
+        pilot_blackhole = true;
       }
-      default:
-        break;
+      break;
+    }
+    case issue_cards ::PILOT__BONUS_MOVEMENT:
+    {
+      // Roll dice, move ship forward half the amount rolled, not below 1.
+      if (Locator::getPlayers()
+            ->players[Locator::getPlayers()->my_player_index]
+            .current_class == player_classes::PILOT)
+      {
+        bonus_movement = true;
+      }
+      break;
+    }
+    default:
+    {
+      debug_text.print("No valid issue card was found of type" +
+                       std::to_string(static_cast<int>(_card_type)));
+      break;
     }
   }
   issueTracking();
