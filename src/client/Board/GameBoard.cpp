@@ -298,10 +298,7 @@ void GameBoard::handleIssueCardEvents(issue_cards _card_type)
     {
       // Set player state to roll dice and set what kind of event was triggered
       // to do the appropriate action with the dice roll.
-      Locator::getPlayers()
-        ->getPlayer(
-          static_cast<player_classes>(Locator::getPlayers()->my_player_index))
-        ->setDiceRolls(1);
+      good_communication = true;
       break;
     }
     case issue_cards ::ENGIN__ENGINE_MALFUNCTION:
@@ -363,10 +360,8 @@ void GameBoard::handleIssueCardEvents(issue_cards _card_type)
       // Currently only disables the player index 1.
       if (Locator::getPlayers()->my_player_index == 1)
       {
-        Locator::getPlayers()
-          ->getPlayer(
-            static_cast<player_classes>(Locator::getPlayers()->my_player_index))
-          ->setChasingChicken(true);
+        // call server function that generates random number, show a popup to
+        // that player to tell them they are chasing chicken this turn.
       }
       break;
     }

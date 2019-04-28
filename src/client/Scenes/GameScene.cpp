@@ -44,6 +44,7 @@ void GameScene::init()
   ui_manager.popups().createPopup(ui_popups::ISSUE_POPUP);
   ui_manager.popups().createPopup(ui_popups::OBJECTIVE_POPUP);
   ui_manager.popups().createPopup(ui_popups::DICE_ROLL_POPUP);
+  ui_manager.popups().createPopup(ui_popups::CHICKEN_POPUP);
 
   // Create all required sprites - add in the order to render
   for (int i = 0; i < 6; i++)
@@ -91,6 +92,9 @@ void GameScene::init()
   ui_manager.popups()
     .getPopup(ui_popups::DICE_ROLL_POPUP)
     ->createSprite("UI/INGAME_UI/dice_roll_bg.png");
+  ui_manager.popups()
+    .getPopup(ui_popups::CHICKEN_POPUP)
+    ->createSprite("UI/INGAME_UI/popup_chicken.png");
 
   // Position main ui buttons
   ui_manager
@@ -254,6 +258,15 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
           active_issue_cards, static_cast<bool>(received_data.retrieve(12)));
         board.checkissueSolved();
         free_player_movement = false;
+        if (received_data.retrieve(13) ==
+            Locator::getPlayers()->my_player_index)
+        {
+          Locator::getPlayers()
+            ->getPlayer(
+              players[Locator::getPlayers()->my_player_index]->current_class)
+            ->setChasingChicken(true);
+          got_chicken_card = true;
+        }
       }
       // Pull a new objective card if required.
       if (Locator::getPlayers()->current_progress_index % 2 == 0 &&
@@ -849,6 +862,15 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
         // Clicked dice roll button
         if (ui_manager.getButton(ui_buttons::ROLL_DICE_BTN)->clicked())
         {
+          if (board.getGoodCommunication())
+          {
+            good_comm_roll =
+              Locator::getPlayers()
+                ->getPlayer(
+                  players[Locator::getPlayers()->my_player_index]->current_class)
+                ->getDiceRoll();
+            board.setGoodCommunication(false);
+          }
           if (board.getBonusMovement())
           {
             // Roll dice
@@ -917,16 +939,35 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
             board.setPilotBlackHole(false);
           }
           else if (!rolled_dice_this_turn && !board.getBonusMovement() &&
-                   !board.getPilotBlackHole())
+                   !board.getPilotBlackHole() && !board.getGoodCommunication())
           {
             // Roll dice
             rolled_dice_this_turn = true;
-            int dice_roll =
+            int dice_roll = 0;
+            dice_roll =
               Locator::getPlayers()
                 ->getPlayer(
                   players[Locator::getPlayers()->my_player_index]->current_class)
                 ->getDiceRoll();
-            ;
+
+            // Show result
+            ui_manager.popups()
+              .getPopup(ui_popups::DICE_ROLL_POPUP)
+              ->clearAllReferencedSprites();
+            ScaledSprite* dice_sprite =
+              ui_manager.getSprite(ui_sprites::DICE_ROLL_1 + dice_roll - 1);
+            dice_sprite->show();
+            ui_manager.popups()
+              .getPopup(ui_popups::DICE_ROLL_POPUP)
+              ->referenceSprite(*dice_sprite);
+            ui_manager.popups().getPopup(ui_popups::DICE_ROLL_POPUP)->show();
+
+            if (good_comm_roll > dice_roll)
+            {
+              dice_roll = good_comm_roll;
+              good_comm_roll = 0;
+            }
+
             DataShare new_share =
               DataShare(data_roles::CLIENT_ACTION_POINTS_CHANGED);
             new_share.add(Locator::getPlayers()->my_player_index);
@@ -941,18 +982,6 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
               dice_roll;
             debug_text.print("Rolled dice! I got " + std::to_string(dice_roll) +
                              ".");
-
-            // Show result
-            ui_manager.popups()
-              .getPopup(ui_popups::DICE_ROLL_POPUP)
-              ->clearAllReferencedSprites();
-            ScaledSprite* dice_sprite =
-              ui_manager.getSprite(ui_sprites::DICE_ROLL_1 + dice_roll - 1);
-            dice_sprite->show();
-            ui_manager.popups()
-              .getPopup(ui_popups::DICE_ROLL_POPUP)
-              ->referenceSprite(*dice_sprite);
-            ui_manager.popups().getPopup(ui_popups::DICE_ROLL_POPUP)->show();
           }
         }
       }
@@ -1083,6 +1112,7 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
     got_new_obj_this_turn = false;
     rolled_dice_this_turn = false;
   }
+
   if (board.updateActiveObjectiveCard())
   {
     // Objective card updated
@@ -1164,6 +1194,20 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
   {
     // ui_manager.popups().getPopup(ui_popups::DICE_ROLL_POPUP)->show();
     is_new_turn = false;
+  }
+
+  // Show chasing chicken popup
+  if (Locator::getPlayers()
+        ->getPlayer(Locator::getPlayers()
+                      ->players[Locator::getPlayers()->my_player_index]
+                      .current_class)
+        ->getChasingChicken() &&
+      got_chicken_card &&
+      !ui_manager.popups().getPopup(ui_popups::ISSUE_POPUP)->isVisible() &&
+      !ui_manager.popups().getPopup(ui_popups::OBJECTIVE_POPUP)->isVisible())
+  {
+    ui_manager.popups().getPopup(ui_popups::CHICKEN_POPUP)->showForTime(5);
+    got_chicken_card = false;
   }
 
   /* STATE-SPECIFIC CURSOR */
@@ -1308,7 +1352,6 @@ void GameScene::render()
                                1,
                                ASGE::COLOURS::WHITE);
         }
-
         // log position for active player marker and "you" marker
         if (players[i]->is_active)
         {

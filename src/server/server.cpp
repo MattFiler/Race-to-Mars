@@ -1,6 +1,7 @@
 #include "server.h"
 #include "gamelib/NetworkedData/NetworkedData.h"
 #include <algorithm>
+#include <gamelib/Math/SimpleMath.h>
 #include <gamelib/Packet.h>
 #include <iostream>
 #include <random>

@@ -139,6 +139,7 @@ void RaceToSpaceServer::endTurn(server_client& client)
 
   // If the next client was who started, we've done a "full rotation",
   // work out some game logic
+  int issue_drawn = 0;
   if (this_clients_lobby->currently_active_player ==
       this_clients_lobby->player_that_started_id)
   {
@@ -165,6 +166,7 @@ void RaceToSpaceServer::endTurn(server_client& client)
       {
         this_clients_lobby->active_issue_cards[j] =
           this_clients_lobby->issue_deck.back();
+        issue_drawn = this_clients_lobby->issue_deck.back();
         debug_text.print("adding issue " +
                          std::to_string(this_clients_lobby->issue_deck.back()) +
                          " to active issues.");
@@ -205,6 +207,10 @@ void RaceToSpaceServer::endTurn(server_client& client)
   new_share.add(this_clients_lobby->active_objective_cards[2]);
   new_share.add(this_clients_lobby->active_objective_cards[3]);
   new_share.add(static_cast<int>(full_rotation));
+  if (issue_drawn == 20)
+  {
+    new_share.add(2);
+  }
 
   // Forward current game data to all clients in this lobby
   sendData(client, static_cast<unsigned int>(-1), new_share);
@@ -455,7 +461,7 @@ void RaceToSpaceServer::initLobbyDecks()
     for (int j = 0; j < 30; ++j)
     {
       // Create for most recent lobby.
-      lobbies.back().issue_deck.push_back(26);
+      lobbies.back().issue_deck.push_back(20);
     }
   }
 

@@ -81,6 +81,7 @@ enum data_roles
    *   [10] = objective card for player 3
    *   [11] = objective card for player 4
    *   [12] = was this a new "full rotation" (1=yes,0=no)
+   *   [13] = The player that is chasing the chicken.
    */
 
   CLIENT_MOVING_PLAYER_TOKEN,

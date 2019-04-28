@@ -71,9 +71,15 @@ class GameBoard
   }
 
   bool getBonusMovement() { return bonus_movement; }
-  void setBonusMovement(bool _setBonusMovement)
+  void setBonusMovement(bool _set_bonus_movement)
   {
-    bonus_movement = _setBonusMovement;
+    bonus_movement = _set_bonus_movement;
+  }
+
+  bool getGoodCommunication() { return good_communication; }
+  void setGoodCommunication(bool _set_good_comm)
+  {
+    good_communication = _set_good_comm;
   }
 
  private:
@@ -92,6 +98,7 @@ class GameBoard
 
   bool pilot_blackhole = false;
   bool bonus_movement = false;
+  bool good_communication = false;
 
   ObjectiveCard* active_obj_card = nullptr;
   std::vector<ObjectiveCard> completed_obj_cards;
