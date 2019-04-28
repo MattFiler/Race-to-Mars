@@ -35,7 +35,7 @@ struct Lobby
   /* Game state information */
   bool game_in_progress = false;
   int user_count = 0;
-  int current_progress_index = 2;
+  int current_progress_index = 0;
   int player_that_started_id = -1;
   int currently_active_player = 0;
 };
