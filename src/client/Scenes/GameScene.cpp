@@ -870,8 +870,19 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
                   players[Locator::getPlayers()->my_player_index]->current_class)
                 ->getDiceRoll();
             board.setGoodCommunication(false);
+
+            ui_manager.popups()
+              .getPopup(ui_popups::DICE_ROLL_POPUP)
+              ->clearAllReferencedSprites();
+            ScaledSprite* dice_sprite = ui_manager.getSprite(
+              ui_sprites::DICE_ROLL_1 + good_comm_roll - 1);
+            dice_sprite->show();
+            ui_manager.popups()
+              .getPopup(ui_popups::DICE_ROLL_POPUP)
+              ->referenceSprite(*dice_sprite);
+            ui_manager.popups().getPopup(ui_popups::DICE_ROLL_POPUP)->show();
           }
-          if (board.getBonusMovement())
+          else if (board.getBonusMovement())
           {
             // Roll dice
             int progress_change = 0;

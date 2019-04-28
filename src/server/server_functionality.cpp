@@ -461,7 +461,7 @@ void RaceToSpaceServer::initLobbyDecks()
     for (int j = 0; j < 30; ++j)
     {
       // Create for most recent lobby.
-      lobbies.back().issue_deck.push_back(20);
+      lobbies.back().issue_deck.push_back(4);
     }
   }
 
