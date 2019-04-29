@@ -42,6 +42,15 @@ void GameScene::init()
 
   createButtonsAndPopups();
 
+  // Load sounds
+  file_handler.loadSound(end_turn_sfx, "end_turn");
+  file_handler.loadSound(new_item_sfx, "new_item");
+  file_handler.loadSound(dice_roll_sfx, "dice_roll");
+  file_handler.loadSound(turn_ends_sfx, "turn_ends");
+  file_handler.loadSound(move_counter_sfx, "move_counter");
+  file_handler.loadSound(option_disabled_sfx, "option_disabled");
+  file_handler.loadSound(ap_assigned_sfx, "assign_ap");
+
   // If we joined in progress, request a data sync from the server
   if (Locator::getPlayers()->joined_in_progress)
   {
@@ -318,6 +327,7 @@ void GameScene::playingInput()
       current_state = game_state::LOCAL_PAUSE;
       debug_text.print("Opening pause menu.");
     }
+#ifndef NDEBUG
     if (keys.keyReleased("End Turn") &&
         players[Locator::getPlayers()->my_player_index]->is_active)
     {
@@ -341,7 +351,6 @@ void GameScene::playingInput()
       debug_text.print("Requesting to end my go!!");
       board.resetCardVariables();
     }
-#ifndef NDEBUG
     if (keys.keyReleased("Debug Obj Inventory"))
     {
       debug_text.print("Creating obj card");
@@ -521,6 +530,8 @@ void GameScene::playingClicksWhenActive(Vector2& mouse_pos)
       current_scene_lock_active = true;
       debug_text.print("Requesting to end my go!!");
 
+      Locator::getAudio()->play(end_turn_sfx);
+
       // Call reset variables on item and issues here
       board.resetCardVariables();
     }
@@ -530,38 +541,51 @@ void GameScene::playingClicksWhenActive(Vector2& mouse_pos)
     {
       // Should validate score and existing items, etc here!
       if (Locator::getPlayers()
-              ->getPlayer(static_cast<player_classes>(
-                Locator::getPlayers()->my_player_index))
-              ->getHeldItemAmount() <
-            Locator::getPlayers()
-              ->getPlayer(static_cast<player_classes>(
-                Locator::getPlayers()->my_player_index))
-              ->getMaxItems() &&
-          players[Locator::getPlayers()->my_player_index]->action_points >= 2)
+            ->getPlayer(static_cast<player_classes>(
+              Locator::getPlayers()->my_player_index))
+            ->getHeldItemAmount() < Locator::getPlayers()
+                                      ->getPlayer(static_cast<player_classes>(
+                                        Locator::getPlayers()->my_player_index))
+                                      ->getMaxItems())
       {
-        DataShare new_share_item =
-          DataShare(data_roles::CLIENT_REQUESTED_ITEM_CARD);
-        new_share_item.add(Locator::getPlayers()->my_player_index);
-        Locator::getNetworkInterface()->sendData(new_share_item);
-        debug_text.print("I want an item card!!");
-
-        // Below is buying item card.
-        int& my_action_points =
-          players[Locator::getPlayers()->my_player_index]->action_points;
-        DataShare new_share =
-          DataShare(data_roles::CLIENT_ACTION_POINTS_CHANGED);
-        new_share.add(Locator::getPlayers()->my_player_index);
-        new_share.add(my_action_points);
-        if (!free_player_movement &&
-            players[Locator::getPlayers()->my_player_index]->action_points > 0)
+        // TODO: Shouldn't we check to see if we're over the max number of items
+        // here? You can currently go forever!
+        if (players[Locator::getPlayers()->my_player_index]->action_points >=
+            2) // TODO: shouldn't this be 1, not 2?
         {
-          my_action_points -= 1;
+          DataShare new_share_item =
+            DataShare(data_roles::CLIENT_REQUESTED_ITEM_CARD);
+          new_share_item.add(Locator::getPlayers()->my_player_index);
+          Locator::getNetworkInterface()->sendData(new_share_item);
+          debug_text.print("I want an item card!!");
+
+          Locator::getAudio()->play(new_item_sfx);
+
+          // Below is buying item card.
+          int& my_action_points =
+            players[Locator::getPlayers()->my_player_index]->action_points;
+          DataShare new_share =
+            DataShare(data_roles::CLIENT_ACTION_POINTS_CHANGED);
+          new_share.add(Locator::getPlayers()->my_player_index);
+          new_share.add(my_action_points);
+          if (!free_player_movement &&
+              players[Locator::getPlayers()->my_player_index]->action_points >
+                0)
+          {
+            my_action_points -= 1;
+          }
+          new_share.add(my_action_points);
+          new_share.add(-1);
+          Locator::getNetworkInterface()->sendData(new_share);
         }
-        new_share.add(my_action_points);
-        new_share.add(-1);
-        Locator::getNetworkInterface()->sendData(new_share);
+        else
+        {
+          Locator::getAudio()->play(option_disabled_sfx);
+        }
       }
     }
+
+    // REFACTOR THIS DICE ROLL SCRIPT - SO MUCH IS DUPLICATED!!
 
     // Clicked dice roll button
     if (ui_manager.getButton(ui_buttons::ROLL_DICE_BTN)->clicked())
@@ -585,6 +609,8 @@ void GameScene::playingClicksWhenActive(Vector2& mouse_pos)
           .getPopup(ui_popups::DICE_ROLL_POPUP)
           ->referenceSprite(*dice_sprite);
         ui_manager.popups().getPopup(ui_popups::DICE_ROLL_POPUP)->show();
+
+        Locator::getAudio()->play(dice_roll_sfx);
       }
       else if (board.getBonusMovement())
       {
@@ -617,6 +643,7 @@ void GameScene::playingClicksWhenActive(Vector2& mouse_pos)
           .getPopup(ui_popups::DICE_ROLL_POPUP)
           ->referenceSprite(*dice_sprite);
         ui_manager.popups().getPopup(ui_popups::DICE_ROLL_POPUP)->show();
+        Locator::getAudio()->play(dice_roll_sfx);
         board.setBonusMovement(false);
       }
       else if (board.getPilotBlackHole())
@@ -651,6 +678,7 @@ void GameScene::playingClicksWhenActive(Vector2& mouse_pos)
           .getPopup(ui_popups::DICE_ROLL_POPUP)
           ->referenceSprite(*dice_sprite);
         ui_manager.popups().getPopup(ui_popups::DICE_ROLL_POPUP)->show();
+        Locator::getAudio()->play(dice_roll_sfx);
         board.setPilotBlackHole(false);
       }
       else if (!rolled_dice_this_turn && !board.getBonusMovement() &&
@@ -676,6 +704,7 @@ void GameScene::playingClicksWhenActive(Vector2& mouse_pos)
           .getPopup(ui_popups::DICE_ROLL_POPUP)
           ->referenceSprite(*dice_sprite);
         ui_manager.popups().getPopup(ui_popups::DICE_ROLL_POPUP)->show();
+        Locator::getAudio()->play(dice_roll_sfx);
 
         if (good_comm_roll > dice_roll)
         {
@@ -810,6 +839,7 @@ void GameScene::issuePopupClicks()
             my_action_points -= points_to_assign;
             debug_text.print("Assigned action points! My total is now " +
                              std::to_string(my_action_points) + ".");
+            Locator::getAudio()->play(ap_assigned_sfx);
           }
           else
           {
@@ -817,6 +847,7 @@ void GameScene::issuePopupClicks()
             // UI prompt here would be nice!
             debug_text.print("COULD NOT ASSIGN ACTION POINTS! WE HAVE " +
                              std::to_string(my_action_points) + ".");
+            Locator::getAudio()->play(option_disabled_sfx);
           }
         }
         ap_button_index++;

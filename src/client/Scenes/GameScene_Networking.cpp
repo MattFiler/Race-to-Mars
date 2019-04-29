@@ -210,11 +210,14 @@ void GameScene::serverEndsClientTurn(DataShare& received_data)
   debug_text.print("The server ended the current go, and passed "
                    "active-ness to client " +
                    std::to_string(received_data.retrieve(1)) + ".");
+  Locator::getAudio()->play(turn_ends_sfx);
 }
 
 /* Client moves their player token */
 void GameScene::clientMovesPlayerToken(DataShare& received_data)
 {
+  Locator::getAudio()->play(move_counter_sfx);
+
   if (received_data.retrieve(0) == Locator::getPlayers()->my_player_index)
   {
     return;

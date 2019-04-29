@@ -94,5 +94,15 @@ class GameScene : public Scene
   bool current_scene_lock_active = false; // optional "scene lock" to freeze
                                           // client interaction - useful for the
                                           // end of a turn
+
+  // Sounds
+  FileHandler file_handler;
+  SoLoud::Wav end_turn_sfx;
+  SoLoud::Wav new_item_sfx;
+  SoLoud::Wav dice_roll_sfx;
+  SoLoud::Wav turn_ends_sfx;
+  SoLoud::Wav move_counter_sfx;
+  SoLoud::Wav option_disabled_sfx;
+  SoLoud::Wav ap_assigned_sfx;
 };
 #endif // PROJECT_GAMESCENE_H
