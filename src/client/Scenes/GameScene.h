@@ -42,7 +42,10 @@ enum ui_popups
 {
   ISSUE_POPUP,
   OBJECTIVE_POPUP,
-  DICE_ROLL_POPUP
+  DICE_ROLL_POPUP,
+  CHICKEN_POPUP,
+  YOU_WIN_POPUP,
+  YOU_LOSE_POPUP
 };
 enum ui_buttons
 {
@@ -81,12 +84,19 @@ class GameScene : public Scene
 
   bool is_new_turn = false;
   bool got_new_obj_card = false;
+  bool got_chicken_card = false;
   bool got_new_obj_this_turn = false;
   bool rolled_dice_this_turn = false;
   bool free_player_movement = false;
 
+  // Win/Lose State
+  bool lost_game = false;
+  bool won_game = false;
+
   bool update_item_card = false;
   int new_item_card = -1;
+
+  int good_comm_roll = 0;
 
   // chat msg
   bool entering_msg = false;

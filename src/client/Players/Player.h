@@ -61,6 +61,7 @@ class Player
   int getHeldItemAmount() { return held_items; }
   bool getUsedApThisTurn() { return ap_not_assigned; }
   bool getReplenishItems() { return replenish_items; }
+  bool getChasingChicken() { return chasing_chicken; }
 
   void makeUninitialised()
   {

@@ -8,6 +8,7 @@
 #include "server/Structs/Lobby.h"
 #include "server/Structs/ServerClient.h"
 #include <enetpp/server.h>
+#include <gamelib/Math/SimpleMath.h>
 #include <gamelib/NetworkedData/Cards.h>
 #include <random>
 #include <vector>
@@ -56,6 +57,7 @@ class RaceToSpaceServer
 
   std::vector<Lobby> lobbies;
   int latest_lobby_id = 0;
+  SimpleMath simplemaths;
 };
 
 #endif // PROJECT_SERVER_H
