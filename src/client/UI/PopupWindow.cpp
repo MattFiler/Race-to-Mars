@@ -11,6 +11,9 @@ PopupWindow::PopupWindow()
   close_button = new ClickableButton("data/UI/INGAME_UI/close_button.png");
   close_button->setPos(Vector2(1193, 83));
   close_button->setActive(false);
+
+  file_handler.loadSound(active_sfx, "popup_show");
+  file_handler.loadSound(inactive_sfx, "popup_hide");
 }
 
 /* Destroy the popup and all contents */
@@ -113,6 +116,7 @@ void PopupWindow::showForTime(float _timeout)
 /* Show popup until user closes it */
 void PopupWindow::show()
 {
+  Locator::getAudio()->play(active_sfx);
   is_active = true;
   timeout = -1;
   close_button->setActive(true);
@@ -121,6 +125,8 @@ void PopupWindow::show()
 /* Close popup if opened with show() */
 void PopupWindow::hide()
 {
+  Locator::getAudio()->play(inactive_sfx);
+
   // Set inactive & reset timeout
   is_active = false;
   timeout = -1;

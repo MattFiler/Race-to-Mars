@@ -6,11 +6,13 @@ Menu::Menu()
 {
   middle_of_window = (static_cast<float>(GameResolution::height) / 2) + 15;
 
-  sound_player = Locator::getAudio();
   renderer = Locator::getRenderer();
 
-  // file_handler.loadSound(item_select, "CLICK_03", 0.7f);
-  // file_handler.loadSound(item_index_change, "CLICK_04", 0.5f);
+  file_handler.loadSound(item_select, "menu_option_changed", 1.0f);
+  file_handler.loadSound(item_activate, "menu_option_selected", 1.0f);
+
+  y_offset *= GameResolution::scale;
+  x_offset *= GameResolution::scale;
 }
 
 /* Add menu text item */
@@ -81,18 +83,18 @@ bool Menu::itemWasSelected(KeyHandler& user_input)
 {
   if (user_input.keyReleased("Activate"))
   {
-    // sound_player->play(item_select);
+    Locator::getAudio()->play(item_activate);
     return true;
   }
   else if (user_input.keyReleased("Menu Up") && (current_menu_index > 0))
   {
-    // sound_player->play(item_index_change);
+    Locator::getAudio()->play(item_select);
     current_menu_index--;
   }
   else if (user_input.keyReleased("Menu Down") &&
            (current_menu_index < static_cast<int>(menu_text_items.size() - 1)))
   {
-    // sound_player->play(item_index_change);
+    Locator::getAudio()->play(item_select);
     current_menu_index++;
   }
   return false;

@@ -84,7 +84,7 @@ set(HEADER_FILES
         ../src/client/UI/Managers/PopupManager.cpp
         ../src/client/UI/Managers/PopupManager.h
         ../src/client/Locator/Interface_Soloud.cpp
-        ../src/client/Locator/Interface_Soloud.h)
+        ../src/client/Locator/Interface_Soloud.h ../src/client/Scenes/GameScene_Networking.cpp)
 
 ## the executable
 add_executable(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES})

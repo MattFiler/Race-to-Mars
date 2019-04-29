@@ -5,6 +5,8 @@
 #include "client/NetworkedData/PlayerData.h"
 #include "gamelib/NetworkedData/Players.h"
 #include <enet/enet.h>
+#include <soloud.h>
+#include <soloud_wav.h>
 
 // All sprites for the lobby ui
 struct LobbySprites
@@ -45,12 +47,20 @@ class LobbyScene : public Scene
   bool has_connected = false;
   bool can_change_ready_state = true;
   bool should_start_game = false;
+  bool is_playing_countdown = false;
 
   Menu main_menu;
   Localisation localiser;
 
   LobbyPlayer* players[4] = { nullptr, nullptr, nullptr, nullptr };
   LobbySprites lobby_sprites;
+
+  FileHandler file_handler;
+  SoLoud::Wav player_join;
+  SoLoud::Wav player_disconnect;
+  SoLoud::Wav player_ready;
+  SoLoud::Wav player_unready;
+  SoLoud::Wav countdown;
 };
 
 #endif // PROJECT_LOBBYSCENE_H

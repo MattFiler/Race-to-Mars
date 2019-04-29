@@ -8,6 +8,8 @@
 #include "gamelib/FileHandler/FileHandler.h"
 #include "gamelib/Localisation/Localisation.h"
 #include <Engine/Renderer.h>
+#include <soloud.h>
+#include <soloud_wav.h>
 
 class Menu
 {
@@ -52,9 +54,8 @@ class Menu
   float x_offset = 100;
   float y_offset = 50;
 
-  SoLoud::Soloud* sound_player;
   SoLoud::Wav item_select;
-  SoLoud::Wav item_index_change;
+  SoLoud::Wav item_activate;
 
   ASGE::Colour active_text_colour = ASGE::COLOURS::WHITE;
   ASGE::Colour inactive_text_colour = ASGE::COLOURS::GREY;

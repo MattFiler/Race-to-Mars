@@ -25,6 +25,13 @@ void LobbyScene::init()
   DataShare new_share = DataShare(data_roles::CLIENT_REQUESTS_TO_JOIN_LOBBY);
   new_share.add(0);
   Locator::getNetworkInterface()->sendData(new_share);
+
+  // Load sounds
+  file_handler.loadSound(player_join, "player_join");
+  file_handler.loadSound(player_disconnect, "player_disconnect");
+  file_handler.loadSound(player_ready, "player_ready");
+  file_handler.loadSound(player_unready, "player_unready");
+  file_handler.loadSound(countdown, "countdown");
 }
 
 /* Handles connecting to the server */
@@ -64,6 +71,7 @@ void LobbyScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     {
       // Forget them!
       players[received_data.retrieve(0)]->performDisconnect();
+      Locator::getAudio()->play(player_disconnect);
 
       debug_text.print("A player disconnected from the lobby!");
       break;
@@ -136,6 +144,8 @@ void LobbyScene::newClientConnected(DataShare& received_data)
     return;
   }
 
+  Locator::getAudio()->play(player_join);
+
   // A player that's not us connected to the lobby, update our info
   players[received_data.retrieve(0)]->is_ready =
     static_cast<bool>(received_data.retrieve(1));
@@ -153,6 +163,14 @@ void LobbyScene::clientChangedReady(DataShare& received_data)
     players[received_data.retrieve(1)]->is_ready =
       static_cast<bool>(received_data.retrieve(0));
     debug_text.print("A player changed their ready state!");
+  }
+  if (received_data.retrieve(0))
+  {
+    Locator::getAudio()->play(player_ready);
+  }
+  else
+  {
+    Locator::getAudio()->play(player_unready);
   }
 }
 
@@ -256,6 +274,13 @@ game_global_scenes LobbyScene::update(const ASGE::GameTime& game_time)
       next_scene = game_global_scenes::IN_GAME;
       should_start_game = false;
     }
+
+    // Play SFX
+    if (!is_playing_countdown)
+    {
+      Locator::getAudio()->play(countdown);
+      is_playing_countdown = true;
+    }
   }
   return next_scene;
 }
@@ -313,8 +338,8 @@ void LobbyScene::render()
     renderer->renderText(
       localiser.getString("LOBBY_COUNTDOWN_" +
                           std::to_string(static_cast<int>(game_countdown + 1))),
-      45,
-      698,
+      static_cast<int>(45 * GameResolution::scale),
+      static_cast<int>(698 * GameResolution::scale),
       1,
       ASGE::COLOURS::WHITE);
   }
