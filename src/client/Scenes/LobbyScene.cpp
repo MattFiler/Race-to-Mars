@@ -338,8 +338,8 @@ void LobbyScene::render()
     renderer->renderText(
       localiser.getString("LOBBY_COUNTDOWN_" +
                           std::to_string(static_cast<int>(game_countdown + 1))),
-      45,
-      698,
+      static_cast<int>(45 * GameResolution::scale),
+      static_cast<int>(698 * GameResolution::scale),
       1,
       ASGE::COLOURS::WHITE);
   }

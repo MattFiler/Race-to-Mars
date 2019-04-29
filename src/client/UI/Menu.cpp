@@ -10,6 +10,9 @@ Menu::Menu()
 
   file_handler.loadSound(item_select, "menu_option_changed", 1.0f);
   file_handler.loadSound(item_activate, "menu_option_selected", 1.0f);
+
+  y_offset *= GameResolution::scale;
+  x_offset *= GameResolution::scale;
 }
 
 /* Add menu text item */

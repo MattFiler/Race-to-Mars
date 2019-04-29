@@ -12,49 +12,6 @@
 #include <client/Cards/ObjectiveCard.h>
 #include <vector>
 
-/* UI Elements */
-enum ui_sprites
-{
-  BACKGROUND,
-  ACTIVE_PLAYER_MARKER,
-  YOUR_PLAYER_MARKER,
-  INACTIVE_PLAYER_MARKER,
-  PROGRESS_METER,
-  PROGRESS_MARKER,
-  SYNC_OVERLAY,
-  DISCONNECT_OVERLAY,
-  CHAT_BOX,
-  MSG_ALERT,
-  POPUP_CARD_SHADOWS_0,
-  POPUP_CARD_SHADOWS_1,
-  POPUP_CARD_SHADOWS_2,
-  POPUP_CARD_SHADOWS_3,
-  POPUP_CARD_SHADOWS_4,
-  POPUP_CARD_SHADOWS_5,
-  DICE_ROLL_1,
-  DICE_ROLL_2,
-  DICE_ROLL_3,
-  DICE_ROLL_4,
-  DICE_ROLL_5,
-  DICE_ROLL_6
-};
-enum ui_popups
-{
-  ISSUE_POPUP,
-  OBJECTIVE_POPUP,
-  DICE_ROLL_POPUP,
-  CHICKEN_POPUP,
-  YOU_WIN_POPUP,
-  YOU_LOSE_POPUP
-};
-enum ui_buttons
-{
-  END_TURN_BTN,
-  BUY_ITEM_BTN,
-  ROLL_DICE_BTN,
-  CHAT_BTN
-};
-
 class GameScene : public Scene
 {
  public:
@@ -77,11 +34,30 @@ class GameScene : public Scene
   }
 
  private:
+  // Misc specific functions split out from the core methods
+  void createButtonsAndPopups();
+  void chatMessageInput(const ASGE::KeyEvent* event);
+  void playingInput();
+  void issuePopupClicks();
+  void playingClicksWhenActive(Vector2& mouse_pos);
+  void playingClicksWhenActiveOrInactive(Vector2& mouse_pos);
+
+  // Network functionality - this can be found in GameScene_Networking.cpp
+  void serverEndsClientTurn(DataShare& received_data);
+  void clientMovesPlayerToken(DataShare& received_data);
+  void clientActionPointsUpdated(DataShare& received_data);
+  void serverSyncsCardInfo(DataShare& received_data);
+  void serverSyncsPositionInfo(DataShare& received_data);
+
+  // Debug output - disabled in release mode
   void debugOutput();
+
+  // Content
   GameBoard board;
   LobbyPlayer* players[4] = { nullptr, nullptr, nullptr, nullptr };
   SceneUI ui_manager;
 
+  // Ability trackers
   bool is_new_turn = false;
   bool got_new_obj_card = false;
   bool got_chicken_card = false;
@@ -93,9 +69,9 @@ class GameScene : public Scene
   bool lost_game = false;
   bool won_game = false;
 
+  // More state trackers
   bool update_item_card = false;
   int new_item_card = -1;
-
   int good_comm_roll = 0;
 
   // chat msg
@@ -108,16 +84,15 @@ class GameScene : public Scene
   size_t max_messages = 32;
   size_t max_message_size = 26;
 
+  // Positioning for cards
   CardOffsets card_offsets;
 
-  int max_progress_index = 19; // win condition
-
+  // Even more state trackers
   bool has_disconnected = false; // did local client disconnect?
   game_state current_state = game_state::PLAYING;
   // int current_progress_index = 0;
   bool current_scene_lock_active = false; // optional "scene lock" to freeze
                                           // client interaction - useful for the
                                           // end of a turn
-  std::string getClassName();
 };
 #endif // PROJECT_GAMESCENE_H

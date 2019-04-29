@@ -3,6 +3,7 @@
 
 #include "gamelib/Math/Vector2.h"
 
+/* Scenes */
 enum game_global_scenes
 {
   DEFAULT = -1,
@@ -12,17 +13,63 @@ enum game_global_scenes
   QUIT_GAME
 };
 
+/* In-game states */
 enum game_state
 {
   PLAYING,     // The regular in-game state
   LOCAL_PAUSE, // The quit menu
 };
 
+/* Misc config */
 struct GameConfig
 {
   int max_issue_cards = 5;
 };
 
+/* In-Game UI Elements */
+enum ui_sprites
+{
+  BACKGROUND,
+  ACTIVE_PLAYER_MARKER,
+  YOUR_PLAYER_MARKER,
+  INACTIVE_PLAYER_MARKER,
+  PROGRESS_METER,
+  PROGRESS_MARKER,
+  SYNC_OVERLAY,
+  DISCONNECT_OVERLAY,
+  CHAT_BOX,
+  MSG_ALERT,
+  POPUP_CARD_SHADOWS_0,
+  POPUP_CARD_SHADOWS_1,
+  POPUP_CARD_SHADOWS_2,
+  POPUP_CARD_SHADOWS_3,
+  POPUP_CARD_SHADOWS_4,
+  POPUP_CARD_SHADOWS_5,
+  DICE_ROLL_1,
+  DICE_ROLL_2,
+  DICE_ROLL_3,
+  DICE_ROLL_4,
+  DICE_ROLL_5,
+  DICE_ROLL_6
+};
+enum ui_popups
+{
+  ISSUE_POPUP,
+  OBJECTIVE_POPUP,
+  DICE_ROLL_POPUP,
+  CHICKEN_POPUP,
+  YOU_WIN_POPUP,
+  YOU_LOSE_POPUP
+};
+enum ui_buttons
+{
+  END_TURN_BTN,
+  BUY_ITEM_BTN,
+  ROLL_DICE_BTN,
+  CHAT_BTN
+};
+
+/* UI card offsets */
 struct CardOffsets
 {
   // Issue card popup
