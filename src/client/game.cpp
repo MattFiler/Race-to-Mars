@@ -64,6 +64,9 @@ bool RaceToSpace::init()
     // toggleFPS();
   }
 
+  // Setup audio
+  audio.init();
+
   // Setup our locator
   Locator::setupRenderer(renderer.get());
   Locator::setupInput(inputs.get());

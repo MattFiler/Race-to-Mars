@@ -13,6 +13,7 @@
 #include <json.hpp>
 #include <queue>
 #include <soloud.h>
+#include <soloud_wav.h>
 #include <string>
 using json = nlohmann::json;
 

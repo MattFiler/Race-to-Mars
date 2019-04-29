@@ -29,6 +29,10 @@ target_compile_features(GameLib PUBLIC cxx_std_17)
 add_dependencies(${PROJECT_NAME} enetpp)
 target_link_libraries(${PROJECT_NAME} enetpp)
 
+## add soloud
+SET(ENABLE_SOUND ON CACHE BOOL "Adds SoLoud to the Project" FORCE)
+target_link_libraries(${PROJECT_NAME} soloud)
+
 ## these are the build directories
 get_target_property(GAMELIB GameLib NAME)
 set_target_properties(GameLib

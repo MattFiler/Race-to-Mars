@@ -4,8 +4,11 @@
 #include "client/KeyHandler/KeyHandler.h"
 #include "client/UI/ClickableButton.h"
 #include "client/UI/ScaledSprite.h"
+#include "gamelib/FileHandler/FileHandler.h"
 #include <Engine/GameTime.h>
 #include <Engine/Renderer.h>
+#include <soloud.h>
+#include <soloud_wav.h>
 #include <vector>
 
 class PopupWindow
@@ -80,6 +83,11 @@ class PopupWindow
   ClickableButton* close_button;
   std::vector<std::string> popup_text;
   std::vector<Vector2> popup_text_pos;
+
+  /* Sound-related */
+  FileHandler file_handler;
+  SoLoud::Wav active_sfx;
+  SoLoud::Wav inactive_sfx;
 };
 
 #endif // PROJECT_POPUPWINDOW_H
