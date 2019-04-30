@@ -62,40 +62,38 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
 /* Handle chat input */
 void GameScene::chatMessageInput(const ASGE::KeyEvent* event)
 {
-  if (entering_msg && current_state == game_state::PLAYING)
+  if (entering_msg && current_state == game_state::PLAYING &&
+      event->action == ASGE::KEYS::KEY_PRESSED)
   {
-    if (event->action == ASGE::KEYS::KEY_PRESSED)
+    if (event->key == ASGE::KEYS::KEY_BACKSPACE && my_chat_msg.length() > 0)
     {
-      if (event->key == ASGE::KEYS::KEY_BACKSPACE && my_chat_msg.length() > 0)
-      {
-        my_chat_msg.resize(my_chat_msg.size() - 1);
-      }
+      my_chat_msg.resize(my_chat_msg.size() - 1);
+    }
 
-      if (event->key == ASGE::KEYS::KEY_ENTER && my_chat_msg.length() > 0)
+    if (event->key == ASGE::KEYS::KEY_ENTER && my_chat_msg.length() > 0)
+    {
+      my_chat_msg =
+        Locator::getPlayers()
+          ->getPlayer(
+            players[Locator::getPlayers()->my_player_index]->current_class)
+          ->getFriendlyName() +
+        ": " + my_chat_msg;
+      // send chat message to server here.
+      auto new_share = DataShare(data_roles::CHAT_MSG);
+      new_share.addMsg(my_chat_msg);
+      Locator::getNetworkInterface()->sendData(new_share);
+      my_chat_msg.clear();
+    }
+    else if (event->key != ASGE::KEYS::KEY_BACKSPACE &&
+             my_chat_msg.length() < max_message_size)
+    {
+      if (event->key >= 65 && event->key <= 90)
       {
-        my_chat_msg =
-          Locator::getPlayers()
-            ->getPlayer(
-              players[Locator::getPlayers()->my_player_index]->current_class)
-            ->getFriendlyName() +
-          ": " + my_chat_msg;
-        // send chat message to server here.
-        auto new_share = DataShare(data_roles::CHAT_MSG);
-        new_share.addMsg(my_chat_msg);
-        Locator::getNetworkInterface()->sendData(new_share);
-        my_chat_msg.clear();
+        my_chat_msg += static_cast<char>(event->key);
       }
-      else if (event->key != ASGE::KEYS::KEY_BACKSPACE &&
-               my_chat_msg.length() < max_message_size)
+      else if (event->key == 32)
       {
-        if (event->key >= 65 && event->key <= 90)
-        {
-          my_chat_msg += static_cast<char>(event->key);
-        }
-        else if (event->key == 32)
-        {
-          my_chat_msg += static_cast<char>(event->key);
-        }
+        my_chat_msg += static_cast<char>(event->key);
       }
     }
   }
@@ -115,81 +113,80 @@ void GameScene::playingInput()
     if (keys.keyReleased("End Turn") &&
         players[Locator::getPlayers()->my_player_index]->is_active)
     {
-      if (board.getObjectiveCard() != nullptr)
+      // request new obj card for client.
+      if (board.getObjectiveCard() != nullptr &&
+          board.checkObjectiveCardComplete(
+            getLobbyPlayer(Locator::getPlayers()->my_player_index)
+              ->current_class))
       {
-        // request new obj card for client.
-        if (board.checkObjectiveCardComplete(
-              getLobbyPlayer(Locator::getPlayers()->my_player_index)
-                ->current_class))
-        {
-          board.addObjCardToInventory();
-          DataShare new_share = DataShare(data_roles::CLIENT_REQUESTS_OBJ_CARD);
-          new_share.add(Locator::getPlayers()->my_player_index);
-          Locator::getNetworkInterface()->sendData(new_share);
-        }
-      }
-      DataShare new_share = DataShare(data_roles::CLIENT_WANTS_TO_END_TURN);
-      new_share.add(Locator::getPlayers()->my_player_index);
-      Locator::getNetworkInterface()->sendData(new_share);
-      current_scene_lock_active = true;
-      debug_text.print("Requesting to end my go!!");
-      board.resetCardVariables();
-    }
-    if (keys.keyReleased("Debug Obj Inventory"))
-    {
-      debug_text.print("Creating obj card");
-      board.addObjCardToInventory();
-    }
-    if (keys.keyReleased("Debug Use Objective Action"))
-    {
-      debug_text.print("Using OBJ POWER!");
-      board.useObjCardDebug();
-    }
-    if (keys.keyReleased("Debug Spend AP") &&
-        players[Locator::getPlayers()->my_player_index]->is_active)
-    {
-      // Debug: change my action points to 10.
-      int new_ap = 10;
-      DataShare new_share = DataShare(data_roles::CLIENT_ACTION_POINTS_CHANGED);
-      new_share.add(Locator::getPlayers()->my_player_index);
-      new_share.add(
-        players[Locator::getPlayers()->my_player_index]->action_points);
-      new_share.add(new_ap);
-      new_share.add(-1);
-      Locator::getNetworkInterface()->sendData(new_share);
-      players[Locator::getPlayers()->my_player_index]->action_points = new_ap;
-      debug_text.print("Debug: changed my action points to 10!");
-    }
-    if (keys.keyReleased("Debug Buy Item") &&
-        players[Locator::getPlayers()->my_player_index]->is_active)
-    {
-      debug_text.print("Trying to buy item card.");
-      if (Locator::getPlayers()
-            ->getPlayer(static_cast<player_classes>(
-              Locator::getPlayers()->my_player_index))
-            ->getHeldItemAmount() < Locator::getPlayers()
-                                      ->getPlayer(static_cast<player_classes>(
-                                        Locator::getPlayers()->my_player_index))
-                                      ->getMaxItems())
-      {
-        auto new_share = DataShare(data_roles::CLIENT_REQUESTED_ITEM_CARD);
+        board.addObjCardToInventory();
+        DataShare new_share = DataShare(data_roles::CLIENT_REQUESTS_OBJ_CARD);
         new_share.add(Locator::getPlayers()->my_player_index);
         Locator::getNetworkInterface()->sendData(new_share);
-        Locator::getPlayers()
-          ->getPlayer(
-            static_cast<player_classes>(Locator::getPlayers()->my_player_index))
-          ->setHeldItems(1);
-        // ap changed here
-        int& my_action_points =
-          players[Locator::getPlayers()->my_player_index]->action_points;
-        DataShare new_share_item =
-          DataShare(data_roles::CLIENT_ACTION_POINTS_CHANGED);
-        new_share_item.add(Locator::getPlayers()->my_player_index);
-        new_share_item.add(my_action_points);
       }
     }
-#endif
+    DataShare new_share = DataShare(data_roles::CLIENT_WANTS_TO_END_TURN);
+    new_share.add(Locator::getPlayers()->my_player_index);
+    Locator::getNetworkInterface()->sendData(new_share);
+    current_scene_lock_active = true;
+    debug_text.print("Requesting to end my go!!");
+    board.resetCardVariables();
   }
+  if (keys.keyReleased("Debug Obj Inventory"))
+  {
+    debug_text.print("Creating obj card");
+    board.addObjCardToInventory();
+  }
+  if (keys.keyReleased("Debug Use Objective Action"))
+  {
+    debug_text.print("Using OBJ POWER!");
+    board.useObjCardDebug();
+  }
+  if (keys.keyReleased("Debug Spend AP") &&
+      players[Locator::getPlayers()->my_player_index]->is_active)
+  {
+    // Debug: change my action points to 10.
+    int new_ap = 10;
+    DataShare new_share = DataShare(data_roles::CLIENT_ACTION_POINTS_CHANGED);
+    new_share.add(Locator::getPlayers()->my_player_index);
+    new_share.add(
+      players[Locator::getPlayers()->my_player_index]->action_points);
+    new_share.add(new_ap);
+    new_share.add(-1);
+    Locator::getNetworkInterface()->sendData(new_share);
+    players[Locator::getPlayers()->my_player_index]->action_points = new_ap;
+    debug_text.print("Debug: changed my action points to 10!");
+  }
+  if (keys.keyReleased("Debug Buy Item") &&
+      players[Locator::getPlayers()->my_player_index]->is_active)
+  {
+    debug_text.print("Trying to buy item card.");
+    if (Locator::getPlayers()
+          ->getPlayer(
+            static_cast<player_classes>(Locator::getPlayers()->my_player_index))
+          ->getHeldItemAmount() < Locator::getPlayers()
+                                    ->getPlayer(static_cast<player_classes>(
+                                      Locator::getPlayers()->my_player_index))
+                                    ->getMaxItems())
+    {
+      auto new_share = DataShare(data_roles::CLIENT_REQUESTED_ITEM_CARD);
+      new_share.add(Locator::getPlayers()->my_player_index);
+      Locator::getNetworkInterface()->sendData(new_share);
+      Locator::getPlayers()
+        ->getPlayer(
+          static_cast<player_classes>(Locator::getPlayers()->my_player_index))
+        ->setHeldItems(1);
+      // ap changed here
+      int& my_action_points =
+        players[Locator::getPlayers()->my_player_index]->action_points;
+      DataShare new_share_item =
+        DataShare(data_roles::CLIENT_ACTION_POINTS_CHANGED);
+      new_share_item.add(Locator::getPlayers()->my_player_index);
+      new_share_item.add(my_action_points);
+    }
+  }
+#endif
+}
 }
 
 /* Handles mouse clicks */
@@ -454,7 +451,6 @@ void GameScene::playingClicksWhenActive(Vector2& mouse_pos)
       else if (board.getPilotBlackHole())
       {
         // Roll dice
-        int progress_change = 0;
         int dice_roll =
           Locator::getPlayers()
             ->getPlayer(
@@ -464,11 +460,9 @@ void GameScene::playingClicksWhenActive(Vector2& mouse_pos)
         // If below 4 move ship back 2 spaces. else move forward 2.
         if (dice_roll < 4)
         {
-          progress_change = -2;
           DataShare new_share =
             DataShare(data_roles::CLIENT_CHANGE_PROGRESS_INDEX);
-          new_share.add(Locator::getPlayers()->current_progress_index +
-                        progress_change);
+          new_share.add(Locator::getPlayers()->current_progress_index - 2);
           Locator::getNetworkInterface()->sendData(new_share);
         }
 
