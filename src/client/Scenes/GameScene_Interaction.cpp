@@ -621,7 +621,7 @@ void GameScene::playingClicksWhenActiveOrInactive(Vector2& mouse_pos)
 void GameScene::issuePopupClicks()
 {
   // Handle interactions for all active buttons in issue popup when
-  // visible
+  // visible.
   if (ui_manager.popups().getPopup(ui_popups::ISSUE_POPUP)->isVisible())
   {
     int ap_button_index = 0;
