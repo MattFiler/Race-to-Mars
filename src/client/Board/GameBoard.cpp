@@ -378,8 +378,9 @@ void GameBoard::handleIssueCardEvents(issue_cards _card_type)
     {
       // Set max items to 5 for local player.
       Locator::getPlayers()
-        ->getPlayer(
-          static_cast<player_classes>(Locator::getPlayers()->my_player_index))
+        ->getPlayer(Locator::getPlayers()
+                      ->players[Locator::getPlayers()->my_player_index]
+                      .current_class)
         ->setMaxItems(5);
       break;
     }
