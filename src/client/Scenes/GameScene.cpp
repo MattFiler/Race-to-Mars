@@ -464,53 +464,59 @@ void GameScene::playingClicksWhenActive(Vector2& mouse_pos)
     if (board.isHoveringOverRoom(mouse_pos))
     {
       ShipRoom this_room = board.getClickedRoom(mouse_pos);
-      bool free_movement =
-        ((static_cast<int>(this_room.getEnum()) ==
+      if (static_cast<int>(this_room.getEnum()) !=
+          players[Locator::getPlayers()->my_player_index]->room)
+      {
+        bool free_movement =
+          ((static_cast<int>(this_room.getEnum()) ==
+            Locator::getPlayers()
+              ->getPlayer(
+                players[Locator::getPlayers()->my_player_index]->current_class)
+              ->getStartingRoom()) ||
+           free_player_movement);
+        if ((players[Locator::getPlayers()->my_player_index]->action_points >
+               0 &&
+             !free_player_movement) ||
+            free_movement)
+        {
+          // Get new movement position
+          Vector2 new_pos = this_room.getPosForPlayer(
+            players[Locator::getPlayers()->my_player_index]->current_class);
+
+          // Move, and let everyone know we're moving
+          DataShare new_share =
+            DataShare(data_roles::CLIENT_MOVING_PLAYER_TOKEN);
+          new_share.add(Locator::getPlayers()->my_player_index);
+          new_share.add(static_cast<int>(this_room.getEnum()));
+          Locator::getNetworkInterface()->sendData(new_share);
           Locator::getPlayers()
             ->getPlayer(
               players[Locator::getPlayers()->my_player_index]->current_class)
-            ->getStartingRoom()) ||
-         free_player_movement);
-      if ((players[Locator::getPlayers()->my_player_index]->action_points > 0 &&
-           !free_player_movement) ||
-          free_movement)
-      {
-        // Get new movement position
-        Vector2 new_pos = this_room.getPosForPlayer(
-          players[Locator::getPlayers()->my_player_index]->current_class);
+            ->setPos(new_pos);
+          players[Locator::getPlayers()->my_player_index]->room =
+            this_room.getEnum();
+          debug_text.print("Moving my player token to room '" +
+                           this_room.getName() + "'.");
 
-        // Move, and let everyone know we're moving
-        DataShare new_share = DataShare(data_roles::CLIENT_MOVING_PLAYER_TOKEN);
-        new_share.add(Locator::getPlayers()->my_player_index);
-        new_share.add(static_cast<int>(this_room.getEnum()));
-        Locator::getNetworkInterface()->sendData(new_share);
-        Locator::getPlayers()
-          ->getPlayer(
-            players[Locator::getPlayers()->my_player_index]->current_class)
-          ->setPos(new_pos);
-        players[Locator::getPlayers()->my_player_index]->room =
-          this_room.getEnum();
-        debug_text.print("Moving my player token to room '" +
-                         this_room.getName() + "'.");
-
-        if (!free_movement)
-        {
-          debug_text.print("Moving costs 1 AP.");
-          int& my_action_points =
-            players[Locator::getPlayers()->my_player_index]->action_points;
-          DataShare new_share2 =
-            DataShare(data_roles::CLIENT_ACTION_POINTS_CHANGED);
-          new_share2.add(Locator::getPlayers()->my_player_index);
-          new_share2.add(my_action_points);
-          if (!free_player_movement &&
-              players[Locator::getPlayers()->my_player_index]->action_points >
-                0)
+          if (!free_movement)
           {
-            my_action_points -= 1;
+            debug_text.print("Moving costs 1 AP.");
+            int& my_action_points =
+              players[Locator::getPlayers()->my_player_index]->action_points;
+            DataShare new_share2 =
+              DataShare(data_roles::CLIENT_ACTION_POINTS_CHANGED);
+            new_share2.add(Locator::getPlayers()->my_player_index);
+            new_share2.add(my_action_points);
+            if (!free_player_movement &&
+                players[Locator::getPlayers()->my_player_index]->action_points >
+                  0)
+            {
+              my_action_points -= 1;
+            }
+            new_share2.add(my_action_points);
+            new_share2.add(-1);
+            Locator::getNetworkInterface()->sendData(new_share2);
           }
-          new_share2.add(my_action_points);
-          new_share2.add(-1);
-          Locator::getNetworkInterface()->sendData(new_share2);
         }
       }
     }
