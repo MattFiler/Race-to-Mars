@@ -248,7 +248,7 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
       break;
     }
     // Is paused
-    case game_state::LOCAL_PAUSE:
+    default:
     {
       if (!ui_manager.getMenu()->itemWasSelected(keys))
       {
@@ -447,7 +447,7 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
 
       playingClicksWhenActiveOrInactive(mouse_pos);
     }
-    case game_state::LOCAL_PAUSE:
+    default:
     {
       break;
     }
@@ -871,8 +871,82 @@ void GameScene::issuePopupClicks()
 /* Update function */
 game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
 {
-  /* POPUPS */
+  // Update popups
+  updatePopups(game_time);
 
+  // Check for updates to objective cards
+  if (board.updateActiveObjectiveCard())
+  {
+    // Objective card updated
+    got_new_obj_card = true;
+    got_new_obj_this_turn = true;
+    debug_text.print("got_new_obj_card");
+  }
+
+  // Check for new chat messages
+  if (new_chat_msg)
+  {
+    debug_text.print("Adding message: " + received_chat_msg + " to ALL_MSGS.");
+    if (chat_messages.size() >= max_messages)
+    {
+      chat_messages.erase(chat_messages.begin());
+    }
+    chat_messages.emplace_back(received_chat_msg);
+    new_chat_msg = false;
+  }
+
+  // Replenish item cards for new ones if obj card has been played.
+  if (Locator::getPlayers()
+        ->getPlayer(
+          static_cast<player_classes>(Locator::getPlayers()->my_player_index))
+        ->getReplenishItems())
+  {
+    board.clearItems();
+    for (int i = 0;
+         i < Locator::getPlayers()
+               ->getPlayer(
+                 players[Locator::getPlayers()->my_player_index]->current_class)
+               ->getHeldItemAmount();
+         ++i)
+    {
+      DataShare new_share_item =
+        DataShare(data_roles::CLIENT_REQUESTED_ITEM_CARD);
+      new_share_item.add(Locator::getPlayers()->my_player_index);
+      Locator::getNetworkInterface()->sendData(new_share_item);
+    }
+
+    Locator::getPlayers()
+      ->getPlayer(
+        static_cast<player_classes>(Locator::getPlayers()->my_player_index))
+      ->setReplenishItems(false);
+  }
+
+  // Check (and perform) item card updates
+  if (update_item_card)
+  {
+    debug_text.print("Updating active item cards.");
+    if (board.updateActiveItemCard(new_item_card))
+    {
+      // show popup here.
+    }
+    update_item_card = false;
+  }
+
+  // Update popups visibility
+  updatePopupVisibility(game_time);
+
+  // Update state specific cursor
+  updateStateSpecificCursor(game_time);
+
+  // Update UI
+  updateButtonStates(game_time);
+
+  return next_scene;
+}
+
+/* POPUPS */
+void GameScene::updatePopups(const ASGE::GameTime& game_time)
+{
   // Update cards if required and show popup if needed
   if (board.updateActiveIssueCards())
   {
@@ -922,62 +996,11 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
     got_new_obj_this_turn = false;
     rolled_dice_this_turn = false;
   }
+}
 
-  if (board.updateActiveObjectiveCard())
-  {
-    // Objective card updated
-    got_new_obj_card = true;
-    got_new_obj_this_turn = true;
-    debug_text.print("got_new_obj_card");
-  }
-
-  if (new_chat_msg)
-  {
-    debug_text.print("Adding message: " + received_chat_msg + " to ALL_MSGS.");
-    if (chat_messages.size() >= max_messages)
-    {
-      chat_messages.erase(chat_messages.begin());
-    }
-    chat_messages.emplace_back(received_chat_msg);
-    new_chat_msg = false;
-  }
-
-  // Replenish item cards for new ones if obj card has been played.
-  if (Locator::getPlayers()
-        ->getPlayer(
-          static_cast<player_classes>(Locator::getPlayers()->my_player_index))
-        ->getReplenishItems())
-  {
-    board.clearItems();
-    for (int i = 0;
-         i < Locator::getPlayers()
-               ->getPlayer(
-                 players[Locator::getPlayers()->my_player_index]->current_class)
-               ->getHeldItemAmount();
-         ++i)
-    {
-      DataShare new_share_item =
-        DataShare(data_roles::CLIENT_REQUESTED_ITEM_CARD);
-      new_share_item.add(Locator::getPlayers()->my_player_index);
-      Locator::getNetworkInterface()->sendData(new_share_item);
-    }
-
-    Locator::getPlayers()
-      ->getPlayer(
-        static_cast<player_classes>(Locator::getPlayers()->my_player_index))
-      ->setReplenishItems(false);
-  }
-
-  if (update_item_card)
-  {
-    debug_text.print("Updating active item cards.");
-    if (board.updateActiveItemCard(new_item_card))
-    {
-      // show popup here.
-    }
-    update_item_card = false;
-  }
-
+/* Update Popups */
+void GameScene::updatePopupVisibility(const ASGE::GameTime& game_time)
+{
   // Show objective popup if needed
   if (is_new_turn && got_new_obj_card &&
       !ui_manager.popups().getPopup(ui_popups::ISSUE_POPUP)->isVisible())
@@ -1037,9 +1060,11 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
   {
     ui_manager.popups().getPopup(ui_popups::YOU_LOSE_POPUP)->showForTime(60);
   }
+}
 
-  /* STATE-SPECIFIC CURSOR */
-
+/* STATE-SPECIFIC CURSOR */
+void GameScene::updateStateSpecificCursor(const ASGE::GameTime& game_time)
+{
   // While our cursor hover state is handled by individual buttons, more
   // generic game stuff like the card hovering needs to be handled here. By
   // default, the cursor is set to inactive at the start of every update
@@ -1065,36 +1090,26 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
       Locator::getCursor()->setCursorActive(true);
     }
   }
+}
 
-  /* MISC */
-
+/* UI Updates */
+void GameScene::updateButtonStates(const ASGE::GameTime& game_time)
+{
   // Update UI
   ui_manager.update(game_time);
 
   // Buy item is only active when we are, and in the supply bay
-  if (players[Locator::getPlayers()->my_player_index]->is_active &&
-      players[Locator::getPlayers()->my_player_index]->room ==
-        ship_rooms::SUPPLY_BAY)
-  {
-    ui_manager.getButton(ui_buttons::BUY_ITEM_BTN)->setActive(true);
-  }
-  else
-  {
-    ui_manager.getButton(ui_buttons::BUY_ITEM_BTN)->setActive(false);
-  }
+  ui_manager.getButton(ui_buttons::BUY_ITEM_BTN)
+    ->setActive(players[Locator::getPlayers()->my_player_index]->is_active &&
+                players[Locator::getPlayers()->my_player_index]->room ==
+                  ship_rooms::SUPPLY_BAY);
 
   // End turn button is only active when we have completed all dice rolls
-  if (Locator::getPlayers()
-        ->players[Locator::getPlayers()->my_player_index]
-        .is_active &&
-      !ui_manager.getButton(ui_buttons::ROLL_DICE_BTN)->isActive())
-  {
-    ui_manager.getButton(ui_buttons::END_TURN_BTN)->setActive(true);
-  }
-  else
-  {
-    ui_manager.getButton(ui_buttons::END_TURN_BTN)->setActive(false);
-  }
+  ui_manager.getButton(ui_buttons::END_TURN_BTN)
+    ->setActive(Locator::getPlayers()
+                  ->players[Locator::getPlayers()->my_player_index]
+                  .is_active &&
+                !ui_manager.getButton(ui_buttons::ROLL_DICE_BTN)->isActive());
 
   if (!rolled_dice_this_turn)
   {
@@ -1135,8 +1150,6 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
     ui_manager.getButton(ui_buttons::END_TURN_BTN)->setActive(false);
     ui_manager.getButton(ui_buttons::BUY_ITEM_BTN)->setActive(false);
   }
-
-  return next_scene;
 }
 
 /* Render function */
@@ -1244,7 +1257,7 @@ void GameScene::render()
       }
       break;
     }
-    case game_state::LOCAL_PAUSE:
+    default:
     {
       ui_manager.getMenu()->render();
       break;
