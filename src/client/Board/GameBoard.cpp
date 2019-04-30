@@ -398,6 +398,10 @@ void GameBoard::handleIssueCardEvents(issue_cards _card_type)
       {
         // call server function that generates random number, show a popup to
         // that player to tell them they are chasing chicken this turn.
+        Locator::getPlayers()
+          ->getPlayer(
+            static_cast<player_classes>(Locator::getPlayers()->my_player_index))
+          ->setChasingChicken(true);
       }
       break;
     }
