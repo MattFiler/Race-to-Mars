@@ -18,6 +18,19 @@ bool GameBoard::isHoveringOverRoom(Vector2 hover_pos)
   return false;
 }
 
+/* Check to see if we're hovering over an item card  */
+bool GameBoard::isHoveringOverItemCard(Vector2 hover_pos)
+{
+  for (ItemCard& card : item_inventory)
+  {
+    if (card.isInBoundingBox(hover_pos))
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
 /* Check to see if we're hovering over an issue card  */
 bool GameBoard::isHoveringOverIssueCard(Vector2 hover_pos)
 {
@@ -167,7 +180,7 @@ void GameBoard::assignActionPointToIssue(player_classes _class,
 }
 
 /* Render the board */
-void GameBoard::render(bool _obj_popup, bool _issue_popup)
+void GameBoard::render(bool _obj_popup, bool _issue_popup, bool _item_popup)
 {
   // Ship
   m_ship.render();
@@ -225,12 +238,23 @@ void GameBoard::render(bool _obj_popup, bool _issue_popup)
   int item_card_index = 0;
   for (auto& active_item : item_inventory)
   {
-    active_item.setDimensions(card_offsets.item_ingame_size);
-    active_item.setPosition(
-      card_offsets.item_ingame_start +
-      (card_offsets.issue_ingame_offset * static_cast<float>(item_card_index)));
-    active_item.render();
+    // Position cards and resize appropriately
+    if (_item_popup)
+    {
+      active_item.setDimensions(card_offsets.item_popup_size);
+      active_item.setPosition(
+        card_offsets.item_popup_start +
+        (card_offsets.item_popup_offset * static_cast<float>(item_card_index)));
+    }
+    else
+    {
+      active_item.setDimensions(card_offsets.item_ingame_size);
+      active_item.setPosition(card_offsets.item_ingame_start +
+                              (card_offsets.item_ingame_offset *
+                               static_cast<float>(item_card_index)));
+    }
 
+    active_item.render();
     ++item_card_index;
   }
 
@@ -266,6 +290,12 @@ std::vector<IssueCard> GameBoard::getIssueCards()
   return active_issues;
 }
 
+/* Get the item cards */
+std::vector<ItemCard> GameBoard::getItemCards()
+{
+  return item_inventory;
+}
+
 /* Get the count of issue cards */
 int GameBoard::activeIssuesCount()
 {
@@ -278,6 +308,12 @@ int GameBoard::activeIssuesCount()
     }
   }
   return count;
+}
+
+/* Get the count of item cards */
+int GameBoard::itemCardCount()
+{
+  return static_cast<int>(item_inventory.size());
 }
 
 /* Get the active objective card */

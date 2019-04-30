@@ -27,10 +27,6 @@ void NetworkConnection::startListening(RaceToSpace* game_instance)
   // Thread out our network loop so we can continue with the game loop
   std::thread th(&NetworkConnection::networkLoop, this);
   th.detach();
-
-  // Enable debug input to test comms from client to server (& other clients)
-  std::thread th2(&NetworkConnection::networkMessageDebug, this);
-  th2.detach();
 }
 
 // Our network connection loop
@@ -65,29 +61,6 @@ void NetworkConnection::networkLoop()
   exiting = true;
 }
 
-// Allow us to send a debug message over the network to our server and any other
-// clients
-void NetworkConnection::networkMessageDebug()
-{
-  while (!msg_queue.empty())
-  {
-    //    // lock thread.
-    //    std::lock_guard<std::mutex> lock(msg_queue_mtx);
-    //    // take the packet first in line.
-    //    auto& pkt = pkt_queue.front();
-    //
-    //    auto pkt_length = static_cast<unsigned int>(pkt.length());
-    //    // prepare packet to be send to server.
-    //    auto pkt_data = pkt.data();
-    //    // send packet to server.
-    //    client.send_packet(0,
-    //                       reinterpret_cast<const enet_uint8*>(pkt_data),
-    //                       pkt_length,
-    //                       ENET_PACKET_FLAG_RELIABLE);
-    //    msg_queue.push(std::move(txt));
-  }
-}
-
 /* Send our data to the server */
 void NetworkConnection::sendData(DataShare& data)
 {
@@ -96,7 +69,7 @@ void NetworkConnection::sendData(DataShare& data)
   getPacketQueue()->push(packet);
 }
 
-void NetworkConnection::sendMsg(std::string data)
+void NetworkConnection::sendMsg(const std::string& data)
 {
   Packet packet;
   packet << data;

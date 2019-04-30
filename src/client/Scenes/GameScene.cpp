@@ -92,6 +92,7 @@ void GameScene::createButtonsAndPopups()
   // Create popups
   ui_manager.popups().createPopup(ui_popups::ISSUE_POPUP);
   ui_manager.popups().createPopup(ui_popups::OBJECTIVE_POPUP);
+  ui_manager.popups().createPopup(ui_popups::ITEM_POPUP);
   ui_manager.popups().createPopup(ui_popups::DICE_ROLL_POPUP);
   ui_manager.popups().createPopup(ui_popups::CHICKEN_POPUP);
   ui_manager.popups().createPopup(ui_popups::YOU_WIN_POPUP);
@@ -451,8 +452,7 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
   }
 }
 
-/* Handle clicks when playing and active (THIS NEEDS A GIANT FUCKING REFACTOR!)
- */
+/* Handle clicks when playing and active */
 void GameScene::playingClicksWhenActive(Vector2& mouse_pos)
 {
   if (players[Locator::getPlayers()->my_player_index]->is_active)
@@ -566,10 +566,7 @@ void GameScene::playingClicksWhenActive(Vector2& mouse_pos)
                           .current_class)
             ->getMaxItems())
       {
-        // TODO: Shouldn't we check to see if we're over the max number of items
-        // - done here? You can currently go forever!
-        if (players[Locator::getPlayers()->my_player_index]->action_points >
-            0) // TODO: shouldn't this be 1, not 2? - done
+        if (players[Locator::getPlayers()->my_player_index]->action_points > 0)
         {
           Locator::getPlayers()
             ->getPlayer(Locator::getPlayers()
@@ -608,7 +605,7 @@ void GameScene::playingClicksWhenActive(Vector2& mouse_pos)
       }
     }
 
-    // REFACTOR THIS DICE ROLL SCRIPT - SO MUCH IS DUPLICATED!!
+    // TODO: REFACTOR THIS DICE ROLL SCRIPT - SO MUCH IS DUPLICATED!!
     // Clicked dice roll button
     if (ui_manager.getButton(ui_buttons::ROLL_DICE_BTN)->clicked())
     {
@@ -637,21 +634,16 @@ void GameScene::playingClicksWhenActive(Vector2& mouse_pos)
       else if (board.getBonusMovement())
       {
         // Roll dice
-        int progress_change = 0;
         int dice_roll =
           Locator::getPlayers()
             ->getPlayer(
               players[Locator::getPlayers()->my_player_index]->current_class)
             ->getDiceRoll();
         // Move ship here
-        if (dice_roll > 1)
-        {
-          progress_change = dice_roll / 2;
-        }
         DataShare new_share =
           DataShare(data_roles::CLIENT_CHANGE_PROGRESS_INDEX);
         new_share.add(Locator::getPlayers()->current_progress_index +
-                      progress_change);
+                      (dice_roll > 1 ? dice_roll / 2 : 0));
         Locator::getNetworkInterface()->sendData(new_share);
 
         // Show result
@@ -780,6 +772,25 @@ void GameScene::playingClicksWhenActiveOrInactive(Vector2& mouse_pos)
       unread_msgs = false;
     }
     entering_msg = !entering_msg;
+  }
+
+  // Clicked on an item card
+  if (board.isHoveringOverItemCard(mouse_pos))
+  {
+    ui_manager.popups()
+      .getPopup(ui_popups::ITEM_POPUP)
+      ->clearAllReferencedSprites();
+    ui_manager.popups()
+      .getPopup(ui_popups::ITEM_POPUP)
+      ->referenceSprite(*ui_manager.getSprite(ui_sprites::POPUP_CARD_SHADOWS_0 +
+                                              board.itemCardCount()));
+    for (ItemCard& item_card : board.getItemCards())
+    {
+      ui_manager.popups()
+        .getPopup(ui_popups::ITEM_POPUP)
+        ->referenceSprite(*item_card.getSprite());
+    }
+    ui_manager.popups().getPopup(ui_popups::ITEM_POPUP)->show();
   }
 
   // Clicked on an issue card
@@ -1087,7 +1098,8 @@ void GameScene::updateStateSpecificCursor(const ASGE::GameTime& game_time)
   {
     // Update to hover cursor for cards
     if (board.isHoveringOverIssueCard(mouse_pos) ||
-        board.isHoveringOverObjectiveCard(mouse_pos))
+        board.isHoveringOverObjectiveCard(mouse_pos) ||
+        board.isHoveringOverItemCard(mouse_pos))
     {
       Locator::getCursor()->setCursorActive(true);
     }
@@ -1175,7 +1187,8 @@ void GameScene::render()
         *ui_manager.getSprite(ui_sprites::BACKGROUND)->getSprite());
       board.render(
         ui_manager.popups().getPopup(ui_popups::OBJECTIVE_POPUP)->isVisible(),
-        ui_manager.popups().getPopup(ui_popups::ISSUE_POPUP)->isVisible());
+        ui_manager.popups().getPopup(ui_popups::ISSUE_POPUP)->isVisible(),
+        ui_manager.popups().getPopup(ui_popups::ITEM_POPUP)->isVisible());
 
       float active_marker_pos = -180.0f;
       float my_marker_pos = -180.f;
