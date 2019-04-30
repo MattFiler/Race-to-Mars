@@ -153,6 +153,9 @@ void GameScene::createButtonsAndPopups()
   ui_manager.popups()
     .getPopup(ui_popups::YOU_LOSE_POPUP)
     ->createSprite("UI/INGAME_UI/you_lose_popup.png");
+  ui_manager.popups()
+    .getPopup(ui_popups::ITEM_POPUP)
+    ->createSprite("UI/INGAME_UI/item_bg.png");
 
   // Position main ui buttons
   ui_manager
@@ -602,6 +605,10 @@ void GameScene::playingClicksWhenActive(Vector2& mouse_pos)
         {
           Locator::getAudio()->play(option_disabled_sfx);
         }
+      }
+      else
+      {
+        Locator::getAudio()->play(option_disabled_sfx);
       }
     }
 
