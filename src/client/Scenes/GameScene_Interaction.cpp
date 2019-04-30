@@ -690,6 +690,10 @@ void GameScene::issuePopupClicks()
             Locator::getAudio()->play(option_disabled_sfx);
           }
         }
+        else
+        {
+          Locator::getAudio()->play(option_disabled_sfx);
+        }
         ap_button_index++;
       }
     }
