@@ -22,12 +22,14 @@ class ShipRoom
   std::string getName();
   ship_rooms getEnum() { return this_room_enum; };
   bool isInBoundingBox(Vector2 _pos);
+  bool canMoveTo(const std::string& room_name);
 
  private:
   FileHandler file_handler;
   BoundingBox bounding_box;
   Localisation localiser;
 
+  std::vector<std::string> neighbour_rooms;
   ship_rooms this_room_enum;
 
   Vector2 centre_point;

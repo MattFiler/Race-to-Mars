@@ -243,12 +243,16 @@ void GameScene::playingClicksWhenActive(Vector2& mouse_pos)
     // Clicked within a room on the ship
     if (board.isHoveringOverRoom(mouse_pos))
     {
-      ShipRoom this_room = board.getClickedRoom(mouse_pos);
-      if (static_cast<int>(this_room.getEnum()) !=
-          players[Locator::getPlayers()->my_player_index]->room)
+      ShipRoom new_room = board.getClickedRoom(mouse_pos);
+      ShipRoom current_room = board.getRoom(static_cast<ship_rooms>(
+        players[Locator::getPlayers()->my_player_index]->room));
+      bool gsgg = current_room.canMoveTo(new_room.getName());
+      if (static_cast<int>(new_room.getEnum()) !=
+            players[Locator::getPlayers()->my_player_index]->room &&
+          gsgg)
       {
         bool free_movement =
-          ((static_cast<int>(this_room.getEnum()) ==
+          ((static_cast<int>(new_room.getEnum()) ==
             Locator::getPlayers()
               ->getPlayer(
                 players[Locator::getPlayers()->my_player_index]->current_class)
@@ -260,23 +264,23 @@ void GameScene::playingClicksWhenActive(Vector2& mouse_pos)
             free_movement)
         {
           // Get new movement position
-          Vector2 new_pos = this_room.getPosForPlayer(
+          Vector2 new_pos = new_room.getPosForPlayer(
             players[Locator::getPlayers()->my_player_index]->current_class);
 
           // Move, and let everyone know we're moving
           DataShare new_share =
             DataShare(data_roles::CLIENT_MOVING_PLAYER_TOKEN);
           new_share.add(Locator::getPlayers()->my_player_index);
-          new_share.add(static_cast<int>(this_room.getEnum()));
+          new_share.add(static_cast<int>(new_room.getEnum()));
           Locator::getNetworkInterface()->sendData(new_share);
           Locator::getPlayers()
             ->getPlayer(
               players[Locator::getPlayers()->my_player_index]->current_class)
             ->setPos(new_pos);
           players[Locator::getPlayers()->my_player_index]->room =
-            this_room.getEnum();
+            new_room.getEnum();
           debug_text.print("Moving my player token to room '" +
-                           this_room.getName() + "'.");
+                           new_room.getName() + "'.");
 
           if (!free_movement)
           {
