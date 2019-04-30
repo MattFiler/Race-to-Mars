@@ -94,7 +94,8 @@ struct DataShare
  private:
   data_roles data_type;
   int data_index = 0;
-  int data_array[20] = { -1 };
+  int data_array[20] = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+                         -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
   char chat_msg_data[40];
 };
 
