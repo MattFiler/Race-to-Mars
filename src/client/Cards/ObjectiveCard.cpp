@@ -176,7 +176,8 @@ bool ObjectiveCard::objectiveComplete(IssueCard* const _issue,
     case objective_cards::CLASS_SOLVER:
     {
       return issue->getAssignedPoints(_this_clients_class) > 0 &&
-             issue->isSolved() && issue->getClassType() != _this_clients_class;
+             issue->isSolved() &&
+             issue->getIssuePlayerType() != _this_clients_class;
     }
     case objective_cards::ISSUE_HELPER:
     {
@@ -244,7 +245,8 @@ bool ObjectiveCard::objectiveComplete(IssueCard* const _issue,
     }
     case objective_cards::PERSONAL_ISSUE:
     {
-      return issue->isSolved() && issue->getClassType() == _this_clients_class;
+      return issue->isSolved() &&
+             issue->getIssuePlayerType() == _this_clients_class;
     }
     case objective_cards::POINT_STASH:
     {

@@ -70,7 +70,7 @@ void GameScene::render()
       renderer->renderSprite(
         *ui_manager.getSprite(ui_sprites::ACTIVE_PLAYER_MARKER)->getSprite());
 
-      // You marker
+      // Your marker
       ui_manager.getSprite(ui_sprites::YOUR_PLAYER_MARKER)->yPos(my_marker_pos);
       renderer->renderSprite(
         *ui_manager.getSprite(ui_sprites::YOUR_PLAYER_MARKER)->getSprite());
