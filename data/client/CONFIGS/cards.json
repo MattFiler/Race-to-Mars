@@ -42,7 +42,7 @@
 
 			{"name": "Air Leak", "description": "A piece of rock has collided with the ship and air is leaking. Patch it up!.", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/engin_airleak.png", "card_id": 6, "player_class": 0},
 			{"name": "Broken Air Filter", "description": "Carbon dioxide is reaching critical level! Replace the air flter.", "action_points": 10, "sprite_path": "UI/CARD_IMAGES/engin_brokenairfilter.png", "card_id": 7, "player_class": 0},
-			{"name": "Engine Malfunction", "description": "The engines are going haywire! if this issue isn't solved in two turns, the ship will move back a space.", "action_points": 15, "sprite_path": "UI/CARD_IMAGES/engin_faultygen.png", "card_id": 8, "player_class": 0},
+			{"name": "Engine Malfunction", "description": "The engines are going haywire! if this issue isn't solved in two turns, the ship will move back a space.", "action_points": 15, "sprite_path": "UI/CARD_IMAGES/engin_malfunction.png", "card_id": 8, "player_class": 0},
 			{"name": "Faulty Generator", "description": "The generator is struggling and making ensettling sounds. Fix it!", "action_points": 5, "sprite_path": "UI/CARD_IMAGES/engin_faultygen.png", "card_id": 9, "player_class": 0},
 			{"name": "Item Boost", "description": "All items action points are doubled this turn. Discard this card next turn.", "action_points": 0, "sprite_path": "UI/CARD_IMAGES/engin_itemboost.png", "card_id": 10, "player_class": 0},
 			{"name": "Lighting Malfunction", "description": "The lighting system is flickering, fix it.", "action_points": 10, "sprite_path": "UI/CARD_IMAGES/engin_lightingissue.png", "card_id": 11, "player_class": 0},
