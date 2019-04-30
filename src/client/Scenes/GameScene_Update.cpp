@@ -111,7 +111,7 @@ void GameScene::updatePopups(const ASGE::GameTime& game_time)
 
     // Show/hide all card overlays as required (card overlays match the card
     // size, so we can filter them this way.)
-    int card_overlay_index = 0;
+    int card_overlay_index = -1;
     for (ScaledSprite* sprite : ui_manager.popups()
                                   .getPopup(ui_popups::ISSUE_POPUP)
                                   ->getInternalSprites())
@@ -119,15 +119,19 @@ void GameScene::updatePopups(const ASGE::GameTime& game_time)
       if (sprite->getBoundingBox().width == card_offsets.issue_popup_size.x &&
           sprite->getBoundingBox().height == card_offsets.issue_popup_size.y)
       {
-        if (card_overlay_index < board.activeIssuesCount())
-        {
-          sprite->show();
-        }
-        else
-        {
-          sprite->hide();
-        }
         card_overlay_index++;
+        sprite->hide();
+        if (card_overlay_index >= board.activeIssuesCount())
+        {
+          continue;
+        }
+        if (board.getIssueCards()
+              .at(card_overlay_index)
+              .getActionPointsNeeded() == 0)
+        {
+          continue;
+        }
+        sprite->show();
       }
     }
 

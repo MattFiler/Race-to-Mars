@@ -613,6 +613,10 @@ void GameScene::playingClicksWhenActiveOrInactive(Vector2& mouse_pos)
         {
           break;
         }
+        if (board.getIssueCards().at(button_index).getActionPointsNeeded() == 0)
+        {
+          break;
+        }
         button->setActive(true);
         button_index++;
       }
@@ -707,10 +711,6 @@ void GameScene::issuePopupClicks()
                              std::to_string(my_action_points) + ".");
             Locator::getAudio()->play(option_disabled_sfx);
           }
-        }
-        else
-        {
-          Locator::getAudio()->play(option_disabled_sfx);
         }
         ap_button_index++;
       }
