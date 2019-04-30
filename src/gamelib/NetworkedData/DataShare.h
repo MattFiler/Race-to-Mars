@@ -35,11 +35,7 @@
 struct DataShare
 {
   /* For instantiating a DataShare that will receive networked data */
-  DataShare()
-  {
-    data_type = data_roles::NO_ROLE;
-    chat_msg_data[0] = '\0';
-  }
+  DataShare() { data_type = data_roles::NO_ROLE; }
 
   /* Initialise the data type for adding data to send */
   explicit DataShare(data_roles _type) { data_type = _type; }
@@ -96,7 +92,7 @@ struct DataShare
   int data_index = 0;
   int data_array[20] = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
                          -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
-  char chat_msg_data[40];
+  char chat_msg_data[40] = { 0 };
 };
 
 #endif // PROJECT_DATASHARE_H

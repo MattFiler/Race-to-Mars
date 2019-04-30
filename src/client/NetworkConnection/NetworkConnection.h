@@ -17,13 +17,12 @@ class NetworkConnection
   void startListening(RaceToSpace* game_instance);
 
   void sendData(DataShare& data);
-  void sendMsg(std::string data);
+  void sendMsg(const std::string& data);
 
   enetpp::client* getClient() { return &client; };
 
  private:
   void networkLoop();
-  void networkMessageDebug();
 
   std::queue<Packet>* getPacketQueue() { return &pkt_queue; };
 

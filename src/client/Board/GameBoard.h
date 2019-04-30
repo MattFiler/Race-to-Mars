@@ -27,6 +27,7 @@ class GameBoard
 
   bool isHoveringOverRoom(Vector2 hover_pos);
   bool isHoveringOverIssueCard(Vector2 hover_pos);
+  bool isHoveringOverItemCard(Vector2 hover_pos);
   bool isHoveringOverObjectiveCard(Vector2 hover_pos);
 
   ShipRoom getClickedRoom(Vector2 clicked_pos);
@@ -48,7 +49,9 @@ class GameBoard
   bool updateActiveItemCard(int _item_card_index);
 
   int activeIssuesCount();
+  int itemCardCount();
   ObjectiveCard* getObjectiveCard();
+  std::vector<ItemCard> getItemCards();
   void addObjCardToInventory();
 
   void clearItems() { item_inventory.clear(); }
@@ -62,7 +65,7 @@ class GameBoard
 
   ShipRoom getRoom(ship_rooms _room);
 
-  void render(bool _obj_popup, bool _issue_popup);
+  void render(bool _obj_popup, bool _issue_popup, bool _item_popup);
 
   bool getPilotBlackHole() { return pilot_blackhole; }
   void setPilotBlackHole(bool _setBlackHole)
