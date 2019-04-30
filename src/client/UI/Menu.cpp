@@ -20,7 +20,6 @@ void Menu::addMenuItem(const std::string& item_text)
 {
   menu_text_items.push_back(localiser.getString(item_text));
   menu_text_offsets.push_back(0);
-
   realignMenuTextItems();
 }
 

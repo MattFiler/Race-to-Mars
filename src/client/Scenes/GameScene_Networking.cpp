@@ -320,7 +320,7 @@ void GameScene::serverSyncsPositionInfo(DataShare& received_data)
     debug_text.print("Sync: moved player " + std::to_string(i) + " to room '" +
                      this_room.getName() + "'.");
   }
-  // Sync ship board progress
+  // Sync ship board progress.
   Locator::getPlayers()->current_progress_index = received_data.retrieve(4);
   debug_text.print(
     "Sync: moved ship to position " +

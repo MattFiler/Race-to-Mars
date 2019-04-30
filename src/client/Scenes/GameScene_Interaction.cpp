@@ -631,11 +631,14 @@ void GameScene::issuePopupClicks()
     {
       if (button->isActive())
       {
-        if (button->clicked())
+        if (button->clicked() && !board.getIssueCards()
+                                    .at(static_cast<size_t>(ap_button_index))
+                                    .isSolved())
         {
           int& my_action_points =
             players[Locator::getPlayers()->my_player_index]->action_points;
           int points_to_assign = 1;
+
           if (my_action_points >= points_to_assign)
           {
             Locator::getPlayers()

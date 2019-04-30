@@ -176,7 +176,11 @@ void GameBoard::assignActionPointToIssue(player_classes _class,
                                          int _issue,
                                          int _points)
 {
-  active_issues.at(_issue).addActionPoints(_class, _points);
+  if (!active_issues.at(static_cast<size_t>(_issue)).isSolved())
+  {
+    active_issues.at(static_cast<size_t>(_issue))
+      .addActionPoints(_class, _points);
+  }
 }
 
 /* Render the board */
