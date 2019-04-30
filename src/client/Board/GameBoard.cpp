@@ -303,15 +303,7 @@ std::vector<ItemCard> GameBoard::getItemCards()
 /* Get the count of issue cards */
 int GameBoard::activeIssuesCount()
 {
-  int count = 0;
-  for (int i = 0; i < 5; i++)
-  {
-    if (slot_active[i])
-    {
-      count++;
-    }
-  }
-  return count;
+  return static_cast<int>(active_issues.size());
 }
 
 /* Get the count of item cards */
@@ -583,4 +575,9 @@ void GameBoard::useObjCardDebug()
   {
     objective_card_inventory.front().useObjectiveCard();
   }
+}
+
+void GameBoard::eraseItemCard(int _item_card_to_delete)
+{
+  item_inventory.erase(item_inventory.begin() + _item_card_to_delete);
 }

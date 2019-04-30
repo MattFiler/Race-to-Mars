@@ -47,6 +47,7 @@ class GameBoard
   bool updateActiveIssueCards();
   bool updateActiveObjectiveCard();
   bool updateActiveItemCard(int _item_card_index);
+  void eraseItemCard(int _item_card_to_delete);
 
   int activeIssuesCount();
   int itemCardCount();

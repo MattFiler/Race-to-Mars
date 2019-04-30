@@ -643,13 +643,31 @@ void GameScene::issuePopupClicks()
                                .at(static_cast<size_t>(ap_button_index))
                                .getIssuePlayerType();
 
-          //          //Check if player is in same room as item if so use AP
-          //          from item card.
-          for (ItemCard& item_card : board.getItemCards())
+          // Check if player has any item cards. If yes add the points to
+          // clicked issue
+          int current_item_card = 0;
+          for (size_t i = 0; i < board.getItemCards().size(); ++i)
           {
-            if (item_card.getItemPlayerType() == issue_card_class)
+            if (board.getItemCards().at(i).getItemPlayerType() ==
+                  issue_card_class &&
+                !used_item_this_turn)
             {
+              points_to_assign = 5;
+              my_action_points += 5;
+              used_item_this_turn = true;
+              debug_text.print("Assign item card points to issue card.");
             }
+
+            if (used_item_this_turn)
+            {
+              Locator::getPlayers()
+                ->getPlayer(Locator::getPlayers()
+                              ->players[Locator::getPlayers()->my_player_index]
+                              .current_class)
+                ->setHeldItems(-1);
+              board.eraseItemCard(current_item_card);
+            }
+            ++current_item_card;
           }
 
           if (my_action_points >= points_to_assign)
