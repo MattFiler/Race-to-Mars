@@ -175,6 +175,7 @@ void GameScene::serverEndsClientTurn(DataShare& received_data)
                               static_cast<bool>(received_data.retrieve(12)));
     board.checkissueSolved();
     free_player_movement = false;
+    used_item_this_turn = false;
     if (board.getIssueCards().size() >= 5)
     {
       lost_game = true;

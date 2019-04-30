@@ -69,6 +69,7 @@ class GameScene : public Scene
   bool got_new_obj_this_turn = false;
   bool rolled_dice_this_turn = false;
   bool free_player_movement = false;
+  bool used_item_this_turn = false;
 
   // Win/Lose State
   bool lost_game = false;
