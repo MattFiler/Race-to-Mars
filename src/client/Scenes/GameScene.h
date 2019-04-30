@@ -42,6 +42,11 @@ class GameScene : public Scene
   void playingClicksWhenActive(Vector2& mouse_pos);
   void playingClicksWhenActiveOrInactive(Vector2& mouse_pos);
 
+  void updatePopups(const ASGE::GameTime& game_time);
+  void updatePopupVisibility(const ASGE::GameTime& game_time);
+  void updateStateSpecificCursor(const ASGE::GameTime& game_time);
+  void updateButtonStates(const ASGE::GameTime& game_time);
+
   // Network functionality - this can be found in GameScene_Networking.cpp
   void serverEndsClientTurn(DataShare& received_data);
   void clientMovesPlayerToken(DataShare& received_data);
