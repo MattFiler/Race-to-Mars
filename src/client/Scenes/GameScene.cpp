@@ -381,14 +381,12 @@ void GameScene::playingInput()
     {
       debug_text.print("Trying to buy item card.");
       if (Locator::getPlayers()
-              ->getPlayer(static_cast<player_classes>(
-                Locator::getPlayers()->my_player_index))
-              ->getHeldItemAmount() <
-            Locator::getPlayers()
-              ->getPlayer(static_cast<player_classes>(
-                Locator::getPlayers()->my_player_index))
-              ->getMaxItems() &&
-          players[Locator::getPlayers()->my_player_index]->action_points >= 2)
+            ->getPlayer(static_cast<player_classes>(
+              Locator::getPlayers()->my_player_index))
+            ->getHeldItemAmount() < Locator::getPlayers()
+                                      ->getPlayer(static_cast<player_classes>(
+                                        Locator::getPlayers()->my_player_index))
+                                      ->getMaxItems())
       {
         auto new_share = DataShare(data_roles::CLIENT_REQUESTED_ITEM_CARD);
         new_share.add(Locator::getPlayers()->my_player_index);
@@ -444,7 +442,6 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
       }
 
       playingClicksWhenActive(mouse_pos);
-
       playingClicksWhenActiveOrInactive(mouse_pos);
     }
     case game_state::LOCAL_PAUSE:
@@ -541,18 +538,26 @@ void GameScene::playingClicksWhenActive(Vector2& mouse_pos)
     {
       // Should validate score and existing items, etc here!
       if (Locator::getPlayers()
-            ->getPlayer(static_cast<player_classes>(
-              Locator::getPlayers()->my_player_index))
-            ->getHeldItemAmount() < Locator::getPlayers()
-                                      ->getPlayer(static_cast<player_classes>(
-                                        Locator::getPlayers()->my_player_index))
-                                      ->getMaxItems())
+            ->getPlayer(Locator::getPlayers()
+                          ->players[Locator::getPlayers()->my_player_index]
+                          .current_class)
+            ->getHeldItemAmount() <
+          Locator::getPlayers()
+            ->getPlayer(Locator::getPlayers()
+                          ->players[Locator::getPlayers()->my_player_index]
+                          .current_class)
+            ->getMaxItems())
       {
         // TODO: Shouldn't we check to see if we're over the max number of items
-        // here? You can currently go forever!
-        if (players[Locator::getPlayers()->my_player_index]->action_points >=
-            2) // TODO: shouldn't this be 1, not 2?
+        // - done here? You can currently go forever!
+        if (players[Locator::getPlayers()->my_player_index]->action_points >
+            0) // TODO: shouldn't this be 1, not 2? - done
         {
+          Locator::getPlayers()
+            ->getPlayer(Locator::getPlayers()
+                          ->players[Locator::getPlayers()->my_player_index]
+                          .current_class)
+            ->setHeldItems(1);
           DataShare new_share_item =
             DataShare(data_roles::CLIENT_REQUESTED_ITEM_CARD);
           new_share_item.add(Locator::getPlayers()->my_player_index);
@@ -586,7 +591,6 @@ void GameScene::playingClicksWhenActive(Vector2& mouse_pos)
     }
 
     // REFACTOR THIS DICE ROLL SCRIPT - SO MUCH IS DUPLICATED!!
-
     // Clicked dice roll button
     if (ui_manager.getButton(ui_buttons::ROLL_DICE_BTN)->clicked())
     {
