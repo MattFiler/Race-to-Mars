@@ -629,17 +629,33 @@ void GameScene::issuePopupClicks()
   if (ui_manager.popups().getPopup(ui_popups::ISSUE_POPUP)->isVisible())
   {
     int ap_button_index = 0;
+    player_classes issue_card_class = player_classes::UNASSIGNED;
     for (ClickableButton* button : ui_manager.popups()
                                      .getPopup(ui_popups::ISSUE_POPUP)
                                      ->getInternalButtons())
     {
       if (button->isActive())
       {
-        if (button->clicked())
+        if (button->clicked() && !board.getIssueCards()
+                                    .at(static_cast<size_t>(ap_button_index))
+                                    .isSolved())
         {
           int& my_action_points =
             players[Locator::getPlayers()->my_player_index]->action_points;
           int points_to_assign = 1;
+          issue_card_class = board.getIssueCards()
+                               .at(static_cast<size_t>(ap_button_index))
+                               .getIssuePlayerType();
+
+          //          //Check if player is in same room as item if so use AP
+          //          from item card.
+          for (ItemCard& item_card : board.getItemCards())
+          {
+            if (item_card.getItemPlayerType() == issue_card_class)
+            {
+            }
+          }
+
           if (my_action_points >= points_to_assign)
           {
             Locator::getPlayers()

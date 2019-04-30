@@ -32,4 +32,5 @@ ItemCard::ItemCard(item_cards card_index)
   std::string sprite_path = card_config["ITEMCARDS"][card_type]["sprite_path"];
   setSprite(sprite_path);
   cardID = card_config["ITEMCARDS"][card_type]["card_id"];
+  player_class_type = card_config["ITEMCARDS"][card_type]["player_class"];
 }

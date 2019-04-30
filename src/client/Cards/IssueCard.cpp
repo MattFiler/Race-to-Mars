@@ -14,23 +14,7 @@ IssueCard::IssueCard(issue_cards _card_type)
   cardID = static_cast<issue_cards>(card_config["ISSUECARDS"][card_type]["card_"
                                                                          "id"]);
   setSprite(card_config["ISSUECARDS"][card_type]["sprite_path"]);
-
-  if (static_cast<int>(cardID) >= 0 && static_cast<int>(cardID) <= 5)
-  {
-    playerclass_type = player_classes::COMMUNICATIONS;
-  }
-  else if (static_cast<int>(cardID) >= 6 && static_cast<int>(cardID) <= 11)
-  {
-    playerclass_type = player_classes::ENGINEER;
-  }
-  else if (static_cast<int>(cardID) >= 12 && static_cast<int>(cardID) <= 17)
-  {
-    playerclass_type = player_classes::MEDIC;
-  }
-  else if (static_cast<int>(cardID) >= 24 && static_cast<int>(cardID) <= 29)
-  {
-    playerclass_type = player_classes::PILOT;
-  }
+  player_class_type = card_config["ISSUECARDS"][card_type]["player_class"];
 }
 
 bool IssueCard::isSolvedSolo(player_classes _player_class)

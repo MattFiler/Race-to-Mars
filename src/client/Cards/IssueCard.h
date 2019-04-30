@@ -25,13 +25,13 @@ class IssueCard : public Card
 
   int getActionPointsNeeded() { return action_points; }
   issue_cards getCardID() { return cardID; };
-  player_classes getClassType() { return playerclass_type; }
   int getAssignedPointsTotal() { return total_ap_assigned; };
   int getAssignedPoints(player_classes _class);
 
   bool isSolved();
   bool isSolvedSolo(player_classes _player_class);
   bool contributedMost(player_classes _player_class);
+  player_classes getIssuePlayerType() { return player_class_type; }
 
  private:
   issue_cards cardID = issue_cards::ISSUE_PLACEHOLDER;
@@ -41,7 +41,7 @@ class IssueCard : public Card
   int pilot_ap_assigned = 0;
   int total_ap_assigned = 0;
   bool issue_solved = false;
-  player_classes playerclass_type = player_classes::UNASSIGNED;
+  player_classes player_class_type = player_classes::UNASSIGNED;
 
   int issue_card_ap_variable = 0;
 };

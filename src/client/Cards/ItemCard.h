@@ -19,11 +19,12 @@ class ItemCard : public Card
   item_cards getCardID() { return cardID; };
   void setActive(bool _active);
   void setActionPointVariable(int _action_point);
-
   int assignActionPoints();
+  player_classes getItemPlayerType() { return player_class_type; }
 
  private:
   item_cards cardID = item_cards::ITEM_PLACEHOLDER;
+  player_classes player_class_type = player_classes::UNASSIGNED;
   bool activated = true;
   int action_point_varibale = 0;
 };
