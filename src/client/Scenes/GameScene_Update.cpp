@@ -113,6 +113,17 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
         ->getChasingChicken() &&
       players[Locator::getPlayers()->my_player_index]->is_active)
   {
+    DataShare new_share = DataShare(data_roles::CLIENT_WANTS_TO_END_TURN);
+    new_share.add(Locator::getPlayers()->my_player_index);
+    Locator::getNetworkInterface()->sendData(new_share);
+    current_scene_lock_active = true;
+    debug_text.print("Requesting to end my go!!");
+    board.resetCardVariables();
+    Locator::getPlayers()
+      ->getPlayer(Locator::getPlayers()
+                    ->players[Locator::getPlayers()->my_player_index]
+                    .current_class)
+      ->setChasingChicken(false);
   }
 
   // Check (and perform) item card updates
@@ -298,11 +309,11 @@ void GameScene::updateStateSpecificCursor(const ASGE::GameTime& game_time)
 /* UI Updates */
 void GameScene::updateButtonStates(const ASGE::GameTime& game_time)
 {
-  bool ckn = !Locator::getPlayers()
-                ->getPlayer(Locator::getPlayers()
-                              ->players[Locator::getPlayers()->my_player_index]
-                              .current_class)
-                ->getChasingChicken();
+  //  bool ckn = !Locator::getPlayers()
+  //                ->getPlayer(Locator::getPlayers()
+  //                              ->players[Locator::getPlayers()->my_player_index]
+  //                              .current_class)
+  //                ->getChasingChicken();
   // Update UI
   ui_manager.update(game_time);
 
@@ -310,8 +321,7 @@ void GameScene::updateButtonStates(const ASGE::GameTime& game_time)
   ui_manager.getButton(ui_buttons::BUY_ITEM_BTN)
     ->setActive(players[Locator::getPlayers()->my_player_index]->is_active &&
                 players[Locator::getPlayers()->my_player_index]->room ==
-                  ship_rooms::SUPPLY_BAY &&
-                !ckn);
+                  ship_rooms::SUPPLY_BAY);
 
   // End turn button is only active when we have completed all dice rolls
   ui_manager.getButton(ui_buttons::END_TURN_BTN)
@@ -322,24 +332,23 @@ void GameScene::updateButtonStates(const ASGE::GameTime& game_time)
 
   ui_manager.getButton(ui_buttons::OBJECTIVE_BTN)
     ->setActive(board.getObjectiveInventory().size() > static_cast<size_t>(0) &&
-                players[Locator::getPlayers()->my_player_index]->is_active &&
-                !ckn);
+                players[Locator::getPlayers()->my_player_index]->is_active);
 
-  if (!rolled_dice_this_turn && !ckn)
+  if (!rolled_dice_this_turn)
   {
     ui_manager.getButton(ui_buttons::ROLL_DICE_BTN)->setActive(true);
   }
-  else if (board.getPilotBlackHole() && !ckn)
+  else if (board.getPilotBlackHole())
   {
     ui_manager.getButton(ui_buttons::ROLL_DICE_BTN)->setActive(true);
   }
-  else if (board.getBonusMovement() && !ckn)
+  else if (board.getBonusMovement())
   {
     ui_manager.getButton(ui_buttons::ROLL_DICE_BTN)->setActive(true);
   }
 
   if (rolled_dice_this_turn && !board.getPilotBlackHole() &&
-      !board.getBonusMovement() && ckn)
+      !board.getBonusMovement())
   {
     ui_manager.getButton(ui_buttons::ROLL_DICE_BTN)->setActive(false);
   }
@@ -347,12 +356,12 @@ void GameScene::updateButtonStates(const ASGE::GameTime& game_time)
   // Roll dice button is active when useable
   ui_manager.getButton(ui_buttons::ROLL_DICE_BTN)
     ->setActive(players[Locator::getPlayers()->my_player_index]->is_active &&
-                !rolled_dice_this_turn && !ckn);
-  if (rolled_dice_this_turn && board.getPilotBlackHole() && !ckn)
+                !rolled_dice_this_turn);
+  if (rolled_dice_this_turn && board.getPilotBlackHole())
   {
     ui_manager.getButton(ui_buttons::ROLL_DICE_BTN)->setActive(true);
   }
-  else if (rolled_dice_this_turn && board.getBonusMovement() && !ckn)
+  else if (rolled_dice_this_turn && board.getBonusMovement())
   {
     ui_manager.getButton(ui_buttons::ROLL_DICE_BTN)->setActive(true);
   }
