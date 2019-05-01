@@ -32,6 +32,7 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
   // Time-out after 60 seconds if we don't get another player connect
   if (game_is_paused)
   {
+    // Keep track of time, and timeout if needed
     game_pause_timer += game_time.delta.count() / 1000;
     if (game_pause_timer > 60)
     {
@@ -43,6 +44,21 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
       debug_text.print("Returning to main menu and disconnecting from "
                        "lobby.");
     }
+
+    // If we're now back at 4 players, continue the game.
+    int connected_count = 0;
+    for (int i = 0; i < 4; i++)
+    {
+      if (players[i]->is_ready)
+      {
+        connected_count++;
+      }
+    }
+    if (connected_count == 4)
+    {
+      game_is_paused = false;
+    }
+
     return next_scene;
   }
   game_pause_timer = 0;
@@ -155,6 +171,13 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
     DataShare new_share = DataShare(data_roles::CLIENT_REQUESTS_SYNC);
     new_share.add(Locator::getPlayers()->my_player_index);
   }
+  // Fix for objective card popup on rejoin
+  if (just_reconnected)
+  {
+    ui_manager.popups().hideAll();
+    just_reconnected = false;
+  }
+
   return next_scene;
 }
 

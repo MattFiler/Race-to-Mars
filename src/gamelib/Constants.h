@@ -80,7 +80,8 @@ enum ui_tutorial
 };
 enum ui_tutorial_btns
 {
-  CONTINUE_BUTTON
+  CONTINUE_BUTTON,
+  BACK_BUTTON
 };
 
 /* UI card offsets */

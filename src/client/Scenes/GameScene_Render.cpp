@@ -124,6 +124,7 @@ void GameScene::render()
 
   // Render popups if needed
   ui_manager.popups().render();
+  ui_manager.infoPopup().render();
 
   // Show the assigned action points per card if visible
   if (ui_manager.popups().getPopup(ui_popups::ISSUE_POPUP)->isVisible())
@@ -182,6 +183,11 @@ void GameScene::render()
     renderer->renderSprite(
       *ui_manager.getSprite(ui_sprites::OTHER_PLAYER_DISCONNECTED_OVERLAY)
          ->getSprite());
+    renderer->renderText(
+      std::to_string(static_cast<int>(60 - game_pause_timer)),
+      1205,
+      657,
+      ASGE::COLOURS::WHITE);
   }
 
   debugOutput();

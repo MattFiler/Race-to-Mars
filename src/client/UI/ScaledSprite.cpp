@@ -1,6 +1,14 @@
 #include "ScaledSprite.h"
 #include "gamelib/Debug/DebugText.h"
 
+/*
+ *
+ * This class is intended to provide scaleable sprites for differing game
+ * resolutions. During development we switched away from this resizeable window
+ * idea, but this class remains as a helper function for simple sprite creation.
+ *
+ */
+
 /* Create */
 ScaledSprite::ScaledSprite(const std::string& filename)
 {

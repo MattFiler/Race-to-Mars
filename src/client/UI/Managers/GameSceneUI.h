@@ -7,6 +7,7 @@
  *
  */
 
+#include "client/UI/ExtraInfoPopup.h"
 #include "client/UI/Managers/PopupManager.h"
 #include "client/UI/Menu.h"
 #include "client/UI/ScaledSprite.h"
@@ -23,6 +24,9 @@ class SceneUI
   ScaledSprite* createSprite(int id, const std::string& path);
   ScaledSprite* getSprite(int id);
 
+  ExtraInfoPopup&
+  showInfoPopup(const std::string& popup_name, float time = 3.0f);
+
   ClickableButton* createButton(int id, const std::string& path);
   ClickableButton* getButton(int id);
 
@@ -30,6 +34,8 @@ class SceneUI
   Menu* getMenu();
 
   PopupManager& popups() { return popup_manager; };
+
+  ExtraInfoPopup& infoPopup() { return ei_popup; };
 
   void update(const ASGE::GameTime& game_time);
   void render();
@@ -42,6 +48,8 @@ class SceneUI
 
   std::vector<int> button_ids;
   std::vector<ClickableButton*> buttons;
+
+  ExtraInfoPopup ei_popup;
 
   Menu* menu = nullptr;
   bool has_menu = false;

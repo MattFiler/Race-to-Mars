@@ -1,4 +1,6 @@
+#include "gamelib/NetworkedData/NetworkedData.h"
 #include "server.h"
+#include <gamelib/Packet.h>
 
 /*
  *
@@ -90,18 +92,21 @@ void RaceToSpaceServer::handleReceivedData(DataShare& data_to_send,
       break;
     }
 
+    // Client has solved an issue card!
     case data_roles::CLIENT_SOLVED_ISSUE_CARD:
     {
       clientSolvedIssueCard(data_to_send, client);
       break;
     }
 
+    // Client requests an objective card
     case data_roles::CLIENT_REQUESTS_OBJ_CARD:
     {
       clientRequestsObjective(data_to_send, client);
       break;
     }
 
+    // Chat message handle
     case data_roles::CHAT_MSG:
     {
       sendData(client, static_cast<unsigned int>(-1), data_to_send);
@@ -150,11 +155,6 @@ void RaceToSpaceServer::endTurn(server_client& client)
     this_clients_lobby->current_progress_index++;
 
     // pull some new issue cards
-    // FOR JACK TO DO!
-    // GO THROUGH THE DECK HERE AND PICK OUT SOME ISSUE CARDS, ADD THEIR
-    // IDs TO this_clients_lobby->active_issue_cards - WIN/LOSS
-    // CONDITIONS SHOULD THEN BE HANDLED CLIENT SIDE
-
     int possible_draw_amount = 0;
     for (size_t i = 0; i < std::size(this_clients_lobby->active_issue_cards);
          ++i)
@@ -197,7 +197,6 @@ void RaceToSpaceServer::endTurn(server_client& client)
     if (this_clients_lobby->current_progress_index % 3 == 0 &&
         this_clients_lobby->current_progress_index != 0)
     {
-      // OBJECTIVE CARDS ARE A WIP!!
       for (int i = 0; i < 4; ++i)
       {
         this_clients_lobby->active_objective_cards[i] =
@@ -418,7 +417,7 @@ void RaceToSpaceServer::connectToLobby(server_client& client)
 }
 
 /* Take client out of the lobby they were registered to */
-void RaceToSpaceServer::disconnectFromLobby(int client_id)
+void RaceToSpaceServer::disconnectFromLobby(int client_id, bool alert_lobby)
 {
   int real_lobby_id = 0;
   for (Lobby& this_lobby : lobbies)
@@ -428,6 +427,29 @@ void RaceToSpaceServer::disconnectFromLobby(int client_id)
       if (this_lobby.players[i].id != client_id)
       {
         continue;
+      }
+
+      // If we should alert the lobby of the player leaving, do so!
+      if (alert_lobby)
+      {
+        DataShare new_share =
+          DataShare(data_roles::CLIENT_DISCONNECTING_FROM_LOBBY);
+        new_share.add(i);
+        Packet packet_to_send;
+        packet_to_send << new_share;
+        for (int x = 0; x < max_lobby_size; x++)
+        {
+          if (this_lobby.players[x].id != -1 &&
+              this_lobby.players[x].id != client_id)
+          {
+            network_server.send_packet_to(
+              static_cast<enet_uint8>(this_lobby.players[x].id),
+              0,
+              reinterpret_cast<const enet_uint8*>(packet_to_send.data()),
+              static_cast<unsigned int>(packet_to_send.length()),
+              ENET_PACKET_FLAG_RELIABLE);
+          }
+        }
       }
 
       // Disconnect from lobby

@@ -104,6 +104,9 @@ namespace RTS_Launcher
             //Update internal config with new language
             game_config_json["DEFAULT"]["language"] = po_language.SelectedItem.ToString().ToUpper();
 
+            //Update config with new IP
+            game_config_json["DEFAULT"]["server_hostname"] = serverIP.Text;
+
             try
             {
                 //Save config back

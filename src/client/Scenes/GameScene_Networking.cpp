@@ -30,63 +30,51 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       // and replace the original player. Similarly, it's untested if it works
       // with more than one player leaving.
       game_is_paused = true;
+      game_pause_timer = 0;
       // ^ pause the game when someone leaves, this starts a 60 sec timer
       break;
     }
-      // A new client has connected to the lobby
+    // A new client has connected to the lobby
     case data_roles::CLIENT_CONNECTED_TO_LOBBY:
     {
       // A player that's not us connected to the lobby, update our info
       if (received_data.retrieve(0) != Locator::getPlayers()->my_player_index)
       {
+        players[received_data.retrieve(0)]->has_connected = true;
         players[received_data.retrieve(0)]->is_ready = true;
         players[received_data.retrieve(0)]->current_class =
           static_cast<player_classes>(received_data.retrieve(2));
       }
-
-      // If we're now back at 4 players, continue the game.
-      int connected_count = 0;
-      for (int i = 0; i < 4; i++)
-      {
-        if (players[i]->has_connected)
-        {
-          connected_count++;
-        }
-      }
-      if (connected_count == 4)
-      {
-        game_is_paused = false;
-      }
       break;
     }
-      // The server has ended the current turn, update our game accordingly
+    // The server has ended the current turn, update our game accordingly
     case data_roles::SERVER_ENDED_CLIENT_TURN:
     {
       serverEndsClientTurn(received_data);
       break;
     }
-      // The active client has moved their player token, update it on our
-      // screen.
+    // The active client has moved their player token, update it on our screen.
     case data_roles::CLIENT_MOVING_PLAYER_TOKEN:
     {
       clientMovesPlayerToken(received_data);
       break;
     }
-      // The active client's action points have changed, update it for us.
+    // The active client's action points have changed, update it for us.
     case data_roles::CLIENT_ACTION_POINTS_CHANGED:
     {
       clientActionPointsUpdated(received_data);
       break;
     }
-      // If connecting to an in-progress game, the server needs to sync
-      // information to us.
+    // If connecting to an in-progress game, the server needs to sync
+    // information to us.
     case data_roles::SERVER_SYNCS_CARD_INFO:
     {
       serverSyncsCardInfo(received_data);
+      just_reconnected = true;
       break;
     }
-      // client requested item card, if this client is == to the one that
-      // requested, add item card to current items.
+    // client requested item card, if this client is == to the one that
+    // requested, add item card to current items.
     case data_roles::CLIENT_REQUESTED_ITEM_CARD:
     {
       debug_text.print("Client that requested item: " +
@@ -104,11 +92,13 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       }
       break;
     }
+    // Server is syncing position info to the new player
     case data_roles::SERVER_SYNCS_POSITION_INFO:
     {
       serverSyncsPositionInfo(received_data);
       break;
     }
+    // Client has changed the game progress index
     case data_roles::CLIENT_CHANGE_PROGRESS_INDEX:
     {
       debug_text.print(
@@ -120,6 +110,7 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
         std::to_string(Locator::getPlayers()->current_progress_index));
       break;
     }
+    // Client has solved an issue card
     case data_roles::CLIENT_SOLVED_ISSUE_CARD:
     {
       debug_text.print("Resyncing issue cards client side... ");
@@ -131,7 +122,7 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       // board.syncIssueCards(sync_issues);
       break;
     }
-      // A client has completed an objective card or ended turn on obj spot.
+    // A client has completed an objective card or ended turn on obj spot.
     case data_roles::CLIENT_REQUESTS_OBJ_CARD:
     {
       debug_text.print("Received new obj after completing one of type:" +
@@ -139,14 +130,14 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       board.setActiveObjectiveCard(received_data.retrieve(1));
       break;
     }
-      // A client has used an obj card to get free ship movement for 1 turn.
+    // A client has used an obj card to get free ship movement for 1 turn.
     case data_roles::CLIENT_FREE_MOVEMENT:
     {
       debug_text.print("Free ship movement for 1 turn.");
       free_player_movement = static_cast<bool>(received_data.retrieve(0));
       break;
     }
-      // Handle Chat Messages.
+    // Handle Chat Messages.
     case data_roles::CHAT_MSG:
     {
       debug_text.print("Storing sent chat msg:" + received_data.getMsg());
@@ -158,7 +149,7 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       }
       break;
     }
-      // Anything else is unhandled.
+    // Anything else is unhandled.
     default:
     {
       debug_text.print("An unhandled data packet was received, of type " +

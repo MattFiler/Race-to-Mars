@@ -115,29 +115,31 @@ void GameScene::playingInput()
       current_state = game_state::LOCAL_PAUSE;
       debug_text.print("Opening pause menu.");
     }
-#ifndef NDEBUG
+#ifdef NDEBUG
+  }
+#else
+    // request new obj card for client.
+    if (board.getObjectiveCard() != nullptr &&
+        board.checkObjectiveCardComplete(
+          getLobbyPlayer(Locator::getPlayers()->my_player_index)->current_class))
+    {
+      board.addObjCardToInventory();
+      DataShare new_share = DataShare(data_roles::CLIENT_REQUESTS_OBJ_CARD);
+      new_share.add(Locator::getPlayers()->my_player_index);
+      Locator::getNetworkInterface()->sendData(new_share);
+    }
+    // debug end go
     if (keys.keyReleased("End Turn") &&
         players[Locator::getPlayers()->my_player_index]->is_active &&
         !entering_msg)
     {
-      // request new obj card for client.
-      if (board.getObjectiveCard() != nullptr &&
-          board.checkObjectiveCardComplete(
-            getLobbyPlayer(Locator::getPlayers()->my_player_index)
-              ->current_class))
-      {
-        board.addObjCardToInventory();
-        DataShare new_share = DataShare(data_roles::CLIENT_REQUESTS_OBJ_CARD);
-        new_share.add(Locator::getPlayers()->my_player_index);
-        Locator::getNetworkInterface()->sendData(new_share);
-      }
+      DataShare new_share = DataShare(data_roles::CLIENT_WANTS_TO_END_TURN);
+      new_share.add(Locator::getPlayers()->my_player_index);
+      Locator::getNetworkInterface()->sendData(new_share);
+      current_scene_lock_active = true;
+      debug_text.print("Requesting to end my go!!");
+      board.resetCardVariables();
     }
-    DataShare new_share = DataShare(data_roles::CLIENT_WANTS_TO_END_TURN);
-    new_share.add(Locator::getPlayers()->my_player_index);
-    Locator::getNetworkInterface()->sendData(new_share);
-    current_scene_lock_active = true;
-    debug_text.print("Requesting to end my go!!");
-    board.resetCardVariables();
   }
   if (keys.keyReleased("Debug Obj Inventory") && !entering_msg)
   {
@@ -398,11 +400,13 @@ void GameScene::playingClicksWhenActive(Vector2& mouse_pos)
         }
         else
         {
+          ui_manager.showInfoPopup("NOT_ENOUGH_AP_ITEM");
           Locator::getAudio()->play(option_disabled_sfx);
         }
       }
       else
       {
+        ui_manager.showInfoPopup("MAX_ITEMS");
         Locator::getAudio()->play(option_disabled_sfx);
       }
     }
@@ -575,6 +579,7 @@ void GameScene::playingClicksWhenActiveOrInactive(Vector2& mouse_pos)
         }
         if (board.getIssueCards().at(button_index).getActionPointsNeeded() == 0)
         {
+          button_index++;
           continue; // we don't allow APs to be assigned to zero-point cards
         }
         button->setActive(true);
@@ -608,6 +613,28 @@ void GameScene::issuePopupClicks()
                 .at(static_cast<size_t>(ap_button_index))
                 .isSolved())
           {
+            debug_text.print("THIS ISSUE IS ALREADY SOLVED!");
+            ui_manager.showInfoPopup("ALREADY_SOLVED");
+            Locator::getAudio()->play(option_disabled_sfx);
+            ap_button_index++;
+            continue;
+          }
+
+          // We must be in the correct room to assign action points
+          if (Locator::getPlayers()
+                ->getPlayer(board.getIssueCards()
+                              .at(static_cast<size_t>(ap_button_index))
+                              .getIssuePlayerType())
+                ->getStartingRoom() !=
+              static_cast<int>(
+                board
+                  .getRoom(static_cast<ship_rooms>(
+                    players[Locator::getPlayers()->my_player_index]->room))
+                  .getEnum()))
+          {
+            debug_text.print("NOT IN THE CORRECT ROOM TO ASSIGN ACTION "
+                             "POINTS!");
+            ui_manager.showInfoPopup("WRONG_ROOM");
             Locator::getAudio()->play(option_disabled_sfx);
             ap_button_index++;
             continue;
@@ -685,10 +712,10 @@ void GameScene::issuePopupClicks()
           }
           else
           {
-            // BEEP BOOP WE DON'T HAVE ENOUGH ACTION POINTS, some kind of
-            // UI prompt here would be nice!
+            // We don't have enough action points
             debug_text.print("COULD NOT ASSIGN ACTION POINTS! WE HAVE " +
                              std::to_string(my_action_points) + ".");
+            ui_manager.showInfoPopup("NOT_ENOUGH_AP");
             Locator::getAudio()->play(option_disabled_sfx);
           }
         }

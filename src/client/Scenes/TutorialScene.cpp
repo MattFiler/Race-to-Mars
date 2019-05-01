@@ -13,30 +13,15 @@ void TutorialScene::init()
     ui_manager.createSprite(i, "UI/TUTORIAL/" + std::to_string(i) + ".png");
   }
 
-  // Setup button
+  // Setup buttons
   ClickableButton* cont_button = ui_manager.createButton(
     ui_tutorial_btns::CONTINUE_BUTTON, "UI/TUTORIAL/continue_button.png");
   cont_button->setPos(Vector2(1098, 674));
   cont_button->setActive(true);
-}
-
-/* Handles key inputs */
-void TutorialScene::keyHandler(const ASGE::SharedEventData data)
-{
-  keys.registerEvent(static_cast<const ASGE::KeyEvent*>(data.get()));
-
-  // Progress tutorial slideshow on press of "Activate"
-  if (keys.keyPressed("Activate"))
-  {
-    Locator::getAudio()->play(active_sfx);
-    current_slide++;
-
-    // If we've reached the end, throw us back to the menu
-    if (current_slide == ui_tutorial::NUMBER_OF_SLIDES)
-    {
-      next_scene = game_global_scenes::MAIN_MENU;
-    }
-  }
+  ClickableButton* back_button = ui_manager.createButton(
+    ui_tutorial_btns::BACK_BUTTON, "UI/TUTORIAL/back_button.png");
+  back_button->setPos(Vector2(0, 674));
+  back_button->setActive(false);
 }
 
 /* Handle clicks */
@@ -54,6 +39,7 @@ void TutorialScene::clickHandler(const ASGE::SharedEventData data)
   {
     Locator::getAudio()->play(active_sfx);
     current_slide++;
+    ui_manager.getButton(ui_tutorial_btns::BACK_BUTTON)->setActive(true);
 
     // If we've reached the end, throw us back to the menu
     if (current_slide == ui_tutorial::NUMBER_OF_SLIDES)
@@ -61,22 +47,42 @@ void TutorialScene::clickHandler(const ASGE::SharedEventData data)
       next_scene = game_global_scenes::MAIN_MENU;
     }
   }
+
+  // Go back if pressing back
+  if (ui_manager.getButton(ui_tutorial_btns::BACK_BUTTON)->isActive() &&
+      ui_manager.getButton(ui_tutorial_btns::BACK_BUTTON)->clicked())
+  {
+    Locator::getAudio()->play(active_sfx);
+    current_slide--;
+
+    if (current_slide == 0)
+    {
+      ui_manager.getButton(ui_tutorial_btns::BACK_BUTTON)->setActive(false);
+    }
+  }
 }
 
 /* Update function */
 game_global_scenes TutorialScene::update(const ASGE::GameTime& game_time)
 {
+  ui_manager.update(game_time);
+
   // Update cursor hover state
   Locator::getCursor()->setCursorActive(
-    ui_manager.getButton(ui_tutorial_btns::CONTINUE_BUTTON)->clicked());
+    ui_manager.getButton(ui_tutorial_btns::CONTINUE_BUTTON)->clicked() ||
+    (ui_manager.getButton(ui_tutorial_btns::BACK_BUTTON)->isActive()
+       ? ui_manager.getButton(ui_tutorial_btns::BACK_BUTTON)->clicked()
+       : false));
+
   return next_scene;
 }
 
 /* Render function */
 void TutorialScene::render()
 {
-  // Render current slide and button
+  // Render current slide and buttons
   Locator::getRenderer()->renderSprite(
     *ui_manager.getSprite(current_slide)->getSprite());
   ui_manager.getButton(ui_tutorial_btns::CONTINUE_BUTTON)->render();
+  ui_manager.getButton(ui_tutorial_btns::BACK_BUTTON)->render();
 }
