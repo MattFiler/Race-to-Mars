@@ -50,6 +50,7 @@ void GameScene::init()
   file_handler.loadSound(move_counter_sfx, "move_counter");
   file_handler.loadSound(option_disabled_sfx, "option_disabled");
   file_handler.loadSound(ap_assigned_sfx, "assign_ap");
+  file_handler.loadSound(issue_solved_sfx, "issue_solved");
 
   // If we joined in progress, request a data sync from the server
   if (Locator::getPlayers()->joined_in_progress)

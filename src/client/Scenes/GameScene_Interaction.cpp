@@ -598,12 +598,13 @@ void GameScene::issuePopupClicks()
   // visible.
   if (ui_manager.popups().getPopup(ui_popups::ISSUE_POPUP)->isVisible())
   {
-    int ap_button_index = 0;
+    int ap_button_index = -1;
     player_classes issue_card_class = player_classes::UNASSIGNED;
     for (ClickableButton* button : ui_manager.popups()
                                      .getPopup(ui_popups::ISSUE_POPUP)
                                      ->getInternalButtons())
     {
+      ap_button_index++;
       if (button->isActive())
       {
         if (button->clicked())
@@ -616,7 +617,6 @@ void GameScene::issuePopupClicks()
             debug_text.print("THIS ISSUE IS ALREADY SOLVED!");
             ui_manager.showInfoPopup("ALREADY_SOLVED");
             Locator::getAudio()->play(option_disabled_sfx);
-            ap_button_index++;
             continue;
           }
 
@@ -636,7 +636,6 @@ void GameScene::issuePopupClicks()
                              "POINTS!");
             ui_manager.showInfoPopup("WRONG_ROOM");
             Locator::getAudio()->play(option_disabled_sfx);
-            ap_button_index++;
             continue;
           }
 
@@ -705,10 +704,28 @@ void GameScene::issuePopupClicks()
               new_share.add(0);
               Locator::getNetworkInterface()->sendData(new_share_2);
             }
-            my_action_points -= points_to_assign;
-            debug_text.print("Assigned action points! My total is now " +
-                             std::to_string(my_action_points) + ".");
-            Locator::getAudio()->play(ap_assigned_sfx);
+            else
+            {
+              my_action_points -= points_to_assign;
+              debug_text.print("Assigned action points! My total is now " +
+                               std::to_string(my_action_points) + ".");
+
+              if (board.getIssueCards().at(ap_button_index).isSolved())
+              {
+                // We solved the issue - hide UI
+                Locator::getAudio()->play(issue_solved_sfx);
+                ui_manager.popups()
+                  .getPopup(ui_popups::ISSUE_POPUP)
+                  ->getInternalButtons()
+                  .at(ap_button_index)
+                  ->setActive(false);
+              }
+              else
+              {
+                // We didn't solve the issue yet
+                Locator::getAudio()->play(ap_assigned_sfx);
+              }
+            }
           }
           else
           {
@@ -719,7 +736,6 @@ void GameScene::issuePopupClicks()
             Locator::getAudio()->play(option_disabled_sfx);
           }
         }
-        ap_button_index++;
       }
     }
   }
