@@ -533,13 +533,16 @@ void GameBoard::checkissueSolved()
   {
     if (active_issues[i].isSolved())
     {
+      debug_text.print("Issue has been solved: " +
+                       std::to_string(active_issue_cards[i]));
       issue_solved = true;
+      //      active_issues.erase(active_issues.begin() + static_cast<int>(i));
       active_issues.erase(active_issues.begin() + static_cast<int>(i));
       active_issue_cards[i] = -1;
       slot_active[i] = false;
     }
   }
-  // if any cards have been completed and deleted when client ends turn we want
+  // If any cards have been completed and deleted when client ends turn we want
   // to update the server active_issue_cards too.
   // nts. THIS NEEDS CHANGING SO IT UPDATES IF MORE THAN ONE CARD HAS BEEN
   // SOLVED.
@@ -600,5 +603,6 @@ void GameBoard::prepReSync()
   for (int i = 0; i < 5; ++i)
   {
     active_issue_cards[i] = -1;
+    slot_active[i] = false;
   }
 }

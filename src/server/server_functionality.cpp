@@ -169,14 +169,15 @@ void RaceToSpaceServer::endTurn(server_client& client)
       }
     }
 
-    auto seed = std::chrono::system_clock::now().time_since_epoch().count();
-    std::mt19937 generator(seed);
-    std::uniform_int_distribution<int> distr{ 1, possible_draw_amount };
-    int issues_tobe_drawn = distr(generator);
-    int issues_drawn = 0;
+    std::random_device rd;  // Will be used to obtain a seed for the random
+                            // number engine
+    std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
+    std::uniform_int_distribution<> dis(1, possible_draw_amount);
+    int issues_tobe_drawn = dis(gen);
     debug_text.print("Issues to be drawn: " +
                      std::to_string(issues_tobe_drawn));
 
+    int issues_drawn = 0;
     for (int j = 0; j < 5; ++j)
     {
       // Check to see if slot is empty.
