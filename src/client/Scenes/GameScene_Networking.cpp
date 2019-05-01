@@ -268,7 +268,7 @@ void GameScene::clientActionPointsUpdated(DataShare& received_data)
 
   if (received_data.retrieve(3) != -1)
   {
-    //TODO: If this returns FALSE, request a card sync.
+    // TODO: If this returns FALSE, request a card sync.
     board.assignActionPointToIssue(
       players[received_data.retrieve(0)]->current_class,
       received_data.retrieve(3),

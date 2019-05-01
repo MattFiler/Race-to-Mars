@@ -73,12 +73,14 @@ enum ui_buttons
 };
 
 /* Tutorial elements */
-enum ui_tutorial {
-    TUTORIAL_INTRO,
-    NUMBER_OF_SLIDES //Must always be last!
+enum ui_tutorial
+{
+  TUTORIAL_INTRO,
+  NUMBER_OF_SLIDES // Must always be last!
 };
-enum ui_tutorial_btns {
-    CONTINUE_BUTTON
+enum ui_tutorial_btns
+{
+  CONTINUE_BUTTON
 };
 
 /* UI card offsets */
