@@ -532,6 +532,7 @@ void GameBoard::checkissueSolved()
   }
   // if any cards have been completed and deleted when client ends turn we want
   // to update the server active_issue_cards too.
+  // THIS NEEDS CHANGING SO IT UPDATES IF MORE THAN ONE CARD HAS BEEN SOLVED.
   if (issue_solved)
   {
     auto new_share = DataShare(data_roles::CLIENT_SOLVED_ISSUE_CARD);
@@ -573,7 +574,8 @@ void GameBoard::useObjCardDebug()
 {
   if (!objective_card_inventory.empty())
   {
-    objective_card_inventory.front().useObjectiveCard();
+    objective_card_inventory.back().useObjectiveCard();
+    objective_card_inventory.pop_back();
   }
 }
 

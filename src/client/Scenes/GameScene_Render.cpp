@@ -41,7 +41,6 @@ void GameScene::render()
                                   ->getPlayer(players[i]->current_class)
                                   ->getGameTabSprite()
                                   ->getSprite());
-
         // draw score if player is connected
         if (players[i]->current_class != player_classes::UNASSIGNED)
         {
@@ -89,6 +88,7 @@ void GameScene::render()
       ui_manager.getButton(ui_buttons::BUY_ITEM_BTN)->render();
       ui_manager.getButton(ui_buttons::ROLL_DICE_BTN)->render();
       ui_manager.getButton(ui_buttons::CHAT_BTN)->render();
+      ui_manager.getButton(ui_buttons::OBJECTIVE_BTN)->render();
 
       // Render chat on top of everything else.
       if (entering_msg)

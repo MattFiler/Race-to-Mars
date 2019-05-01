@@ -56,7 +56,7 @@ void ObjectiveCard::useObjectiveCard()
     }
     case objective_cards::ISSUE_HELPER_15:
     {
-      // Delete an issue immediately
+      // +3 AP
       increaseAP();
       break;
     }

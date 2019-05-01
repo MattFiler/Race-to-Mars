@@ -78,7 +78,7 @@ class GameScene : public Scene
   double game_over_timer = 0;
 
   // More state trackers
-  bool update_item_card = false;
+  int update_item_card = 0;
   int new_item_card = -1;
   int good_comm_roll = 0;
   bool game_is_paused = false;

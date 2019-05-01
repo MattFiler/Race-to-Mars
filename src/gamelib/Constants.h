@@ -68,7 +68,8 @@ enum ui_buttons
   END_TURN_BTN,
   BUY_ITEM_BTN,
   ROLL_DICE_BTN,
-  CHAT_BTN
+  CHAT_BTN,
+  OBJECTIVE_BTN
 };
 
 /* UI card offsets */
