@@ -30,6 +30,7 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       // and replace the original player. Similarly, it's untested if it works
       // with more than one player leaving.
       game_is_paused = true;
+      game_pause_timer = 0;
       // ^ pause the game when someone leaves, this starts a 60 sec timer
       break;
     }

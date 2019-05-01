@@ -400,11 +400,13 @@ void GameScene::playingClicksWhenActive(Vector2& mouse_pos)
         }
         else
         {
+          ui_manager.showInfoPopup("NOT_ENOUGH_AP_ITEM");
           Locator::getAudio()->play(option_disabled_sfx);
         }
       }
       else
       {
+        ui_manager.showInfoPopup("MAX_ITEMS");
         Locator::getAudio()->play(option_disabled_sfx);
       }
     }
@@ -612,8 +614,8 @@ void GameScene::issuePopupClicks()
                 .isSolved())
           {
             debug_text.print("THIS ISSUE IS ALREADY SOLVED!");
+            ui_manager.showInfoPopup("ALREADY_SOLVED");
             Locator::getAudio()->play(option_disabled_sfx);
-            ap_button_index++;
             continue;
           }
 
@@ -631,8 +633,8 @@ void GameScene::issuePopupClicks()
           {
             debug_text.print("NOT IN THE CORRECT ROOM TO ASSIGN ACTION "
                              "POINTS!");
+            ui_manager.showInfoPopup("WRONG_ROOM");
             Locator::getAudio()->play(option_disabled_sfx);
-            ap_button_index++;
             continue;
           }
 
@@ -704,6 +706,7 @@ void GameScene::issuePopupClicks()
             // We don't have enough action points
             debug_text.print("COULD NOT ASSIGN ACTION POINTS! WE HAVE " +
                              std::to_string(my_action_points) + ".");
+            ui_manager.showInfoPopup("NOT_ENOUGH_AP");
             Locator::getAudio()->play(option_disabled_sfx);
           }
         }

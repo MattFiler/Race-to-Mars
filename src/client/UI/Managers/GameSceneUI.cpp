@@ -38,6 +38,15 @@ ScaledSprite* SceneUI::getSprite(int id)
   throw "Sprite ID did not exist.";
 }
 
+/* Show the extra info popup for X time */
+ExtraInfoPopup&
+SceneUI::showInfoPopup(const std::string& popup_name, float time)
+{
+  ei_popup.setSprite(popup_name);
+  ei_popup.showForTime(time);
+  return ei_popup;
+}
+
 /* Create a button on the UI with ID */
 ClickableButton* SceneUI::createButton(int id, const std::string& path)
 {
@@ -92,6 +101,7 @@ void SceneUI::update(const ASGE::GameTime& game_time)
     this_button->update();
   }
   popups().update(game_time);
+  ei_popup.update(game_time);
 }
 
 /* Render UI */
@@ -106,4 +116,5 @@ void SceneUI::render()
     this_button->render();
   }
   popups().render();
+  ei_popup.render();
 }
