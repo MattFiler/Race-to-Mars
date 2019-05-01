@@ -110,14 +110,15 @@ void GameScene::playingInput()
 {
   if (!entering_msg)
   {
-    if (keys.keyReleased("Back") && !current_scene_lock_active)
+    if (keys.keyReleased("Back") && !current_scene_lock_active && !entering_msg)
     {
       current_state = game_state::LOCAL_PAUSE;
       debug_text.print("Opening pause menu.");
     }
 #ifndef NDEBUG
     if (keys.keyReleased("End Turn") &&
-        players[Locator::getPlayers()->my_player_index]->is_active)
+        players[Locator::getPlayers()->my_player_index]->is_active &&
+        !entering_msg)
     {
       // request new obj card for client.
       if (board.getObjectiveCard() != nullptr &&
@@ -138,18 +139,19 @@ void GameScene::playingInput()
     debug_text.print("Requesting to end my go!!");
     board.resetCardVariables();
   }
-  if (keys.keyReleased("Debug Obj Inventory"))
+  if (keys.keyReleased("Debug Obj Inventory") && !entering_msg)
   {
     debug_text.print("Creating obj card");
     board.addObjCardToInventory();
   }
-  if (keys.keyReleased("Debug Use Objective Action"))
+  if (keys.keyReleased("Debug Use Objective Action") && !entering_msg)
   {
     debug_text.print("Using OBJ POWER!");
     board.useObjCardDebug();
   }
   if (keys.keyReleased("Debug Spend AP") &&
-      players[Locator::getPlayers()->my_player_index]->is_active)
+      players[Locator::getPlayers()->my_player_index]->is_active &&
+      !entering_msg)
   {
     // Debug: change my action points to 10.
     int new_ap = 10;
@@ -164,7 +166,8 @@ void GameScene::playingInput()
     debug_text.print("Debug: changed my action points to 10!");
   }
   if (keys.keyReleased("Debug Buy Item") &&
-      players[Locator::getPlayers()->my_player_index]->is_active)
+      players[Locator::getPlayers()->my_player_index]->is_active &&
+      !entering_msg)
   {
     debug_text.print("Trying to buy item card.");
     if (Locator::getPlayers()
@@ -600,10 +603,11 @@ void GameScene::issuePopupClicks()
       {
         if (button->clicked())
         {
-          //If we've already solved an issue, we can't keep adding points!
+          // If we've already solved an issue, we can't keep adding points!
           if (board.getIssueCards()
-                  .at(static_cast<size_t>(ap_button_index))
-                  .isSolved()) {
+                .at(static_cast<size_t>(ap_button_index))
+                .isSolved())
+          {
             Locator::getAudio()->play(option_disabled_sfx);
             ap_button_index++;
             continue;
