@@ -72,6 +72,15 @@ enum ui_buttons
   OBJECTIVE_BTN
 };
 
+/* Tutorial elements */
+enum ui_tutorial {
+    TUTORIAL_INTRO,
+    NUMBER_OF_SLIDES //Must always be last!
+};
+enum ui_tutorial_btns {
+    CONTINUE_BUTTON
+};
+
 /* UI card offsets */
 struct CardOffsets
 {

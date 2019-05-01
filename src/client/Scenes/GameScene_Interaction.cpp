@@ -479,7 +479,7 @@ void GameScene::playingClicksWhenActive(Vector2& mouse_pos)
       ui_manager.popups()
         .getPopup(ui_popups::DICE_ROLL_POPUP)
         ->referenceSprite(*dice_sprite);
-      ui_manager.popups().getPopup(ui_popups::DICE_ROLL_POPUP)->showForTime(5);
+      ui_manager.popups().getPopup(ui_popups::DICE_ROLL_POPUP)->showForTime(3);
       Locator::getAudio()->play(dice_roll_sfx);
     }
   }
@@ -565,6 +565,7 @@ void GameScene::playingClicksWhenActiveOrInactive(Vector2& mouse_pos)
                                        .getPopup(ui_popups::ISSUE_POPUP)
                                        ->getInternalButtons())
       {
+        button->setActive(false);
         if (button_index == board.activeIssuesCount())
         {
           break;
@@ -597,10 +598,17 @@ void GameScene::issuePopupClicks()
     {
       if (button->isActive())
       {
-        if (button->clicked() && !board.getIssueCards()
-                                    .at(static_cast<size_t>(ap_button_index))
-                                    .isSolved())
+        if (button->clicked())
         {
+          //If we've already solved an issue, we can't keep adding points!
+          if (board.getIssueCards()
+                  .at(static_cast<size_t>(ap_button_index))
+                  .isSolved()) {
+            Locator::getAudio()->play(option_disabled_sfx);
+            ap_button_index++;
+            continue;
+          }
+
           int& my_action_points =
             players[Locator::getPlayers()->my_player_index]->action_points;
           int points_to_assign = 1;

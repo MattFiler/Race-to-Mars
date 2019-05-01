@@ -320,9 +320,6 @@ void GameScene::updateButtonStates(const ASGE::GameTime& game_time)
                   .is_active &&
                 !ui_manager.getButton(ui_buttons::ROLL_DICE_BTN)->isActive());
 
-  ui_manager.getButton(ui_buttons::END_TURN_BTN)
-    ->setActive(rolled_dice_this_turn);
-
   ui_manager.getButton(ui_buttons::OBJECTIVE_BTN)
     ->setActive(board.getObjectiveInventory().size() > static_cast<size_t>(0) &&
                 players[Locator::getPlayers()->my_player_index]->is_active);
