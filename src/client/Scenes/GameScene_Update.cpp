@@ -119,6 +119,8 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
     current_scene_lock_active = true;
     debug_text.print("Requesting to end my go!!");
     board.resetCardVariables();
+
+    // Setting chicken chase to false.
     Locator::getPlayers()
       ->getPlayer(Locator::getPlayers()
                     ->players[Locator::getPlayers()->my_player_index]
@@ -146,6 +148,13 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
   // Update UI
   updateButtonStates(game_time);
 
+  // Resync Issue Cards
+  if (!current_scene_lock_active && new_turn)
+  {
+    new_turn = false;
+    DataShare new_share = DataShare(data_roles::CLIENT_REQUESTS_SYNC);
+    new_share.add(Locator::getPlayers()->my_player_index);
+  }
   return next_scene;
 }
 
@@ -309,11 +318,6 @@ void GameScene::updateStateSpecificCursor(const ASGE::GameTime& game_time)
 /* UI Updates */
 void GameScene::updateButtonStates(const ASGE::GameTime& game_time)
 {
-  //  bool ckn = !Locator::getPlayers()
-  //                ->getPlayer(Locator::getPlayers()
-  //                              ->players[Locator::getPlayers()->my_player_index]
-  //                              .current_class)
-  //                ->getChasingChicken();
   // Update UI
   ui_manager.update(game_time);
 

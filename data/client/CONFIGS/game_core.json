@@ -20,7 +20,7 @@
 		  "Debug Chat": 84
 		},
 		"language": "English",
-		"server_hostname": "localhost",
+		"server_hostname": "86.160.2.33",
 		"server_port": 8888,
 		"enable_debug": true
 	}
