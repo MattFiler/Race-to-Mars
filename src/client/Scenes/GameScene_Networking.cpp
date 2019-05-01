@@ -180,7 +180,7 @@ void GameScene::serverEndsClientTurn(DataShare& received_data)
     {
       lost_game = true;
     }
-    else if (Locator::getPlayers()->current_progress_index >= 19)
+    else if (Locator::getPlayers()->current_progress_index >= 15)
     {
       won_game = true;
     }

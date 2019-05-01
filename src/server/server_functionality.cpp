@@ -154,9 +154,28 @@ void RaceToSpaceServer::endTurn(server_client& client)
     // GO THROUGH THE DECK HERE AND PICK OUT SOME ISSUE CARDS, ADD THEIR
     // IDs TO this_clients_lobby->active_issue_cards - WIN/LOSS
     // CONDITIONS SHOULD THEN BE HANDLED CLIENT SIDE
-    int issues_tobe_drawn =
-      amount_to_draw[this_clients_lobby->current_progress_index - 1];
+
+    int possible_draw_amount = 0;
+    for (size_t i = 0; i < std::size(this_clients_lobby->active_issue_cards);
+         ++i)
+    {
+      if (this_clients_lobby->active_issue_cards[i] == -1)
+      {
+        ++possible_draw_amount;
+        if (possible_draw_amount > 3)
+        {
+          possible_draw_amount = 3;
+        }
+      }
+    }
+
+    auto seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::mt19937 generator(seed);
+    std::uniform_int_distribution<int> distr{ 1, possible_draw_amount };
+    int issues_tobe_drawn = distr(generator);
     int issues_drawn = 0;
+    debug_text.print("Issues to be drawn: " +
+                     std::to_string(issues_tobe_drawn));
 
     for (int j = 0; j < 5; ++j)
     {
