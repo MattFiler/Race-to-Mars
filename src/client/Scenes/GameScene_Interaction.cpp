@@ -616,6 +616,7 @@ void GameScene::issuePopupClicks()
             debug_text.print("THIS ISSUE IS ALREADY SOLVED!");
             ui_manager.showInfoPopup("ALREADY_SOLVED");
             Locator::getAudio()->play(option_disabled_sfx);
+            ap_button_index++;
             continue;
           }
 
@@ -635,6 +636,7 @@ void GameScene::issuePopupClicks()
                              "POINTS!");
             ui_manager.showInfoPopup("WRONG_ROOM");
             Locator::getAudio()->play(option_disabled_sfx);
+            ap_button_index++;
             continue;
           }
 
