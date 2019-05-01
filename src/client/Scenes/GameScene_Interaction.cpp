@@ -577,10 +577,14 @@ void GameScene::playingClicksWhenActiveOrInactive(Vector2& mouse_pos)
         {
           break;
         }
-        if (board.getIssueCards().at(button_index).getActionPointsNeeded() == 0)
+        if (board.getIssueCards().at(button_index).getActionPointsNeeded() ==
+              0 ||
+            board.getIssueCards().at(button_index).isSolved())
         {
           button_index++;
-          continue; // we don't allow APs to be assigned to zero-point cards
+          continue; // we don't allow APs to be assigned to zero-point (or
+                    // solved) cards - this is handled however for if we ever
+                    // change our minds
         }
         button->setActive(true);
         button_index++;
