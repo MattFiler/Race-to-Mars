@@ -92,18 +92,21 @@ void RaceToSpaceServer::handleReceivedData(DataShare& data_to_send,
       break;
     }
 
+    // Client has solved an issue card!
     case data_roles::CLIENT_SOLVED_ISSUE_CARD:
     {
       clientSolvedIssueCard(data_to_send, client);
       break;
     }
 
+    // Client requests an objective card
     case data_roles::CLIENT_REQUESTS_OBJ_CARD:
     {
       clientRequestsObjective(data_to_send, client);
       break;
     }
 
+    // Chat message handle
     case data_roles::CHAT_MSG:
     {
       sendData(client, static_cast<unsigned int>(-1), data_to_send);
@@ -152,11 +155,6 @@ void RaceToSpaceServer::endTurn(server_client& client)
     this_clients_lobby->current_progress_index++;
 
     // pull some new issue cards
-    // FOR JACK TO DO!
-    // GO THROUGH THE DECK HERE AND PICK OUT SOME ISSUE CARDS, ADD THEIR
-    // IDs TO this_clients_lobby->active_issue_cards - WIN/LOSS
-    // CONDITIONS SHOULD THEN BE HANDLED CLIENT SIDE
-
     int possible_draw_amount = 0;
     for (size_t i = 0; i < std::size(this_clients_lobby->active_issue_cards);
          ++i)
@@ -199,7 +197,6 @@ void RaceToSpaceServer::endTurn(server_client& client)
     if (this_clients_lobby->current_progress_index % 3 == 0 &&
         this_clients_lobby->current_progress_index != 0)
     {
-      // OBJECTIVE CARDS ARE A WIP!!
       for (int i = 0; i < 4; ++i)
       {
         this_clients_lobby->active_objective_cards[i] =

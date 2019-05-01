@@ -6,6 +6,7 @@
 /* Print a string if debug outputs are enabled */
 void DebugText::print(const std::string& debug_string, int severity)
 {
+#ifndef NDEBUG
   if (enabled)
   {
     // Work out time to log
@@ -45,6 +46,7 @@ void DebugText::print(const std::string& debug_string, int severity)
       }
     }
   }
+#endif
 }
 
 /* This value is modified to config definition at runtime */

@@ -493,11 +493,6 @@ void GameScene::playingClicksWhenActive(Vector2& mouse_pos)
 /* Handle clicks when playing and active or inactive */
 void GameScene::playingClicksWhenActiveOrInactive(Vector2& mouse_pos)
 {
-  //  bool ckn =       !Locator::getPlayers()
-  //          ->getPlayer(Locator::getPlayers()
-  //                              ->players[Locator::getPlayers()->my_player_index]
-  //                              .current_class)
-  //          ->getChasingChicken();
   // Clicked on Use Objective Card Btn
   if (ui_manager.getButton(ui_buttons::OBJECTIVE_BTN)->clicked())
   {
@@ -582,6 +577,7 @@ void GameScene::playingClicksWhenActiveOrInactive(Vector2& mouse_pos)
         }
         if (board.getIssueCards().at(button_index).getActionPointsNeeded() == 0)
         {
+          button_index++;
           continue; // we don't allow APs to be assigned to zero-point cards
         }
         button->setActive(true);
@@ -596,11 +592,6 @@ void GameScene::playingClicksWhenActiveOrInactive(Vector2& mouse_pos)
 /* Handle clicks in the issue popup */
 void GameScene::issuePopupClicks()
 {
-  //  bool ckn =       !Locator::getPlayers()
-  //          ->getPlayer(Locator::getPlayers()
-  //                              ->players[Locator::getPlayers()->my_player_index]
-  //                              .current_class)
-  //          ->getChasingChicken();
   // Handle interactions for all active buttons in issue popup when
   // visible.
   if (ui_manager.popups().getPopup(ui_popups::ISSUE_POPUP)->isVisible())
@@ -620,6 +611,26 @@ void GameScene::issuePopupClicks()
                 .at(static_cast<size_t>(ap_button_index))
                 .isSolved())
           {
+            debug_text.print("THIS ISSUE IS ALREADY SOLVED!");
+            Locator::getAudio()->play(option_disabled_sfx);
+            ap_button_index++;
+            continue;
+          }
+
+          // We must be in the correct room to assign action points
+          if (Locator::getPlayers()
+                ->getPlayer(board.getIssueCards()
+                              .at(static_cast<size_t>(ap_button_index))
+                              .getIssuePlayerType())
+                ->getStartingRoom() !=
+              static_cast<int>(
+                board
+                  .getRoom(static_cast<ship_rooms>(
+                    players[Locator::getPlayers()->my_player_index]->room))
+                  .getEnum()))
+          {
+            debug_text.print("NOT IN THE CORRECT ROOM TO ASSIGN ACTION "
+                             "POINTS!");
             Locator::getAudio()->play(option_disabled_sfx);
             ap_button_index++;
             continue;
@@ -690,8 +701,7 @@ void GameScene::issuePopupClicks()
           }
           else
           {
-            // BEEP BOOP WE DON'T HAVE ENOUGH ACTION POINTS, some kind of
-            // UI prompt here would be nice!
+            // We don't have enough action points
             debug_text.print("COULD NOT ASSIGN ACTION POINTS! WE HAVE " +
                              std::to_string(my_action_points) + ".");
             Locator::getAudio()->play(option_disabled_sfx);
