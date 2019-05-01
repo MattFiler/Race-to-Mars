@@ -44,12 +44,10 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
   {
     board.clearItems();
     for (int i = 0;
-         i <
-         Locator::getPlayers()
-             ->getPlayer(
-               players[Locator::getPlayers()->my_player_index]->current_class)
-             ->getHeldItemAmount() +
-           1;
+         i < Locator::getPlayers()
+               ->getPlayer(
+                 players[Locator::getPlayers()->my_player_index]->current_class)
+               ->getHeldItemAmount();
          ++i)
     {
       DataShare new_share_item =
@@ -89,14 +87,14 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
   }
 
   // Check (and perform) item card updates
-  if (update_item_card)
+  if (update_item_card != 0)
   {
     debug_text.print("Updating active item cards.");
     if (board.updateActiveItemCard(new_item_card))
     {
       // show popup here.
     }
-    update_item_card = false;
+    update_item_card -= 1;
   }
 
   // Update popups visibility

@@ -76,7 +76,7 @@ class GameScene : public Scene
   bool won_game = false;
 
   // More state trackers
-  bool update_item_card = false;
+  int update_item_card = 0;
   int new_item_card = -1;
   int good_comm_roll = 0;
 

@@ -84,7 +84,7 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
           std::to_string(received_data.retrieve(1)) +
           "for player: " + std::to_string(received_data.retrieve(0)));
         new_item_card = received_data.retrieve(1);
-        update_item_card = true;
+        update_item_card += 1;
       }
       break;
     }
