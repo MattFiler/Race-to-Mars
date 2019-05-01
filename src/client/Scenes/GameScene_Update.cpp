@@ -12,13 +12,15 @@
 /* Update function */
 game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
 {
-  //Check to see if we should auto-exit
-  if (game_over_timer_started) {
+  // Check to see if we should auto-exit
+  if (game_over_timer_started)
+  {
     game_over_timer += game_time.delta.count() / 1000;
-    if (game_over_timer > 10) {
+    if (game_over_timer > 10)
+    {
       // Game over! Disconnect and return to main menu.
       DataShare new_share =
-              DataShare(data_roles::CLIENT_DISCONNECTING_FROM_LOBBY);
+        DataShare(data_roles::CLIENT_DISCONNECTING_FROM_LOBBY);
       new_share.add(Locator::getPlayers()->my_player_index);
       Locator::getNetworkInterface()->sendData(new_share);
       next_scene = game_global_scenes::MAIN_MENU;
@@ -27,12 +29,14 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
     }
   }
 
-  //Time-out after 60 seconds if we don't get another player connect
-  if (game_is_paused) {
+  // Time-out after 60 seconds if we don't get another player connect
+  if (game_is_paused)
+  {
     game_pause_timer += game_time.delta.count() / 1000;
-    if (game_pause_timer > 60) {
+    if (game_pause_timer > 60)
+    {
       DataShare new_share =
-              DataShare(data_roles::CLIENT_DISCONNECTING_FROM_LOBBY);
+        DataShare(data_roles::CLIENT_DISCONNECTING_FROM_LOBBY);
       new_share.add(Locator::getPlayers()->my_player_index);
       Locator::getNetworkInterface()->sendData(new_share);
       next_scene = game_global_scenes::MAIN_MENU;
@@ -248,7 +252,7 @@ void GameScene::updatePopupVisibility(const ASGE::GameTime& game_time)
       !ui_manager.popups().getPopup(ui_popups::ISSUE_POPUP)->isVisible() &&
       !ui_manager.popups().getPopup(ui_popups::OBJECTIVE_POPUP)->isVisible() &&
       !ui_manager.popups().getPopup(ui_popups::CHICKEN_POPUP)->isVisible() &&
-          !ui_manager.popups().getPopup(ui_popups::YOU_WIN_POPUP)->isVisible())
+      !ui_manager.popups().getPopup(ui_popups::YOU_WIN_POPUP)->isVisible())
   {
     ui_manager.popups().getPopup(ui_popups::YOU_WIN_POPUP)->showForTime(10);
     game_over_timer_started = true;

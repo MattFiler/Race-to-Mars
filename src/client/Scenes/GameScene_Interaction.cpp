@@ -12,8 +12,9 @@
 /* Handles Key Inputs */
 void GameScene::keyHandler(const ASGE::SharedEventData data)
 {
-  //Disable input when paused
-  if (game_is_paused) {
+  // Disable input when paused
+  if (game_is_paused)
+  {
     return;
   }
 
@@ -196,8 +197,9 @@ void GameScene::playingInput()
 /* Handles mouse clicks */
 void GameScene::clickHandler(const ASGE::SharedEventData data)
 {
-  //Disable input when paused
-  if (game_is_paused) {
+  // Disable input when paused
+  if (game_is_paused)
+  {
     return;
   }
 
@@ -406,7 +408,11 @@ void GameScene::playingClicksWhenActive(Vector2& mouse_pos)
     if (ui_manager.getButton(ui_buttons::ROLL_DICE_BTN)->clicked())
     {
       // Roll dice
-      int dice_roll = Locator::getPlayers()->getPlayer(players[Locator::getPlayers()->my_player_index]->current_class)->getDiceRoll();
+      int dice_roll =
+        Locator::getPlayers()
+          ->getPlayer(
+            players[Locator::getPlayers()->my_player_index]->current_class)
+          ->getDiceRoll();
 
       /* Card-specific dice rolls */
       if (board.getGoodCommunication())
@@ -437,7 +443,7 @@ void GameScene::playingClicksWhenActive(Vector2& mouse_pos)
         board.setPilotBlackHole(false);
       }
       else if (!rolled_dice_this_turn && !board.getBonusMovement() &&
-          !board.getPilotBlackHole() && !board.getGoodCommunication())
+               !board.getPilotBlackHole() && !board.getGoodCommunication())
       {
         // Roll dice
         rolled_dice_this_turn = true;
@@ -448,31 +454,31 @@ void GameScene::playingClicksWhenActive(Vector2& mouse_pos)
         }
 
         DataShare new_share =
-                DataShare(data_roles::CLIENT_ACTION_POINTS_CHANGED);
+          DataShare(data_roles::CLIENT_ACTION_POINTS_CHANGED);
         new_share.add(Locator::getPlayers()->my_player_index);
         new_share.add(
-                players[Locator::getPlayers()->my_player_index]->action_points);
+          players[Locator::getPlayers()->my_player_index]->action_points);
         new_share.add(
-                dice_roll +
-                players[Locator::getPlayers()->my_player_index]->action_points);
+          dice_roll +
+          players[Locator::getPlayers()->my_player_index]->action_points);
         new_share.add(-1);
         Locator::getNetworkInterface()->sendData(new_share);
         players[Locator::getPlayers()->my_player_index]->action_points +=
-                dice_roll;
+          dice_roll;
         debug_text.print("Rolled dice! I got " + std::to_string(dice_roll) +
                          ".");
       }
 
       // Show dice roll popup
       ui_manager.popups()
-              .getPopup(ui_popups::DICE_ROLL_POPUP)
-              ->clearAllReferencedSprites();
+        .getPopup(ui_popups::DICE_ROLL_POPUP)
+        ->clearAllReferencedSprites();
       ScaledSprite* dice_sprite =
-              ui_manager.getSprite(ui_sprites::DICE_ROLL_1 + dice_roll - 1);
+        ui_manager.getSprite(ui_sprites::DICE_ROLL_1 + dice_roll - 1);
       dice_sprite->show();
       ui_manager.popups()
-              .getPopup(ui_popups::DICE_ROLL_POPUP)
-              ->referenceSprite(*dice_sprite);
+        .getPopup(ui_popups::DICE_ROLL_POPUP)
+        ->referenceSprite(*dice_sprite);
       ui_manager.popups().getPopup(ui_popups::DICE_ROLL_POPUP)->showForTime(5);
       Locator::getAudio()->play(dice_roll_sfx);
     }
@@ -565,7 +571,7 @@ void GameScene::playingClicksWhenActiveOrInactive(Vector2& mouse_pos)
         }
         if (board.getIssueCards().at(button_index).getActionPointsNeeded() == 0)
         {
-          continue; //we don't allow APs to be assigned to zero-point cards
+          continue; // we don't allow APs to be assigned to zero-point cards
         }
         button->setActive(true);
         button_index++;
