@@ -74,8 +74,9 @@ enum ui_buttons
 };
 
 /* Tutorial elements */
-enum ui_tutorial {
-    NUMBER_OF_SLIDES = 13
+enum ui_tutorial
+{
+  NUMBER_OF_SLIDES = 13
 };
 enum ui_tutorial_btns
 {
