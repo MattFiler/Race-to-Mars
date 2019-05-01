@@ -664,6 +664,10 @@ void GameScene::issuePopupClicks()
               my_action_points += 5;
               used_item_this_turn = true;
               debug_text.print("Assign item card points to issue card.");
+              Locator::getPlayers()
+                ->getPlayer(
+                  players[Locator::getPlayers()->my_player_index]->current_class)
+                ->useItem();
             }
 
             if (used_item_this_turn)

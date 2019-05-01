@@ -51,6 +51,7 @@ class Player
     chasing_chicken = _chasing_chicken;
   }
   void setHeldItems(int _item_increase) { held_items += _item_increase; }
+  void useItem() { held_items -= 1; };
   void setUsedAPThisTurn(bool _used_ap) { ap_not_assigned = _used_ap; }
   void setReplenishItems(bool _replenish_items)
   {
