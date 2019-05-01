@@ -39,23 +39,10 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       // A player that's not us connected to the lobby, update our info
       if (received_data.retrieve(0) != Locator::getPlayers()->my_player_index)
       {
+        players[received_data.retrieve(0)]->has_connected = true;
         players[received_data.retrieve(0)]->is_ready = true;
         players[received_data.retrieve(0)]->current_class =
           static_cast<player_classes>(received_data.retrieve(2));
-      }
-
-      // If we're now back at 4 players, continue the game.
-      int connected_count = 0;
-      for (int i = 0; i < 4; i++)
-      {
-        if (players[i]->has_connected)
-        {
-          connected_count++;
-        }
-      }
-      if (connected_count == 4)
-      {
-        game_is_paused = false;
       }
       break;
     }
