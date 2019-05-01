@@ -62,9 +62,6 @@ class GameBoard
   void clearItems() { item_inventory.clear(); }
   void useObjCardDebug();
 
-  // issue tracking
-  int engine_countdown = 2;
-
   bool
   assignActionPointToIssue(player_classes _class, int _issue, int _points = 1);
 
@@ -114,6 +111,8 @@ class GameBoard
   std::vector<ObjectiveCard> completed_obj_cards;
   ObjectiveCard* getObjCard() { return active_obj_card; }
 
+  // While we use vectors for our card objects, unfortunately these trackers
+  // need to be in place to fix some threading issues with sprite creation.
   int active_issue_cards[5] = { -1, -1, -1, -1, -1 };
   int active_item_card[5] = { -1, -1, -1, -1, -1 };
   bool item_slot_active[5] = { false, false, false, false, false };
@@ -126,6 +125,9 @@ class GameBoard
   bool update_issues = false;
   int new_obj_card = -1;
   CardOffsets card_offsets;
+
+  // issue tracking
+  int engine_countdown = 2;
 
   bool lost_game = false;
 
