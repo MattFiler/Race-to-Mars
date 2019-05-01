@@ -167,6 +167,7 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
   // Resync Issue Cards
   if (!current_scene_lock_active && new_turn)
   {
+    board.prepReSync();
     new_turn = false;
     DataShare new_share = DataShare(data_roles::CLIENT_REQUESTS_SYNC);
     new_share.add(Locator::getPlayers()->my_player_index);

@@ -593,3 +593,12 @@ void GameBoard::eraseItemCard(int _item_card_to_delete)
 {
   item_inventory.erase(item_inventory.begin() + _item_card_to_delete);
 }
+
+void GameBoard::prepReSync()
+{
+  active_issues.clear();
+  for (int i = 0; i < 5; ++i)
+  {
+    active_issue_cards[i] = -1;
+  }
+}

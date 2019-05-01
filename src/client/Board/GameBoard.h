@@ -90,6 +90,8 @@ class GameBoard
     good_communication = _set_good_comm;
   }
 
+  void prepReSync();
+
  private:
   /* Players */
   Players* m_players = nullptr;
