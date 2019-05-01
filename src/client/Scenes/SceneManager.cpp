@@ -2,6 +2,7 @@
 #include "GameScene.h"
 #include "LobbyScene.h"
 #include "MenuScene.h"
+#include "TutorialScene.h"
 #include <exception>
 
 /* Set the current scene */
@@ -17,6 +18,11 @@ bool SceneManager::setCurrentScene(game_global_scenes new_scene)
     case game_global_scenes::MAIN_MENU:
     {
       current_scene = dynamic_cast<Scene*>(new MenuScene());
+      break;
+    }
+    case game_global_scenes::TUTORIAL:
+    {
+      current_scene = dynamic_cast<Scene*>(new TutorialScene());
       break;
     }
     case game_global_scenes::LOBBY:

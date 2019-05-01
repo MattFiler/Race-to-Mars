@@ -16,6 +16,7 @@
 		
 		"MENU_NEWGAME": "New Game",
 		"MENU_CONTINUE": "Continue",
+		"MENU_TUTORIAL": "Tutorial",
 		"MENU_QUIT": "Quit",
 		
 		"LOBBY_AWAITING": "Awaiting players...",

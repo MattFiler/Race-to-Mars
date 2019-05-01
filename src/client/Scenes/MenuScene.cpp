@@ -5,11 +5,9 @@ void MenuScene::init()
 {
   main_menu.addMenuSprite("MAIN_MENU/background.jpg");
   main_menu.addMenuItem("MENU_NEWGAME");
+  main_menu.addMenuItem("MENU_TUTORIAL");
   main_menu.addMenuItem("MENU_QUIT");
 }
-
-/* Handles receiving data from the server */
-void MenuScene::networkDataReceived(const enet_uint8* data, size_t data_size) {}
 
 /* Handles key inputs */
 void MenuScene::keyHandler(const ASGE::SharedEventData data)
@@ -21,6 +19,11 @@ void MenuScene::keyHandler(const ASGE::SharedEventData data)
     {
       debug_text.print("Entering lobby.");
       next_scene = game_global_scenes::LOBBY;
+    }
+    else if (main_menu.selectedItemWas("MENU_TUTORIAL"))
+    {
+      debug_text.print("Entering tutorial slideshow.");
+      next_scene = game_global_scenes::TUTORIAL;
     }
     else if (main_menu.selectedItemWas("MENU_QUIT"))
     {
