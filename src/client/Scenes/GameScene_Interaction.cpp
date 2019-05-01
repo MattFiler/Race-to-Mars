@@ -249,12 +249,7 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
 /* Handle clicks when playing and active */
 void GameScene::playingClicksWhenActive(Vector2& mouse_pos)
 {
-  if (players[Locator::getPlayers()->my_player_index]->is_active &&
-      Locator::getPlayers()
-        ->getPlayer(Locator::getPlayers()
-                      ->players[Locator::getPlayers()->my_player_index]
-                      .current_class)
-        ->getChasingChicken())
+  if (players[Locator::getPlayers()->my_player_index]->is_active)
   {
     // Clicked within a room on the ship
     if (board.isHoveringOverRoom(mouse_pos))
@@ -496,6 +491,11 @@ void GameScene::playingClicksWhenActive(Vector2& mouse_pos)
 /* Handle clicks when playing and active or inactive */
 void GameScene::playingClicksWhenActiveOrInactive(Vector2& mouse_pos)
 {
+  //  bool ckn =       !Locator::getPlayers()
+  //          ->getPlayer(Locator::getPlayers()
+  //                              ->players[Locator::getPlayers()->my_player_index]
+  //                              .current_class)
+  //          ->getChasingChicken();
   // Clicked on Use Objective Card Btn
   if (ui_manager.getButton(ui_buttons::OBJECTIVE_BTN)->clicked())
   {
@@ -594,6 +594,11 @@ void GameScene::playingClicksWhenActiveOrInactive(Vector2& mouse_pos)
 /* Handle clicks in the issue popup */
 void GameScene::issuePopupClicks()
 {
+  //  bool ckn =       !Locator::getPlayers()
+  //          ->getPlayer(Locator::getPlayers()
+  //                              ->players[Locator::getPlayers()->my_player_index]
+  //                              .current_class)
+  //          ->getChasingChicken();
   // Handle interactions for all active buttons in issue popup when
   // visible.
   if (ui_manager.popups().getPopup(ui_popups::ISSUE_POPUP)->isVisible())
