@@ -74,11 +74,15 @@ class GameScene : public Scene
   // Win/Lose State
   bool lost_game = false;
   bool won_game = false;
+  bool game_over_timer_started = false;
+  double game_over_timer = 0;
 
   // More state trackers
   bool update_item_card = false;
   int new_item_card = -1;
   int good_comm_roll = 0;
+  bool game_is_paused = false;
+  double game_pause_timer = 0;
 
   // chat msg
   bool entering_msg = false;
