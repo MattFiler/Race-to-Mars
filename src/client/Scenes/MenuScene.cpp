@@ -8,12 +8,6 @@ void MenuScene::init()
   main_menu.addMenuItem("MENU_QUIT");
 }
 
-/* Handles connecting to the server */
-void MenuScene::networkConnected() {}
-
-/* Handles disconnecting from the server */
-void MenuScene::networkDisconnected() {}
-
 /* Handles receiving data from the server */
 void MenuScene::networkDataReceived(const enet_uint8* data, size_t data_size) {}
 
@@ -34,12 +28,6 @@ void MenuScene::keyHandler(const ASGE::SharedEventData data)
       next_scene = game_global_scenes::QUIT_GAME;
     }
   }
-}
-
-/* Handles mouse clicks */
-void MenuScene::clickHandler(const ASGE::SharedEventData data)
-{
-  // auto click = static_cast<const ASGE::ClickEvent*>(data.get());
 }
 
 /* Update function */

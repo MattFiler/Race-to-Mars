@@ -65,7 +65,7 @@ class GameBoard
   // issue tracking
   int engine_countdown = 2;
 
-  void
+  bool
   assignActionPointToIssue(player_classes _class, int _issue, int _points = 1);
 
   ShipRoom getRoom(ship_rooms _room);

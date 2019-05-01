@@ -84,7 +84,7 @@ set(HEADER_FILES
         ../src/client/UI/Managers/PopupManager.cpp
         ../src/client/UI/Managers/PopupManager.h
         ../src/client/Locator/Interface_Soloud.cpp
-        ../src/client/Locator/Interface_Soloud.h ../src/client/Scenes/GameScene_Networking.cpp ../src/client/Scenes/GameScene_Interaction.cpp ../src/client/Scenes/GameScene_Update.cpp ../src/client/Scenes/GameScene_Render.cpp)
+        ../src/client/Locator/Interface_Soloud.h ../src/client/Scenes/GameScene_Networking.cpp ../src/client/Scenes/GameScene_Interaction.cpp ../src/client/Scenes/GameScene_Update.cpp ../src/client/Scenes/GameScene_Render.cpp ../src/client/Scenes/TutorialScene.cpp ../src/client/Scenes/TutorialScene.h)
 
 ## the executable
 add_executable(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES})
