@@ -33,6 +33,8 @@
             this.launcherImage = new System.Windows.Forms.PictureBox();
             this.launcherTabs = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.label3 = new System.Windows.Forms.Label();
+            this.serverIP = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.po_language = new System.Windows.Forms.ComboBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
@@ -46,6 +48,7 @@
             // resolutionSelector
             // 
             this.resolutionSelector.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.resolutionSelector.Enabled = false;
             this.resolutionSelector.FormattingEnabled = true;
             this.resolutionSelector.Items.AddRange(new object[] {
             "2560x1440",
@@ -88,6 +91,8 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.label3);
+            this.tabPage1.Controls.Add(this.serverIP);
             this.tabPage1.Controls.Add(this.label2);
             this.tabPage1.Controls.Add(this.po_language);
             this.tabPage1.Controls.Add(this.label1);
@@ -97,8 +102,25 @@
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage1.Size = new System.Drawing.Size(428, 178);
             this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "Output";
+            this.tabPage1.Text = "General";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(178, 75);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(51, 13);
+            this.label3.TabIndex = 5;
+            this.label3.Text = "Server IP";
+            // 
+            // serverIP
+            // 
+            this.serverIP.Location = new System.Drawing.Point(18, 72);
+            this.serverIP.Name = "serverIP";
+            this.serverIP.Size = new System.Drawing.Size(154, 20);
+            this.serverIP.TabIndex = 4;
+            this.serverIP.Text = "localhost";
             // 
             // label2
             // 
@@ -112,6 +134,7 @@
             // po_language
             // 
             this.po_language.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.po_language.Enabled = false;
             this.po_language.FormattingEnabled = true;
             this.po_language.Items.AddRange(new object[] {
             "English",
@@ -129,7 +152,7 @@
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage2.Size = new System.Drawing.Size(428, 178);
             this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Input";
+            this.tabPage2.Text = "Keybinds";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // playButton
@@ -164,7 +187,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Race to Space Launcher";
+            this.Text = "Race to Mars Launcher";
             this.Load += new System.EventHandler(this.RTS_Launcher_Load);
             ((System.ComponentModel.ISupportInitialize)(this.launcherImage)).EndInit();
             this.launcherTabs.ResumeLayout(false);
@@ -184,6 +207,8 @@
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.Button playButton;
         private System.Windows.Forms.Button quitButton;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox serverIP;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ComboBox po_language;
     }

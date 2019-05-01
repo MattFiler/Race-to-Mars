@@ -19,7 +19,7 @@
  */
 RaceToSpace::RaceToSpace()
 {
-  game_name = "Race to Space";
+  game_name = "Race to Mars";
 }
 
 /**
