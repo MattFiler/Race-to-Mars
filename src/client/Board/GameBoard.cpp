@@ -176,9 +176,13 @@ bool GameBoard::assignActionPointToIssue(player_classes _class,
                                          int _issue,
                                          int _points)
 {
-  if (_issue >= static_cast<int>(active_issues.size())) {
-    debug_text.print("Hmm... strange! A player assigned action points to a card we don't know about. Is this client's connection bad?");
-    return false; //We got data for a card we don't know about... it's resync time!
+  if (_issue >= static_cast<int>(active_issues.size()))
+  {
+    debug_text.print("Hmm... strange! A player assigned action points to a "
+                     "card we don't know about. Is this client's connection "
+                     "bad?");
+    return false; // We got data for a card we don't know about... it's resync
+                  // time!
   }
   if (!active_issues.at(static_cast<size_t>(_issue)).isSolved())
   {

@@ -34,6 +34,7 @@ void TutorialScene::keyHandler(const ASGE::SharedEventData data)
             next_scene = game_global_scenes::MAIN_MENU;
         }
     }
+  }
 }
 
 /* Handle clicks */

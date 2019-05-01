@@ -77,8 +77,9 @@ enum ui_buttons
 enum ui_tutorial {
     NUMBER_OF_SLIDES = 13
 };
-enum ui_tutorial_btns {
-    CONTINUE_BUTTON
+enum ui_tutorial_btns
+{
+  CONTINUE_BUTTON
 };
 
 /* UI card offsets */
