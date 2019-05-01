@@ -157,15 +157,43 @@ bool GameBoard::updateActiveIssueCards()
   {
     return false;
   }
+  debug_text.print("@updateActiveIssueCards - DIDN'T HIT !update_issues");
 
   for (int i = 0; i < game_config.max_issue_cards; ++i)
   {
+    /* DEBUG!! */
+    debug_text.print("@updateActiveIssueCards - loop index " +
+                     std::to_string(i));
+    if (active_issue_cards[i])
+    {
+      debug_text.print("@updateActiveIssueCards - active_issue_cards[i] - " +
+                       std::to_string(i));
+    }
+    else
+    {
+      debug_text.print("@updateActiveIssueCards - !active_issue_cards[i] - " +
+                       std::to_string(i));
+    }
+    if (slot_active[i])
+    {
+      debug_text.print("@updateActiveIssueCards - slot_active[i] - " +
+                       std::to_string(i));
+    }
+    else
+    {
+      debug_text.print("@updateActiveIssueCards - !slot_active[i] - " +
+                       std::to_string(i));
+    }
+    /* END */
+
     if (active_issue_cards[i] != -1 && !slot_active[i]) // TODO: traceback this,
                                                         // if slot is active we
                                                         // won't set a card -
                                                         // maybe it's not being
                                                         // set somewhere?
     {
+      debug_text.print("@updateActiveIssueCards - EMPLACING BACK - " +
+                       std::to_string(i));
       active_issues.emplace_back(
         IssueCard(static_cast<issue_cards>(active_issue_cards[i])));
       slot_active[i] = true;
