@@ -23,7 +23,26 @@ ShipRoom::ShipRoom(const std::string& room_name,
       (static_cast<float>(room_config["bounding_box_size"][1]) / 2));
   friendly_name = localiser.getString(room_config["friendly_name"]);
 
+  for (int i = 0; i < static_cast<int>(room_config["can_move_to"].size()); i++)
+  {
+    neighbour_rooms.push_back(
+      localiser.getString(room_config["can_move_to"][i]));
+  }
+
   this_room_enum = room_enum;
+}
+
+/* Work out if we can move to X room from this one */
+bool ShipRoom::canMoveTo(const std::string& room_name)
+{
+  for (int i = 0; i < static_cast<int>(neighbour_rooms.size()); i++)
+  {
+    if (room_name == neighbour_rooms.at(i))
+    {
+      return true;
+    }
+  }
+  return false;
 }
 
 /* Get the centre of the room */

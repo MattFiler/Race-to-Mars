@@ -12,6 +12,37 @@
 /* Update function */
 game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
 {
+  //Check to see if we should auto-exit
+  if (game_over_timer_started) {
+    game_over_timer += game_time.delta.count() / 1000;
+    if (game_over_timer > 10) {
+      // Game over! Disconnect and return to main menu.
+      DataShare new_share =
+              DataShare(data_roles::CLIENT_DISCONNECTING_FROM_LOBBY);
+      new_share.add(Locator::getPlayers()->my_player_index);
+      Locator::getNetworkInterface()->sendData(new_share);
+      next_scene = game_global_scenes::MAIN_MENU;
+      debug_text.print("Returning to main menu and disconnecting from "
+                       "lobby.");
+    }
+  }
+
+  //Time-out after 60 seconds if we don't get another player connect
+  if (game_is_paused) {
+    game_pause_timer += game_time.delta.count() / 1000;
+    if (game_pause_timer > 60) {
+      DataShare new_share =
+              DataShare(data_roles::CLIENT_DISCONNECTING_FROM_LOBBY);
+      new_share.add(Locator::getPlayers()->my_player_index);
+      Locator::getNetworkInterface()->sendData(new_share);
+      next_scene = game_global_scenes::MAIN_MENU;
+      debug_text.print("Returning to main menu and disconnecting from "
+                       "lobby.");
+    }
+    return next_scene;
+  }
+  game_pause_timer = 0;
+
   // Update popups
   updatePopups(game_time);
 
@@ -135,7 +166,7 @@ void GameScene::updatePopups(const ASGE::GameTime& game_time)
 
     // Show/hide all card overlays as required (card overlays match the card
     // size, so we can filter them this way.)
-    int card_overlay_index = 0;
+    int card_overlay_index = -1;
     for (ScaledSprite* sprite : ui_manager.popups()
                                   .getPopup(ui_popups::ISSUE_POPUP)
                                   ->getInternalSprites())
@@ -143,15 +174,19 @@ void GameScene::updatePopups(const ASGE::GameTime& game_time)
       if (sprite->getBoundingBox().width == card_offsets.issue_popup_size.x &&
           sprite->getBoundingBox().height == card_offsets.issue_popup_size.y)
       {
-        if (card_overlay_index < board.activeIssuesCount())
-        {
-          sprite->show();
-        }
-        else
-        {
-          sprite->hide();
-        }
         card_overlay_index++;
+        sprite->hide();
+        if (card_overlay_index >= board.activeIssuesCount())
+        {
+          continue;
+        }
+        if (board.getIssueCards()
+              .at(card_overlay_index)
+              .getActionPointsNeeded() == 0)
+        {
+          continue;
+        }
+        sprite->show();
       }
     }
 
@@ -212,18 +247,22 @@ void GameScene::updatePopupVisibility(const ASGE::GameTime& game_time)
   if (won_game &&
       !ui_manager.popups().getPopup(ui_popups::ISSUE_POPUP)->isVisible() &&
       !ui_manager.popups().getPopup(ui_popups::OBJECTIVE_POPUP)->isVisible() &&
-      !ui_manager.popups().getPopup(ui_popups::CHICKEN_POPUP)->isVisible())
+      !ui_manager.popups().getPopup(ui_popups::CHICKEN_POPUP)->isVisible() &&
+          !ui_manager.popups().getPopup(ui_popups::YOU_WIN_POPUP)->isVisible())
   {
-    ui_manager.popups().getPopup(ui_popups::YOU_WIN_POPUP)->showForTime(60);
+    ui_manager.popups().getPopup(ui_popups::YOU_WIN_POPUP)->showForTime(10);
+    game_over_timer_started = true;
   }
   else if (lost_game &&
            !ui_manager.popups().getPopup(ui_popups::ISSUE_POPUP)->isVisible() &&
            !ui_manager.popups()
               .getPopup(ui_popups::OBJECTIVE_POPUP)
               ->isVisible() &&
-           !ui_manager.popups().getPopup(ui_popups::CHICKEN_POPUP)->isVisible())
+           !ui_manager.popups().getPopup(ui_popups::CHICKEN_POPUP)->isVisible() &&
+           !ui_manager.popups().getPopup(ui_popups::YOU_LOSE_POPUP)->isVisible())
   {
-    ui_manager.popups().getPopup(ui_popups::YOU_LOSE_POPUP)->showForTime(60);
+    ui_manager.popups().getPopup(ui_popups::YOU_LOSE_POPUP)->showForTime(10);
+    game_over_timer_started = true;
   }
 }
 

@@ -131,31 +131,34 @@ void GameScene::render()
     ui_manager.popups().getPopup(ui_popups::ISSUE_POPUP)->clearAllRenderText();
     for (IssueCard& card : board.getIssueCards())
     {
-      ui_manager.popups()
-        .getPopup(ui_popups::ISSUE_POPUP)
-        ->renderTextAtPosition(
-          std::to_string(card.getAssignedPoints(player_classes::MEDIC)),
-          card.getPosition() + Vector2(80 * card.getSprite()->getScalar(),
-                                       290 * card.getSprite()->getScalar()));
-      ui_manager.popups()
-        .getPopup(ui_popups::ISSUE_POPUP)
-        ->renderTextAtPosition(
-          std::to_string(
-            card.getAssignedPoints(player_classes::COMMUNICATIONS)),
-          card.getPosition() + Vector2(183 * card.getSprite()->getScalar(),
-                                       290 * card.getSprite()->getScalar()));
-      ui_manager.popups()
-        .getPopup(ui_popups::ISSUE_POPUP)
-        ->renderTextAtPosition(
-          std::to_string(card.getAssignedPoints(player_classes::PILOT)),
-          card.getPosition() + Vector2(183 * card.getSprite()->getScalar(),
-                                       329 * card.getSprite()->getScalar()));
-      ui_manager.popups()
-        .getPopup(ui_popups::ISSUE_POPUP)
-        ->renderTextAtPosition(
-          std::to_string(card.getAssignedPoints(player_classes::ENGINEER)),
-          card.getPosition() + Vector2(80 * card.getSprite()->getScalar(),
-                                       329 * card.getSprite()->getScalar()));
+      if (card.getActionPointsNeeded() != 0)
+      {
+        ui_manager.popups()
+          .getPopup(ui_popups::ISSUE_POPUP)
+          ->renderTextAtPosition(
+            std::to_string(card.getAssignedPoints(player_classes::MEDIC)),
+            card.getPosition() + Vector2(80 * card.getSprite()->getScalar(),
+                                         290 * card.getSprite()->getScalar()));
+        ui_manager.popups()
+          .getPopup(ui_popups::ISSUE_POPUP)
+          ->renderTextAtPosition(
+            std::to_string(
+              card.getAssignedPoints(player_classes::COMMUNICATIONS)),
+            card.getPosition() + Vector2(183 * card.getSprite()->getScalar(),
+                                         290 * card.getSprite()->getScalar()));
+        ui_manager.popups()
+          .getPopup(ui_popups::ISSUE_POPUP)
+          ->renderTextAtPosition(
+            std::to_string(card.getAssignedPoints(player_classes::PILOT)),
+            card.getPosition() + Vector2(183 * card.getSprite()->getScalar(),
+                                         329 * card.getSprite()->getScalar()));
+        ui_manager.popups()
+          .getPopup(ui_popups::ISSUE_POPUP)
+          ->renderTextAtPosition(
+            std::to_string(card.getAssignedPoints(player_classes::ENGINEER)),
+            card.getPosition() + Vector2(80 * card.getSprite()->getScalar(),
+                                         329 * card.getSprite()->getScalar()));
+      }
     }
   }
 
@@ -171,5 +174,12 @@ void GameScene::render()
     renderer->renderSprite(
       *ui_manager.getSprite(ui_sprites::DISCONNECT_OVERLAY)->getSprite());
   }
+
+  //If a player has disconnected from the game, let the other players know we're waiting for them to return.
+  if (game_is_paused) {
+    renderer->renderSprite(
+            *ui_manager.getSprite(ui_sprites::OTHER_PLAYER_DISCONNECTED_OVERLAY)->getSprite());
+  }
+
   debugOutput();
 }

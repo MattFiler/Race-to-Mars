@@ -2,7 +2,8 @@
 	"DEFAULT": {
 		"bounding_box_pos": [0,0],
 		"bounding_box_size": [158,75],
-		"friendly_name": "PLACEHOLDER"
+		"friendly_name": "PLACEHOLDER",
+		"can_move_to": ["ROOM_SUPPLY"]
 	},
 	"COCKPIT": {
 		"bounding_box_pos": [183,111],
@@ -12,7 +13,8 @@
 	"SUPPLY_BAY": {
 		"bounding_box_pos": [195,225],
 		"bounding_box_size": [109,172],
-		"friendly_name": "ROOM_SUPPLY"
+		"friendly_name": "ROOM_SUPPLY",
+		"can_move_to": ["ROOM_BRIDGE", "ROOM_MEDBAY", "ROOM_RADIOS", "ROOM_ENGINE"]
 	},
 	"MEDBAY": {
 		"bounding_box_pos": [305,321],
