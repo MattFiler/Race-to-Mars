@@ -249,7 +249,12 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
 /* Handle clicks when playing and active */
 void GameScene::playingClicksWhenActive(Vector2& mouse_pos)
 {
-  if (players[Locator::getPlayers()->my_player_index]->is_active)
+  if (players[Locator::getPlayers()->my_player_index]->is_active &&
+      Locator::getPlayers()
+        ->getPlayer(Locator::getPlayers()
+                      ->players[Locator::getPlayers()->my_player_index]
+                      .current_class)
+        ->getChasingChicken())
   {
     // Clicked within a room on the ship
     if (board.isHoveringOverRoom(mouse_pos))
@@ -257,10 +262,10 @@ void GameScene::playingClicksWhenActive(Vector2& mouse_pos)
       ShipRoom new_room = board.getClickedRoom(mouse_pos);
       ShipRoom current_room = board.getRoom(static_cast<ship_rooms>(
         players[Locator::getPlayers()->my_player_index]->room));
-      bool gsgg = current_room.canMoveTo(new_room.getName());
+      bool can_move = current_room.canMoveTo(new_room.getName());
       if (static_cast<int>(new_room.getEnum()) !=
             players[Locator::getPlayers()->my_player_index]->room &&
-          gsgg)
+          can_move)
       {
         bool free_movement =
           ((static_cast<int>(new_room.getEnum()) ==

@@ -113,12 +113,6 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
         ->getChasingChicken() &&
       players[Locator::getPlayers()->my_player_index]->is_active)
   {
-    DataShare new_share = DataShare(data_roles::CLIENT_WANTS_TO_END_TURN);
-    new_share.add(Locator::getPlayers()->my_player_index);
-    Locator::getNetworkInterface()->sendData(new_share);
-    current_scene_lock_active = true;
-    debug_text.print("Requesting to end my go!!");
-    board.resetCardVariables();
   }
 
   // Check (and perform) item card updates
