@@ -454,8 +454,8 @@ void GameBoard::handleIssueCardEvents(issue_cards _card_type)
     }
     default:
     {
-      debug_text.print("No valid issue card was found of type" +
-                       std::to_string(static_cast<int>(_card_type)));
+      debug_text.print("Card " + std::to_string(static_cast<int>(_card_type)) +
+                       " has no events.");
       break;
     }
   }
