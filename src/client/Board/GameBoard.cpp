@@ -164,14 +164,16 @@ bool GameBoard::updateActiveIssueCards()
     /* DEBUG!! */
     debug_text.print("@updateActiveIssueCards - loop index " +
                      std::to_string(i));
-    if (active_issue_cards[i])
+    if (active_issue_cards[i] != -1)
     {
-      debug_text.print("@updateActiveIssueCards - active_issue_cards[i] - " +
+      debug_text.print("@updateActiveIssueCards - active_issue_cards[i] != -1 "
+                       "- " +
                        std::to_string(i));
     }
     else
     {
-      debug_text.print("@updateActiveIssueCards - !active_issue_cards[i] - " +
+      debug_text.print("@updateActiveIssueCards - active_issue_cards[i] == -1 "
+                       "- " +
                        std::to_string(i));
     }
     if (slot_active[i])
