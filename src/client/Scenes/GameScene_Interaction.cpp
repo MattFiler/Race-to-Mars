@@ -259,10 +259,10 @@ void GameScene::playingClicksWhenActive(Vector2& mouse_pos)
       ShipRoom new_room = board.getClickedRoom(mouse_pos);
       ShipRoom current_room = board.getRoom(static_cast<ship_rooms>(
         players[Locator::getPlayers()->my_player_index]->room));
-      bool gsgg = current_room.canMoveTo(new_room.getName());
+      bool can_move = current_room.canMoveTo(new_room.getName());
       if (static_cast<int>(new_room.getEnum()) !=
             players[Locator::getPlayers()->my_player_index]->room &&
-          gsgg)
+          can_move)
       {
         bool free_movement =
           ((static_cast<int>(new_room.getEnum()) ==
@@ -493,6 +493,11 @@ void GameScene::playingClicksWhenActive(Vector2& mouse_pos)
 /* Handle clicks when playing and active or inactive */
 void GameScene::playingClicksWhenActiveOrInactive(Vector2& mouse_pos)
 {
+  //  bool ckn =       !Locator::getPlayers()
+  //          ->getPlayer(Locator::getPlayers()
+  //                              ->players[Locator::getPlayers()->my_player_index]
+  //                              .current_class)
+  //          ->getChasingChicken();
   // Clicked on Use Objective Card Btn
   if (ui_manager.getButton(ui_buttons::OBJECTIVE_BTN)->clicked())
   {
@@ -591,6 +596,11 @@ void GameScene::playingClicksWhenActiveOrInactive(Vector2& mouse_pos)
 /* Handle clicks in the issue popup */
 void GameScene::issuePopupClicks()
 {
+  //  bool ckn =       !Locator::getPlayers()
+  //          ->getPlayer(Locator::getPlayers()
+  //                              ->players[Locator::getPlayers()->my_player_index]
+  //                              .current_class)
+  //          ->getChasingChicken();
   // Handle interactions for all active buttons in issue popup when
   // visible.
   if (ui_manager.popups().getPopup(ui_popups::ISSUE_POPUP)->isVisible())

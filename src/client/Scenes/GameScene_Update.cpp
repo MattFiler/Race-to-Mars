@@ -135,6 +135,11 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
     current_scene_lock_active = true;
     debug_text.print("Requesting to end my go!!");
     board.resetCardVariables();
+    Locator::getPlayers()
+      ->getPlayer(Locator::getPlayers()
+                    ->players[Locator::getPlayers()->my_player_index]
+                    .current_class)
+      ->setChasingChicken(false);
   }
 
   // Check (and perform) item card updates
@@ -327,6 +332,11 @@ void GameScene::updateStateSpecificCursor(const ASGE::GameTime& game_time)
 /* UI Updates */
 void GameScene::updateButtonStates(const ASGE::GameTime& game_time)
 {
+  //  bool ckn = !Locator::getPlayers()
+  //                ->getPlayer(Locator::getPlayers()
+  //                              ->players[Locator::getPlayers()->my_player_index]
+  //                              .current_class)
+  //                ->getChasingChicken();
   // Update UI
   ui_manager.update(game_time);
 
