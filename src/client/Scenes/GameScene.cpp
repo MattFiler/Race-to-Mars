@@ -123,7 +123,8 @@ void GameScene::createButtonsAndPopups()
                   "UI/INGAME_UI/progress_marker_padded.png")
     ->yPos(89.0f);
   ui_manager.createSprite(ui_sprites::SYNC_OVERLAY, "UI/INGAME_UI/syncing.png");
-  ui_manager.createSprite(ui_sprites::OTHER_PLAYER_DISCONNECTED_OVERLAY, "UI/INGAME_UI/disconnect_overlay.png");
+  ui_manager.createSprite(ui_sprites::OTHER_PLAYER_DISCONNECTED_OVERLAY,
+                          "UI/INGAME_UI/disconnect_overlay.png");
   ui_manager.createSprite(ui_sprites::DISCONNECT_OVERLAY,
                           "UI/INGAME_UI/syncing_notext.png");
   ui_manager.createSprite(ui_sprites::CHAT_BOX, "UI/INGAME_UI/chatbox.png");

@@ -175,10 +175,13 @@ void GameScene::render()
       *ui_manager.getSprite(ui_sprites::DISCONNECT_OVERLAY)->getSprite());
   }
 
-  //If a player has disconnected from the game, let the other players know we're waiting for them to return.
-  if (game_is_paused) {
+  // If a player has disconnected from the game, let the other players know
+  // we're waiting for them to return.
+  if (game_is_paused)
+  {
     renderer->renderSprite(
-            *ui_manager.getSprite(ui_sprites::OTHER_PLAYER_DISCONNECTED_OVERLAY)->getSprite());
+      *ui_manager.getSprite(ui_sprites::OTHER_PLAYER_DISCONNECTED_OVERLAY)
+         ->getSprite());
   }
 
   debugOutput();
