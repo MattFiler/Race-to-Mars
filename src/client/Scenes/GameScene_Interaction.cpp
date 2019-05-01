@@ -115,29 +115,31 @@ void GameScene::playingInput()
       current_state = game_state::LOCAL_PAUSE;
       debug_text.print("Opening pause menu.");
     }
-#ifndef NDEBUG
+#ifdef NDEBUG
+  }
+#else
+    // request new obj card for client.
+    if (board.getObjectiveCard() != nullptr &&
+        board.checkObjectiveCardComplete(
+          getLobbyPlayer(Locator::getPlayers()->my_player_index)->current_class))
+    {
+      board.addObjCardToInventory();
+      DataShare new_share = DataShare(data_roles::CLIENT_REQUESTS_OBJ_CARD);
+      new_share.add(Locator::getPlayers()->my_player_index);
+      Locator::getNetworkInterface()->sendData(new_share);
+    }
+    // debug end go
     if (keys.keyReleased("End Turn") &&
         players[Locator::getPlayers()->my_player_index]->is_active &&
         !entering_msg)
     {
-      // request new obj card for client.
-      if (board.getObjectiveCard() != nullptr &&
-          board.checkObjectiveCardComplete(
-            getLobbyPlayer(Locator::getPlayers()->my_player_index)
-              ->current_class))
-      {
-        board.addObjCardToInventory();
-        DataShare new_share = DataShare(data_roles::CLIENT_REQUESTS_OBJ_CARD);
-        new_share.add(Locator::getPlayers()->my_player_index);
-        Locator::getNetworkInterface()->sendData(new_share);
-      }
+      DataShare new_share = DataShare(data_roles::CLIENT_WANTS_TO_END_TURN);
+      new_share.add(Locator::getPlayers()->my_player_index);
+      Locator::getNetworkInterface()->sendData(new_share);
+      current_scene_lock_active = true;
+      debug_text.print("Requesting to end my go!!");
+      board.resetCardVariables();
     }
-    DataShare new_share = DataShare(data_roles::CLIENT_WANTS_TO_END_TURN);
-    new_share.add(Locator::getPlayers()->my_player_index);
-    Locator::getNetworkInterface()->sendData(new_share);
-    current_scene_lock_active = true;
-    debug_text.print("Requesting to end my go!!");
-    board.resetCardVariables();
   }
   if (keys.keyReleased("Debug Obj Inventory") && !entering_msg)
   {
