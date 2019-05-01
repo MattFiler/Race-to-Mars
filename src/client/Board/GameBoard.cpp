@@ -167,7 +167,13 @@ bool GameBoard::updateActiveIssueCards()
     }
   }
   update_issues = false;
-
+  debug_text.print("Issue Card Vector Size" +
+                   std::to_string(active_issues.size()));
+  debug_text.print("Slot Active" + std::to_string(slot_active[0]));
+  debug_text.print("Slot Active" + std::to_string(slot_active[1]));
+  debug_text.print("Slot Active" + std::to_string(slot_active[2]));
+  debug_text.print("Slot Active" + std::to_string(slot_active[3]));
+  debug_text.print("Slot Active" + std::to_string(slot_active[4]));
   return true;
 }
 
