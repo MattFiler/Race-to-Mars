@@ -4,6 +4,8 @@
 #include "Scene.h"
 #include "client/UI/Managers/GameSceneUI.h"
 #include <enet/enet.h>
+#include <soloud.h>
+#include <soloud_wav.h>
 
 class TutorialScene : public Scene
 {
@@ -14,7 +16,7 @@ class TutorialScene : public Scene
   void init() override;
   void networkConnected() override{};
   void networkDisconnected() override{};
-  void networkDataReceived(const enet_uint8* data, size_t data_size) override;
+  void networkDataReceived(const enet_uint8* data, size_t data_size) override{};
 
   void keyHandler(const ASGE::SharedEventData data) override;
   void clickHandler(const ASGE::SharedEventData data) override;
@@ -23,7 +25,10 @@ class TutorialScene : public Scene
 
  private:
   SceneUI ui_manager;
+  FileHandler file_handler;
+
   int current_slide = 0;
+  SoLoud::Wav active_sfx;
 };
 
 #endif // PROJECT_TUTORIALSCENE_H

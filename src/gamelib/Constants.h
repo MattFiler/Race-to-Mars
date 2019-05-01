@@ -8,6 +8,7 @@ enum game_global_scenes
 {
   DEFAULT = -1,
   MAIN_MENU = 0,
+  TUTORIAL,
   LOBBY,
   IN_GAME,
   QUIT_GAME
@@ -75,8 +76,7 @@ enum ui_buttons
 /* Tutorial elements */
 enum ui_tutorial
 {
-  TUTORIAL_INTRO,
-  NUMBER_OF_SLIDES // Must always be last!
+  NUMBER_OF_SLIDES = 13
 };
 enum ui_tutorial_btns
 {
