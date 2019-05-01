@@ -117,5 +117,6 @@ class GameScene : public Scene
   SoLoud::Wav move_counter_sfx;
   SoLoud::Wav option_disabled_sfx;
   SoLoud::Wav ap_assigned_sfx;
+  SoLoud::Wav issue_solved_sfx;
 };
 #endif // PROJECT_GAMESCENE_H
