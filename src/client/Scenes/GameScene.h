@@ -62,6 +62,8 @@ class GameScene : public Scene
   LobbyPlayer* players[4] = { nullptr, nullptr, nullptr, nullptr };
   SceneUI ui_manager;
 
+  bool new_turn = true;
+
   // Ability trackers
   bool is_new_turn = false;
   bool got_new_obj_card = false;

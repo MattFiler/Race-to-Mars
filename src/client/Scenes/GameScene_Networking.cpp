@@ -114,12 +114,12 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     case data_roles::CLIENT_SOLVED_ISSUE_CARD:
     {
       debug_text.print("Resyncing issue cards client side... ");
-      int sync_issues[5] = { received_data.retrieve(0),
-                             received_data.retrieve(1),
-                             received_data.retrieve(2),
-                             received_data.retrieve(3),
-                             received_data.retrieve(4) };
-      board.syncIssueCards(sync_issues);
+      //      int sync_issues[5] = { received_data.retrieve(0),
+      //                             received_data.retrieve(1),
+      //                             received_data.retrieve(2),
+      //                             received_data.retrieve(3),
+      //                             received_data.retrieve(4) };
+      // board.syncIssueCards(sync_issues);
       break;
     }
     // A client has completed an objective card or ended turn on obj spot.

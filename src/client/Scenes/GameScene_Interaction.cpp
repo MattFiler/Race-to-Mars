@@ -694,10 +694,17 @@ void GameScene::issuePopupClicks()
             new_share.add(my_action_points - points_to_assign);
             new_share.add(ap_button_index);
             Locator::getNetworkInterface()->sendData(new_share);
-            board.assignActionPointToIssue(
-              players[Locator::getPlayers()->my_player_index]->current_class,
-              ap_button_index,
-              points_to_assign);
+            if (!board.assignActionPointToIssue(
+                  players[Locator::getPlayers()->my_player_index]->current_class,
+                  ap_button_index,
+                  points_to_assign))
+            {
+              DataShare new_share_2 =
+                DataShare(data_roles::CLIENT_REQUESTS_SYNC);
+              new_share.add(Locator::getPlayers()->my_player_index);
+              new_share.add(0);
+              Locator::getNetworkInterface()->sendData(new_share_2);
+            }
             my_action_points -= points_to_assign;
             debug_text.print("Assigned action points! My total is now " +
                              std::to_string(my_action_points) + ".");
