@@ -34,6 +34,10 @@ class GameBoard
   IssueCard* getClickedIssueCard(Vector2 clicked_pos);
   ObjectiveCard* getClickedObjectiveCard(Vector2 clicked_pos);
   std::vector<IssueCard> getIssueCards();
+  std::vector<ObjectiveCard> getObjectiveInventory()
+  {
+    return objective_card_inventory;
+  }
 
   void setActiveIssueCards(int active_cards[5], bool is_new_rotation);
   void setActiveObjectiveCard(int card_index);

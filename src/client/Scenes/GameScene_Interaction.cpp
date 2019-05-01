@@ -535,6 +535,13 @@ void GameScene::playingClicksWhenActive(Vector2& mouse_pos)
 /* Handle clicks when playing and active or inactive */
 void GameScene::playingClicksWhenActiveOrInactive(Vector2& mouse_pos)
 {
+  // Clicked on Use Objective Card Btn
+  if (ui_manager.getButton(ui_buttons::OBJECTIVE_BTN)->clicked())
+  {
+    debug_text.print("user clicked objective card.");
+    board.useObjCardDebug();
+  }
+
   // Clicked on an objective card
   if (board.isHoveringOverObjectiveCard(mouse_pos))
   {
@@ -613,6 +620,7 @@ void GameScene::playingClicksWhenActiveOrInactive(Vector2& mouse_pos)
         button_index++;
       }
     }
+
     ui_manager.popups().getPopup(ui_popups::ISSUE_POPUP)->show();
   }
 }

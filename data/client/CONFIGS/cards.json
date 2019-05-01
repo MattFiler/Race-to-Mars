@@ -58,7 +58,7 @@
 			{"name": "Broken Items", "description": "All items are disabled this turn. Discared next turn.", "action_points": 0, "sprite_path": "UI/CARD_IMAGES/global_brokenitems.png", "card_id": 19, "player_class": -1},
 			{"name": "Chicken on Board", "description": "one member cant play while catching the chicken.", "action_points": 0, "sprite_path": "UI/CARD_IMAGES/global_chicken.png", "card_id": 20, "player_class": -1},
 			{"name": "Gravity Leak!", "description": "There's a gravity leak, all issues require +3 points this turn. Discarded next turn.", "action_points": 0, "sprite_path": "UI/CARD_IMAGES/global_gravityleak.png", "card_id": 21, "player_class": -1},
-			{"name": "Items Overused", "description": "All items are overused and the value of items depreciates by 3 this turn. Discarded next turn.", "action_points": 0, "sprite_path": "UI/CARD_IMAGES/global_itemsoverused.png", "card_id": 22},
+			{"name": "Items Overused", "description": "All items are overused and the value of items depreciates by 3 this turn. Discarded next turn.", "action_points": 0, "sprite_path": "UI/CARD_IMAGES/global_itemsoverused.png", "card_id": 22, "player_class": -1},
 			{"name": "Low Resources!", "description": "Everyone returns all their items to the bottom of the deck. Discarded next turn.", "action_points": 0, "sprite_path": "UI/CARD_IMAGES/global_lowresources.png", "card_id": 23 , "player_class": -1},
 
 			{"name": "Asteroid Field", "description": "You're entering an asteroid belt. Navigate through carefully!", "action_points": 10, "sprite_path": "UI/CARD_IMAGES/pilot_asteroidfield.png", "card_id": 24, "player_class": 2},

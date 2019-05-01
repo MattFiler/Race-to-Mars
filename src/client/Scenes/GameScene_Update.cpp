@@ -44,10 +44,12 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
   {
     board.clearItems();
     for (int i = 0;
-         i < Locator::getPlayers()
-               ->getPlayer(
-                 players[Locator::getPlayers()->my_player_index]->current_class)
-               ->getHeldItemAmount();
+         i <
+         Locator::getPlayers()
+             ->getPlayer(
+               players[Locator::getPlayers()->my_player_index]->current_class)
+             ->getHeldItemAmount() +
+           1;
          ++i)
     {
       DataShare new_share_item =
@@ -56,10 +58,34 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
       Locator::getNetworkInterface()->sendData(new_share_item);
     }
 
+    debug_text.print(
+      "Creating " +
+      std::to_string(
+        Locator::getPlayers()
+          ->getPlayer(
+            players[Locator::getPlayers()->my_player_index]->current_class)
+          ->getHeldItemAmount()) +
+      " new item cards.");
     Locator::getPlayers()
       ->getPlayer(
         static_cast<player_classes>(Locator::getPlayers()->my_player_index))
       ->setReplenishItems(false);
+  }
+
+  // End client turn auto if chasing chicken
+  if (Locator::getPlayers()
+        ->getPlayer(Locator::getPlayers()
+                      ->players[Locator::getPlayers()->my_player_index]
+                      .current_class)
+        ->getChasingChicken() &&
+      players[Locator::getPlayers()->my_player_index]->is_active)
+  {
+    DataShare new_share = DataShare(data_roles::CLIENT_WANTS_TO_END_TURN);
+    new_share.add(Locator::getPlayers()->my_player_index);
+    Locator::getNetworkInterface()->sendData(new_share);
+    current_scene_lock_active = true;
+    debug_text.print("Requesting to end my go!!");
+    board.resetCardVariables();
   }
 
   // Check (and perform) item card updates
@@ -253,6 +279,13 @@ void GameScene::updateButtonStates(const ASGE::GameTime& game_time)
                   .is_active &&
                 !ui_manager.getButton(ui_buttons::ROLL_DICE_BTN)->isActive());
 
+  ui_manager.getButton(ui_buttons::END_TURN_BTN)
+    ->setActive(rolled_dice_this_turn);
+
+  ui_manager.getButton(ui_buttons::OBJECTIVE_BTN)
+    ->setActive(board.getObjectiveInventory().size() > static_cast<size_t>(0) &&
+                players[Locator::getPlayers()->my_player_index]->is_active);
+
   if (!rolled_dice_this_turn)
   {
     ui_manager.getButton(ui_buttons::ROLL_DICE_BTN)->setActive(true);
@@ -291,5 +324,6 @@ void GameScene::updateButtonStates(const ASGE::GameTime& game_time)
     ui_manager.getButton(ui_buttons::ROLL_DICE_BTN)->setActive(false);
     ui_manager.getButton(ui_buttons::END_TURN_BTN)->setActive(false);
     ui_manager.getButton(ui_buttons::BUY_ITEM_BTN)->setActive(false);
+    ui_manager.getButton(ui_buttons::OBJECTIVE_BTN)->setActive(false);
   }
 }

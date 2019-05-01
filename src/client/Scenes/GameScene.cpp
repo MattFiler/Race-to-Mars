@@ -169,6 +169,10 @@ void GameScene::createButtonsAndPopups()
     ->setPos(Vector2(1042, 551));
   ui_manager.createButton(ui_buttons::CHAT_BTN, "UI/INGAME_UI/chat_btn.png")
     ->setPos(Vector2(330, 679));
+  ui_manager
+    .createButton(ui_buttons::OBJECTIVE_BTN,
+                  "UI/INGAME_UI/use_objective_btn.png")
+    ->setPos(Vector2(847, 551));
 
   // Issue popup card placeholder
   ScaledSprite& card_placeholder = ui_manager.popups()
