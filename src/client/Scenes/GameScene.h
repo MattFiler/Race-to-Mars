@@ -83,6 +83,7 @@ class GameScene : public Scene
   int good_comm_roll = 0;
   bool game_is_paused = false;
   double game_pause_timer = 0;
+  bool just_reconnected = false;
 
   // chat msg
   bool entering_msg = false;

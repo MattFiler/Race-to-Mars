@@ -64,7 +64,7 @@ void RaceToSpaceServer::run()
                      " has disconnected.");
 
     // Leave the lobby and clean up, if the client is still in one
-    disconnectFromLobby(static_cast<int>(client_id));
+    disconnectFromLobby(static_cast<int>(client_id), true);
   });
 
   /* Data received from a client */

@@ -1,4 +1,6 @@
+#include "gamelib/NetworkedData/NetworkedData.h"
 #include "server.h"
+#include <gamelib/Packet.h>
 
 /*
  *
@@ -418,7 +420,7 @@ void RaceToSpaceServer::connectToLobby(server_client& client)
 }
 
 /* Take client out of the lobby they were registered to */
-void RaceToSpaceServer::disconnectFromLobby(int client_id)
+void RaceToSpaceServer::disconnectFromLobby(int client_id, bool alert_lobby)
 {
   int real_lobby_id = 0;
   for (Lobby& this_lobby : lobbies)
@@ -428,6 +430,29 @@ void RaceToSpaceServer::disconnectFromLobby(int client_id)
       if (this_lobby.players[i].id != client_id)
       {
         continue;
+      }
+
+      // If we should alert the lobby of the player leaving, do so!
+      if (alert_lobby)
+      {
+        DataShare new_share =
+          DataShare(data_roles::CLIENT_DISCONNECTING_FROM_LOBBY);
+        new_share.add(i);
+        Packet packet_to_send;
+        packet_to_send << new_share;
+        for (int x = 0; x < max_lobby_size; x++)
+        {
+          if (this_lobby.players[x].id != -1 &&
+              this_lobby.players[x].id != client_id)
+          {
+            network_server.send_packet_to(
+              static_cast<enet_uint8>(this_lobby.players[x].id),
+              0,
+              reinterpret_cast<const enet_uint8*>(packet_to_send.data()),
+              static_cast<unsigned int>(packet_to_send.length()),
+              ENET_PACKET_FLAG_RELIABLE);
+          }
+        }
       }
 
       // Disconnect from lobby

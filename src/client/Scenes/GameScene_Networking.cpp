@@ -70,6 +70,7 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     case data_roles::SERVER_SYNCS_CARD_INFO:
     {
       serverSyncsCardInfo(received_data);
+      just_reconnected = true;
       break;
     }
       // client requested item card, if this client is == to the one that

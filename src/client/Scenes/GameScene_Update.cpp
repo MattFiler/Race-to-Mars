@@ -157,6 +157,13 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
   // Update UI
   updateButtonStates(game_time);
 
+  // Fix for objective card popup on rejoin
+  if (just_reconnected)
+  {
+    ui_manager.popups().hideAll();
+    just_reconnected = false;
+  }
+
   return next_scene;
 }
 
