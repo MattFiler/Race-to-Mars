@@ -120,12 +120,16 @@ void GameBoard::setActiveIssueCards(int card_index[5], bool is_new_rotation)
     if (is_new_rotation && active_issue_cards[i] == -1)
     {
       active_issue_cards[i] = card_index[i];
+      debug_text.print("@setActiveIssueCards - Active issue card at " +
+                       std::to_string(i) + " is set to id " +
+                       std::to_string(card_index[i]) + ".");
       // sets the slot to active so no other card can take this position.
       // Creating a new issue card and adding it to the back of the
       // current issues vector for rendering and points.
       update_issues = true;
     }
   }
+  debug_text.print("Finished setting active issue card array");
 }
 
 /* Set the client's active objective card */
@@ -156,17 +160,25 @@ bool GameBoard::updateActiveIssueCards()
 
   for (int i = 0; i < game_config.max_issue_cards; ++i)
   {
-    if (active_issue_cards[i] != -1 && !slot_active[i])
+    if (active_issue_cards[i] != -1 && !slot_active[i]) // TODO: traceback this,
+                                                        // if slot is active we
+                                                        // won't set a card -
+                                                        // maybe it's not being
+                                                        // set somewhere?
     {
       active_issues.emplace_back(
         IssueCard(static_cast<issue_cards>(active_issue_cards[i])));
       slot_active[i] = true;
-      debug_text.print("Creating issue card " +
-                       std::to_string(active_issue_cards[i]) + ".");
+      debug_text.print("@updateActiveIssueCards - Creating issue card " +
+                       std::to_string(active_issue_cards[i]) +
+                       " in vector at " +
+                       std::to_string(active_issues.size() - 1) + ".");
       handleIssueCardEvents(static_cast<issue_cards>(active_issue_cards[i]));
     }
   }
   update_issues = false;
+
+  debug_text.print("Finished updating active issue cards");
 
   return true;
 }
@@ -312,6 +324,8 @@ std::vector<ItemCard> GameBoard::getItemCards()
 /* Get the count of issue cards */
 int GameBoard::activeIssuesCount()
 {
+  debug_text.print("requested issue count - it is " +
+                   std::to_string(active_issues.size()));
   return static_cast<int>(active_issues.size());
 }
 
@@ -537,6 +551,8 @@ void GameBoard::checkissueSolved()
       active_issues.erase(active_issues.begin() + static_cast<int>(i));
       active_issue_cards[i] = -1;
       slot_active[i] = false;
+      debug_text.print("@checkissueSolved - issue " + std::to_string(i) +
+                       " solved");
     }
   }
   // if any cards have been completed and deleted when client ends turn we want
@@ -600,5 +616,7 @@ void GameBoard::prepReSync()
   for (int i = 0; i < 5; ++i)
   {
     active_issue_cards[i] = -1;
+    slot_active[i] = false;
   }
+  debug_text.print("cleared out objective cards");
 }
