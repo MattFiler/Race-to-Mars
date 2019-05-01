@@ -38,7 +38,6 @@ void TutorialScene::keyHandler(const ASGE::SharedEventData data)
     }
   }
 }
-}
 
 /* Handle clicks */
 void TutorialScene::clickHandler(const ASGE::SharedEventData data)
