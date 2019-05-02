@@ -69,8 +69,8 @@ bool GameBoard::isHoveringOverIssueCard(Vector2 hover_pos)
 /* THREAD: GAME */
 bool GameBoard::isHoveringOverObjectiveCard(Vector2 hover_pos)
 {
-  return (active_obj_card != nullptr &&
-          active_obj_card->isInBoundingBox(hover_pos));
+  return active_obj_card != nullptr &&
+         active_obj_card->isInBoundingBox(hover_pos);
 }
 
 /* Return clicked interactable room  */

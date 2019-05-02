@@ -22,6 +22,104 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
     std::this_thread::sleep_for(std::chrono::milliseconds(2));
   }
 
+  // Check to see if we should auto-exit for some reason
+  if (updateAutoExitChecks(game_time))
+  {
+    return next_scene;
+  }
+
+  // Update popups
+  updatePopups(game_time);
+
+  // Check for updates to objective cards
+  if (board.updateActiveObjectiveCard())
+  {
+    // Objective card updated
+    got_new_obj_card = true;
+    got_new_obj_this_turn = true;
+    debug_text.print("got_new_obj_card");
+  }
+
+  // Check for new chat messages
+  if (new_chat_msg)
+  {
+    debug_text.print("Adding message: " + received_chat_msg + " to ALL_MSGS.");
+    if (chat_messages.size() >= max_messages)
+    {
+      chat_messages.erase(chat_messages.begin());
+    }
+    chat_messages.emplace_back(received_chat_msg);
+    new_chat_msg = false;
+  }
+
+  // Replenish item cards for new ones if obj card has been played.
+  updateItemCardReplenish(game_time);
+
+  // End client turn auto if chasing chicken
+  if (Locator::getPlayers()
+        ->getPlayer(Locator::getPlayers()
+                      ->players[Locator::getPlayers()->my_player_index]
+                      .current_class)
+        ->getChasingChicken() &&
+      players[Locator::getPlayers()->my_player_index]->is_active)
+  {
+    DataShare new_share = DataShare(data_roles::CLIENT_WANTS_TO_END_TURN);
+    new_share.add(Locator::getPlayers()->my_player_index);
+    Locator::getNetworkInterface()->sendData(new_share);
+    current_scene_lock_active = true;
+    debug_text.print("Requesting to end my go!!");
+    board.resetCardVariables();
+
+    // Setting chicken chase to false.
+    Locator::getPlayers()
+      ->getPlayer(Locator::getPlayers()
+                    ->players[Locator::getPlayers()->my_player_index]
+                    .current_class)
+      ->setChasingChicken(false);
+  }
+
+  // Check (and perform) item card updates
+  if (update_item_card != 0)
+  {
+    debug_text.print("Updating active item cards.");
+    if (board.updateActiveItemCard(new_item_card))
+    {
+      // item purchased, show popup for 3 secs
+      ui_manager.popups().getPopup(ui_popups::ITEM_POPUP)->showForTime(3);
+    }
+    update_item_card -= 1;
+  }
+
+  // Update popups visibility
+  updatePopupVisibility(game_time);
+
+  // Update state specific cursor
+  updateStateSpecificCursor(game_time);
+
+  // Update UI
+  updateButtonStates(game_time);
+
+  // Resync Issue Cards
+  if (!current_scene_lock_active && new_turn)
+  {
+    board.prepReSync();
+    new_turn = false;
+    DataShare new_share = DataShare(data_roles::CLIENT_REQUESTS_SYNC);
+    new_share.add(Locator::getPlayers()->my_player_index);
+  }
+  // Fix for objective card popup on rejoin
+  if (just_reconnected)
+  {
+    ui_manager.popups().hideAll();
+    just_reconnected = false;
+  }
+
+  return next_scene;
+}
+
+/* Update checks for "auto exiters" */
+bool GameScene::updateAutoExitChecks(const ASGE::GameTime& game_time)
+{
   // Check to see if we should auto-exit
   if (game_over_timer_started)
   {
@@ -69,35 +167,16 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
       game_is_paused = false;
     }
 
-    return next_scene;
+    return true;
   }
   game_pause_timer = 0;
 
-  // Update popups
-  updatePopups(game_time);
+  return false;
+}
 
-  // Check for updates to objective cards
-  if (board.updateActiveObjectiveCard())
-  {
-    // Objective card updated
-    got_new_obj_card = true;
-    got_new_obj_this_turn = true;
-    debug_text.print("got_new_obj_card");
-  }
-
-  // Check for new chat messages
-  if (new_chat_msg)
-  {
-    debug_text.print("Adding message: " + received_chat_msg + " to ALL_MSGS.");
-    if (chat_messages.size() >= max_messages)
-    {
-      chat_messages.erase(chat_messages.begin());
-    }
-    chat_messages.emplace_back(received_chat_msg);
-    new_chat_msg = false;
-  }
-
-  // Replenish item cards for new ones if obj card has been played.
+/* Item card replenish if objective card was played */
+void GameScene::updateItemCardReplenish()
+{
   if (Locator::getPlayers()
         ->getPlayer(
           static_cast<player_classes>(Locator::getPlayers()->my_player_index))
@@ -130,76 +209,10 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
         static_cast<player_classes>(Locator::getPlayers()->my_player_index))
       ->setReplenishItems(false);
   }
-
-  // End client turn auto if chasing chicken
-  if (Locator::getPlayers()
-        ->getPlayer(Locator::getPlayers()
-                      ->players[Locator::getPlayers()->my_player_index]
-                      .current_class)
-        ->getChasingChicken() &&
-      players[Locator::getPlayers()->my_player_index]->is_active)
-  {
-    DataShare new_share = DataShare(data_roles::CLIENT_WANTS_TO_END_TURN);
-    new_share.add(Locator::getPlayers()->my_player_index);
-    Locator::getNetworkInterface()->sendData(new_share);
-    current_scene_lock_active = true;
-    debug_text.print("Requesting to end my go!!");
-    board.resetCardVariables();
-
-    // Setting chicken chase to false.
-    Locator::getPlayers()
-      ->getPlayer(Locator::getPlayers()
-                    ->players[Locator::getPlayers()->my_player_index]
-                    .current_class)
-      ->setChasingChicken(false);
-  }
-
-  // Check (and perform) item card updates
-  if (update_item_card != 0)
-  {
-    debug_text.print("Updating active item cards.");
-    if (board.updateActiveItemCard(new_item_card))
-    {
-      // show popup here.
-    }
-    update_item_card -= 1;
-  }
-
-  // Update popups visibility
-  updatePopupVisibility(game_time);
-
-  // Update state specific cursor
-  updateStateSpecificCursor(game_time);
-
-  // Update UI
-  updateButtonStates(game_time);
-
-  // Resync Issue Cards
-  if (!current_scene_lock_active && new_turn)
-  {
-    board.prepReSync();
-    new_turn = false;
-    DataShare new_share = DataShare(data_roles::CLIENT_REQUESTS_SYNC);
-    new_share.add(Locator::getPlayers()->my_player_index);
-  }
-  // Fix for objective card popup on rejoin
-  if (just_reconnected)
-  {
-    ui_manager.popups().hideAll();
-    just_reconnected = false;
-  }
-
-  // Debug
-  if (updating_network_info)
-  {
-    debug_text.print("Reached end of update look and network was updating...");
-  }
-
-  return next_scene;
 }
 
 /* POPUPS */
-void GameScene::updatePopups(const ASGE::GameTime& game_time)
+void GameScene::updatePopups()
 {
   // Update cards if required and show popup if needed
   if (board.updateActiveIssueCards())
@@ -270,7 +283,7 @@ void GameScene::updatePopups(const ASGE::GameTime& game_time)
 }
 
 /* Update Popups */
-void GameScene::updatePopupVisibility(const ASGE::GameTime& game_time)
+void GameScene::updatePopupVisibility()
 {
   // Show objective popup if needed
   if (is_new_turn && got_new_obj_card &&
@@ -338,7 +351,7 @@ void GameScene::updatePopupVisibility(const ASGE::GameTime& game_time)
 }
 
 /* STATE-SPECIFIC CURSOR */
-void GameScene::updateStateSpecificCursor(const ASGE::GameTime& game_time)
+void GameScene::updateStateSpecificCursor()
 {
   // While our cursor hover state is handled by individual buttons, more
   // generic game stuff like the card hovering needs to be handled here. By

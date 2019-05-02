@@ -40,13 +40,21 @@ class GameScene : public Scene
   void chatMessageInput(const ASGE::KeyEvent* event);
   void playingInput();
   void issuePopupClicks();
+  void
+  issuePopupAssignAP(int& ap_button_index, player_classes& issue_card_class);
   void playingClicksWhenActive(Vector2& mouse_pos);
   void playingClicksWhenActiveOrInactive(Vector2& mouse_pos);
 
-  void updatePopups(const ASGE::GameTime& game_time);
-  void updatePopupVisibility(const ASGE::GameTime& game_time);
-  void updateStateSpecificCursor(const ASGE::GameTime& game_time);
+  bool updateAutoExitChecks(const ASGE::GameTime& game_time);
+  void updateItemCardReplenish();
+  void updatePopups();
+  void updatePopupVisibility();
+  void updateStateSpecificCursor();
   void updateButtonStates(const ASGE::GameTime& game_time);
+
+  void renderPlayingState();
+  void renderPopupPointText();
+  void renderGameOverlays();
 
   // Network functionality - this can be found in GameScene_Networking.cpp
   void serverEndsClientTurn(DataShare& received_data);
