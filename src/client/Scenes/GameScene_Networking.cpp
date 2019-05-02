@@ -179,12 +179,22 @@ void GameScene::serverEndsClientTurn(DataShare& received_data)
   }
 
   // Re-sync progress index every turn.
+  if (received_data.retrieve(2) > Locator::getPlayers()->current_progress_index)
+  {
+    ship_update = ship_progression::WENT_FORWARD;
+  }
+  else if (received_data.retrieve(2) <
+           Locator::getPlayers()->current_progress_index)
+  {
+    ship_update = ship_progression::WENT_BACKWARDS;
+  }
   Locator::getPlayers()->current_progress_index = received_data.retrieve(2);
 
   // Re-sync issue cards if we've had a full rotation
   if (received_data.retrieve(12))
   {
-    debug_text.print("@serverEndsClientTurn - Full rotation, updating cards.");
+    debug_text.print("@serverEndsClientTurn - Full rotation, updating "
+                     "cards.");
 
     int active_issue_cards[5] = { received_data.retrieve(3),
                                   received_data.retrieve(4),

@@ -35,6 +35,14 @@ enum win_state
   WON
 };
 
+/* Ship progress popups */
+enum ship_progression
+{
+  WENT_FORWARD,
+  WENT_BACKWARDS,
+  STAYED_THE_SAME
+};
+
 /* In-Game UI Elements */
 enum ui_sprites
 {

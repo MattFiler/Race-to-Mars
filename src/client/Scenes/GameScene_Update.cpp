@@ -306,6 +306,39 @@ void GameScene::updatePopupVisibility()
     got_new_obj_card = false;
   }
 
+  // Show forward/backwards for ship if it happened
+  switch (ship_update)
+  {
+    case ship_progression::WENT_BACKWARDS:
+    {
+      ui_manager.showInfoPopup("SHIP_GOES_BACKWARDS", 5);
+      ship_update = ship_progression::STAYED_THE_SAME;
+      break;
+    }
+    case ship_progression::WENT_FORWARD:
+    {
+      ui_manager.showInfoPopup("SHIP_GOES_FORWARD", 5);
+      ship_update = ship_progression::STAYED_THE_SAME;
+      break;
+    }
+    default:
+    {
+      break;
+    }
+  }
+
+  // Show "your turn" popup if its your go now
+  if (players[Locator::getPlayers()->my_player_index]->is_active &&
+      !showing_turn_notif)
+  {
+    ui_manager.showInfoPopup("ITS_YOUR_TURN", 5);
+    showing_turn_notif = true;
+  }
+  else if (!players[Locator::getPlayers()->my_player_index]->is_active)
+  {
+    showing_turn_notif = false;
+  }
+
   // Show dice roll popup if a new active turn
   if (is_new_turn &&
       players[Locator::getPlayers()->my_player_index]->is_active &&
