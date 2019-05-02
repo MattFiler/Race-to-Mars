@@ -135,13 +135,6 @@ void GameBoard::setActiveObjectiveCard(int card_index)
 /* THREAD: NETWORK */
 void GameBoard::setActiveIssueCards(int card_index[5], bool is_new_rotation)
 {
-  // checkissueSolved();
-  if (active_issues.size() >= static_cast<size_t>(game_config.max_issue_cards))
-  {
-    // Swap To Lose Game State.
-    setWinState(win_state::LOST);
-  }
-
   for (int i = 0; i < game_config.max_issue_cards; ++i)
   {
     if (is_new_rotation && active_issue_cards[i] == -1)
@@ -248,29 +241,30 @@ bool GameBoard::updateActiveIssueCards()
       // debug why we don't emplace back
       if (active_issue_cards[i] != -1)
       {
-        debug_text.print("@updateActiveIssueCards - 'active_issue_cards != -1' "
+        debug_text.print("@updateActiveIssueCards - active_issue_cards DOES NOT equal minus one (card is set) "
                          "at index " +
                          std::to_string(i));
       }
       else
       {
-        debug_text.print("@updateActiveIssueCards - 'active_issue_cards == -1' "
+        debug_text.print("@updateActiveIssueCards - active_issue_cards DOES EQUAL -1 (card isn't set) "
                          "at index " +
                          std::to_string(i));
       }
       if (slot_active[i])
       {
-        debug_text.print("@updateActiveIssueCards - 'slot_active' at index " +
+        debug_text.print("@updateActiveIssueCards - slot_active IS TRUE (has been emplaced back) at index " +
                          std::to_string(i));
       }
       else
       {
-        debug_text.print("@updateActiveIssueCards - '!slot_active' at index " +
+        debug_text.print("@updateActiveIssueCards - slot_active IS FALSE (hasn't been emplaced back) at index " +
                          std::to_string(i));
       }
     }
   }
 
+  /*
   // Validate that we have the correct data
   std::vector<int> cards_to_remove;
   int index = 0;
@@ -304,13 +298,14 @@ bool GameBoard::updateActiveIssueCards()
     debug_text.print("@updateActiveIssueCards - Auto-removed card at index " +
                      std::to_string(card_index) + " please investigate!");
   }
+   */
   update_issues = false;
 
   debug_text.print("@updateActiveIssueCards - Finished updating active issue "
                    "cards");
 
   // Debug out current card vector
-  index = 0;
+  int index = 0;
   for (IssueCard& card : active_issues)
   {
     debug_text.print("@updateActiveIssueCards - Vector entry " +
@@ -694,7 +689,6 @@ void GameBoard::checkissueSolved()
   int card_index = 0;
   int index = 0;
   std::vector<int> cards_solved;
-  std::vector<int> cards_solved_id;
   for (IssueCard& card : active_issues)
   {
     if (card.isSolved())
