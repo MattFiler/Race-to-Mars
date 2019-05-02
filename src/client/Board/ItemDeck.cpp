@@ -1,7 +1,3 @@
-//
-// Created by j42-king on 24/03/2019.
-//
-
 #include "ItemDeck.h"
 
 Vector2 ItemDeck::getCentre()

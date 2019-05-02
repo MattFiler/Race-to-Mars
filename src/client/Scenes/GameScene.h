@@ -16,8 +16,8 @@
 class GameScene : public Scene
 {
  public:
-  GameScene();
-  ~GameScene() override;
+  GameScene() = default;
+  ~GameScene() override = default;
 
   void init() override;
 
@@ -96,6 +96,8 @@ class GameScene : public Scene
   bool just_reconnected = false;
   bool new_turn = true;
   bool updating_network_info = false;
+  ship_progression ship_update = ship_progression::WENT_FORWARD;
+  bool showing_turn_notif = false;
 
   // chat msg
   bool entering_msg = false;

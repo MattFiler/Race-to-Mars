@@ -220,6 +220,7 @@ void LobbyScene::keyHandler(const ASGE::SharedEventData data)
   }
 
   /* DEBUGGING */
+#ifndef NDEBUG
   if (debug_text.enabled && keys.keyReleased("Debug Skip Readyup"))
   {
     // DEBUG ONLY LOCAL GAME START
@@ -240,6 +241,7 @@ void LobbyScene::keyHandler(const ASGE::SharedEventData data)
     players[my_player_index]->is_active = true;
     should_start_game = true;
   }
+#endif
 }
 
 /* Handles mouse clicks */

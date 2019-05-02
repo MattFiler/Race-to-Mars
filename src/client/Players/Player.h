@@ -33,9 +33,7 @@ class Player
   {
     return localiser.getString(config["friendly_name"]);
   }
-  // ScaledSprite* getCounterSprite() { return counter.getSprite(); } -
-  // shouldn't be needed as we provide a render function and necessary handles
-  // for moving, etc
+
   ScaledSprite* getLobbySprite() { return lobby_sprite; }
   ScaledSprite* getGameTabSprite() { return game_tab_sprite; }
 
@@ -80,14 +78,20 @@ class Player
   };
   void setup();
 
+  /* Engine Components */
   ASGE::Renderer* renderer = nullptr;
   FileHandler file_handler;
   Localisation localiser;
   PlayerCounter counter;
+
+  /* Our Sprites */
   ScaledSprite* lobby_sprite = nullptr;
   ScaledSprite* game_tab_sprite = nullptr;
+
+  /* Player Config */
   json config;
 
+  /* States and Trackers */
   int current_action_points = 0;
   int held_items = 0;
   int max_items = 2;

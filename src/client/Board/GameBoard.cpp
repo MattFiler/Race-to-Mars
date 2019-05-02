@@ -19,7 +19,7 @@
  *
  * It also means we need to be careful to update our vector when new cards are
  * added to the index array from the network thread. It should be checked each
- * game update.
+ * game update tick.
  *
  */
 
@@ -135,18 +135,12 @@ void GameBoard::setActiveObjectiveCard(int card_index)
 /* THREAD: NETWORK */
 void GameBoard::setActiveIssueCards(int card_index[5], bool is_new_rotation)
 {
-  // checkissueSolved();
-  if (active_issues.size() >= static_cast<size_t>(game_config.max_issue_cards))
-  {
-    // Swap To Lose Game State.
-    setWinState(win_state::LOST);
-  }
-
   for (int i = 0; i < game_config.max_issue_cards; ++i)
   {
     if (is_new_rotation && active_issue_cards[i] == -1)
     {
       active_issue_cards[i] = card_index[i];
+      slot_active[i] = false;
       debug_text.print("@setActiveIssueCards - Active issue card at " +
                        std::to_string(i) + " is set to id " +
                        std::to_string(card_index[i]) + ".");
@@ -155,8 +149,30 @@ void GameBoard::setActiveIssueCards(int card_index[5], bool is_new_rotation)
       // current issues vector for rendering and points.
       update_issues = true;
     }
+    else if (active_issue_cards[i] != card_index[i])
+    {
+      debug_text.print("@setActiveIssueCards - Our local card info was wrong "
+                       "(" +
+                       std::to_string(i) + " - overwriting...");
+      active_issue_cards[i] = card_index[i];
+      slot_active[i] = false;
+    }
+    else
+    {
+      debug_text.print("@setActiveIssueCards - Card at index " +
+                       std::to_string(i) + " already set, continuing...");
+    }
   }
-  debug_text.print("Finished setting active issue card array");
+  debug_text.print("@setActiveIssueCards - Finished setting active issue card "
+                   "array");
+
+  // Debug out current card array
+  for (int i = 0; i < 5; i++)
+  {
+    debug_text.print("@setActiveIssueCards - Card " + std::to_string(i) +
+                     " in array is ID " +
+                     std::to_string(active_issue_cards[i]));
+  }
 }
 
 /* Set the client's active objective card */
@@ -171,7 +187,8 @@ bool GameBoard::updateActiveObjectiveCard()
   delete active_obj_card;
   active_obj_card =
     new ObjectiveCard(static_cast<objective_cards>(new_obj_card));
-  debug_text.print("Active objective card set to " +
+  debug_text.print("@updateActiveObjectiveCard - Active objective card set "
+                   "to " +
                    std::to_string(new_obj_card) + ".");
   new_obj_card = -1;
 
@@ -190,20 +207,25 @@ bool GameBoard::updateActiveIssueCards()
   // Quickly hard lock here if cards are being updated - avoids thread errors
   while (is_updating_cards)
   {
-    debug_text.print("@updateActiveIssueCards - Cards are updating... "
-                     "waiting...");
     std::this_thread::sleep_for(std::chrono::milliseconds(2));
   }
 
   // Check to see if we've solved any issues...
-  checkissueSolved();
+  checkIssueSolved();
 
   // Check to see our win/loss state before updating
-  // TODO: Fix this, we currently lose too early!
-  if (getIssueCards().size() >= 5)
+  int raw_card_count = 0;
+  for (int i = 0; i < 5; i++)
   {
-    debug_text.print("@serverEndsClientTurn - Lost game with " +
-                     std::to_string(getIssueCards().size()) + " issues");
+    if (active_issue_cards[i] != -1)
+    {
+      raw_card_count++;
+    }
+  }
+  if (raw_card_count == 5)
+  {
+    debug_text.print("@serverEndsClientTurn - Lost game! Still had 5 issues at "
+                     "end of turn.");
     has_won = win_state::LOST;
   }
   else if (Locator::getPlayers()->current_progress_index >= 15)
@@ -221,9 +243,6 @@ bool GameBoard::updateActiveIssueCards()
   {
     if (active_issue_cards[i] != -1 && !slot_active[i])
     {
-      debug_text.print("@updateActiveIssueCards - EMPLACING BACK at index " +
-                       std::to_string(i) + ", which is card id " +
-                       std::to_string(active_issue_cards[i]));
       active_issues.emplace_back(
         IssueCard(static_cast<issue_cards>(active_issue_cards[i].load())));
       slot_active[i] = true;
@@ -235,43 +254,7 @@ bool GameBoard::updateActiveIssueCards()
         static_cast<issue_cards>(active_issue_cards[i].load()));
     }
   }
-
-  // Validate that we have the correct data
-  std::vector<int> cards_to_remove;
-  int index = 0;
-  for (IssueCard& card : active_issues)
-  {
-    bool valid = false;
-    for (int i = 0; i < game_config.max_issue_cards; i++)
-    {
-      if (card.getCardID() == active_issue_cards[i])
-      {
-        valid = true;
-      }
-    }
-    // If card is invalid, remove it (this should never happen at ship)
-    if (!valid)
-    {
-      debug_text.print("@updateActiveIssueCards - We have card with ID " +
-                       std::to_string(card.getCardID()) +
-                       " in our deck, but the server doesn't know about this "
-                       "card.");
-      debug_text.print("@updateActiveIssueCards - Auto-removing this dodgy "
-                       "card, but please investigate!");
-      cards_to_remove.push_back(index);
-    }
-    index++;
-  }
-  debug_text.print("@updateActiveIssueCards ---");
-  for (int card_index : cards_to_remove)
-  {
-    active_issues.erase(active_issues.begin() + card_index);
-    debug_text.print("@updateActiveIssueCards - Auto-removed card at index " +
-                     std::to_string(card_index) + " please investigate!");
-  }
   update_issues = false;
-
-  debug_text.print("Finished updating active issue cards");
 
   return true;
 }
@@ -284,14 +267,16 @@ bool GameBoard::assignActionPointToIssue(player_classes _class,
 {
   if (_issue >= static_cast<int>(active_issues.size()))
   {
-    debug_text.print("Hmm... strange! A player assigned action points to a "
-                     "card we don't know about. Is this client's connection "
-                     "bad?");
+    // Should never hit this!
+    debug_text.print("@assignActionPointToIssue - Hmm... strange! A player "
+                     "assigned action points to a "
+                     "card we don't know about.");
     return false; // We got data for a card we don't know about... it's resync
                   // time!
   }
   if (!active_issues.at(static_cast<size_t>(_issue)).isSolved())
   {
+    // Assign action points by class
     active_issues.at(static_cast<size_t>(_issue))
       .addActionPoints(_class, _points);
   }
@@ -423,7 +408,7 @@ std::vector<ItemCard> GameBoard::getItemCards()
 /* THREAD: GAME */
 int GameBoard::activeIssuesCount()
 {
-  debug_text.print("requested issue count - it is " +
+  debug_text.print("@activeIssuesCount - requested issue count, it is " +
                    std::to_string(active_issues.size()));
   return static_cast<int>(active_issues.size());
 }
@@ -483,7 +468,7 @@ void GameBoard::handleIssueCardEvents(issue_cards _card_type)
       // subtract 3 this turn on all issue cards here.
       for (auto& active_issue : active_issues)
       {
-        active_issue.setIssueCardvariable(-3);
+        active_issue.setIssueCardVariable(-3);
       }
       break;
     }
@@ -507,7 +492,7 @@ void GameBoard::handleIssueCardEvents(issue_cards _card_type)
       // All issues +3 to completion.
       for (auto& active_issue : active_issues)
       {
-        active_issue.setIssueCardvariable(3);
+        active_issue.setIssueCardVariable(3);
       }
       break;
     }
@@ -570,7 +555,8 @@ void GameBoard::handleIssueCardEvents(issue_cards _card_type)
     }
     default:
     {
-      debug_text.print("Card " + std::to_string(static_cast<int>(_card_type)) +
+      debug_text.print("@handleIssueCardEvents - Card " +
+                       std::to_string(static_cast<int>(_card_type)) +
                        " has no events.");
       break;
     }
@@ -578,6 +564,7 @@ void GameBoard::handleIssueCardEvents(issue_cards _card_type)
   issueTracking();
 }
 
+/* Set our active item card (I think we're gonna depreciate this) */
 void GameBoard::setActiveItemCard(int card_index)
 {
   for (int i = 0; i < Locator::getPlayers()
@@ -593,19 +580,23 @@ void GameBoard::setActiveItemCard(int card_index)
   }
 }
 
+/* Update our active item card */
+/* THREAD: GAME */
 bool GameBoard::updateActiveItemCard(int _item_card_index)
 {
   if (_item_card_index >= 0 && _item_card_index <= 19)
   {
     item_inventory.emplace_back(static_cast<item_cards>(_item_card_index));
     debug_text.print(
-      "Creating item card: " +
+      "@updateActiveItemCard - Creating item card: " +
       std::to_string(active_item_card[item_inventory.size() - 1]));
     return true;
   }
   return false;
 }
 
+/* Keep track of issue abilities */
+/* THREAD: GAME */
 void GameBoard::issueTracking()
 {
   for (auto& issue : active_issues)
@@ -625,6 +616,8 @@ void GameBoard::issueTracking()
   }
 }
 
+/* Reset our card's variable data, this can cancel out special card modifiers */
+/* THREAD: GAME */
 void GameBoard::resetCardVariables()
 {
   // Reset Item card values for any issue cards drawn affecting stats.
@@ -637,56 +630,84 @@ void GameBoard::resetCardVariables()
   // Reset Issue Cards ".
   for (auto& issue : active_issues)
   {
-    issue.setIssueCardvariable(0);
+    issue.setIssueCardVariable(0);
   }
 }
 
-void GameBoard::checkissueSolved()
+/* To call at the end full rotation - checks to see if any cards were solved,
+ * and if so, removes them from our vector */
+/* THREAD: GAME */
+void GameBoard::checkIssueSolved()
 {
   // Remove solved issues
-  bool issue_solved = false;
-  auto it = active_issues.begin();
-  int i = 0;
-  while (it != active_issues.end())
+  int card_index = 0;
+  std::vector<int> cards_solved;
+  for (IssueCard& card : active_issues)
   {
-    if (it->isSolved())
+    if (card.isSolved())
     {
-      it = active_issues.erase(it);
-      issue_solved = true;
-      active_issue_cards[i] = -1;
-      slot_active[i] = false;
-      debug_text.print("@checkissueSolved - issue " + std::to_string(i) +
-                       " solved");
-      ++i;
+      debug_text.print("@checkIssueSolved - card ID " +
+                       std::to_string(card.getCardID()) +
+                       " was marked as SOLVED");
+      cards_solved.push_back(card_index);
     }
     else
     {
-      ++it;
+      debug_text.print("@checkIssueSolved - card ID " +
+                       std::to_string(card.getCardID()) + " was NOT SOLVED");
+      card_index++; // Only increment if not being deleted, else our index will
+                    // be off
+    }
+  }
+  debug_text.print("@checkIssueSolved ---");
+  for (int card : cards_solved)
+  {
+    debug_text.print("@checkIssueSolved - deleting solved card");
+    active_issues.erase(active_issues.begin() + card);
+  }
+}
+
+/* To call each turn - checks to see if any cards were solved this turn, and
+ * removes them from our network-safe array */
+/* THREAD: GAME */
+void GameBoard::checkIssueSolvedThisTurn()
+{
+  // Remove solved issues from array
+  auto new_share = DataShare(data_roles::CLIENT_TURN_SOLVED_ISSUE);
+  for (IssueCard& card : active_issues)
+  {
+    if (card.isSolved())
+    {
+      bool marked_solved = false;
+      for (int i = 0; i < 5; i++)
+      {
+        if (active_issue_cards[i] == card.getCardID())
+        {
+          active_issue_cards[i] = -1;
+          slot_active[i] = false;
+          new_share.add(i);
+          marked_solved = true;
+          break;
+        }
+      }
+      if (!marked_solved)
+      {
+        debug_text.print("@checkIssueSolvedThisTurn - FAILED TO FIND CARD ID " +
+                         std::to_string(card.getCardID()) +
+                         " IN ACTIVE ISSUE CARD ARRAY!!!!");
+      }
     }
   }
 
-  // if any cards have been completed and deleted when client ends turn we want
-  // to update the server active_issue_cards too.
-  if (issue_solved)
+  // If any cards were solved, let the server know
+  if (new_share.retrieve(0) != -1)
   {
-    auto new_share = DataShare(data_roles::CLIENT_SOLVED_ISSUE_CARD);
-    new_share.add(active_issue_cards[0]);
-    new_share.add(active_issue_cards[1]);
-    new_share.add(active_issue_cards[2]);
-    new_share.add(active_issue_cards[3]);
-    new_share.add(active_issue_cards[4]);
     Locator::getNetworkInterface()->sendData(new_share);
   }
 }
 
-void GameBoard::syncIssueCards(int active_cards[5])
-{
-  for (int i = 0; i < 5; ++i)
-  {
-    active_issue_cards[i] = active_cards[i];
-  }
-}
-
+/* Check for completion of objective card */
+/* THREAD: GAME */
 bool GameBoard::checkObjectiveCardComplete(player_classes _this_clients_class)
 {
   for (auto& issue : active_issues)
@@ -699,12 +720,16 @@ bool GameBoard::checkObjectiveCardComplete(player_classes _this_clients_class)
   return false;
 }
 
+/* Add an objective card to our inventory */
+/* THREAD: GAME */
 void GameBoard::addObjCardToInventory()
 {
   objective_card_inventory.emplace_back(active_obj_card->getCardID());
 }
 
-void GameBoard::useObjCardDebug()
+/* Use a completed objective card's ability */
+/* THREAD: GAME */
+void GameBoard::useObjectiveCard()
 {
   if (!objective_card_inventory.empty())
   {
@@ -713,11 +738,15 @@ void GameBoard::useObjCardDebug()
   }
 }
 
+/* Erase an item card - might be nice to give players this control? */
+/* THREAD: GAME */
 void GameBoard::eraseItemCard(int _item_card_to_delete)
 {
   item_inventory.erase(item_inventory.begin() + _item_card_to_delete);
 }
 
+/* Prep for a full card re-sync (depreciate this?) */
+/* THREAD: GAME */
 void GameBoard::prepReSync()
 {
   active_issues.clear();
@@ -726,5 +755,5 @@ void GameBoard::prepReSync()
     active_issue_cards[i] = -1;
     slot_active[i] = false;
   }
-  debug_text.print("cleared out objective cards");
+  debug_text.print("@prepReSync - cleared out objective cards");
 }

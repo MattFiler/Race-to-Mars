@@ -7,6 +7,13 @@
 
 class RaceToSpace;
 
+/*
+ *
+ * The core of our network connection to server! This class is the interface to
+ * send data and listen to the server in our network thread.
+ *
+ */
+
 class NetworkConnection
 {
  public:

@@ -10,7 +10,6 @@
 #include <gamelib/Packet.h>
 
 /* Render function */
-// This is super messy atm and is due a refactor
 void GameScene::render()
 {
   switch (current_state)

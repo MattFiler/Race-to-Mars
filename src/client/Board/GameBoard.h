@@ -44,9 +44,8 @@ class GameBoard
   void setActiveObjectiveCard(int card_index);
   void setActiveItemCard(int card_index);
 
-  void syncIssueCards(int active_cards[5]);
-
-  void checkissueSolved();
+  void checkIssueSolved();         // For full rotations
+  void checkIssueSolvedThisTurn(); // For each turn
   bool checkObjectiveCardComplete(player_classes _this_clients_class);
 
   bool updateActiveIssueCards();
@@ -61,7 +60,7 @@ class GameBoard
   void addObjCardToInventory();
 
   void clearItems() { item_inventory.clear(); }
-  void useObjCardDebug();
+  void useObjectiveCard();
 
   bool
   assignActionPointToIssue(player_classes _class, int _issue, int _points = 1);
@@ -99,46 +98,42 @@ class GameBoard
   void setWinState(win_state _state) { has_won = _state; };
 
  private:
+  void handleIssueCardEvents(issue_cards _card_type);
+
   /* Players */
   Players* m_players = nullptr;
 
   /* Ship */
   Ship m_ship;
 
-  /* Cards */
-  void handleIssueCardEvents(issue_cards _card_type);
-
+  /* Out cards */
   std::vector<IssueCard> active_issues;
   std::vector<ItemCard> item_inventory;
   std::vector<ObjectiveCard> objective_card_inventory;
 
+  /* Card-specific State Trackers */
   bool pilot_blackhole = false;
   bool bonus_movement = false;
   bool good_communication = false;
+  int engine_countdown = 2;
 
+  /* Active Objective */
   ObjectiveCard* active_obj_card = nullptr;
-  std::vector<ObjectiveCard> completed_obj_cards;
-  ObjectiveCard* getObjCard() { return active_obj_card; }
 
   // While we use vectors for our card objects, unfortunately these trackers
   // need to be in place to fix some threading issues with sprite creation.
   std::atomic<int> active_issue_cards[5] = { -1, -1, -1, -1, -1 };
   std::atomic<int> active_item_card[5] = { -1, -1, -1, -1, -1 };
-  bool item_slot_active[5] = { false, false, false, false, false };
 
-  int objective_cards_inplay[4] = { -1, -1, -1, -1 };
   // Slot active is to keep track of available slots to place new cards since
   // if active_issue_card[x] != -1 can be overridden by another card.
   std::atomic<bool> slot_active[5] = { false, false, false, false, false };
 
+  /* Game State Trackers */
   bool is_updating_cards = false;
   bool update_issues = false;
   int new_obj_card = -1;
   CardOffsets card_offsets;
-
-  // issue tracking
-  int engine_countdown = 2;
-
   win_state has_won = win_state::UNDECIDED;
 
   /* Misc */

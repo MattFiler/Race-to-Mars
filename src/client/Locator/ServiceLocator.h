@@ -3,6 +3,8 @@
 
 #include <stdexcept>
 
+// Note to self: always predefine classes here, never include them - or be
+// prepared for a world of circular inclusion...
 class Cursor;
 class NetworkConnection;
 namespace ASGE
@@ -26,6 +28,7 @@ struct Players;
 class Locator
 {
  public:
+  //"Getters" (get the pointer to the interface)
   static ASGE::Renderer* getRenderer()
   {
     if (ref_renderer == nullptr)
@@ -78,6 +81,8 @@ class Locator
     return ref_players;
   };
 
+  //"Setters" (set the pointer to the interface - this needs to be something
+  // that isn't gonna be destroyed during runtime)
   static void setupRenderer(ASGE::Renderer* inst_renderer)
   {
     ref_renderer = inst_renderer;
@@ -98,6 +103,7 @@ class Locator
   }
 
  private:
+  // Our interface pointers to set/return
   static ASGE::Renderer* ref_renderer;
   static SoLoud::Soloud* ref_audio;
   static ASGE::Input* ref_input;

@@ -18,7 +18,7 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
   // Force a hard lock-out here if active_issue_cards is being updated
   while (updating_network_info)
   {
-    debug_text.print("Waiting for network update to finish...");
+    // debug_text.print("Waiting for network update to finish...");
     std::this_thread::sleep_for(std::chrono::milliseconds(2));
   }
 
@@ -37,13 +37,14 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
     // Objective card updated
     got_new_obj_card = true;
     got_new_obj_this_turn = true;
-    debug_text.print("got_new_obj_card");
+    debug_text.print("@update - got_new_obj_card");
   }
 
   // Check for new chat messages
   if (new_chat_msg)
   {
-    debug_text.print("Adding message: " + received_chat_msg + " to ALL_MSGS.");
+    debug_text.print("@update - Adding message: " + received_chat_msg +
+                     " to ALL_MSGS.");
     if (chat_messages.size() >= max_messages)
     {
       chat_messages.erase(chat_messages.begin());
@@ -67,7 +68,7 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
     new_share.add(Locator::getPlayers()->my_player_index);
     Locator::getNetworkInterface()->sendData(new_share);
     current_scene_lock_active = true;
-    debug_text.print("Requesting to end my go!!");
+    debug_text.print("@update - Requesting to end my go!!");
     board.resetCardVariables();
 
     // Setting chicken chase to false.
@@ -81,7 +82,7 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
   // Check (and perform) item card updates
   if (update_item_card != 0)
   {
-    debug_text.print("Updating active item cards.");
+    debug_text.print("@update - Updating active item cards.");
     if (board.updateActiveItemCard(new_item_card))
     {
       // item purchased, populate popup and show for 3 secs
@@ -145,7 +146,8 @@ bool GameScene::updateAutoExitChecks(const ASGE::GameTime& game_time)
       new_share.add(Locator::getPlayers()->my_player_index);
       Locator::getNetworkInterface()->sendData(new_share);
       next_scene = game_global_scenes::MAIN_MENU;
-      debug_text.print("Returning to main menu and disconnecting from "
+      debug_text.print("@updateAutoExitChecks - Returning to main menu and "
+                       "disconnecting from "
                        "lobby.");
     }
   }
@@ -162,7 +164,8 @@ bool GameScene::updateAutoExitChecks(const ASGE::GameTime& game_time)
       new_share.add(Locator::getPlayers()->my_player_index);
       Locator::getNetworkInterface()->sendData(new_share);
       next_scene = game_global_scenes::MAIN_MENU;
-      debug_text.print("Returning to main menu and disconnecting from "
+      debug_text.print("@updateAutoExitChecks - Returning to main menu and "
+                       "disconnecting from "
                        "lobby.");
     }
 
@@ -210,7 +213,7 @@ void GameScene::updateItemCardReplenish()
     }
 
     debug_text.print(
-      "Creating " +
+      "@updateItemCardReplenish - Creating " +
       std::to_string(
         Locator::getPlayers()
           ->getPlayer(
@@ -230,19 +233,6 @@ void GameScene::updatePopups()
   // Update cards if required and show popup if needed
   if (board.updateActiveIssueCards())
   {
-    // SANITY CHECK
-    debug_text.print("@updatePopups - Now we've updated, we sanity check...");
-    int index = 0;
-    for (IssueCard& card : board.getIssueCards())
-    {
-      debug_text.print("@updatePopups - board has card " +
-                       std::to_string(card.getCardID()) + " in slot " +
-                       std::to_string(index));
-      index++;
-    }
-    debug_text.print("@updatePopups - Finished sanity check");
-    // END SANITY CHECK
-
     // Hide all old popups
     ui_manager.popups().hideAll();
 
@@ -314,6 +304,39 @@ void GameScene::updatePopupVisibility()
       ->referenceSprite(*board.getObjectiveCard()->getSprite());
     ui_manager.popups().getPopup(ui_popups::OBJECTIVE_POPUP)->showForTime(5);
     got_new_obj_card = false;
+  }
+
+  // Show forward/backwards for ship if it happened
+  switch (ship_update)
+  {
+    case ship_progression::WENT_BACKWARDS:
+    {
+      ui_manager.showInfoPopup("SHIP_GOES_BACKWARDS", 5);
+      ship_update = ship_progression::STAYED_THE_SAME;
+      break;
+    }
+    case ship_progression::WENT_FORWARD:
+    {
+      ui_manager.showInfoPopup("SHIP_GOES_FORWARD", 5);
+      ship_update = ship_progression::STAYED_THE_SAME;
+      break;
+    }
+    default:
+    {
+      break;
+    }
+  }
+
+  // Show "your turn" popup if its your go now
+  if (players[Locator::getPlayers()->my_player_index]->is_active &&
+      !showing_turn_notif)
+  {
+    ui_manager.showInfoPopup("ITS_YOUR_TURN", 5);
+    showing_turn_notif = true;
+  }
+  else if (!players[Locator::getPlayers()->my_player_index]->is_active)
+  {
+    showing_turn_notif = false;
   }
 
   // Show dice roll popup if a new active turn

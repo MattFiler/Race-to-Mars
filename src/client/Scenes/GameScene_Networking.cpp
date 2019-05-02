@@ -20,8 +20,8 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
   DataShare received_data;
   data_packet >> received_data;
 
-  debug_text.print("DATA PACKET " + std::to_string(received_data.getType()) +
-                   " INCOMING...");
+  debug_text.print("@networkDataReceived - DATA PACKET " +
+                   std::to_string(received_data.getType()) + " INCOMING...");
 
   // Handle all relevant data packets for this scene
   switch (received_data.getType())
@@ -83,7 +83,7 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     // requested, add item card to current items.
     case data_roles::CLIENT_REQUESTED_ITEM_CARD:
     {
-      debug_text.print("Client that requested item: " +
+      debug_text.print("@networkDataReceived - Client that requested item: " +
                        std::to_string(received_data.retrieve(0)) +
                        ". This client: " +
                        std::to_string(Locator::getPlayers()->my_player_index));
@@ -108,7 +108,7 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     case data_roles::CLIENT_CHANGE_PROGRESS_INDEX:
     {
       debug_text.print(
-        "Changing current_progress_index from:" +
+        "@networkDataReceived - Changing current_progress_index from:" +
         std::to_string(Locator::getPlayers()->current_progress_index));
       Locator::getPlayers()->current_progress_index = received_data.retrieve(0);
       debug_text.print(
@@ -119,7 +119,8 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     // A client has completed an objective card or ended turn on obj spot.
     case data_roles::CLIENT_REQUESTS_OBJ_CARD:
     {
-      debug_text.print("Received new obj after completing one of type:" +
+      debug_text.print("@networkDataReceived - Received new obj after "
+                       "completing one of type:" +
                        std::to_string(received_data.retrieve(1)));
       board.setActiveObjectiveCard(received_data.retrieve(1));
       break;
@@ -127,14 +128,15 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     // A client has used an obj card to get free ship movement for 1 turn.
     case data_roles::CLIENT_FREE_MOVEMENT:
     {
-      debug_text.print("Free ship movement for 1 turn.");
+      debug_text.print("@networkDataReceived - Free ship movement for 1 turn.");
       free_player_movement = static_cast<bool>(received_data.retrieve(0));
       break;
     }
     // Handle Chat Messages.
     case data_roles::CHAT_MSG:
     {
-      debug_text.print("Storing sent chat msg:" + received_data.getMsg());
+      debug_text.print("@networkDataReceived - Storing sent chat msg:" +
+                       received_data.getMsg());
       received_chat_msg = received_data.getMsg();
       new_chat_msg = true;
       if (!entering_msg)
@@ -146,13 +148,14 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     // Anything else is unhandled.
     default:
     {
-      debug_text.print("An unhandled data packet was received, of type " +
+      debug_text.print("@networkDataReceived - An unhandled data packet was "
+                       "received, of type " +
                          std::to_string(received_data.getType()) + "!",
                        1);
       break;
     }
   }
-  debug_text.print("FINISHED WITH PACKET " +
+  debug_text.print("@networkDataReceived - FINISHED WITH PACKET " +
                    std::to_string(received_data.getType()) + "!!");
   mtx.unlock();
   updating_network_info = false;
@@ -176,12 +179,22 @@ void GameScene::serverEndsClientTurn(DataShare& received_data)
   }
 
   // Re-sync progress index every turn.
+  if (received_data.retrieve(2) > Locator::getPlayers()->current_progress_index)
+  {
+    ship_update = ship_progression::WENT_FORWARD;
+  }
+  else if (received_data.retrieve(2) <
+           Locator::getPlayers()->current_progress_index)
+  {
+    ship_update = ship_progression::WENT_BACKWARDS;
+  }
   Locator::getPlayers()->current_progress_index = received_data.retrieve(2);
 
   // Re-sync issue cards if we've had a full rotation
   if (received_data.retrieve(12))
   {
-    debug_text.print("@serverEndsClientTurn - Full rotation, updating cards.");
+    debug_text.print("@serverEndsClientTurn - Full rotation, updating "
+                     "cards.");
 
     int active_issue_cards[5] = { received_data.retrieve(3),
                                   received_data.retrieve(4),
@@ -214,7 +227,7 @@ void GameScene::serverEndsClientTurn(DataShare& received_data)
   {
     board.setActiveObjectiveCard(
       received_data.retrieve(8 + Locator::getPlayers()->my_player_index));
-    debug_text.print("Adding obj card for client " +
+    debug_text.print("@serverEndsClientTurn - Adding obj card for client " +
                      std::to_string(Locator::getPlayers()->my_player_index) +
                      "of type: " +
                      std::to_string(received_data.retrieve(
@@ -223,7 +236,8 @@ void GameScene::serverEndsClientTurn(DataShare& received_data)
 
   // End the scene lock.
   current_scene_lock_active = false;
-  debug_text.print("The server ended the current go, and passed "
+  debug_text.print("@serverEndsClientTurn - The server ended the current go, "
+                   "and passed "
                    "active-ness to client " +
                    std::to_string(received_data.retrieve(1)) + ".");
   Locator::getAudio()->play(turn_ends_sfx);
@@ -249,7 +263,7 @@ void GameScene::clientMovesPlayerToken(DataShare& received_data)
     ->getPlayer(players[received_data.retrieve(0)]->current_class)
     ->setPos(new_pos);
   players[received_data.retrieve(0)]->room = this_room.getEnum();
-  debug_text.print("Moving player " +
+  debug_text.print("@clientMovesPlayerToken - Moving player " +
                    std::to_string(received_data.retrieve(0)) + " to room '" +
                    this_room.getName() + "'.");
 }
@@ -272,7 +286,8 @@ void GameScene::clientActionPointsUpdated(DataShare& received_data)
       received_data.retrieve(3),
       received_data.retrieve(1) - received_data.retrieve(2));
     debug_text.print(
-      "Player " + std::to_string(received_data.retrieve(0)) + " assigned " +
+      "@clientActionPointsUpdated - Player " +
+      std::to_string(received_data.retrieve(0)) + " assigned " +
       std::to_string(received_data.retrieve(1) - received_data.retrieve(2)) +
       " points to card " + std::to_string(received_data.retrieve(3)) + ".");
   }
@@ -289,16 +304,16 @@ void GameScene::serverSyncsCardInfo(DataShare& received_data)
                          received_data.retrieve(4) };
   board.setActiveIssueCards(issue_cards, true); // should sync ship
   // position here too
-  debug_text.print("Sync: updated active issue cards.");
+  debug_text.print("@serverSyncsCardInfo -  updated active issue cards.");
   for (int i = 0; i < 5; i++)
   {
-    debug_text.print("Sync: issue card " + std::to_string(i) + ": " +
-                     std::to_string(received_data.retrieve(i)));
+    debug_text.print("@serverSyncsCardInfo - issue card " + std::to_string(i) +
+                     ": " + std::to_string(received_data.retrieve(i)));
   }
   // Sync my objective card
   board.setActiveObjectiveCard(
     received_data.retrieve(5 + Locator::getPlayers()->my_player_index));
-  debug_text.print("Sync: updated my objective card to " +
+  debug_text.print("@serverSyncsCardInfo - updated my objective card to " +
                    std::to_string(received_data.retrieve(
                      5 + Locator::getPlayers()->my_player_index)) +
                    ".");
@@ -306,8 +321,8 @@ void GameScene::serverSyncsCardInfo(DataShare& received_data)
   for (int i = 0; i < 4; i++)
   {
     players[i]->action_points = received_data.retrieve(9 + i);
-    debug_text.print("Sync: updated player " + std::to_string(i) +
-                     "'s points to " +
+    debug_text.print("@serverSyncsCardInfo - updated player " +
+                     std::to_string(i) + "'s points to " +
                      std::to_string(players[i]->action_points) + ".");
   }
 }
@@ -333,12 +348,13 @@ void GameScene::serverSyncsPositionInfo(DataShare& received_data)
       Locator::getNetworkInterface()->sendData(new_share);
     }
 
-    debug_text.print("Sync: moved player " + std::to_string(i) + " to room '" +
-                     this_room.getName() + "'.");
+    debug_text.print("@serverSyncsPositionInfo - moved player " +
+                     std::to_string(i) + " to room '" + this_room.getName() +
+                     "'.");
   }
   // Sync ship board progress.
   Locator::getPlayers()->current_progress_index = received_data.retrieve(4);
   debug_text.print(
-    "Sync: moved ship to position " +
+    "@serverSyncsPositionInfo - moved ship to position " +
     std::to_string(Locator::getPlayers()->current_progress_index));
 }

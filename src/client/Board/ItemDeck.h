@@ -1,7 +1,3 @@
-//
-// Created by j42-king on 24/03/2019.
-//
-
 #ifndef PROJECT_ITEMDECK_H
 #define PROJECT_ITEMDECK_H
 

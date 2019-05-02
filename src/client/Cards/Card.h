@@ -25,14 +25,18 @@ class Card : public OnBoardObject
   ~Card() = default;
 
  protected:
+  /* Card Metadata (used in children) */
   std::string card_name = "Temp Name";
   std::string card_decription = "Temp desc";
   std::string ability_text = "Temp Ability Text";
   int action_points = 0;
 
+  /* Engine Components */
   FileHandler file_handler;
-  json card_config;
   DebugText debug_text;
+
+  /* Our Config */
+  json card_config;
 };
 
 #endif // PROJECT_CARD_H
