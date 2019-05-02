@@ -21,6 +21,7 @@ class ItemCard : public Card
   void setActionPointVariable(int _action_point);
   int assignActionPoints();
   player_classes getItemPlayerType() { return player_class_type; }
+  int getActionPoints() { return action_point_varibale; }
 
  private:
   item_cards cardID = item_cards::ITEM_PLACEHOLDER;

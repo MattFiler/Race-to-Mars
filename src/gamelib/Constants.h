@@ -24,7 +24,7 @@ enum game_state
 /* Misc config */
 struct GameConfig
 {
-  int max_issue_cards = 5;
+  int max_issue_cards = 4;
 };
 
 /* Won or lost? */

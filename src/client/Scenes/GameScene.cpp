@@ -9,18 +9,6 @@
 #include <client/Cards/ObjectiveCard.h>
 #include <gamelib/Packet.h>
 
-/* Create */
-GameScene::GameScene()
-{
-  debug_text.print("entered game scene.");
-}
-
-/* Destroy! */
-GameScene::~GameScene()
-{
-  // Destroy stuff here
-}
-
 /* Initialise the scene */
 void GameScene::init()
 {
@@ -82,7 +70,7 @@ void GameScene::init()
         players[Locator::getPlayers()->my_player_index]->current_class)
       ->setPos(new_pos);
     players[Locator::getPlayers()->my_player_index]->room = this_room.getEnum();
-    debug_text.print("Starting my player token in room '" +
+    debug_text.print("@init - Starting my player token in room '" +
                      this_room.getName() + "'.");
   }
 }

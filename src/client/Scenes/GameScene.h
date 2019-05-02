@@ -16,8 +16,8 @@
 class GameScene : public Scene
 {
  public:
-  GameScene();
-  ~GameScene() override;
+  GameScene() = default;
+  ~GameScene() override = default;
 
   void init() override;
 

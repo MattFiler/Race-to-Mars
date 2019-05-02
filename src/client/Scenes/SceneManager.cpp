@@ -41,7 +41,9 @@ bool SceneManager::setCurrentScene(game_global_scenes new_scene)
     }
     default:
     {
-      debug_text.print("Attempted to access a scene which is unhandled.", 2);
+      debug_text.print("@setCurrentScene - Attempted to access a scene which "
+                       "is unhandled.",
+                       2);
       break;
     }
   }
