@@ -29,7 +29,7 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
   }
 
   // Update popups
-  updatePopups(game_time);
+  updatePopups();
 
   // Check for updates to objective cards
   if (board.updateActiveObjectiveCard())
@@ -53,7 +53,7 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
   }
 
   // Replenish item cards for new ones if obj card has been played.
-  updateItemCardReplenish(game_time);
+  updateItemCardReplenish();
 
   // End client turn auto if chasing chicken
   if (Locator::getPlayers()
@@ -91,10 +91,10 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
   }
 
   // Update popups visibility
-  updatePopupVisibility(game_time);
+  updatePopupVisibility();
 
   // Update state specific cursor
-  updateStateSpecificCursor(game_time);
+  updateStateSpecificCursor();
 
   // Update UI
   updateButtonStates(game_time);
