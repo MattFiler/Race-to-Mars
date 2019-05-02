@@ -167,6 +167,14 @@ void GameScene::serverEndsClientTurn(DataShare& received_data)
     players[i]->is_active = (received_data.retrieve(1) == i);
   }
 
+  // Debug log the cards we got
+  for (int i = 0; i < 5; i++)
+  {
+    debug_text.print("@serverEndsClientTurn - Server sent card " +
+                     std::to_string(i + 1) + " as ID " +
+                     std::to_string(received_data.retrieve(3 + i)));
+  }
+
   // Re-sync progress index every turn.
   Locator::getPlayers()->current_progress_index = received_data.retrieve(2);
 
