@@ -47,7 +47,7 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
       if (ui_manager.getMenu()->selectedItemWas("MENU_CONTINUE"))
       {
         current_state = game_state::PLAYING;
-        debug_text.print("Closing pause menu.");
+        debug_text.print("@keyHandler - Closing pause menu.");
       }
       else if (ui_manager.getMenu()->selectedItemWas("MENU_QUIT"))
       {
@@ -57,7 +57,8 @@ void GameScene::keyHandler(const ASGE::SharedEventData data)
         new_share.add(Locator::getPlayers()->my_player_index);
         Locator::getNetworkInterface()->sendData(new_share);
         next_scene = game_global_scenes::MAIN_MENU;
-        debug_text.print("Returning to main menu and disconnecting from "
+        debug_text.print("@keyHandler - Returning to main menu and "
+                         "disconnecting from "
                          "lobby.");
       }
       break;
@@ -113,7 +114,7 @@ void GameScene::playingInput()
     if (keys.keyReleased("Back") && !current_scene_lock_active && !entering_msg)
     {
       current_state = game_state::LOCAL_PAUSE;
-      debug_text.print("Opening pause menu.");
+      debug_text.print("@playingInput - Opening pause menu.");
     }
 #ifdef NDEBUG
   }
@@ -137,18 +138,18 @@ void GameScene::playingInput()
       new_share.add(Locator::getPlayers()->my_player_index);
       Locator::getNetworkInterface()->sendData(new_share);
       current_scene_lock_active = true;
-      debug_text.print("Requesting to end my go!!");
+      debug_text.print("@playingInput - Requesting to end my go!!");
       board.resetCardVariables();
     }
   }
   if (keys.keyReleased("Debug Obj Inventory") && !entering_msg)
   {
-    debug_text.print("Creating obj card");
+    debug_text.print("@playingInput - Creating obj card");
     board.addObjCardToInventory();
   }
   if (keys.keyReleased("Debug Use Objective Action") && !entering_msg)
   {
-    debug_text.print("Using OBJ POWER!");
+    debug_text.print("@playingInput - Using OBJ POWER!");
     board.useObjCardDebug();
   }
   if (keys.keyReleased("Debug Spend AP") &&
@@ -165,13 +166,13 @@ void GameScene::playingInput()
     new_share.add(-1);
     Locator::getNetworkInterface()->sendData(new_share);
     players[Locator::getPlayers()->my_player_index]->action_points = new_ap;
-    debug_text.print("Debug: changed my action points to 10!");
+    debug_text.print("@playingInput - changed my action points to 10!");
   }
   if (keys.keyReleased("Debug Buy Item") &&
       players[Locator::getPlayers()->my_player_index]->is_active &&
       !entering_msg)
   {
-    debug_text.print("Trying to buy item card.");
+    debug_text.print("@playingInput - Trying to buy item card.");
     if (Locator::getPlayers()
           ->getPlayer(
             static_cast<player_classes>(Locator::getPlayers()->my_player_index))
@@ -288,13 +289,14 @@ void GameScene::playingClicksWhenActive(Vector2& mouse_pos)
             ->setPos(new_pos);
           players[Locator::getPlayers()->my_player_index]->room =
             new_room.getEnum();
-          debug_text.print("Moving my player token to room '" +
+          debug_text.print("@playingClicksWhenActive - Moving my player token "
+                           "to room '" +
                            new_room.getName() + "'.");
 
           // Movement costs, so take points
           if (!free_movement)
           {
-            debug_text.print("Moving costs 1 AP.");
+            debug_text.print("@playingClicksWhenActive - Moving costs 1 AP.");
             int& my_action_points =
               players[Locator::getPlayers()->my_player_index]->action_points;
             DataShare new_share2 =
@@ -320,13 +322,15 @@ void GameScene::playingClicksWhenActive(Vector2& mouse_pos)
     {
       if (board.getObjectiveCard() != nullptr)
       {
-        debug_text.print("Checking if OBJ card is complete.");
+        debug_text.print("@playingClicksWhenActive - Checking if OBJ card is "
+                         "complete.");
         // request new obj card for client.
         if (board.checkObjectiveCardComplete(
               getLobbyPlayer(Locator::getPlayers()->my_player_index)
                 ->current_class))
         {
-          debug_text.print("Objective card complete! Creating new "
+          debug_text.print("@playingClicksWhenActive - Objective card "
+                           "complete! Creating new "
                            "one... "
                            "and adding current obj to inventory.");
           board.addObjCardToInventory();
@@ -340,7 +344,7 @@ void GameScene::playingClicksWhenActive(Vector2& mouse_pos)
       new_share.add(Locator::getPlayers()->my_player_index);
       Locator::getNetworkInterface()->sendData(new_share);
       current_scene_lock_active = true;
-      debug_text.print("Requesting to end my go!!");
+      debug_text.print("@playingClicksWhenActive - Requesting to end my go!!");
 
       Locator::getAudio()->play(end_turn_sfx);
 
@@ -374,7 +378,7 @@ void GameScene::playingClicksWhenActive(Vector2& mouse_pos)
             DataShare(data_roles::CLIENT_REQUESTED_ITEM_CARD);
           new_share_item.add(Locator::getPlayers()->my_player_index);
           Locator::getNetworkInterface()->sendData(new_share_item);
-          debug_text.print("I want an item card!!");
+          debug_text.print("@playingClicksWhenActive - I want an item card!!");
 
           Locator::getAudio()->play(new_item_sfx);
 
@@ -469,8 +473,8 @@ void GameScene::playingClicksWhenActive(Vector2& mouse_pos)
         Locator::getNetworkInterface()->sendData(new_share);
         players[Locator::getPlayers()->my_player_index]->action_points +=
           dice_roll;
-        debug_text.print("Rolled dice! I got " + std::to_string(dice_roll) +
-                         ".");
+        debug_text.print("@playingClicksWhenActive - Rolled dice! I got " +
+                         std::to_string(dice_roll) + ".");
       }
 
       // Show dice roll popup
@@ -495,7 +499,8 @@ void GameScene::playingClicksWhenActiveOrInactive(Vector2& mouse_pos)
   // Clicked on Use Objective Card Btn
   if (ui_manager.getButton(ui_buttons::OBJECTIVE_BTN)->clicked())
   {
-    debug_text.print("user clicked objective card.");
+    debug_text.print("@playingClicksWhenActiveOrInactive - user clicked "
+                     "objective card.");
     board.useObjCardDebug();
   }
 
@@ -621,7 +626,7 @@ void GameScene::issuePopupAssignAP(int& ap_button_index,
   // If we've already solved an issue, we can't keep adding points!
   if (board.getIssueCards().at(static_cast<size_t>(ap_button_index)).isSolved())
   {
-    debug_text.print("THIS ISSUE IS ALREADY SOLVED!");
+    debug_text.print("@issuePopupAssignAP - THIS ISSUE IS ALREADY SOLVED!");
     ui_manager.showInfoPopup("ALREADY_SOLVED");
     Locator::getAudio()->play(option_disabled_sfx);
     return;
@@ -639,7 +644,8 @@ void GameScene::issuePopupAssignAP(int& ap_button_index,
             players[Locator::getPlayers()->my_player_index]->room))
           .getEnum()))
   {
-    debug_text.print("NOT IN THE CORRECT ROOM TO ASSIGN ACTION "
+    debug_text.print("@issuePopupAssignAP - NOT IN THE CORRECT ROOM TO ASSIGN "
+                     "ACTION "
                      "POINTS!");
     ui_manager.showInfoPopup("WRONG_ROOM");
     Locator::getAudio()->play(option_disabled_sfx);
@@ -664,7 +670,8 @@ void GameScene::issuePopupAssignAP(int& ap_button_index,
       points_to_assign = 5;
       my_action_points += 5;
       used_item_this_turn = true;
-      debug_text.print("Assign item card points to issue card.");
+      debug_text.print("@issuePopupAssignAP - Assign item card points to issue "
+                       "card.");
       Locator::getPlayers()
         ->getPlayer(
           players[Locator::getPlayers()->my_player_index]->current_class)
@@ -704,7 +711,8 @@ void GameScene::issuePopupAssignAP(int& ap_button_index,
           points_to_assign))
     {
       my_action_points -= points_to_assign;
-      debug_text.print("Assigned action points! My total is now " +
+      debug_text.print("@issuePopupAssignAP - Assigned action points! My total "
+                       "is now " +
                        std::to_string(my_action_points) + ".");
 
       if (board.getIssueCards().at(ap_button_index).isSolved())
@@ -734,7 +742,8 @@ void GameScene::issuePopupAssignAP(int& ap_button_index,
   else
   {
     // We don't have enough action points
-    debug_text.print("COULD NOT ASSIGN ACTION POINTS! WE HAVE " +
+    debug_text.print("@issuePopupAssignAP - COULD NOT ASSIGN ACTION POINTS! WE "
+                     "HAVE " +
                      std::to_string(my_action_points) + ".");
     ui_manager.showInfoPopup("NOT_ENOUGH_AP");
     Locator::getAudio()->play(option_disabled_sfx);

@@ -149,7 +149,8 @@ void ObjectiveCard::useObjectiveCard()
     }
     default:
     {
-      debug_text.print("No objective card exists of this type...");
+      debug_text.print("@useObjectiveCard - No objective card exists of this "
+                       "type...");
       break;
     }
   }
@@ -256,7 +257,8 @@ bool ObjectiveCard::objectiveComplete(IssueCard* const _issue,
     }
     default:
     {
-      debug_text.print("No objective card exists of this type...");
+      debug_text.print("@objectiveComplete - No objective card exists of this "
+                       "type...");
       break;
     }
   }
