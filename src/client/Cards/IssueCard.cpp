@@ -140,7 +140,15 @@ int IssueCard::getAssignedPoints(player_classes _class)
 bool IssueCard::isSolved()
 {
   // return true if total assigned ap's is more than needed ap.
-  return action_points + issue_card_ap_variable <= total_ap_assigned;
+  if (action_points == 0)
+  {
+    return true;
+  }
+  else if (action_points != 0)
+  {
+    return action_points + issue_card_ap_variable <= total_ap_assigned;
+  }
+  return false;
 }
 
 void IssueCard::setIssueCardvariable(int _action_points)
