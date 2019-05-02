@@ -645,22 +645,28 @@ void GameBoard::checkissueSolved()
 {
   // Remove solved issues
   bool issue_solved = false;
-  for (size_t i = 0; i < active_issues.size(); ++i)
+  auto it = active_issues.begin();
+  int i = 0;
+  while (it != active_issues.end())
   {
-    if (active_issues[i].isSolved())
+    if (it->isSolved())
     {
+      it = active_issues.erase(it);
       issue_solved = true;
-      active_issues.erase(active_issues.begin() + static_cast<int>(i));
       active_issue_cards[i] = -1;
       slot_active[i] = false;
       debug_text.print("@checkissueSolved - issue " + std::to_string(i) +
                        " solved");
+      ++i;
+    }
+    else
+    {
+      ++it;
     }
   }
+
   // if any cards have been completed and deleted when client ends turn we want
   // to update the server active_issue_cards too.
-  // nts. THIS NEEDS CHANGING SO IT UPDATES IF MORE THAN ONE CARD HAS BEEN
-  // SOLVED.
   if (issue_solved)
   {
     auto new_share = DataShare(data_roles::CLIENT_SOLVED_ISSUE_CARD);
