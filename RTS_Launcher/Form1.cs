@@ -44,11 +44,14 @@ namespace RTS_Launcher
             game_config.Extract(tempS);
             game_config_json = JObject.Parse(Encoding.ASCII.GetString(tempS.ToArray()));
 
-            //Add keybinds to list from config
+            //Add keybinds to list from config (excluding debug)
             foreach (JProperty keybind in game_config_json["DEFAULT"]["keybinds"])
             {
-                tabPage2.Controls.Add(makeNewLabel(keybind.Name));
-                tabPage2.Controls.Add(makeNewDropdown(keycodeToKeyname(Convert.ToInt32(keybind.Value))));
+                if (!keybind.Name.ToUpper().Contains("DEBUG"))
+                {
+                    tabPage2.Controls.Add(makeNewLabel(keybind.Name));
+                    tabPage2.Controls.Add(makeNewDropdown(keycodeToKeyname(Convert.ToInt32(keybind.Value))));
+                }
             }
 
             //Load previous res from config
@@ -69,6 +72,9 @@ namespace RTS_Launcher
             //Load previous language
             string loadedLanguage = game_config_json["DEFAULT"]["language"].ToString();
             po_language.SelectedItem = loadedLanguage.Substring(0, 1) + loadedLanguage.Substring(1).ToLower();
+
+            //Load previous IP
+            serverIP.Text = game_config_json["DEFAULT"]["server_hostname"].ToString();
         }
 
         /* Launcher Close */

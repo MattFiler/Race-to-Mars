@@ -84,7 +84,20 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
     debug_text.print("Updating active item cards.");
     if (board.updateActiveItemCard(new_item_card))
     {
-      // item purchased, show popup for 3 secs
+      // item purchased, populate popup and show for 3 secs
+      ui_manager.popups()
+        .getPopup(ui_popups::ITEM_POPUP)
+        ->clearAllReferencedSprites();
+      ui_manager.popups()
+        .getPopup(ui_popups::ITEM_POPUP)
+        ->referenceSprite(*ui_manager.getSprite(
+          ui_sprites::POPUP_CARD_SHADOWS_0 + board.itemCardCount()));
+      for (ItemCard& item_card : board.getItemCards())
+      {
+        ui_manager.popups()
+          .getPopup(ui_popups::ITEM_POPUP)
+          ->referenceSprite(*item_card.getSprite());
+      }
       ui_manager.popups().getPopup(ui_popups::ITEM_POPUP)->showForTime(3);
     }
     update_item_card -= 1;

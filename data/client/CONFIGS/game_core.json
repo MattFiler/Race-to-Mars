@@ -12,7 +12,7 @@
 		  "Debug Test": 80,
 		  "Ready Up": 88,
 		  "Debug Skip Readyup": 32,
-		  "End Turn": 77,
+		  "Debug End Turn": 77,
 		  "Debug Spend AP": 76,
 		  "Debug Buy Item": 73,
 		  "Debug Obj Inventory": 79,
