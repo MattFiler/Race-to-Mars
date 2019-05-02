@@ -3,9 +3,28 @@
 #include "client/NetworkConnection/NetworkConnection.h"
 #include "gamelib/Constants.h"
 #include "gamelib/NetworkedData/NetworkedData.h"
+#include <chrono>
 #include <client/Cards/ObjectiveCard.h>
+#include <thread>
+
+/*
+ *
+ * This class features functions intended for use in different threads - each
+ * function is commented with its intended use. The general rule of thumb is if
+ * the function uses a vector of cards, it MUST be used in the game scene.
+ *
+ * We have arrays of card indexes which are safe to use in the network thread -
+ * due to sprite issues when accessing card vectors in the network thread, this
+ * must be stuck to!
+ *
+ * It also means we need to be careful to update our vector when new cards are
+ * added to the index array from the network thread. It should be checked each
+ * game update.
+ *
+ */
 
 /* Check to see if we're hovering over an interactable room  */
+/* THREAD: GAME */
 bool GameBoard::isHoveringOverRoom(Vector2 hover_pos)
 {
   for (ShipRoom& room : m_ship.getRooms())
@@ -19,6 +38,7 @@ bool GameBoard::isHoveringOverRoom(Vector2 hover_pos)
 }
 
 /* Check to see if we're hovering over an item card  */
+/* THREAD: GAME */
 bool GameBoard::isHoveringOverItemCard(Vector2 hover_pos)
 {
   for (ItemCard& card : item_inventory)
@@ -32,6 +52,7 @@ bool GameBoard::isHoveringOverItemCard(Vector2 hover_pos)
 }
 
 /* Check to see if we're hovering over an issue card  */
+/* THREAD: GAME */
 bool GameBoard::isHoveringOverIssueCard(Vector2 hover_pos)
 {
   for (IssueCard& card : active_issues)
@@ -45,6 +66,7 @@ bool GameBoard::isHoveringOverIssueCard(Vector2 hover_pos)
 }
 
 /* Check to see if we're hovering over an objective card  */
+/* THREAD: GAME */
 bool GameBoard::isHoveringOverObjectiveCard(Vector2 hover_pos)
 {
   return (active_obj_card != nullptr &&
@@ -52,6 +74,7 @@ bool GameBoard::isHoveringOverObjectiveCard(Vector2 hover_pos)
 }
 
 /* Return clicked interactable room  */
+/* THREAD: GAME */
 ShipRoom GameBoard::getClickedRoom(Vector2 clicked_pos)
 {
   // Check rooms
@@ -69,6 +92,7 @@ ShipRoom GameBoard::getClickedRoom(Vector2 clicked_pos)
 }
 
 /* Return clicked issue card  */
+/* THREAD: GAME */
 IssueCard* GameBoard::getClickedIssueCard(Vector2 clicked_pos)
 {
   // Check issue card deck
@@ -86,6 +110,7 @@ IssueCard* GameBoard::getClickedIssueCard(Vector2 clicked_pos)
 }
 
 /* Return clicked objective card  */
+/* THREAD: GAME */
 ObjectiveCard* GameBoard::getClickedObjectiveCard(Vector2 clicked_pos)
 {
   // Check objective card
@@ -100,19 +125,21 @@ ObjectiveCard* GameBoard::getClickedObjectiveCard(Vector2 clicked_pos)
 }
 
 /* Set the active objective card to update */
+/* THREAD: NETWORK */
 void GameBoard::setActiveObjectiveCard(int card_index)
 {
   new_obj_card = card_index;
 }
 
 /* Set active issue cards to update */
+/* THREAD: NETWORK */
 void GameBoard::setActiveIssueCards(int card_index[5], bool is_new_rotation)
 {
   // checkissueSolved();
   if (active_issues.size() >= static_cast<size_t>(game_config.max_issue_cards))
   {
     // Swap To Lose Game State.
-    lost_game = true;
+    setWinState(win_state::LOST);
   }
 
   for (int i = 0; i < game_config.max_issue_cards; ++i)
@@ -133,6 +160,7 @@ void GameBoard::setActiveIssueCards(int card_index[5], bool is_new_rotation)
 }
 
 /* Set the client's active objective card */
+/* THREAD: GAME */
 bool GameBoard::updateActiveObjectiveCard()
 {
   if (new_obj_card == -1)
@@ -151,6 +179,7 @@ bool GameBoard::updateActiveObjectiveCard()
 }
 
 /* Update the active issue cards if required */
+/* THREAD: GAME */
 bool GameBoard::updateActiveIssueCards()
 {
   if (!update_issues)
@@ -158,6 +187,31 @@ bool GameBoard::updateActiveIssueCards()
     return false;
   }
 
+  // Quickly hard lock here if cards are being updated - avoids thread errors
+  while (is_updating_cards)
+  {
+    debug_text.print("@updateActiveIssueCards - Cards are updating... "
+                     "waiting...");
+    std::this_thread::sleep_for(std::chrono::milliseconds(2));
+  }
+
+  // Check to see our win/loss state before updating
+  if (getIssueCards().size() >= 5)
+  {
+    debug_text.print("@serverEndsClientTurn - Lost game");
+    has_won = win_state::LOST;
+  }
+  else if (Locator::getPlayers()->current_progress_index >= 15)
+  {
+    debug_text.print("@serverEndsClientTurn - Won game");
+    has_won = win_state::WON;
+  }
+  else
+  {
+    has_won = win_state::UNDECIDED;
+  }
+
+  // Update our issue card vector (used by the game thread)
   for (int i = 0; i < game_config.max_issue_cards; ++i)
   {
     if (active_issue_cards[i] != -1 && !slot_active[i])
@@ -178,12 +232,16 @@ bool GameBoard::updateActiveIssueCards()
   }
   update_issues = false;
 
+  // Check to see if we've solved any issues...
+  checkissueSolved();
+
   debug_text.print("Finished updating active issue cards");
 
   return true;
 }
 
 /* Assign action points to specified issue card */
+/* THREAD: GAME */
 bool GameBoard::assignActionPointToIssue(player_classes _class,
                                          int _issue,
                                          int _points)
@@ -205,6 +263,7 @@ bool GameBoard::assignActionPointToIssue(player_classes _class,
 }
 
 /* Render the board */
+/* THREAD: GAME */
 void GameBoard::render(bool _obj_popup, bool _issue_popup, bool _item_popup)
 {
   // Ship
@@ -297,6 +356,7 @@ void GameBoard::render(bool _obj_popup, bool _issue_popup, bool _item_popup)
 }
 
 /* Get the room position for a player */
+/* THREAD: GAME */
 ShipRoom GameBoard::getRoom(ship_rooms _room)
 {
   for (ShipRoom& room : m_ship.getRooms())
@@ -310,18 +370,21 @@ ShipRoom GameBoard::getRoom(ship_rooms _room)
 }
 
 /* Get the active issue cards */
+/* THREAD: GAME */
 std::vector<IssueCard> GameBoard::getIssueCards()
 {
   return active_issues;
 }
 
 /* Get the item cards */
+/* THREAD: GAME */
 std::vector<ItemCard> GameBoard::getItemCards()
 {
   return item_inventory;
 }
 
 /* Get the count of issue cards */
+/* THREAD: GAME */
 int GameBoard::activeIssuesCount()
 {
   debug_text.print("requested issue count - it is " +
@@ -330,18 +393,21 @@ int GameBoard::activeIssuesCount()
 }
 
 /* Get the count of item cards */
+/* THREAD: GAME */
 int GameBoard::itemCardCount()
 {
   return static_cast<int>(item_inventory.size());
 }
 
 /* Get the active objective card */
+/* THREAD: GAME */
 ObjectiveCard* GameBoard::getObjectiveCard()
 {
   return active_obj_card;
 }
 
 /* Handle the events caused by issue cards */
+/* THREAD: GAME */
 void GameBoard::handleIssueCardEvents(issue_cards _card_type)
 {
   // This function will begin the logic of the issue card depending on what

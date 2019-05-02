@@ -90,6 +90,14 @@ class GameBoard
 
   void prepReSync();
 
+  void cardUpdateIsHappening(bool _happening)
+  {
+    is_updating_cards = _happening;
+  };
+
+  win_state getWinState() { return has_won; };
+  void setWinState(win_state _state) { has_won = _state; };
+
  private:
   /* Players */
   Players* m_players = nullptr;
@@ -123,6 +131,7 @@ class GameBoard
   // if active_issue_card[x] != -1 can be overridden by another card.
   std::atomic<bool> slot_active[5] = { false, false, false, false, false };
 
+  bool is_updating_cards = false;
   bool update_issues = false;
   int new_obj_card = -1;
   CardOffsets card_offsets;
@@ -130,7 +139,7 @@ class GameBoard
   // issue tracking
   int engine_countdown = 2;
 
-  bool lost_game = false;
+  win_state has_won = win_state::UNDECIDED;
 
   /* Misc */
   DebugText debug_text;

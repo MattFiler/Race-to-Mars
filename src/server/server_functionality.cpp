@@ -92,7 +92,7 @@ void RaceToSpaceServer::handleReceivedData(DataShare& data_to_send,
       break;
     }
 
-    // Client has solved an issue card!
+    // Client has solved an issue card - update our indexes
     case data_roles::CLIENT_SOLVED_ISSUE_CARD:
     {
       clientSolvedIssueCard(data_to_send, client);
@@ -649,38 +649,38 @@ void RaceToSpaceServer::clientRequestsItem(DataShare& data_to_send,
   sendData(client, static_cast<unsigned int>(-1), new_share);
 }
 
+/* Client figured out that an issue card was solved - update our list */
 void RaceToSpaceServer::clientSolvedIssueCard(DataShare& data_to_send,
                                               server_client& client)
 {
-  DataShare new_share = DataShare(data_roles::CLIENT_SOLVED_ISSUE_CARD);
+  // TODO: Currently this will most likely (or at least should) come in four
+  // times every full rotation, some kind of catch to only perform this once
+  // would be nice.
   Lobby* this_lobby = getLobbyByID(client.lobby_id);
   if (this_lobby == nullptr)
   {
-    debug_text.print("Client solved an issue card, but we failed to get their "
-                     "lobby to alert.");
+    debug_text.print("@clientSolvedIssueCard - ERROR - Lobby not found.");
     return;
   }
-  // re sync cards in lobby after client has completed 1 and
-  // redistribute to clients.
+  // Update cards
   for (int i = 0; i < 5; ++i)
   {
     this_lobby->active_issue_cards[i] = data_to_send.retrieve(i);
-    new_share.add(data_to_send.retrieve(i));
   }
-
-  sendData(client, static_cast<unsigned int>(-1), new_share);
 }
 
+/* A client has requested an objective card */
 void RaceToSpaceServer::clientRequestsObjective(DataShare& data_to_send,
                                                 server_client& client)
 {
   Lobby* this_lobby = getLobbyByID(client.lobby_id);
   if (this_lobby == nullptr)
   {
+    debug_text.print("@clientRequestsObjective - ERROR - Lobby not found.");
     return;
   }
 
-  // Compile data and send it back off
+  // Pick the last objective card from our deck and remove it, send to client
   DataShare new_share = DataShare(data_roles::CLIENT_REQUESTS_OBJ_CARD);
   new_share.add(data_to_send.retrieve(0));
   new_share.add(this_lobby->objective_deck.back());

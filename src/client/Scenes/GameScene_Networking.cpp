@@ -56,6 +56,7 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     // The server has ended the current turn, update our game accordingly
     case data_roles::SERVER_ENDED_CLIENT_TURN:
     {
+      board.cardUpdateIsHappening(true);
       debug_text.print("SERVER_ENDED_CLIENT_TURN");
       debug_text.print("CARD 1: " + std::to_string(received_data.retrieve(3)));
       debug_text.print("CARD 2: " + std::to_string(received_data.retrieve(4)));
@@ -63,6 +64,7 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       debug_text.print("CARD 4: " + std::to_string(received_data.retrieve(6)));
       debug_text.print("CARD 5: " + std::to_string(received_data.retrieve(7)));
       serverEndsClientTurn(received_data);
+      board.cardUpdateIsHappening(false);
       break;
     }
     // The active client has moved their player token, update it on our screen.
@@ -81,6 +83,7 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     // information to us.
     case data_roles::SERVER_SYNCS_CARD_INFO:
     {
+      board.cardUpdateIsHappening(true);
       debug_text.print("SERVER_SYNCS_CARD_INFO");
       debug_text.print("CARD 1: " + std::to_string(received_data.retrieve(0)));
       debug_text.print("CARD 2: " + std::to_string(received_data.retrieve(1)));
@@ -89,6 +92,7 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       debug_text.print("CARD 5: " + std::to_string(received_data.retrieve(4)));
       serverSyncsCardInfo(received_data);
       just_reconnected = true;
+      board.cardUpdateIsHappening(false);
       break;
     }
     // client requested item card, if this client is == to the one that
@@ -126,23 +130,6 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       debug_text.print(
         ". to:" +
         std::to_string(Locator::getPlayers()->current_progress_index));
-      break;
-    }
-    // Client has solved an issue card - resync all cards
-    case data_roles::CLIENT_SOLVED_ISSUE_CARD:
-    {
-      debug_text.print("Resyncing issue cards client side... ");
-      debug_text.print("CARD 1: " + std::to_string(received_data.retrieve(0)));
-      debug_text.print("CARD 2: " + std::to_string(received_data.retrieve(1)));
-      debug_text.print("CARD 3: " + std::to_string(received_data.retrieve(2)));
-      debug_text.print("CARD 4: " + std::to_string(received_data.retrieve(3)));
-      debug_text.print("CARD 5: " + std::to_string(received_data.retrieve(4)));
-      int sync_issues[5] = { received_data.retrieve(0),
-                             received_data.retrieve(1),
-                             received_data.retrieve(2),
-                             received_data.retrieve(3),
-                             received_data.retrieve(4) };
-      board.syncIssueCards(sync_issues);
       break;
     }
     // A client has completed an objective card or ended turn on obj spot.
@@ -195,11 +182,15 @@ void GameScene::serverEndsClientTurn(DataShare& received_data)
   {
     players[i]->is_active = (received_data.retrieve(1) == i);
   }
+
   // Re-sync progress index every turn.
   Locator::getPlayers()->current_progress_index = received_data.retrieve(2);
-  // Re-sync issue cards every turn.
+
+  // Re-sync issue cards if we've had a full rotation
   if (received_data.retrieve(12))
   {
+    debug_text.print("@serverEndsClientTurn - Full rotation, updating cards.");
+
     int active_issue_cards[5] = { received_data.retrieve(3),
                                   received_data.retrieve(4),
                                   received_data.retrieve(5),
@@ -208,49 +199,12 @@ void GameScene::serverEndsClientTurn(DataShare& received_data)
     board.setActiveIssueCards(active_issue_cards,
                               static_cast<bool>(received_data.retrieve(12)));
 
-    // SANITY CHECK
-    debug_text.print("Now we've updated, we sanity check...");
-    int index = 0;
-    for (IssueCard& card : board.getIssueCards())
-    {
-      debug_text.print("board has card " + std::to_string(card.getCardID()) +
-                       " in slot " + std::to_string(index));
-      index++;
-    }
-    int index2 = 0;
-    for (int i = 0; i < 5; i++)
-    {
-      if (received_data.retrieve(3 + i) != -1)
-      {
-        index2++;
-      }
-    }
-    if (index != index2)
-    {
-      debug_text.print("FATAL!! Board vector of cards DID NOT MATCH the data "
-                       "we got from server. Something went wrong!");
-      debug_text.print("Got " + std::to_string(index2) +
-                       " cards, but we have " + std::to_string(index) +
-                       " in our vector");
-    }
-    else
-    {
-      debug_text.print("CARD VECTOR MATCHES NETWORK DATA!");
-    }
-    debug_text.print("Finished sanity check");
-    // end
-
-    board.checkissueSolved(); // TODO: should this be called first?
+    // Update our misc states
+    // TODO: Check if we should do this elsewhere - find their useages
     free_player_movement = false;
     used_item_this_turn = false;
-    if (board.getIssueCards().size() >= 5)
-    {
-      lost_game = true;
-    }
-    else if (Locator::getPlayers()->current_progress_index >= 15)
-    {
-      won_game = true;
-    }
+
+    // Check to see if we're chasing the chicken!
     if (received_data.retrieve(13) == Locator::getPlayers()->my_player_index)
     {
       Locator::getPlayers()
@@ -260,6 +214,7 @@ void GameScene::serverEndsClientTurn(DataShare& received_data)
       got_chicken_card = true;
     }
   }
+
   // Pull a new objective card if required.
   if (Locator::getPlayers()->current_progress_index % 2 == 0 &&
       Locator::getPlayers()->current_progress_index != 0 &&
@@ -273,6 +228,7 @@ void GameScene::serverEndsClientTurn(DataShare& received_data)
                      std::to_string(received_data.retrieve(
                        8 + Locator::getPlayers()->my_player_index)));
   }
+
   // End the scene lock.
   current_scene_lock_active = false;
   debug_text.print("The server ended the current go, and passed "
@@ -330,7 +286,7 @@ void GameScene::clientActionPointsUpdated(DataShare& received_data)
   }
 }
 
-/* Server syncs card info */
+/* Server syncs card info - used for reconnection */
 void GameScene::serverSyncsCardInfo(DataShare& received_data)
 {
   // Sync issue cards.
@@ -364,7 +320,7 @@ void GameScene::serverSyncsCardInfo(DataShare& received_data)
   }
 }
 
-/* Server syncs player position info */
+/* Server syncs player position info - used for reconnection */
 void GameScene::serverSyncsPositionInfo(DataShare& received_data)
 {
   for (int i = 0; i < 4; i++)

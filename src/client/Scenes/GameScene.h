@@ -76,8 +76,6 @@ class GameScene : public Scene
   bool used_item_this_turn = false;
 
   // Win/Lose State
-  bool lost_game = false;
-  bool won_game = false;
   bool game_over_timer_started = false;
   double game_over_timer = 0;
 
