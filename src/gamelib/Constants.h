@@ -27,6 +27,14 @@ struct GameConfig
   int max_issue_cards = 5;
 };
 
+/* Won or lost? */
+enum win_state
+{
+  UNDECIDED,
+  LOST,
+  WON
+};
+
 /* In-Game UI Elements */
 enum ui_sprites
 {

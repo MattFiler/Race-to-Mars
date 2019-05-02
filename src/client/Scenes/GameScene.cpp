@@ -121,8 +121,8 @@ void GameScene::createButtonsAndPopups()
                           "UI/INGAME_UI/progress_bar.png");
   ui_manager
     .createSprite(ui_sprites::PROGRESS_MARKER,
-                  "UI/INGAME_UI/progress_marker_padded.png")
-    ->yPos(89.0f);
+                  "UI/INGAME_UI/progress_marker.png")
+    ->xPos(401.0f);
   ui_manager.createSprite(ui_sprites::SYNC_OVERLAY, "UI/INGAME_UI/syncing.png");
   ui_manager.createSprite(ui_sprites::OTHER_PLAYER_DISCONNECTED_OVERLAY,
                           "UI/INGAME_UI/disconnect_overlay.png");

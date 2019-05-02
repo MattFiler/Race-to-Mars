@@ -9,9 +9,19 @@
 #include <client/Cards/ObjectiveCard.h>
 #include <gamelib/Packet.h>
 
+#include <chrono>
+#include <thread>
+
 /* Update function */
 game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
 {
+  // Force a hard lock-out here if active_issue_cards is being updated
+  while (updating_network_info)
+  {
+    debug_text.print("Waiting for network update to finish...");
+    std::this_thread::sleep_for(std::chrono::milliseconds(2));
+  }
+
   // Check to see if we should auto-exit
   if (game_over_timer_started)
   {
@@ -179,6 +189,12 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
     just_reconnected = false;
   }
 
+  // Debug
+  if (updating_network_info)
+  {
+    debug_text.print("Reached end of update look and network was updating...");
+  }
+
   return next_scene;
 }
 
@@ -188,6 +204,19 @@ void GameScene::updatePopups(const ASGE::GameTime& game_time)
   // Update cards if required and show popup if needed
   if (board.updateActiveIssueCards())
   {
+    // SANITY CHECK
+    debug_text.print("@updatePopups - Now we've updated, we sanity check...");
+    int index = 0;
+    for (IssueCard& card : board.getIssueCards())
+    {
+      debug_text.print("@updatePopups - board has card " +
+                       std::to_string(card.getCardID()) + " in slot " +
+                       std::to_string(index));
+      index++;
+    }
+    debug_text.print("@updatePopups - Finished sanity check");
+    // END SANITY CHECK
+
     // Hide all old popups
     ui_manager.popups().hideAll();
 
@@ -286,7 +315,7 @@ void GameScene::updatePopupVisibility(const ASGE::GameTime& game_time)
   }
 
   // Show win/Lose states
-  if (won_game &&
+  if (board.getWinState() == win_state::WON &&
       !ui_manager.popups().getPopup(ui_popups::ISSUE_POPUP)->isVisible() &&
       !ui_manager.popups().getPopup(ui_popups::OBJECTIVE_POPUP)->isVisible() &&
       !ui_manager.popups().getPopup(ui_popups::CHICKEN_POPUP)->isVisible() &&
@@ -295,7 +324,7 @@ void GameScene::updatePopupVisibility(const ASGE::GameTime& game_time)
     ui_manager.popups().getPopup(ui_popups::YOU_WIN_POPUP)->showForTime(10);
     game_over_timer_started = true;
   }
-  else if (lost_game &&
+  else if (board.getWinState() == win_state::LOST &&
            !ui_manager.popups().getPopup(ui_popups::ISSUE_POPUP)->isVisible() &&
            !ui_manager.popups()
               .getPopup(ui_popups::OBJECTIVE_POPUP)

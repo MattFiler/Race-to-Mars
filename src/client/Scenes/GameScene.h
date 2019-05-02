@@ -10,6 +10,7 @@
 #include <client/Cards/IssueCard.h>
 #include <client/Cards/ItemCard.h>
 #include <client/Cards/ObjectiveCard.h>
+#include <mutex>
 #include <vector>
 
 class GameScene : public Scene
@@ -57,12 +58,13 @@ class GameScene : public Scene
   // Debug output - disabled in release mode
   void debugOutput();
 
+  // Mutex to lock the game upon getting network data
+  std::mutex mtx;
+
   // Content
   GameBoard board;
   LobbyPlayer* players[4] = { nullptr, nullptr, nullptr, nullptr };
   SceneUI ui_manager;
-
-  bool new_turn = true;
 
   // Ability trackers
   bool is_new_turn = false;
@@ -74,8 +76,6 @@ class GameScene : public Scene
   bool used_item_this_turn = false;
 
   // Win/Lose State
-  bool lost_game = false;
-  bool won_game = false;
   bool game_over_timer_started = false;
   double game_over_timer = 0;
 
@@ -86,6 +86,8 @@ class GameScene : public Scene
   bool game_is_paused = false;
   double game_pause_timer = 0;
   bool just_reconnected = false;
+  bool new_turn = true;
+  bool updating_network_info = false;
 
   // chat msg
   bool entering_msg = false;

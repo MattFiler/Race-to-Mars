@@ -9,6 +9,7 @@
 #include "gamelib/Constants.h"
 #include "gamelib/Debug/DebugText.h"
 #include <Engine/Renderer.h>
+#include <atomic>
 
 class ObjectiveCard;
 
@@ -62,9 +63,6 @@ class GameBoard
   void clearItems() { item_inventory.clear(); }
   void useObjCardDebug();
 
-  // issue tracking
-  int engine_countdown = 2;
-
   bool
   assignActionPointToIssue(player_classes _class, int _issue, int _points = 1);
 
@@ -92,6 +90,14 @@ class GameBoard
 
   void prepReSync();
 
+  void cardUpdateIsHappening(bool _happening)
+  {
+    is_updating_cards = _happening;
+  };
+
+  win_state getWinState() { return has_won; };
+  void setWinState(win_state _state) { has_won = _state; };
+
  private:
   /* Players */
   Players* m_players = nullptr;
@@ -114,20 +120,26 @@ class GameBoard
   std::vector<ObjectiveCard> completed_obj_cards;
   ObjectiveCard* getObjCard() { return active_obj_card; }
 
-  int active_issue_cards[5] = { -1, -1, -1, -1, -1 };
-  int active_item_card[5] = { -1, -1, -1, -1, -1 };
+  // While we use vectors for our card objects, unfortunately these trackers
+  // need to be in place to fix some threading issues with sprite creation.
+  std::atomic<int> active_issue_cards[5] = { -1, -1, -1, -1, -1 };
+  std::atomic<int> active_item_card[5] = { -1, -1, -1, -1, -1 };
   bool item_slot_active[5] = { false, false, false, false, false };
 
   int objective_cards_inplay[4] = { -1, -1, -1, -1 };
   // Slot active is to keep track of available slots to place new cards since
   // if active_issue_card[x] != -1 can be overridden by another card.
-  bool slot_active[5] = { false, false, false, false, false };
+  std::atomic<bool> slot_active[5] = { false, false, false, false, false };
 
+  bool is_updating_cards = false;
   bool update_issues = false;
   int new_obj_card = -1;
   CardOffsets card_offsets;
 
-  bool lost_game = false;
+  // issue tracking
+  int engine_countdown = 2;
+
+  win_state has_won = win_state::UNDECIDED;
 
   /* Misc */
   DebugText debug_text;
