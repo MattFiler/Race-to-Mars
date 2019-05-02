@@ -46,7 +46,8 @@ class GameBoard
 
   void syncIssueCards(int active_cards[5]);
 
-  void checkissueSolved();
+  void checkIssueSolved();         // For full rotations
+  void checkIssueSolvedThisTurn(); // For each turn
   bool checkObjectiveCardComplete(player_classes _this_clients_class);
 
   bool updateActiveIssueCards();
@@ -111,6 +112,7 @@ class GameBoard
   std::vector<IssueCard> active_issues;
   std::vector<ItemCard> item_inventory;
   std::vector<ObjectiveCard> objective_card_inventory;
+  std::vector<int> solved_card_queue;
 
   bool pilot_blackhole = false;
   bool bonus_movement = false;

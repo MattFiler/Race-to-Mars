@@ -141,13 +141,23 @@ enum data_roles
    */
 
   CLIENT_SOLVED_ISSUE_CARD,
-  /* ^ The client has requested an item card
+  /* ^ This is effectively a card sync to server at the end of a full rotation
    *   [0] = active issue [0]
    *   [1] = active issue [1]
    *   [2] = active issue [2]
    *   [3] = active issue [3]
    *   [4] = active issue [4]
    */
+
+  CLIENT_TURN_SOLVED_ISSUE,
+  /* ^ A turn has just ended, pass over any card IDs that were solved
+   *   [0] = solved card 1 array index
+   *   [1] = solved card 2 array index (optional)
+   *   [2] = solved card 3 array index (optional)
+   *   [3] = solved card 4 array index (optional)
+   *   [4] = solved card 5 array index (optional)
+   */
+
   CLIENT_REQUESTS_OBJ_CARD,
   /* ^ The client has requested an objective card
    *   [0] = client ID that pulled the item.

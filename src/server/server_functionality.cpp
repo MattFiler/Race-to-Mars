@@ -99,6 +99,13 @@ void RaceToSpaceServer::handleReceivedData(DataShare& data_to_send,
       break;
     }
 
+      // An issue card was solved this turn, update our info
+    case data_roles::CLIENT_TURN_SOLVED_ISSUE:
+    {
+      clientSolvedIssueCardThisTurn(data_to_send, client);
+      break;
+    }
+
     // Client requests an objective card
     case data_roles::CLIENT_REQUESTS_OBJ_CARD:
     {
@@ -670,6 +677,31 @@ void RaceToSpaceServer::clientSolvedIssueCard(DataShare& data_to_send,
                      ", previously " +
                      std::to_string(this_lobby->active_issue_cards[i]));
     this_lobby->active_issue_cards[i] = data_to_send.retrieve(i);
+  }
+}
+
+/* An issue card was solved this turn, update our info */
+void RaceToSpaceServer::clientSolvedIssueCardThisTurn(DataShare& data_to_send,
+                                                      server_client& client)
+{
+  Lobby* this_lobby = getLobbyByID(client.lobby_id);
+  if (this_lobby == nullptr)
+  {
+    debug_text.print("@clientSolvedIssueCardThisTurn - ERROR - Lobby not "
+                     "found.");
+    return;
+  }
+  // Update cards
+  for (int i = 0; i < 5; ++i)
+  {
+    if (data_to_send.retrieve(i) == -1)
+    {
+      break;
+    }
+    debug_text.print("@clientSolvedIssueCardThisTurn - Card at index " +
+                     std::to_string(data_to_send.retrieve(i)) +
+                     " was marked as solved.");
+    this_lobby->active_issue_cards[data_to_send.retrieve(i)] = -1;
   }
 }
 

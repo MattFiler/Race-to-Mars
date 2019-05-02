@@ -40,6 +40,8 @@ class RaceToSpaceServer
   void clientProgressChange(DataShare& data_to_send, server_client& client);
   void clientRequestsItem(DataShare& data_to_send, server_client& client);
   void clientSolvedIssueCard(DataShare& data_to_send, server_client& client);
+  void
+  clientSolvedIssueCardThisTurn(DataShare& data_to_send, server_client& client);
   void clientRequestsObjective(DataShare& data_to_send, server_client& client);
   void clientFreeMovement(DataShare& data_to_send, server_client& client);
   void chatMsg(DataShare& data_to_send, server_client& client);

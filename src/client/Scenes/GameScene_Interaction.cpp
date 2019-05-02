@@ -340,11 +340,18 @@ void GameScene::playingClicksWhenActive(Vector2& mouse_pos)
           // add objective card to inventory.
         }
       }
+
+      // Before ending our go, let the server know if we solved any issues
+      board.checkIssueSolvedThisTurn();
+
+      // End the go
       DataShare new_share = DataShare(data_roles::CLIENT_WANTS_TO_END_TURN);
       new_share.add(Locator::getPlayers()->my_player_index);
       Locator::getNetworkInterface()->sendData(new_share);
       current_scene_lock_active = true;
-      debug_text.print("@playingClicksWhenActive - Requesting to end my go!!");
+      debug_text.print("@playingClicksWhenActive - Requesting to end my go!! "
+                       "My client ID " +
+                       std::to_string(Locator::getPlayers()->my_player_index));
 
       Locator::getAudio()->play(end_turn_sfx);
 
