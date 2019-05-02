@@ -79,7 +79,7 @@ void GameScene::render()
         *ui_manager.getSprite(ui_sprites::PROGRESS_METER)->getSprite());
       ui_manager.getSprite(ui_sprites::PROGRESS_MARKER)
         ->yPos(static_cast<float>(
-          ((Locator::getPlayers()->current_progress_index + 3.5) * 30)));
+          ((Locator::getPlayers()->current_progress_index * 31) + 101)));
       renderer->renderSprite(
         *ui_manager.getSprite(ui_sprites::PROGRESS_MARKER)->getSprite());
 
