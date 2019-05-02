@@ -82,7 +82,7 @@ class Locator
   };
 
   //"Setters" (set the pointer to the interface - this needs to be something
-  //that isn't gonna be destroyed during runtime)
+  // that isn't gonna be destroyed during runtime)
   static void setupRenderer(ASGE::Renderer* inst_renderer)
   {
     ref_renderer = inst_renderer;

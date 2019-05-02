@@ -130,7 +130,7 @@ void GameScene::playingInput()
       Locator::getNetworkInterface()->sendData(new_share);
     }
     // debug end go
-    if (keys.keyReleased("End Turn") &&
+    if (keys.keyReleased("Debug End Turn") &&
         players[Locator::getPlayers()->my_player_index]->is_active &&
         !entering_msg)
     {

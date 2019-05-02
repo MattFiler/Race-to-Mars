@@ -30,7 +30,7 @@ class ItemCard : public Card
   /* Item Metadata */
   item_cards cardID = item_cards::ITEM_PLACEHOLDER;
   player_classes player_class_type = player_classes::UNASSIGNED;
-    bool activated = true;
+  bool activated = true;
 
   /* AP Modifiers */
   int action_point_varibale = 0;
