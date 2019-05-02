@@ -694,6 +694,7 @@ void GameBoard::checkissueSolved()
   int card_index = 0;
   int index = 0;
   std::vector<int> cards_solved;
+  std::vector<int> cards_solved_id;
   for (IssueCard& card : active_issues)
   {
     if (card.isSolved())
@@ -702,6 +703,8 @@ void GameBoard::checkissueSolved()
                        std::to_string(index) +
                        " was marked as solved, deleting");
       cards_solved.push_back(card_index);
+      active_issue_cards[index] = -1;
+      slot_active[index] = false;
     }
     else
     {
@@ -710,8 +713,6 @@ void GameBoard::checkissueSolved()
       card_index++; // Only increment if not being deleted, else our index will
                     // be off when deleting
     }
-    active_issue_cards[index] = -1;
-    slot_active[index] = false;
     index++;
   }
   debug_text.print("@checkissueSolved ---");
