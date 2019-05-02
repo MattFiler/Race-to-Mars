@@ -195,10 +195,15 @@ bool GameBoard::updateActiveIssueCards()
     std::this_thread::sleep_for(std::chrono::milliseconds(2));
   }
 
+  // Check to see if we've solved any issues...
+  checkissueSolved();
+
   // Check to see our win/loss state before updating
+  // TODO: Fix this, we currently lose too early!
   if (getIssueCards().size() >= 5)
   {
-    debug_text.print("@serverEndsClientTurn - Lost game");
+    debug_text.print("@serverEndsClientTurn - Lost game with " +
+                     std::to_string(getIssueCards().size()) + " issues");
     has_won = win_state::LOST;
   }
   else if (Locator::getPlayers()->current_progress_index >= 15)
@@ -230,10 +235,41 @@ bool GameBoard::updateActiveIssueCards()
         static_cast<issue_cards>(active_issue_cards[i].load()));
     }
   }
-  update_issues = false;
 
-  // Check to see if we've solved any issues...
-  checkissueSolved();
+  // Validate that we have the correct data
+  std::vector<int> cards_to_remove;
+  int index = 0;
+  for (IssueCard& card : active_issues)
+  {
+    bool valid = false;
+    for (int i = 0; i < game_config.max_issue_cards; i++)
+    {
+      if (card.getCardID() == active_issue_cards[i])
+      {
+        valid = true;
+      }
+    }
+    // If card is invalid, remove it (this should never happen at ship)
+    if (!valid)
+    {
+      debug_text.print("@updateActiveIssueCards - We have card with ID " +
+                       std::to_string(card.getCardID()) +
+                       " in our deck, but the server doesn't know about this "
+                       "card.");
+      debug_text.print("@updateActiveIssueCards - Auto-removing this dodgy "
+                       "card, but please investigate!");
+      cards_to_remove.push_back(index);
+    }
+    index++;
+  }
+  debug_text.print("@updateActiveIssueCards ---");
+  for (int card_index : cards_to_remove)
+  {
+    active_issues.erase(active_issues.begin() + card_index);
+    debug_text.print("@updateActiveIssueCards - Auto-removed card at index " +
+                     std::to_string(card_index) + " please investigate!");
+  }
+  update_issues = false;
 
   debug_text.print("Finished updating active issue cards");
 

@@ -300,7 +300,7 @@ void GameScene::serverSyncsCardInfo(DataShare& received_data)
   debug_text.print("Sync: updated active issue cards.");
   for (int i = 0; i < 5; i++)
   {
-    debug_text.print("Sync: issue card 1: " +
+    debug_text.print("Sync: issue card " + std::to_string(i) + ": " +
                      std::to_string(received_data.retrieve(i)));
   }
   // Sync my objective card
