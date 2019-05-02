@@ -1,16 +1,35 @@
 #pragma once
+#include "client/KeyHandler/KeyHandler.h"
+#include "client/NetworkConnection/NetworkConnection.h"
+#include "client/Players/AllPlayers.h"
+#include "client/Scenes/SceneManager.h"
+#include "client/UI/Cursor.h"
+#include "gamelib/Debug/DebugText.h"
+#include "gamelib/FileHandler/FileHandler.h"
+#include "gamelib/Localisation/Localisation.h"
 #include <Engine/OGLGame.h>
+#include <atomic>
+#include <enetpp/client.h>
+#include <json.hpp>
+#include <queue>
+#include <soloud.h>
+#include <soloud_wav.h>
 #include <string>
+using json = nlohmann::json;
 
 /**
  *  An OpenGL Game based on ASGE.
  */
-class MyASGEGame : public ASGE::OGLGame
+class RaceToSpace : public ASGE::OGLGame
 {
  public:
-  MyASGEGame();
-  ~MyASGEGame();
+  RaceToSpace();
+  ~RaceToSpace();
   virtual bool init() override;
+
+  void connection();
+  void disconnection();
+  void data(const enet_uint8* data, size_t data_size);
 
  private:
   void keyHandler(const ASGE::SharedEventData data);
@@ -23,6 +42,18 @@ class MyASGEGame : public ASGE::OGLGame
   int key_callback_id = -1;   /**< Key Input Callback ID. */
   int mouse_callback_id = -1; /**< Mouse Input Callback ID. */
 
-  // Add your GameObjects
-  bool in_menu = true;
+ private:
+  bool has_connected_to_server = false;
+  int active_font = 0;
+
+  NetworkConnection networked_client;
+  json game_config;
+  FileHandler file_handler;
+  DebugText debug_text;
+  KeyHandler key_handler;
+  SoLoud::Soloud audio;
+  SceneManager scene_manager;
+  Localisation localiser;
+  Cursor cursor_pointer;
+  Players* all_players = nullptr;
 };

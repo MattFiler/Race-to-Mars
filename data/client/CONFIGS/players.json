@@ -1,0 +1,39 @@
+{
+	"DEFAULT": {
+		"counter_sprite": "UI/PLAYER_COUNTERS/placeholder.png",
+		"lobby_sprite": "UI/LOBBY/player_unassigned.png",
+		"ingame_tab_sprite": "UI/INGAME_UI/unassigned_tab.png",
+		"start_room": 0,
+		"friendly_name": "BLANK_STRING",
+		"counter_width": 50,
+		"counter_height": 50
+	},
+	"COMMUNICATIONS": {
+		"counter_sprite": "UI/PLAYER_COUNTERS/communications.png",
+		"lobby_sprite": "UI/LOBBY/player_comms.png",
+		"ingame_tab_sprite": "UI/INGAME_UI/comms_tab.png",
+		"start_room": 3,
+		"friendly_name": "PLAYER_COMMS"
+	},
+	"PILOT": {
+		"counter_sprite": "UI/PLAYER_COUNTERS/pilot.png",
+		"lobby_sprite": "UI/LOBBY/player_pilot.png",
+		"ingame_tab_sprite": "UI/INGAME_UI/pilot_tab.png",
+		"start_room": 4,
+		"friendly_name": "PLAYER_PILOT"
+	},
+	"ENGINEER": {
+		"counter_sprite": "UI/PLAYER_COUNTERS/engineer.png",
+		"lobby_sprite": "UI/LOBBY/player_engineer.png",
+		"ingame_tab_sprite": "UI/INGAME_UI/engineer_tab.png",
+		"start_room": 2,
+		"friendly_name": "PLAYER_ENGIN"
+	},
+	"MEDIC": {
+		"counter_sprite": "UI/PLAYER_COUNTERS/medic.png",
+		"lobby_sprite": "UI/LOBBY/player_medic.png",
+		"ingame_tab_sprite": "UI/INGAME_UI/medic_tab.png",
+		"start_room": 1,
+		"friendly_name": "PLAYER_MEDIC"
+	}
+}

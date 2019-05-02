@@ -1,0 +1,27 @@
+{
+	"DEFAULT": {
+		"resolution": {
+			"width": 1280,
+			"height": 720
+		},
+		"keybinds": {
+		  "Activate": 257,
+		  "Back": 256,
+		  "Menu Up": 265,
+		  "Menu Down": 264,
+		  "Debug Test": 80,
+		  "Ready Up": 88,
+		  "Debug Skip Readyup": 32,
+		  "Debug End Turn": 77,
+		  "Debug Spend AP": 76,
+		  "Debug Buy Item": 73,
+		  "Debug Obj Inventory": 79,
+		  "Debug Use Objective Action": 49,
+		  "Debug Chat": 84
+		},
+		"language": "English",
+		"server_hostname": "localhost",
+		"server_port": 8888,
+		"enable_debug": true
+	}
+}

@@ -1,0 +1,6 @@
+{
+	"number_of_rooms": 5,
+	"default_pos": [500,100],
+	"render_size": [500, 493],
+	"base_size": [500,493]
+}

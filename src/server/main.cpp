@@ -1,8 +1,13 @@
+#include "server.h"
 #include <enetpp/client.h>
 #include <gamelib/gamelib.h>
+#include <memory>
 int main()
 {
-  enetpp::global_state::get().initialize();
-  enetpp::global_state::get().deinitialize();
+  std::unique_ptr<RaceToSpaceServer> server =
+    std::make_unique<RaceToSpaceServer>();
+
+  server->initialise();
+  server->run();
   return 0;
 }

@@ -3,12 +3,9 @@
 #include <gamelib/gamelib.h>
 int main()
 {
-  enetpp::global_state::get().initialize();
-
-  MyASGEGame asge_game;
+  RaceToSpace asge_game;
   asge_game.init();
   asge_game.run();
 
-  enetpp::global_state::get().deinitialize();
   return 0;
 }

@@ -25,11 +25,12 @@ if(GAMEDATA_FOLDER)
 
     if(WIN32)
         ## creates a compressed version of the game data ready for publishing ##
+        get_target_property(PROJECT_OUTPUT_DIR ${PROJECT_NAME} RUNTIME_OUTPUT_DIRECTORY)
         add_custom_target(
                 ${PROJECT_NAME}+GameData
-                COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/../tools/7zip/${PLATFORM}/7za" -tzip a
+                COMMAND "${CMAKE_SOURCE_DIR}/tools/7zip/${PLATFORM}/7za" -tzip a
                         "$<TARGET_FILE_DIR:${PROJECT_NAME}>/game.dat" "${CMAKE_SOURCE_DIR}/${GAMEDATA_FOLDER}/*"
-                WORKING_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+                WORKING_DIRECTORY "${PROJECT_OUTPUT_DIR}"
                 COMMENT "creating data archive")
     else()
         ## creates a compressed version of the game data for nix ready for publishing ##

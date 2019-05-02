@@ -1,27 +1,32 @@
 #include <string>
 
+#include "Locator/ServiceLocator.h"
+#include "gamelib/Constants.h"
 #include <Engine/DebugPrinter.h>
 #include <Engine/Input.h>
 #include <Engine/InputEvents.h>
 #include <Engine/Keys.h>
 #include <Engine/Sprite.h>
 
+#include <iostream>
+
 #include "game.h"
+
 /**
  *   @brief   Default Constructor.
  *   @details Consider setting the game's width and height
  *            and even seeding the random number generator.
  */
-MyASGEGame::MyASGEGame()
+RaceToSpace::RaceToSpace()
 {
-  game_name = "ASGE Game";
+  game_name = "Race to Mars";
 }
 
 /**
  *   @brief   Destructor.
  *   @details Remove any non-managed memory and callbacks.
  */
-MyASGEGame::~MyASGEGame()
+RaceToSpace::~RaceToSpace()
 {
   this->inputs->unregisterCallback(static_cast<unsigned int>(key_callback_id));
 
@@ -36,26 +41,107 @@ MyASGEGame::~MyASGEGame()
  *            callback should also be set in the initialise function.
  *   @return  True if the game initialised correctly.
  */
-bool MyASGEGame::init()
+bool RaceToSpace::init()
 {
+  // Load core config
+  game_config = file_handler.loadConfig("game_core.json");
+
+  // Connect us to our server
+  networked_client.connectToServer(game_config["server_hostname"],
+                                   game_config["server_port"]);
+
+  // Configure game
   setupResolution();
   if (!initAPI())
   {
     return false;
   }
 
-  toggleFPS();
+  // Enable debug outputs if requested
+  if (game_config["enable_debug"])
+  {
+    debug_text.enabled = true;
+    // toggleFPS();
+  }
 
-  // input handling functions
+  // Setup audio
+  audio.init();
+
+  // Setup our locator
+  Locator::setupRenderer(renderer.get());
+  Locator::setupInput(inputs.get());
+  Locator::setupAudio(&audio);
+  Locator::setupNetworkInterface(&networked_client);
+  Locator::setupCursor(&cursor_pointer);
+
+  // Initialise our players & pass to locator
+  all_players = new Players();
+  Locator::setupPlayers(all_players);
+
+  // Setup cursor
+  cursor_pointer.configure();
+
+  // Setup keybinds
+  key_handler.setup(game_config["keybinds"]);
+
+  // Configure localisation
+  localiser.configure(game_config["language"]);
+
+  // Start out on the main menu
+  scene_manager.setCurrentScene(game_global_scenes::MAIN_MENU);
+
+  // Load font
+  auto font_buffer = file_handler.openAsBuffer("UI/font_regular.ttf");
+  active_font =
+    renderer->loadFontFromMem("Alte Haas",
+                              font_buffer.as_unsigned_char(),
+                              static_cast<unsigned int>(font_buffer.length),
+                              static_cast<int>(30 * GameResolution::scale));
+
+  // Hide cursor
+  inputs->setCursorMode(ASGE::MOUSE::CursorMode::HIDDEN);
+
+  // Input handling functions
   inputs->use_threads = false;
-
   key_callback_id =
-    inputs->addCallbackFnc(ASGE::E_KEY, &MyASGEGame::keyHandler, this);
-
+    inputs->addCallbackFnc(ASGE::E_KEY, &RaceToSpace::keyHandler, this);
   mouse_callback_id = inputs->addCallbackFnc(
-    ASGE::E_MOUSE_CLICK, &MyASGEGame::clickHandler, this);
+    ASGE::E_MOUSE_CLICK, &RaceToSpace::clickHandler, this);
+
+  // Start listening to the server
+  networked_client.startListening(this);
 
   return true;
+}
+
+// Act on connection to our server
+void RaceToSpace::connection()
+{
+  scene_manager.networkConnected();
+
+  // debugging
+  debug_text.print("Connected to server.");
+  has_connected_to_server = true;
+}
+
+// Act on disconnection to our server
+void RaceToSpace::disconnection()
+{
+  scene_manager.networkDisconnected();
+
+  // debugging
+  debug_text.print("Disconnected from server.");
+  has_connected_to_server = false;
+}
+
+// Function called when data is received from the server
+void RaceToSpace::data(const enet_uint8* data, size_t data_size)
+{
+  scene_manager.networkDataReceived(data, data_size);
+
+  // Debugging with message send/receive
+  //  ChatMsg msg(reinterpret_cast<const char*>(data), data_size);
+  //  debug_text.print("received message from server: " + msg);
 }
 
 /**
@@ -65,15 +151,14 @@ bool MyASGEGame::init()
  *            game frames when resolutions are changed in size.
  *   @return  void
  */
-void MyASGEGame::setupResolution()
+void RaceToSpace::setupResolution()
 {
-  // how will you calculate the game's resolution?
-  // will it scale correctly in full screen? what AR will you use?
-  // how will the game be framed in native 16:9 resolutions?
-  // here are some arbitrary values for you to adjust as you see fit
-  // https://www.gamasutra.com/blogs/KenanBolukbasi/20171002/306822/Scaling_and_MultiResolution_in_2D_Games.php
-  game_width = 640;
-  game_height = 920;
+  game_width = game_config["resolution"]["width"];
+  GameResolution::width = game_width;
+  game_height = game_config["resolution"]["height"];
+  GameResolution::height = game_height;
+  GameResolution::scale =
+    static_cast<float>(game_height) / GameResolution::base_height;
 }
 
 /**
@@ -86,14 +171,9 @@ void MyASGEGame::setupResolution()
  *   @see     KeyEvent
  *   @return  void
  */
-void MyASGEGame::keyHandler(const ASGE::SharedEventData data)
+void RaceToSpace::keyHandler(const ASGE::SharedEventData data)
 {
-  auto key = static_cast<const ASGE::KeyEvent*>(data.get());
-
-  if (key->key == ASGE::KEYS::KEY_ESCAPE)
-  {
-    signalExit();
-  }
+  scene_manager.keyHandler(data);
 }
 
 /**
@@ -106,15 +186,9 @@ void MyASGEGame::keyHandler(const ASGE::SharedEventData data)
  *   @see     ClickEvent
  *   @return  void
  */
-void MyASGEGame::clickHandler(const ASGE::SharedEventData data)
+void RaceToSpace::clickHandler(const ASGE::SharedEventData data)
 {
-  auto click = static_cast<const ASGE::ClickEvent*>(data.get());
-
-  double x_pos = click->xpos;
-  double y_pos = click->ypos;
-
-  ASGE::DebugPrinter{} << "x_pos: " << x_pos << std::endl;
-  ASGE::DebugPrinter{} << "y_pos: " << y_pos << std::endl;
+  scene_manager.clickHandler(data);
 }
 
 /**
@@ -124,13 +198,16 @@ void MyASGEGame::clickHandler(const ASGE::SharedEventData data)
  *            the buffers are swapped accordingly and the image shown.
  *   @return  void
  */
-void MyASGEGame::update(const ASGE::GameTime& game_time)
+void RaceToSpace::update(const ASGE::GameTime& game_time)
 {
-  // auto dt_sec = game_time.delta.count() / 1000.0;;
-  // make sure you use delta time in any movement calculations!
-
-  if (!in_menu)
+  double x_pos, y_pos;
+  inputs.get()->getCursorPos(x_pos, y_pos);
+  cursor_pointer.updatePosition(x_pos, y_pos);
+  cursor_pointer.setCursorActive(false); // this is then overridden by
+                                         // hover-able items
+  if (!scene_manager.update(game_time))
   {
+    signalExit();
   }
 }
 
@@ -141,14 +218,30 @@ void MyASGEGame::update(const ASGE::GameTime& game_time)
  *            swapped accordingly and the image shown.
  *   @return  void
  */
-void MyASGEGame::render(const ASGE::GameTime&)
+void RaceToSpace::render(const ASGE::GameTime&)
 {
-  renderer->setFont(0);
+  renderer->setFont(active_font);
 
-  if (in_menu)
+  scene_manager.render();
+
+  // Server connection debug
+  /*
+  if (has_connected_to_server)
   {
+    std::string server_ip(game_config["server_hostname"]);
+    renderer->renderText("CONNECTED: " + server_ip, game_width - 250, 50, 0.5f);
+    renderer->renderText("PING: " + std::to_string(networked_client.getClient()
+                                                     ->get_statistics()
+                                                     ._round_trip_time_in_ms),
+                         game_width - 250,
+                         75,
+                         0.5f);
   }
   else
   {
+    renderer->renderText("NOT CONNECTED", game_width - 250, 50, 0.5f);
   }
+   */
+
+  cursor_pointer.render();
 }

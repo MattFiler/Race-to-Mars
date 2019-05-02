@@ -1,4 +1,9 @@
 ## build the ASGE game libs folder
+
+if (TARGET ASGE)
+  return()
+endif()
+
 add_library(ASGE UNKNOWN IMPORTED)
 target_link_libraries(${PROJECT_NAME} ASGE)
 
@@ -11,7 +16,7 @@ add_subdirectory(
 target_include_directories(
         ${PROJECT_NAME}
         SYSTEM
-        PRIVATE
+        PUBLIC
         "${CMAKE_SOURCE_DIR}/external/asge/include")
 
 ## copy the dlls post build
