@@ -344,6 +344,30 @@ void GameScene::playingClicksWhenActive(Vector2& mouse_pos)
       // Before ending our go, let the server know if we solved any issues
       board.checkIssueSolvedThisTurn();
 
+      // If this is the end of the final player's turn in the rotation, did we
+      // win or lose?
+      if (Locator::getPlayers()->my_player_index == 3)
+      {
+        debug_text.print("@playingClicksWhenActive - Checking to see if we "
+                         "won/lost.");
+        DataShare game_over_share = DataShare(data_roles::GAME_ENDED);
+        win_state did_we_win = win_state::UNDECIDED;
+        if (board.getIssueCards().size() >= 5)
+        {
+          debug_text.print("@playingClicksWhenActive - Lost game! Still had 5 "
+                           "issues at "
+                           "end of turn.");
+          did_we_win = win_state::LOST;
+        }
+        else if (Locator::getPlayers()->current_progress_index >= 15)
+        {
+          debug_text.print("@playingClicksWhenActive - Won game");
+          did_we_win = win_state::WON;
+        }
+        game_over_share.add(did_we_win);
+        Locator::getNetworkInterface()->sendData(game_over_share);
+      }
+
       // End the go
       DataShare new_share = DataShare(data_roles::CLIENT_WANTS_TO_END_TURN);
       new_share.add(Locator::getPlayers()->my_player_index);

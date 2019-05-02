@@ -145,6 +145,12 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       }
       break;
     }
+      // Handle game win/loss
+    case data_roles::GAME_ENDED:
+    {
+      board.setWinState(static_cast<win_state>(received_data.retrieve(0)));
+      break;
+    }
     // Anything else is unhandled.
     default:
     {
