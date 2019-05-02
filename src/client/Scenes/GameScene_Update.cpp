@@ -383,7 +383,7 @@ void GameScene::updatePopupVisibility()
            !ui_manager.popups().getPopup(ui_popups::YOU_LOSE_POPUP)->isVisible())
   {
     ui_manager.popups().getPopup(ui_popups::YOU_LOSE_POPUP)->showForTime(10);
-      Locator::getAudio()->play(game_over_loss);
+    Locator::getAudio()->play(game_over_loss);
     game_over_timer_started = true;
   }
 }
