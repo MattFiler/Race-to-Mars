@@ -88,6 +88,7 @@ void GameScene::chatMessageInput(const ASGE::KeyEvent* event)
       auto new_share = DataShare(data_roles::CHAT_MSG);
       new_share.addMsg(my_chat_msg);
       Locator::getNetworkInterface()->sendData(new_share);
+      debug_text.print("Sending Message: " + my_chat_msg);
       my_chat_msg.clear();
     }
     else if (event->key != ASGE::KEYS::KEY_BACKSPACE &&

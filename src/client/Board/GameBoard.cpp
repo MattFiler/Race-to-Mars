@@ -147,7 +147,7 @@ void GameBoard::setActiveIssueCards(int card_index[5], bool is_new_rotation)
     if (is_new_rotation && active_issue_cards[i] == -1)
     {
       active_issue_cards[i] = card_index[i];
-      debug_text.print("@setActiveIssueCards - Active issue card at " +
+      debug_text.print("@setActiveIssueCards - Active issue card at index " +
                        std::to_string(i) + " is set to id " +
                        std::to_string(card_index[i]) + ".");
       // sets the slot to active so no other card can take this position.
@@ -200,7 +200,7 @@ bool GameBoard::updateActiveIssueCards()
 
   // Check to see our win/loss state before updating
   // TODO: Fix this, we currently lose too early!
-  if (getIssueCards().size() >= 5)
+  if (getIssueCards().size() > 5)
   {
     debug_text.print("@serverEndsClientTurn - Lost game with " +
                      std::to_string(getIssueCards().size()) + " issues");
@@ -225,7 +225,7 @@ bool GameBoard::updateActiveIssueCards()
                        std::to_string(i) + ", which is card id " +
                        std::to_string(active_issue_cards[i]));
       active_issues.emplace_back(
-        IssueCard(static_cast<issue_cards>(active_issue_cards[i].load())));
+        IssueCard(static_cast<issue_cards>(active_issue_cards[i - 1].load())));
       slot_active[i] = true;
       debug_text.print("@updateActiveIssueCards - Creating issue card " +
                        std::to_string(active_issue_cards[i]) +
@@ -647,14 +647,21 @@ void GameBoard::checkissueSolved()
   bool issue_solved = false;
   auto it = active_issues.begin();
   int i = 0;
+  int card_id = -1;
   while (it != active_issues.end())
   {
     if (it->isSolved())
     {
       it = active_issues.erase(it);
-      issue_solved = true;
-      active_issue_cards[i] = -1;
-      slot_active[i] = false;
+      card_id = issue_solved = true;
+      for (size_t j = 0; j < std::size(active_issue_cards); ++i)
+      {
+        if (active_issue_cards[j] == card_id)
+        {
+          active_issue_cards[j] = -1;
+          slot_active[i] = false;
+        }
+      }
       debug_text.print("@checkissueSolved - issue " + std::to_string(i) +
                        " solved");
       ++i;
