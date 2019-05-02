@@ -227,25 +227,21 @@ void GameScene::clickHandler(const ASGE::SharedEventData data)
     return;
   }
 
-  // Game input states
-  switch (current_state)
+  // Game input states from here on out
+  if (current_state != game_state::PLAYING)
   {
-    case game_state::PLAYING:
-    {
-      // Disallow interaction when scene lock is active
-      if (current_scene_lock_active)
-      {
-        break;
-      }
-
-      playingClicksWhenActive(mouse_pos);
-      playingClicksWhenActiveOrInactive(mouse_pos);
-    }
-    default:
-    {
-      break;
-    }
+    return;
   }
+
+  // Disallow interaction when scene lock is active
+  if (current_scene_lock_active)
+  {
+    return;
+  }
+
+  // Game scene input updates
+  playingClicksWhenActive(mouse_pos);
+  playingClicksWhenActiveOrInactive(mouse_pos);
 }
 
 /* Handle clicks when playing and active */
@@ -265,12 +261,12 @@ void GameScene::playingClicksWhenActive(Vector2& mouse_pos)
           can_move)
       {
         bool free_movement =
-          ((static_cast<int>(new_room.getEnum()) ==
-            Locator::getPlayers()
-              ->getPlayer(
-                players[Locator::getPlayers()->my_player_index]->current_class)
-              ->getStartingRoom()) ||
-           free_player_movement);
+          (static_cast<int>(new_room.getEnum()) ==
+           Locator::getPlayers()
+             ->getPlayer(
+               players[Locator::getPlayers()->my_player_index]->current_class)
+             ->getStartingRoom()) ||
+          free_player_movement;
         if ((players[Locator::getPlayers()->my_player_index]->action_points >
                0 &&
              !free_player_movement) ||
@@ -295,6 +291,7 @@ void GameScene::playingClicksWhenActive(Vector2& mouse_pos)
           debug_text.print("Moving my player token to room '" +
                            new_room.getName() + "'.");
 
+          // Movement costs, so take points
           if (!free_movement)
           {
             debug_text.print("Moving costs 1 AP.");
@@ -609,138 +606,137 @@ void GameScene::issuePopupClicks()
                                      ->getInternalButtons())
     {
       ap_button_index++;
-      if (button->isActive())
+      if (button->isActive() && button->clicked())
       {
-        if (button->clicked())
-        {
-          // If we've already solved an issue, we can't keep adding points!
-          if (board.getIssueCards()
-                .at(static_cast<size_t>(ap_button_index))
-                .isSolved())
-          {
-            debug_text.print("THIS ISSUE IS ALREADY SOLVED!");
-            ui_manager.showInfoPopup("ALREADY_SOLVED");
-            Locator::getAudio()->play(option_disabled_sfx);
-            continue;
-          }
-
-          // We must be in the correct room to assign action points
-          if (Locator::getPlayers()
-                ->getPlayer(board.getIssueCards()
-                              .at(static_cast<size_t>(ap_button_index))
-                              .getIssuePlayerType())
-                ->getStartingRoom() !=
-              static_cast<int>(
-                board
-                  .getRoom(static_cast<ship_rooms>(
-                    players[Locator::getPlayers()->my_player_index]->room))
-                  .getEnum()))
-          {
-            debug_text.print("NOT IN THE CORRECT ROOM TO ASSIGN ACTION "
-                             "POINTS!");
-            ui_manager.showInfoPopup("WRONG_ROOM");
-            Locator::getAudio()->play(option_disabled_sfx);
-            continue;
-          }
-
-          int& my_action_points =
-            players[Locator::getPlayers()->my_player_index]->action_points;
-          int points_to_assign = 1;
-          issue_card_class = board.getIssueCards()
-                               .at(static_cast<size_t>(ap_button_index))
-                               .getIssuePlayerType();
-
-          // Check if player has any item cards. If yes add the points to
-          // clicked issue
-          int current_item_card = 0;
-          for (size_t i = 0; i < board.getItemCards().size(); ++i)
-          {
-            if (board.getItemCards().at(i).getItemPlayerType() ==
-                  issue_card_class &&
-                !used_item_this_turn)
-            {
-              points_to_assign = 5;
-              my_action_points += 5;
-              used_item_this_turn = true;
-              debug_text.print("Assign item card points to issue card.");
-              Locator::getPlayers()
-                ->getPlayer(
-                  players[Locator::getPlayers()->my_player_index]->current_class)
-                ->useItem();
-            }
-
-            if (used_item_this_turn)
-            {
-              Locator::getPlayers()
-                ->getPlayer(Locator::getPlayers()
-                              ->players[Locator::getPlayers()->my_player_index]
-                              .current_class)
-                ->setHeldItems(-1);
-              board.eraseItemCard(current_item_card);
-            }
-            ++current_item_card;
-          }
-
-          if (my_action_points >= points_to_assign)
-          {
-            Locator::getPlayers()
-              ->getPlayer(static_cast<player_classes>(
-                Locator::getPlayers()->my_player_index))
-              ->setUsedAPThisTurn(true);
-            // Assign action point to the selected issue - this currently
-            // assigns ONE action point, maybe in future have buttons for
-            // varying amounts?
-            DataShare new_share =
-              DataShare(data_roles::CLIENT_ACTION_POINTS_CHANGED);
-            new_share.add(Locator::getPlayers()->my_player_index);
-            new_share.add(my_action_points);
-            new_share.add(my_action_points - points_to_assign);
-            new_share.add(ap_button_index);
-            Locator::getNetworkInterface()->sendData(new_share);
-            if (!board.assignActionPointToIssue(
-                  players[Locator::getPlayers()->my_player_index]->current_class,
-                  ap_button_index,
-                  points_to_assign))
-            {
-              DataShare new_share_2 =
-                DataShare(data_roles::CLIENT_REQUESTS_SYNC);
-              new_share.add(Locator::getPlayers()->my_player_index);
-              new_share.add(0);
-              Locator::getNetworkInterface()->sendData(new_share_2);
-            }
-            else
-            {
-              my_action_points -= points_to_assign;
-              debug_text.print("Assigned action points! My total is now " +
-                               std::to_string(my_action_points) + ".");
-
-              if (board.getIssueCards().at(ap_button_index).isSolved())
-              {
-                // We solved the issue - hide UI
-                Locator::getAudio()->play(issue_solved_sfx);
-                ui_manager.popups()
-                  .getPopup(ui_popups::ISSUE_POPUP)
-                  ->getInternalButtons()
-                  .at(ap_button_index)
-                  ->setActive(false);
-              }
-              else
-              {
-                // We didn't solve the issue yet
-                Locator::getAudio()->play(ap_assigned_sfx);
-              }
-            }
-          }
-          else
-          {
-            // We don't have enough action points
-            debug_text.print("COULD NOT ASSIGN ACTION POINTS! WE HAVE " +
-                             std::to_string(my_action_points) + ".");
-            ui_manager.showInfoPopup("NOT_ENOUGH_AP");
-            Locator::getAudio()->play(option_disabled_sfx);
-          }
-        }
+        issuePopupAssignAP(ap_button_index, issue_card_class);
       }
     }
+  }
+}
+
+/* Assign AP to an issue based on button index and player class */
+void GameScene::issuePopupAssignAP(int& ap_button_index,
+                                   player_classes& issue_card_class)
+{
+  // If we've already solved an issue, we can't keep adding points!
+  if (board.getIssueCards().at(static_cast<size_t>(ap_button_index)).isSolved())
+  {
+    debug_text.print("THIS ISSUE IS ALREADY SOLVED!");
+    ui_manager.showInfoPopup("ALREADY_SOLVED");
+    Locator::getAudio()->play(option_disabled_sfx);
+    return;
+  }
+
+  // We must be in the correct room to assign action points
+  if (Locator::getPlayers()
+        ->getPlayer(board.getIssueCards()
+                      .at(static_cast<size_t>(ap_button_index))
+                      .getIssuePlayerType())
+        ->getStartingRoom() !=
+      static_cast<int>(
+        board
+          .getRoom(static_cast<ship_rooms>(
+            players[Locator::getPlayers()->my_player_index]->room))
+          .getEnum()))
+  {
+    debug_text.print("NOT IN THE CORRECT ROOM TO ASSIGN ACTION "
+                     "POINTS!");
+    ui_manager.showInfoPopup("WRONG_ROOM");
+    Locator::getAudio()->play(option_disabled_sfx);
+    return;
+  }
+
+  int& my_action_points =
+    players[Locator::getPlayers()->my_player_index]->action_points;
+  int points_to_assign = 1;
+  issue_card_class = board.getIssueCards()
+                       .at(static_cast<size_t>(ap_button_index))
+                       .getIssuePlayerType();
+
+  // Check if player has any item cards. If yes add the points to
+  // clicked issue
+  int current_item_card = 0;
+  for (size_t i = 0; i < board.getItemCards().size(); ++i)
+  {
+    if (board.getItemCards().at(i).getItemPlayerType() == issue_card_class &&
+        !used_item_this_turn)
+    {
+      points_to_assign = 5;
+      my_action_points += 5;
+      used_item_this_turn = true;
+      debug_text.print("Assign item card points to issue card.");
+      Locator::getPlayers()
+        ->getPlayer(
+          players[Locator::getPlayers()->my_player_index]->current_class)
+        ->useItem();
+    }
+
+    if (used_item_this_turn)
+    {
+      Locator::getPlayers()
+        ->getPlayer(Locator::getPlayers()
+                      ->players[Locator::getPlayers()->my_player_index]
+                      .current_class)
+        ->setHeldItems(-1);
+      board.eraseItemCard(current_item_card);
+    }
+    ++current_item_card;
+  }
+
+  if (my_action_points >= points_to_assign)
+  {
+    Locator::getPlayers()
+      ->getPlayer(
+        static_cast<player_classes>(Locator::getPlayers()->my_player_index))
+      ->setUsedAPThisTurn(true);
+    // Assign action point to the selected issue - this currently
+    // assigns ONE action point, maybe in future have buttons for
+    // varying amounts?
+    DataShare new_share = DataShare(data_roles::CLIENT_ACTION_POINTS_CHANGED);
+    new_share.add(Locator::getPlayers()->my_player_index);
+    new_share.add(my_action_points);
+    new_share.add(my_action_points - points_to_assign);
+    new_share.add(ap_button_index);
+    Locator::getNetworkInterface()->sendData(new_share);
+    if (board.assignActionPointToIssue(
+          players[Locator::getPlayers()->my_player_index]->current_class,
+          ap_button_index,
+          points_to_assign))
+    {
+      my_action_points -= points_to_assign;
+      debug_text.print("Assigned action points! My total is now " +
+                       std::to_string(my_action_points) + ".");
+
+      if (board.getIssueCards().at(ap_button_index).isSolved())
+      {
+        // We solved the issue - hide UI
+        Locator::getAudio()->play(issue_solved_sfx);
+        ui_manager.popups()
+          .getPopup(ui_popups::ISSUE_POPUP)
+          ->getInternalButtons()
+          .at(ap_button_index)
+          ->setActive(false);
+      }
+      else
+      {
+        // We didn't solve the issue yet
+        Locator::getAudio()->play(ap_assigned_sfx);
+      }
+    }
+    else
+    {
+      DataShare new_share_2 = DataShare(data_roles::CLIENT_REQUESTS_SYNC);
+      new_share.add(Locator::getPlayers()->my_player_index);
+      new_share.add(0);
+      Locator::getNetworkInterface()->sendData(new_share_2);
+    }
+  }
+  else
+  {
+    // We don't have enough action points
+    debug_text.print("COULD NOT ASSIGN ACTION POINTS! WE HAVE " +
+                     std::to_string(my_action_points) + ".");
+    ui_manager.showInfoPopup("NOT_ENOUGH_AP");
+    Locator::getAudio()->play(option_disabled_sfx);
   }
 }

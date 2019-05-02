@@ -20,11 +20,7 @@ ExtraInfoPopup::~ExtraInfoPopup()
 /* Set the popup sprite */
 ScaledSprite& ExtraInfoPopup::setSprite(const std::string& popup_name)
 {
-  if (sprite != nullptr)
-  {
-    delete sprite;
-    sprite = nullptr;
-  }
+  delete sprite;
   sprite =
     new ScaledSprite("data/UI/INGAME_UI/EI_POPUP_" + popup_name + ".png");
   return *sprite;

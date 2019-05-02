@@ -31,10 +31,6 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     {
       // Forget them!
       players[received_data.retrieve(0)]->performDisconnect();
-      // While connecting/disconnecting works properly now, it might be nice to
-      // implement some more validation to it - at the moment anyone can rejoin
-      // and replace the original player. Similarly, it's untested if it works
-      // with more than one player leaving.
       game_is_paused = true;
       game_pause_timer = 0;
       // ^ pause the game when someone leaves, this starts a 60 sec timer
@@ -57,12 +53,6 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     case data_roles::SERVER_ENDED_CLIENT_TURN:
     {
       board.cardUpdateIsHappening(true);
-      debug_text.print("SERVER_ENDED_CLIENT_TURN");
-      debug_text.print("CARD 1: " + std::to_string(received_data.retrieve(3)));
-      debug_text.print("CARD 2: " + std::to_string(received_data.retrieve(4)));
-      debug_text.print("CARD 3: " + std::to_string(received_data.retrieve(5)));
-      debug_text.print("CARD 4: " + std::to_string(received_data.retrieve(6)));
-      debug_text.print("CARD 5: " + std::to_string(received_data.retrieve(7)));
       serverEndsClientTurn(received_data);
       board.cardUpdateIsHappening(false);
       break;
@@ -84,12 +74,6 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     case data_roles::SERVER_SYNCS_CARD_INFO:
     {
       board.cardUpdateIsHappening(true);
-      debug_text.print("SERVER_SYNCS_CARD_INFO");
-      debug_text.print("CARD 1: " + std::to_string(received_data.retrieve(0)));
-      debug_text.print("CARD 2: " + std::to_string(received_data.retrieve(1)));
-      debug_text.print("CARD 3: " + std::to_string(received_data.retrieve(2)));
-      debug_text.print("CARD 4: " + std::to_string(received_data.retrieve(3)));
-      debug_text.print("CARD 5: " + std::to_string(received_data.retrieve(4)));
       serverSyncsCardInfo(received_data);
       just_reconnected = true;
       board.cardUpdateIsHappening(false);
@@ -181,6 +165,14 @@ void GameScene::serverEndsClientTurn(DataShare& received_data)
   for (int i = 0; i < 4; i++)
   {
     players[i]->is_active = (received_data.retrieve(1) == i);
+  }
+
+  // Debug log the cards we got
+  for (int i = 0; i < 5; i++)
+  {
+    debug_text.print("@serverEndsClientTurn - Server sent card " +
+                     std::to_string(i + 1) + " as ID " +
+                     std::to_string(received_data.retrieve(3 + i)));
   }
 
   // Re-sync progress index every turn.
@@ -300,7 +292,7 @@ void GameScene::serverSyncsCardInfo(DataShare& received_data)
   debug_text.print("Sync: updated active issue cards.");
   for (int i = 0; i < 5; i++)
   {
-    debug_text.print("Sync: issue card 1: " +
+    debug_text.print("Sync: issue card " + std::to_string(i) + ": " +
                      std::to_string(received_data.retrieve(i)));
   }
   // Sync my objective card

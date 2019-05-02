@@ -50,32 +50,32 @@ void RaceToSpaceServer::initialise()
 void RaceToSpaceServer::run()
 {
   /* A client connected */
-  auto on_connect = ([&](server_client& client) {
+  auto on_connect = [&](server_client& client) {
     // Clients enter into the "global pool" - lobbies aren't joined until the
     // client enters the lobby menu to save idle menu players hogging lobby
     // space
     debug_text.print("Client " + std::to_string(client.get_id()) +
                      " has connected to server, in global pool.");
-  });
+  };
 
   /* A client disconnected */
-  auto on_disconnect = ([&](unsigned int client_id) {
+  auto on_disconnect = [&](unsigned int client_id) {
     debug_text.print("Client " + std::to_string(client_id) +
                      " has disconnected.");
 
     // Leave the lobby and clean up, if the client is still in one
     disconnectFromLobby(static_cast<int>(client_id), true);
-  });
+  };
 
   /* Data received from a client */
   auto on_data =
-    ([&](server_client& client, const enet_uint8* data, size_t data_size) {
+    [&](server_client& client, const enet_uint8* data, size_t data_size) {
       DataShare data_to_send;
       Packet packet_data(data, data_size);
       packet_data >> data_to_send;
 
       handleReceivedData(data_to_send, client);
-    });
+    };
 
   /* Our server update loop */
   static bool terminate = false;
