@@ -9,9 +9,19 @@
 #include <client/Cards/ObjectiveCard.h>
 #include <gamelib/Packet.h>
 
+#include <chrono>
+#include <thread>
+
 /* Update function */
 game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
 {
+  // Force a hard lock-out here if active_issue_cards is being updated
+  while (updating_network_info)
+  {
+    debug_text.print("Waiting for network update to finish...");
+    std::this_thread::sleep_for(std::chrono::milliseconds(2));
+  }
+
   // Check to see if we should auto-exit
   if (game_over_timer_started)
   {
@@ -177,6 +187,12 @@ game_global_scenes GameScene::update(const ASGE::GameTime& game_time)
   {
     ui_manager.popups().hideAll();
     just_reconnected = false;
+  }
+
+  // Debug
+  if (updating_network_info)
+  {
+    debug_text.print("Reached end of update look and network was updating...");
   }
 
   return next_scene;

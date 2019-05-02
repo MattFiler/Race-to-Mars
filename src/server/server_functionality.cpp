@@ -635,6 +635,8 @@ void RaceToSpaceServer::clientRequestsItem(DataShare& data_to_send,
   Lobby* this_lobby = getLobbyByID(client.lobby_id);
   if (this_lobby == nullptr)
   {
+    debug_text.print("Client requested an item, but we failed to get their "
+                     "lobby to alert.");
     return;
   }
 
@@ -644,7 +646,7 @@ void RaceToSpaceServer::clientRequestsItem(DataShare& data_to_send,
   new_share.add(this_lobby->item_deck.back());
   this_lobby->item_deck.pop_back();
 
-  sendData(client, static_cast<unsigned int>(-2), new_share);
+  sendData(client, static_cast<unsigned int>(-1), new_share);
 }
 
 void RaceToSpaceServer::clientSolvedIssueCard(DataShare& data_to_send,
@@ -654,9 +656,11 @@ void RaceToSpaceServer::clientSolvedIssueCard(DataShare& data_to_send,
   Lobby* this_lobby = getLobbyByID(client.lobby_id);
   if (this_lobby == nullptr)
   {
+    debug_text.print("Client solved an issue card, but we failed to get their "
+                     "lobby to alert.");
     return;
   }
-  // re sync cards in server after client has completed 1 and
+  // re sync cards in lobby after client has completed 1 and
   // redistribute to clients.
   for (int i = 0; i < 5; ++i)
   {
@@ -664,7 +668,7 @@ void RaceToSpaceServer::clientSolvedIssueCard(DataShare& data_to_send,
     new_share.add(data_to_send.retrieve(i));
   }
 
-  sendData(client, static_cast<unsigned int>(-2), new_share);
+  sendData(client, static_cast<unsigned int>(-1), new_share);
 }
 
 void RaceToSpaceServer::clientRequestsObjective(DataShare& data_to_send,

@@ -12,10 +12,16 @@
 /* Handles receiving data from the server */
 void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
 {
+  updating_network_info = true;
+  mtx.lock();
+
   // Recreate packet
   Packet data_packet(data, data_size);
   DataShare received_data;
   data_packet >> received_data;
+
+  debug_text.print("DATA PACKET " + std::to_string(received_data.getType()) +
+                   " INCOMING...");
 
   // Handle all relevant data packets for this scene
   switch (received_data.getType())
@@ -50,6 +56,7 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     // The server has ended the current turn, update our game accordingly
     case data_roles::SERVER_ENDED_CLIENT_TURN:
     {
+      debug_text.print("SERVER_ENDED_CLIENT_TURN");
       debug_text.print("CARD 1: " + std::to_string(received_data.retrieve(3)));
       debug_text.print("CARD 2: " + std::to_string(received_data.retrieve(4)));
       debug_text.print("CARD 3: " + std::to_string(received_data.retrieve(5)));
@@ -74,6 +81,7 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
     // information to us.
     case data_roles::SERVER_SYNCS_CARD_INFO:
     {
+      debug_text.print("SERVER_SYNCS_CARD_INFO");
       debug_text.print("CARD 1: " + std::to_string(received_data.retrieve(0)));
       debug_text.print("CARD 2: " + std::to_string(received_data.retrieve(1)));
       debug_text.print("CARD 3: " + std::to_string(received_data.retrieve(2)));
@@ -173,6 +181,10 @@ void GameScene::networkDataReceived(const enet_uint8* data, size_t data_size)
       break;
     }
   }
+  debug_text.print("FINISHED WITH PACKET " +
+                   std::to_string(received_data.getType()) + "!!");
+  mtx.unlock();
+  updating_network_info = false;
 }
 
 /* Server ends the client's turn */
@@ -195,7 +207,40 @@ void GameScene::serverEndsClientTurn(DataShare& received_data)
                                   received_data.retrieve(7) };
     board.setActiveIssueCards(active_issue_cards,
                               static_cast<bool>(received_data.retrieve(12)));
-    board.checkissueSolved();
+
+    // SANITY CHECK
+    debug_text.print("Now we've updated, we sanity check...");
+    int index = 0;
+    for (IssueCard& card : board.getIssueCards())
+    {
+      debug_text.print("board has card " + std::to_string(card.getCardID()) +
+                       " in slot " + std::to_string(index));
+      index++;
+    }
+    int index2 = 0;
+    for (int i = 0; i < 5; i++)
+    {
+      if (received_data.retrieve(3 + i) != -1)
+      {
+        index2++;
+      }
+    }
+    if (index != index2)
+    {
+      debug_text.print("FATAL!! Board vector of cards DID NOT MATCH the data "
+                       "we got from server. Something went wrong!");
+      debug_text.print("Got " + std::to_string(index2) +
+                       " cards, but we have " + std::to_string(index) +
+                       " in our vector");
+    }
+    else
+    {
+      debug_text.print("CARD VECTOR MATCHES NETWORK DATA!");
+    }
+    debug_text.print("Finished sanity check");
+    // end
+
+    board.checkissueSolved(); // TODO: should this be called first?
     free_player_movement = false;
     used_item_this_turn = false;
     if (board.getIssueCards().size() >= 5)

@@ -9,6 +9,7 @@
 #include "gamelib/Constants.h"
 #include "gamelib/Debug/DebugText.h"
 #include <Engine/Renderer.h>
+#include <atomic>
 
 class ObjectiveCard;
 
@@ -113,14 +114,14 @@ class GameBoard
 
   // While we use vectors for our card objects, unfortunately these trackers
   // need to be in place to fix some threading issues with sprite creation.
-  int active_issue_cards[5] = { -1, -1, -1, -1, -1 };
-  int active_item_card[5] = { -1, -1, -1, -1, -1 };
+  std::atomic<int> active_issue_cards[5] = { -1, -1, -1, -1, -1 };
+  std::atomic<int> active_item_card[5] = { -1, -1, -1, -1, -1 };
   bool item_slot_active[5] = { false, false, false, false, false };
 
   int objective_cards_inplay[4] = { -1, -1, -1, -1 };
   // Slot active is to keep track of available slots to place new cards since
   // if active_issue_card[x] != -1 can be overridden by another card.
-  bool slot_active[5] = { false, false, false, false, false };
+  std::atomic<bool> slot_active[5] = { false, false, false, false, false };
 
   bool update_issues = false;
   int new_obj_card = -1;

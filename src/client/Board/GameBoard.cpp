@@ -157,53 +157,23 @@ bool GameBoard::updateActiveIssueCards()
   {
     return false;
   }
-  debug_text.print("@updateActiveIssueCards - DIDN'T HIT !update_issues");
 
   for (int i = 0; i < game_config.max_issue_cards; ++i)
   {
-    /* DEBUG!! */
-    debug_text.print("@updateActiveIssueCards - loop index " +
-                     std::to_string(i));
-    if (active_issue_cards[i] != -1)
+    if (active_issue_cards[i] != -1 && !slot_active[i])
     {
-      debug_text.print("@updateActiveIssueCards - active_issue_cards[i] != -1 "
-                       "- " +
-                       std::to_string(i));
-    }
-    else
-    {
-      debug_text.print("@updateActiveIssueCards - active_issue_cards[i] == -1 "
-                       "- " +
-                       std::to_string(i));
-    }
-    if (slot_active[i])
-    {
-      debug_text.print("@updateActiveIssueCards - slot_active[i] - " +
-                       std::to_string(i));
-    }
-    else
-    {
-      debug_text.print("@updateActiveIssueCards - !slot_active[i] - " +
-                       std::to_string(i));
-    }
-    /* END */
-
-    if (active_issue_cards[i] != -1 && !slot_active[i]) // TODO: traceback this,
-                                                        // if slot is active we
-                                                        // won't set a card -
-                                                        // maybe it's not being
-                                                        // set somewhere?
-    {
-      debug_text.print("@updateActiveIssueCards - EMPLACING BACK - " +
-                       std::to_string(i));
+      debug_text.print("@updateActiveIssueCards - EMPLACING BACK at index " +
+                       std::to_string(i) + ", which is card id " +
+                       std::to_string(active_issue_cards[i]));
       active_issues.emplace_back(
-        IssueCard(static_cast<issue_cards>(active_issue_cards[i])));
+        IssueCard(static_cast<issue_cards>(active_issue_cards[i].load())));
       slot_active[i] = true;
       debug_text.print("@updateActiveIssueCards - Creating issue card " +
                        std::to_string(active_issue_cards[i]) +
                        " in vector at " +
                        std::to_string(active_issues.size() - 1) + ".");
-      handleIssueCardEvents(static_cast<issue_cards>(active_issue_cards[i]));
+      handleIssueCardEvents(
+        static_cast<issue_cards>(active_issue_cards[i].load()));
     }
   }
   update_issues = false;
