@@ -213,31 +213,6 @@ bool GameBoard::updateActiveIssueCards()
   // Check to see if we've solved any issues...
   checkIssueSolved();
 
-  // Check to see our win/loss state before updating
-  int raw_card_count = 0;
-  for (int i = 0; i < 5; i++)
-  {
-    if (active_issue_cards[i] != -1)
-    {
-      raw_card_count++;
-    }
-  }
-  if (raw_card_count == 5)
-  {
-    debug_text.print("@serverEndsClientTurn - Lost game! Still had 5 issues at "
-                     "end of turn.");
-    has_won = win_state::LOST;
-  }
-  else if (Locator::getPlayers()->current_progress_index >= 15)
-  {
-    debug_text.print("@serverEndsClientTurn - Won game");
-    has_won = win_state::WON;
-  }
-  else
-  {
-    has_won = win_state::UNDECIDED;
-  }
-
   // Update our issue card vector (used by the game thread)
   for (int i = 0; i < game_config.max_issue_cards; ++i)
   {
@@ -672,6 +647,8 @@ void GameBoard::checkIssueSolved()
 /* THREAD: GAME */
 void GameBoard::checkIssueSolvedThisTurn()
 {
+  is_updating_cards = true;
+
   // Remove solved issues from array
   auto new_share = DataShare(data_roles::CLIENT_TURN_SOLVED_ISSUE);
   for (IssueCard& card : active_issues)
@@ -704,6 +681,8 @@ void GameBoard::checkIssueSolvedThisTurn()
   {
     Locator::getNetworkInterface()->sendData(new_share);
   }
+
+  is_updating_cards = false;
 }
 
 /* Check for completion of objective card */

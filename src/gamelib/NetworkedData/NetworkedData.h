@@ -168,9 +168,15 @@ enum data_roles
   /* ^ The client has used an obj to get free movement for a turn.
    *   [0] = Set client movement to true.
    */
-  CHAT_MSG
+
+  CHAT_MSG,
   /* ^ The client has used an obj to get free movement for a turn.
    *   [0] = CHAT_MESSAGE
+   */
+
+  GAME_ENDED
+  /* ^ The game ended - alert all clients!
+   *   [0] = win/loss (casts to win_state enum)
    */
 };
 
