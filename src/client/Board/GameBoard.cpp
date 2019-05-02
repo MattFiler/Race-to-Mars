@@ -140,6 +140,7 @@ void GameBoard::setActiveIssueCards(int card_index[5], bool is_new_rotation)
     if (is_new_rotation && active_issue_cards[i] == -1)
     {
       active_issue_cards[i] = card_index[i];
+      slot_active[i] = false;
       debug_text.print("@setActiveIssueCards - Active issue card at " +
                        std::to_string(i) + " is set to id " +
                        std::to_string(card_index[i]) + ".");
@@ -147,6 +148,19 @@ void GameBoard::setActiveIssueCards(int card_index[5], bool is_new_rotation)
       // Creating a new issue card and adding it to the back of the
       // current issues vector for rendering and points.
       update_issues = true;
+    }
+    else if (active_issue_cards[i] != card_index[i])
+    {
+      debug_text.print("@setActiveIssueCards - Our local card info was wrong "
+                       "(" +
+                       std::to_string(i) + " - overwriting...");
+      active_issue_cards[i] = card_index[i];
+      slot_active[i] = false;
+    }
+    else
+    {
+      debug_text.print("@setActiveIssueCards - Card at index " +
+                       std::to_string(i) + " already set, continuing...");
     }
   }
   debug_text.print("@setActiveIssueCards - Finished setting active issue card "
