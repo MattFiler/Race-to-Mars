@@ -40,21 +40,26 @@ class LobbyScene : public Scene
   void clientChangedReady(DataShare& received_data);
   void serverStartsGame(DataShare& received_data);
 
+  /* My info & timers */
   int lobby_id = -1;
   int my_player_index = -1;
   double game_countdown = 5.0;
 
+  /* States */
   bool has_connected = false;
   bool can_change_ready_state = true;
   bool should_start_game = false;
   bool is_playing_countdown = false;
 
+  /* Engine Functions */
   Menu main_menu;
   Localisation localiser;
 
+  /* Players and Sprites */
   LobbyPlayer* players[4] = { nullptr, nullptr, nullptr, nullptr };
   LobbySprites lobby_sprites;
 
+  /* Sound */
   FileHandler file_handler;
   SoLoud::Wav player_join;
   SoLoud::Wav player_disconnect;

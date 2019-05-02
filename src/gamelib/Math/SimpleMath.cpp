@@ -1,7 +1,3 @@
-//
-// Created by j42-king on 30/03/2019.
-//
-
 #include "SimpleMath.h"
 #include <chrono>
 #include <random>

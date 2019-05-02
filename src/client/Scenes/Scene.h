@@ -39,12 +39,14 @@ class Scene
   virtual void render(){};
 
  protected:
+  /* Engine Functions */
   ASGE::Input* input = nullptr;
   ASGE::Renderer* renderer = nullptr;
   SoLoud::Soloud* audio = nullptr;
   KeyHandler keys;
   DebugText debug_text;
 
+  /* Scene Info */
   game_global_scenes next_scene = game_global_scenes::DEFAULT;
 };
 

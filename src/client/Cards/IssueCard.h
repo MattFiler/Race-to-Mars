@@ -21,7 +21,7 @@ class IssueCard : public Card
 
   void setCardID(issue_cards _item_card_id);
   void addActionPoints(player_classes _player_class, int _ap_amount);
-  void setIssueCardvariable(int _action_points);
+  void setIssueCardVariable(int _action_points);
 
   int getActionPointsNeeded() { return action_points; }
   issue_cards getCardID() { return cardID; };
@@ -34,15 +34,18 @@ class IssueCard : public Card
   player_classes getIssuePlayerType() { return player_class_type; }
 
  private:
+  /* Card Metadata */
   issue_cards cardID = issue_cards::ISSUE_PLACEHOLDER;
+  player_classes player_class_type = player_classes::UNASSIGNED;
+
+  /* Assigned AP */
   int comms_ap_assigned = 0;
   int engineer_ap_assigned = 0;
   int medic_ap_assigned = 0;
   int pilot_ap_assigned = 0;
   int total_ap_assigned = 0;
-  bool issue_solved = false;
-  player_classes player_class_type = player_classes::UNASSIGNED;
 
+  /* Variable AP */
   int issue_card_ap_variable = 0;
 };
 

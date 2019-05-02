@@ -4,6 +4,7 @@
 #include <client/Players/AllPlayers.h>
 #include <gamelib/NetworkedData/DataShare.h>
 
+/* Create Objective Card */
 ObjectiveCard::ObjectiveCard(objective_cards _card_type)
 {
   card_config = file_handler.openAsJSON("CONFIGS/cards.json");
@@ -18,11 +19,13 @@ ObjectiveCard::ObjectiveCard(objective_cards _card_type)
   setSprite(card_config["OBJECTIVECARDS"][card_type]["sprite_path"]);
 }
 
+/* Set Card ID */
 void ObjectiveCard::setCardID(objective_cards _obj_card_id)
 {
   cardID = _obj_card_id;
 }
 
+/* Use the Objective Card (called from button usually) */
 void ObjectiveCard::useObjectiveCard()
 {
   switch (cardID)
@@ -156,6 +159,7 @@ void ObjectiveCard::useObjectiveCard()
   }
 }
 
+/* Work out if the objective has been completed */
 bool ObjectiveCard::objectiveComplete(IssueCard* const _issue,
                                       player_classes _this_clients_class)
 {
@@ -265,6 +269,7 @@ bool ObjectiveCard::objectiveComplete(IssueCard* const _issue,
   return false;
 }
 
+/* Increase the Action Points */
 void ObjectiveCard::increaseAP()
 {
   int& my_action_points = Locator::getPlayers()
@@ -279,6 +284,7 @@ void ObjectiveCard::increaseAP()
   Locator::getNetworkInterface()->sendData(new_share);
 }
 
+/* Bespoke function for free ship movement ability */
 void ObjectiveCard::freeShipMovement()
 {
   DataShare new_share = DataShare(data_roles::CLIENT_FREE_MOVEMENT);

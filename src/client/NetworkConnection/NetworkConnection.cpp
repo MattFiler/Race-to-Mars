@@ -3,13 +3,14 @@
 #include <Engine/Renderer.h>
 #include <iostream>
 
+/* On destruction, disconnect gracefully */
 NetworkConnection::~NetworkConnection()
 {
   client.disconnect();
   enetpp::global_state::get().deinitialize();
 }
 
-// Initialise networking and connect to server
+/* Initialise networking and connect to server */
 void NetworkConnection::connectToServer(const std::string& hostname,
                                         enet_uint16 port)
 {
@@ -19,7 +20,7 @@ void NetworkConnection::connectToServer(const std::string& hostname,
                    .set_server_host_name_and_port(hostname.c_str(), port));
 }
 
-// Start listening to our server
+/* Start listening to our server */
 void NetworkConnection::startListening(RaceToSpace* game_instance)
 {
   game = game_instance;
@@ -29,7 +30,7 @@ void NetworkConnection::startListening(RaceToSpace* game_instance)
   th.detach();
 }
 
-// Our network connection loop
+/* Our network connection loop */
 void NetworkConnection::networkLoop()
 {
   while (client.is_connecting_or_connected())
@@ -69,6 +70,7 @@ void NetworkConnection::sendData(DataShare& data)
   getPacketQueue()->push(packet);
 }
 
+/* Send a chat message */
 void NetworkConnection::sendMsg(const std::string& data)
 {
   Packet packet;

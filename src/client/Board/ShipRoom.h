@@ -25,13 +25,16 @@ class ShipRoom
   bool canMoveTo(const std::string& room_name);
 
  private:
+  /* Engine Features */
   FileHandler file_handler;
   BoundingBox bounding_box;
   Localisation localiser;
 
+  /* Rooms */
   std::vector<std::string> neighbour_rooms;
   ship_rooms this_room_enum;
 
+  /* Misc */
   Vector2 centre_point;
   std::string friendly_name;
 };

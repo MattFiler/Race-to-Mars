@@ -15,6 +15,7 @@ IssueCard::IssueCard(issue_cards _card_type)
   player_class_type = card_config["ISSUECARDS"][card_type]["player_class"];
 }
 
+/* Work out if the card was solved by one class */
 bool IssueCard::isSolvedSolo(player_classes _player_class)
 {
   switch (_player_class)
@@ -153,11 +154,13 @@ bool IssueCard::isSolved()
   return false;
 }
 
-void IssueCard::setIssueCardvariable(int _action_points)
+/* Set the variable modifier to this card's AP - used for in-game modifiers */
+void IssueCard::setIssueCardVariable(int _action_points)
 {
   issue_card_ap_variable += _action_points;
 }
 
+/* Work out who contributed most to solving this card */
 bool IssueCard::contributedMost(player_classes _player_class)
 {
   switch (_player_class)

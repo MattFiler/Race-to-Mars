@@ -70,11 +70,7 @@ void Menu::realignMenuTextItems()
 /* Checks to see if the given menu item was selected (identified by its text) */
 bool Menu::selectedItemWas(const std::string& item_text)
 {
-  if (menu_text_items[current_menu_index] == localiser.getString(item_text))
-  {
-    return true;
-  }
-  return false;
+  return menu_text_items[current_menu_index] == localiser.getString(item_text);
 }
 
 /* Key handler - returns true if the active option was selected */

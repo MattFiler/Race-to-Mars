@@ -1,7 +1,3 @@
-//
-// Created by j42-king on 30/03/2019.
-//
-
 #ifndef PROJECT_SIMPLEMATH_H
 #define PROJECT_SIMPLEMATH_H
 

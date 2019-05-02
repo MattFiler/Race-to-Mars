@@ -150,7 +150,7 @@ void GameScene::playingInput()
   if (keys.keyReleased("Debug Use Objective Action") && !entering_msg)
   {
     debug_text.print("@playingInput - Using OBJ POWER!");
-    board.useObjCardDebug();
+    board.useObjectiveCard();
   }
   if (keys.keyReleased("Debug Spend AP") &&
       players[Locator::getPlayers()->my_player_index]->is_active &&
@@ -508,7 +508,7 @@ void GameScene::playingClicksWhenActiveOrInactive(Vector2& mouse_pos)
   {
     debug_text.print("@playingClicksWhenActiveOrInactive - user clicked "
                      "objective card.");
-    board.useObjCardDebug();
+    board.useObjectiveCard();
   }
 
   // Clicked on an objective card

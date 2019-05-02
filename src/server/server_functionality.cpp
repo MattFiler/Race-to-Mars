@@ -2,16 +2,6 @@
 #include "server.h"
 #include <gamelib/Packet.h>
 
-/*
- *
- * This is still a way away from the tidyup that the server needs, but it's a
- * start.
- *
- * To go further with the tidyup, it would be nice to get cards into their own
- * class within the server instead of all being in the same place.
- *
- */
-
 /* Handle data received by the server */
 void RaceToSpaceServer::handleReceivedData(DataShare& data_to_send,
                                            server_client& client)
@@ -660,9 +650,6 @@ void RaceToSpaceServer::clientRequestsItem(DataShare& data_to_send,
 void RaceToSpaceServer::clientSolvedIssueCard(DataShare& data_to_send,
                                               server_client& client)
 {
-  // TODO: Currently this will most likely (or at least should) come in four
-  // times every full rotation, some kind of catch to only perform this once
-  // would be nice.
   Lobby* this_lobby = getLobbyByID(client.lobby_id);
   if (this_lobby == nullptr)
   {
@@ -672,10 +659,6 @@ void RaceToSpaceServer::clientSolvedIssueCard(DataShare& data_to_send,
   // Update cards
   for (int i = 0; i < 5; ++i)
   {
-    debug_text.print("@clientSolvedIssueCard - Card " + std::to_string(i) +
-                     " is now " + std::to_string(data_to_send.retrieve(i)) +
-                     ", previously " +
-                     std::to_string(this_lobby->active_issue_cards[i]));
     this_lobby->active_issue_cards[i] = data_to_send.retrieve(i);
   }
 }
@@ -724,6 +707,7 @@ void RaceToSpaceServer::clientRequestsObjective(DataShare& data_to_send,
   sendData(client, client.get_id(), new_share);
 }
 
+/* Chat messsage handler */
 void RaceToSpaceServer::chatMsg(DataShare& data_to_send, server_client& client)
 {
   DataShare new_share = DataShare(data_roles::CLIENT_FREE_MOVEMENT);

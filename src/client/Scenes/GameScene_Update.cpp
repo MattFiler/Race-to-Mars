@@ -233,19 +233,6 @@ void GameScene::updatePopups()
   // Update cards if required and show popup if needed
   if (board.updateActiveIssueCards())
   {
-    // SANITY CHECK
-    debug_text.print("@updatePopups - Now we've updated, we sanity check...");
-    int index = 0;
-    for (IssueCard& card : board.getIssueCards())
-    {
-      debug_text.print("@updatePopups - board has card " +
-                       std::to_string(card.getCardID()) + " in slot " +
-                       std::to_string(index));
-      index++;
-    }
-    debug_text.print("@updatePopups - Finished sanity check");
-    // END SANITY CHECK
-
     // Hide all old popups
     ui_manager.popups().hideAll();
 
