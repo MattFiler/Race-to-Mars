@@ -665,6 +665,10 @@ void RaceToSpaceServer::clientSolvedIssueCard(DataShare& data_to_send,
   // Update cards
   for (int i = 0; i < 5; ++i)
   {
+    debug_text.print("@clientSolvedIssueCard - Card " + std::to_string(i) +
+                     " is now " + std::to_string(data_to_send.retrieve(i)) +
+                     ", previously " +
+                     std::to_string(this_lobby->active_issue_cards[i]));
     this_lobby->active_issue_cards[i] = data_to_send.retrieve(i);
   }
 }
