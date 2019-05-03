@@ -685,6 +685,20 @@ void GameBoard::checkIssueSolvedThisTurn()
   is_updating_cards = false;
 }
 
+/* Get the number of issues that are left to solve in our network-safe array */
+int GameBoard::getInternalIssuesUnsolved()
+{
+  int count = 0;
+  for (int i = 0; i < 5; i++)
+  {
+    if (active_issue_cards[i] != -1)
+    {
+      count++;
+    }
+  }
+  return count;
+}
+
 /* Check for completion of objective card */
 /* THREAD: GAME */
 bool GameBoard::checkObjectiveCardComplete(player_classes _this_clients_class)

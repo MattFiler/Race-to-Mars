@@ -97,6 +97,8 @@ class GameBoard
   win_state getWinState() { return has_won; };
   void setWinState(win_state _state) { has_won = _state; };
 
+  int getInternalIssuesUnsolved();
+
  private:
   void handleIssueCardEvents(issue_cards _card_type);
 

@@ -352,7 +352,7 @@ void GameScene::playingClicksWhenActive(Vector2& mouse_pos)
                          "won/lost.");
         DataShare game_over_share = DataShare(data_roles::GAME_ENDED);
         win_state did_we_win = win_state::UNDECIDED;
-        if (board.getIssueCards().size() >= 5)
+        if (board.getInternalIssuesUnsolved() >= 5)
         {
           debug_text.print("@playingClicksWhenActive - Lost game! Still had 5 "
                            "issues at "
