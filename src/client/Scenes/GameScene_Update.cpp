@@ -191,9 +191,9 @@ bool GameScene::updateAutoExitChecks(const ASGE::GameTime& game_time)
     if (connected_count == 4)
     {
       game_is_paused = false;
+      game_pause_timer = 0;
     }
   }
-  game_pause_timer = 0;
 
   return false;
 }
