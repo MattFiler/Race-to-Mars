@@ -371,6 +371,7 @@ void GameScene::updatePopupVisibility()
       !ui_manager.popups().getPopup(ui_popups::YOU_WIN_POPUP)->isVisible())
   {
     ui_manager.popups().getPopup(ui_popups::YOU_WIN_POPUP)->showForTime(10);
+    Locator::getAudio()->play(game_over_win);
     game_over_timer_started = true;
   }
   else if (board.getWinState() == win_state::LOST &&
@@ -382,6 +383,7 @@ void GameScene::updatePopupVisibility()
            !ui_manager.popups().getPopup(ui_popups::YOU_LOSE_POPUP)->isVisible())
   {
     ui_manager.popups().getPopup(ui_popups::YOU_LOSE_POPUP)->showForTime(10);
+    Locator::getAudio()->play(game_over_loss);
     game_over_timer_started = true;
   }
 }

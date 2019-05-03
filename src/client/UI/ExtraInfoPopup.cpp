@@ -6,8 +6,8 @@ ExtraInfoPopup::ExtraInfoPopup()
   renderer = Locator::getRenderer();
   sprite = new ScaledSprite("data/UI/INGAME_UI/popup_blank.png");
 
-  file_handler.loadSound(active_sfx, "popup_show");
-  file_handler.loadSound(inactive_sfx, "popup_hide");
+  file_handler.loadSound(active_sfx, "info_popup_show");
+  file_handler.loadSound(inactive_sfx, "info_popup_dismiss");
 }
 
 /* Destroy the popup and all contents */

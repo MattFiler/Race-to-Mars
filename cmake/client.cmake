@@ -83,7 +83,14 @@ set(HEADER_FILES
         ../src/client/UI/Managers/GameSceneUI.h
         ../src/client/UI/Managers/PopupManager.cpp
         ../src/client/UI/Managers/PopupManager.h
-        ../src/client/Scenes/GameScene_Networking.cpp ../src/client/Scenes/GameScene_Interaction.cpp ../src/client/Scenes/GameScene_Update.cpp ../src/client/Scenes/GameScene_Render.cpp ../src/client/Scenes/TutorialScene.cpp ../src/client/Scenes/TutorialScene.h ../src/client/UI/ExtraInfoPopup.cpp ../src/client/UI/ExtraInfoPopup.h)
+        ../src/client/Scenes/GameScene_Networking.cpp
+        ../src/client/Scenes/GameScene_Interaction.cpp
+        ../src/client/Scenes/GameScene_Update.cpp
+        ../src/client/Scenes/GameScene_Render.cpp
+        ../src/client/Scenes/TutorialScene.cpp
+        ../src/client/Scenes/TutorialScene.h
+        ../src/client/UI/ExtraInfoPopup.cpp
+        ../src/client/UI/ExtraInfoPopup.h)
 
 ## the executable
 add_executable(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES})
@@ -110,6 +117,6 @@ include(build/compilation)
 include(tools/itch.io)
 
 ## hide console unless debug build ##
-if (NOT CMAKE_BUILD_TYPE STREQUAL  "Debug" AND WIN32)
+if (CMAKE_BUILD_TYPE MATCHES DEBUG AND WIN32)
     target_compile_options(${PROJECT_NAME} -mwindows)
 endif()
