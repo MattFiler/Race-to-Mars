@@ -146,9 +146,14 @@ bool GameScene::updateAutoExitChecks(const ASGE::GameTime& game_time)
       new_share.add(Locator::getPlayers()->my_player_index);
       Locator::getNetworkInterface()->sendData(new_share);
       next_scene = game_global_scenes::MAIN_MENU;
+      for (int i = 0; i < 4; i++)
+      {
+        Locator::getPlayers()->players[i].performDisconnect();
+      }
       debug_text.print("@updateAutoExitChecks - Returning to main menu and "
                        "disconnecting from "
                        "lobby.");
+      return true;
     }
   }
 
@@ -164,9 +169,14 @@ bool GameScene::updateAutoExitChecks(const ASGE::GameTime& game_time)
       new_share.add(Locator::getPlayers()->my_player_index);
       Locator::getNetworkInterface()->sendData(new_share);
       next_scene = game_global_scenes::MAIN_MENU;
+      for (int i = 0; i < 4; i++)
+      {
+        Locator::getPlayers()->players[i].performDisconnect();
+      }
       debug_text.print("@updateAutoExitChecks - Returning to main menu and "
                        "disconnecting from "
                        "lobby.");
+      return true;
     }
 
     // If we're now back at 4 players, continue the game.
@@ -182,8 +192,6 @@ bool GameScene::updateAutoExitChecks(const ASGE::GameTime& game_time)
     {
       game_is_paused = false;
     }
-
-    return true;
   }
   game_pause_timer = 0;
 
