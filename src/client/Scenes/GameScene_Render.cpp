@@ -33,7 +33,6 @@ void GameScene::render()
   // Render APs, overlays, and debug options if in debug mode
   renderPopupPointText();
   renderGameOverlays();
-  debugOutput();
 }
 
 /* Render our "playing" state */

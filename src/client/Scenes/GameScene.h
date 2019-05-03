@@ -63,9 +63,6 @@ class GameScene : public Scene
   void serverSyncsCardInfo(DataShare& received_data);
   void serverSyncsPositionInfo(DataShare& received_data);
 
-  // Debug output - disabled in release mode
-  void debugOutput();
-
   // Mutex to lock the game upon getting network data
   std::mutex mtx;
 

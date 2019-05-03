@@ -115,8 +115,3 @@ endif()
 ## important build scripts
 include(build/compilation)
 include(tools/itch.io)
-
-## hide console unless debug build ##
-if (CMAKE_BUILD_TYPE MATCHES DEBUG AND WIN32)
-    target_compile_options(${PROJECT_NAME} -mwindows)
-endif()
